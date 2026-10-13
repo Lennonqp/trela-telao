@@ -67,12 +67,7 @@
 <div class="cortina" id="cortina">
   <div>
     <div class="logo" style="font-size:72px">trela</div>
-    <form id="login" novalidate style="display:flex;flex-direction:column;gap:12px;text-align:left" hidden>
-      <div><label for="email">E-mail da equipe</label><input id="email" type="email" autocomplete="username"></div>
-      <div><label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password"></div>
-      <button class="btn" type="submit">Entrar</button>
-      <div class="erro" id="erroLogin"></div>
-    </form>
+    <div id="porta" style="display:flex;justify-content:center"></div>
     <button class="btn" id="ligar" hidden>Ligar o telão</button>
     <p>Abre em tela cheia e impede a TV de apagar. Pra sair da tela cheia, aperta Esc.</p>
   </div>
@@ -84,6 +79,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="config.js"></script>
 <script src="comum.js"></script>
+<script src="equipe.js"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = firebase.auth();
@@ -95,22 +91,10 @@
 
   // ---------- Login (o telão precisa estar logado pra avisar os celulares da fila) ----------
   let iniciado = false;
-  auth.onAuthStateChanged(async u => {
-    $("login").hidden = !!u; $("ligar").hidden = true;
-    if (!u) return;
-    const ehEquipe = await db.doc("equipe/" + u.uid).get().then(s => s.exists).catch(() => false);
-    if (!ehEquipe) {
-      $("erroLogin").textContent = "Essa conta não é da equipe do Trela.";
-      $("login").hidden = false; auth.signOut(); return;
-    }
+  portaEquipe($("porta"), () => {
     $("ligar").hidden = false;
     if (!iniciado) { iniciado = true; iniciar(); }
-  });
-  $("login").addEventListener("submit", async e => {
-    e.preventDefault(); $("erroLogin").textContent = "";
-    try { await auth.signInWithEmailAndPassword($("email").value.trim(), $("senha").value); $("erroLogin").textContent = ""; }
-    catch (err) { $("erroLogin").textContent = "E-mail ou senha não conferem."; }
-  });
+  }, () => location.reload());
   let trava = null;
   async function manterAcesa() { try { trava = await navigator.wakeLock.request("screen"); } catch (e) {} }
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") manterAcesa(); });

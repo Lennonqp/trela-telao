@@ -51,12 +51,7 @@
     <button class="ghost" id="sair" hidden>Sair</button>
   </header>
 
-  <form class="login" id="login" novalidate>
-    <div><label for="email">E-mail da equipe</label><input id="email" type="email" autocomplete="username"></div>
-    <div><label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password"></div>
-    <button class="btn" type="submit">Entrar</button>
-    <div class="erro" id="erroLogin"></div>
-  </form>
+  <div id="porta"></div>
 
   <div class="painel" id="painel" hidden>
     <div class="topo">
@@ -92,28 +87,21 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="config.js"></script>
 <script src="comum.js"></script>
+<script src="equipe.js"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = firebase.auth();
   const FS = firebase.firestore;
   let parar = [];
 
-  $("login").addEventListener("submit", async e => {
-    e.preventDefault();
-    $("erroLogin").textContent = "";
-    try { await auth.signInWithEmailAndPassword($("email").value.trim(), $("senha").value); }
-    catch (err) { $("erroLogin").textContent = "E-mail ou senha não conferem."; }
-  });
   $("sair").onclick = () => auth.signOut();
 
-  auth.onAuthStateChanged(async u => {
-    parar.forEach(f => f()); parar = [];
-    $("painel").hidden = true; $("sair").hidden = !u; $("login").hidden = !!u;
-    if (!u) return;
-    const ehEquipe = await db.doc("equipe/" + u.uid).get().then(s => s.exists).catch(() => false);
-    if (!ehEquipe) { $("erroLogin").textContent = "Essa conta não é da equipe do Trela."; auth.signOut(); return; }
-    $("painel").hidden = false;
+  portaEquipe($("porta"), () => {
+    $("painel").hidden = false; $("sair").hidden = false;
     iniciar();
+  }, () => {
+    parar.forEach(f => f()); parar = [];
+    $("painel").hidden = true; $("sair").hidden = true;
   });
 
   const NOME_TIPO = { recado: "Recado", foto: "Foto", comentario: "Comentário", bar: "Recado do Trela" };

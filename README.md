@@ -44,7 +44,7 @@ A equipe usa uma conta normal, marcada como equipe no banco:
 2. No Firebase, **Authentication → Usuários** → copia o **UID** dessa conta.
 3. **Firestore → Iniciar coleção** → ID da coleção: `equipe` → ID do documento: **cola o UID** → adiciona um campo qualquer (ex.: `nome` = `Balcão`) → Salvar.
 
-Pronto: com esse login, o `balcao.html` e o `telao.html` abrem. Pra pôr mais alguém na equipe, repete com o UID da pessoa.
+Pronto: com esse login, o `balcao.html` e o `telao.html` abrem. Dica: se entrar no balcão com uma conta que ainda não é da equipe, a própria página mostra o UID pra copiar. A equipe pode entrar com e-mail/senha ou com Google.
 
 ## Endereços
 

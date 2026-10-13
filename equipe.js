@@ -29,11 +29,14 @@ function portaEquipe(caixa, aoLiberar, aoSair) {
     const msg = el("p", "msg" + (erro ? " erro" : ""), erro || "Entra com a mesma conta que a equipe usa no app.");
     g.onclick = async () => {
       const p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
+      g.disabled = true;
       try { await auth.signInWithPopup(p); }
       catch (e) {
-        if (e.code === "auth/popup-blocked") return auth.signInWithRedirect(p);
-        if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") { msg.textContent = "Não deu pra entrar com o Google. Tenta de novo."; msg.className = "msg erro"; }
-      }
+        msg.className = "msg erro";
+        if (e.code === "auth/popup-blocked") msg.textContent = "O navegador bloqueou a janela do Google. Clica de novo ou libera pop-ups pra este site.";
+        else if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") msg.textContent = "Não deu pra entrar com o Google. Tenta de novo.";
+        else msg.className = "msg";
+      } finally { g.disabled = false; }
     };
     f.onsubmit = async e => {
       e.preventDefault();

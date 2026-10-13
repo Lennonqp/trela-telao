@@ -163,7 +163,7 @@
 <body>
 <div class="app" id="app">
 
-  <div class="tela carregando" id="tCarregando"><div class="logo" style="font-size:72px">trela</div></div>
+  <div class="tela carregando" id="tCarregando"><div style="display:flex;flex-direction:column;align-items:center;gap:14px"><div class="logo" style="font-size:72px">trela</div><p id="carregandoTxt" style="margin:0;color:var(--muted);font-size:14px"></p></div></div>
 
   <!-- Login -->
   <div class="tela" id="tLogin" hidden>
@@ -419,16 +419,27 @@
     "auth/network-request-failed": "Sem internet. Confere a conexão."
   };
 
-  $("#btnGoogle").onclick = async () => {
+  // Login com Google pela janelinha (popup). O modo "redirecionar" não funciona em
+  // sites fora do Firebase Hosting nos navegadores que bloqueiam cookies de terceiros
+  // (a pessoa volta pro login sem entrar), então ele não é usado.
+  const btnGoogle = $("#btnGoogle"), textoGoogle = btnGoogle.innerHTML;
+  btnGoogle.onclick = async () => {
     erroLogin("");
+    btnGoogle.disabled = true; btnGoogle.textContent = "Abrindo o Google…";
     const prov = new firebase.auth.GoogleAuthProvider();
     prov.setCustomParameters({ prompt: "select_account" });
-    try { await auth.signInWithPopup(prov); }
-    catch (e) {
-      if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") return auth.signInWithRedirect(prov);
-      if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") erroLogin(MSG_ERRO[e.code] || "Não deu pra entrar com o Google. Tenta de novo.");
-    }
+    try {
+      await auth.signInWithPopup(prov);
+      carregando("Entrando…");
+    } catch (e) {
+      if (e.code === "auth/popup-blocked") erroLogin("O navegador bloqueou a janela do Google. Toca de novo no botão ou libera pop-ups pra este site.");
+      else if (e.code === "auth/operation-not-supported-in-this-environment" || e.code === "auth/web-storage-unsupported") erroLogin("Esse navegador não deixa entrar com Google. Abre o link no Chrome ou Safari, ou entra com e-mail.");
+      else if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") erroLogin(MSG_ERRO[e.code] || "Não deu pra entrar com o Google. Tenta de novo.");
+    } finally { btnGoogle.disabled = false; btnGoogle.innerHTML = textoGoogle; }
   };
+  // Se alguém voltou de um login antigo por redirecionamento, mostra o erro em vez de ficar parado
+  auth.getRedirectResult().catch(e => { if (e && e.code) erroLogin(MSG_ERRO[e.code] || "Não deu pra entrar com o Google. Tenta de novo."); });
+  function carregando(txt) { $("#carregandoTxt").textContent = txt || ""; document.querySelectorAll("#app .tela").forEach(t => t.hidden = t.id !== "tCarregando"); }
   $("#trocaModo").onclick = () => {
     modoCriar = !modoCriar;
     $("#campoNome").hidden = !modoCriar;
@@ -478,14 +489,14 @@
   auth.onAuthStateChanged(async u => {
     parar.forEach(f => f()); parar = []; clearInterval(batida);
     if (!u) { EU = null; pilha = []; ir("tLogin"); return; }
+    carregando("Entrando…");
     try {
-      const susp = await db.doc("suspensos/" + u.uid).get();
+      const ref = db.doc("usuarios/" + u.uid);
+      const [susp, s] = await Promise.all([db.doc("suspensos/" + u.uid).get(), ref.get()]);
       if (susp.exists) {
         folha([el("h4", "", "Conta suspensa"), el("p", "", "A equipe do Trela suspendeu tua conta. Fala com alguém no balcão."), bt("Ok", "sim", () => { fecharFolha(); auth.signOut(); })], true);
         return;
       }
-      const ref = db.doc("usuarios/" + u.uid);
-      const s = await ref.get();
       let nome, cor = corDe(u.uid);
       if (!s.exists) {
         nome = (nomePendente || u.displayName || "").trim().split(/\s+/).slice(0, 2).join(" ").slice(0, 20);

@@ -280,7 +280,7 @@
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-  const auth = firebase.auth();
+  const auth = appTrela.auth();
   const FS = firebase.firestore;
   const semEspaco = n => n.replace(/\s+/g, "");
 

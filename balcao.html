@@ -93,11 +93,12 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="config.js"></script>
+<script>window.SESSAO_EQUIPE = true;</script>
 <script src="comum.js"></script>
 <script src="equipe.js"></script>
 <script>
   const $ = id => document.getElementById(id);
-  const auth = firebase.auth();
+  const auth = appTrela.auth();
   const FS = firebase.firestore;
   let parar = [];
 

@@ -78,11 +78,12 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="config.js"></script>
+<script>window.SESSAO_EQUIPE = true;</script>
 <script src="comum.js"></script>
 <script src="equipe.js"></script>
 <script>
   const $ = id => document.getElementById(id);
-  const auth = firebase.auth();
+  const auth = appTrela.auth();
   const DUR = window.TEMPO_POR_RECADO || 8;
   const BAR_A_CADA = 4; // um recado do Trela "repetir" a cada 4 recados da galera
 

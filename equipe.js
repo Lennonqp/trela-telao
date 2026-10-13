@@ -2,7 +2,7 @@
 // Mostra o login, confere se a conta está em /equipe e, se não estiver,
 // explica como liberar (mostrando o UID pra copiar) em vez de deslogar.
 function portaEquipe(caixa, aoLiberar, aoSair) {
-  const auth = firebase.auth();
+  const auth = appTrela.auth();
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
   const estilo = document.createElement("style");
   estilo.textContent = `

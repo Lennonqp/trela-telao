@@ -1,6 +1,10 @@
 // Coisas compartilhadas entre as três páginas
-firebase.initializeApp(window.FIREBASE_CONFIG);
-const db = firebase.firestore();
+// O balcão e o telão usam uma sessão separada ("equipe"), pra o login da equipe
+// não trocar a conta do app da galera aberto em outra aba do mesmo navegador.
+const appTrela = window.SESSAO_EQUIPE
+  ? firebase.initializeApp(window.FIREBASE_CONFIG, "equipe")
+  : firebase.initializeApp(window.FIREBASE_CONFIG);
+const db = appTrela.firestore();
 const agoraServidor = () => firebase.firestore.FieldValue.serverTimestamp();
 
 const CORES = { neon: "var(--neon)", lilas: "var(--lilas)", laranja: "var(--laranja)" };

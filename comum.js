@@ -28,11 +28,22 @@ const FILTRO_COMECOS = ["arromb","desgrac","vagabund","retardad","fodid","fudid"
 
 function normalizar(texto) {
   return texto.toLowerCase()
-    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .replace(/[0]/g, "o").replace(/[1!]/g, "i").replace(/3/g, "e").replace(/[4@]/g, "a")
-    .replace(/[5$]/g, "s").replace(/7/g, "t")
-    .replace(/(?<=\b[a-z])[\s.\-_*]+(?=[a-z]\b)/g, "")   // p.u.t.a  /  p u t a  ->  puta
-    .replace(/([a-z])\1+/g, "$1");                       // poooorra -> pora
+    .replace(/[5$]/g, "s").replace(/7/g, "t");
+}
+// Separa em palavras e junta letras soltas seguidas (p.u.t.a / p u t a -> puta).
+// Feito sem "lookbehind" de regex, que iPhones antigos (antes do iOS 16.4) não entendem.
+function palavrasDe(texto) {
+  const toks = normalizar(texto).split(/[^a-z]+/).filter(Boolean), out = [];
+  let soltas = "";
+  for (const w of toks) {
+    if (w.length === 1) { soltas += w; continue; }
+    if (soltas) { out.push(soltas); soltas = ""; }
+    out.push(w);
+  }
+  if (soltas) out.push(soltas);
+  return out.map(w => w.replace(/([a-z])\1+/g, "$1"));   // poooorra -> pora
 }
 const comprimir = p => p.replace(/([a-z])\1+/g, "$1");
 const PALAVRAS_C = new Set(FILTRO_PALAVRAS.map(comprimir));
@@ -44,7 +55,7 @@ function motivoSuspeito(texto) {
   if (/(https?:\/\/|www\.|\b[\w-]+\.(com|net|org|br|ly|io|me|gg|link|site|xyz)\b)/i.test(texto)) return "Tem link";
   if (/(\d[\s.()-]*){8,}/.test(texto)) return "Parece telefone";
   if (/@[\w.]{3,}/.test(texto)) return "Marca um perfil (@)";
-  const palavras = normalizar(texto).split(/[^a-z]+/).filter(Boolean);
+  const palavras = palavrasDe(texto);
   if (palavras.some(p => PALAVRAS_C.has(p) || COMECOS_C.some(c => p.startsWith(c)))) return "Palavrão ou ofensa";
   const letras = texto.replace(/[^A-Za-zÀ-ú]/g, "");
   if (letras.length >= 25 && letras === letras.toUpperCase()) return "Tudo em maiúsculas";

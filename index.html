@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0d0a12">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610122359">
+<link rel="stylesheet" href="estilo.css?v=202610130003">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -275,8 +275,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610122359"></script>
-<script src="comum.js?v=202610122359"></script>
+<script src="config.js?v=202610130003"></script>
+<script src="comum.js?v=202610130003"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -521,11 +521,12 @@
     const uid = EU.uid;
 
     // Feed "Rolou hoje"
-    parar.push(db.collection("telao").orderBy("criado", "desc").limit(40).onSnapshot(snap => {
+    // (só o que foi postado desde as 6h; às 6h o feed zera sozinho)
+    parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(40).onSnapshot(snap => {
       S.posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       S.postsMap = new Map(S.posts.map(p => [p.id, p]));
       redesenhar();
-    }, () => {}));
+    }, () => {})));
 
     // Amizades
     let primeiraAmizade = true;
@@ -544,9 +545,12 @@
     parar.push(db.collection("conversas").where("membros", "array-contains", uid).onSnapshot(snap => {
       snap.docChanges().forEach(c => {
         const d = c.doc.data(), outro = d.membros.find(m => m !== uid);
+        const antes = S.conversas.get(outro);
         S.conversas.set(outro, d);
         const u2 = d.ultima;
-        if (!primeiraConversa && u2 && u2.de !== uid && !(telaAtual() === "tChat" && chatCom === outro) && c.type !== "removed")
+        // Só avisa quando chegou mensagem nova (não quando a outra pessoa leu ou apagou)
+        const novaMsg = u2 && (!antes || !antes.ultima || ms(u2.criado) !== ms(antes.ultima.criado) || u2.texto !== antes.ultima.texto);
+        if (!primeiraConversa && novaMsg && u2.de !== uid && !(telaAtual() === "tChat" && chatCom === outro) && c.type !== "removed")
           toast(outro, perfil(outro).nome + ": " + (ofensivoTexto(u2.texto) ? "mandou uma mensagem" : u2.texto), () => abrirChat(outro));
       });
       primeiraConversa = false; redesenhar();
@@ -987,7 +991,8 @@
       if (!amigos.length) out.push(el("div", "vazio-s", "Nenhum amigo ainda. Vai em No Trela agora e adiciona a galera."));
       amigos.sort((a, b) => (naoLida(b.id) - naoLida(a.id)) || (online(b) - online(a)) || (ms(S.conversas.get(b.id)?.ultima?.criado) - ms(S.conversas.get(a.id)?.ultima?.criado)))
         .forEach(p => {
-          const ult = S.conversas.get(p.id)?.ultima, nl = naoLida(p.id);
+          let ult = S.conversas.get(p.id)?.ultima; const nl = naoLida(p.id);
+          if (ult && apagadaAte(p.id) && ms(ult.criado) <= apagadaAte(p.id)) ult = null;
           const prev = ult ? (ult.de === EU.uid ? "Tu: " : "") + (ofensivoTexto(ult.texto) && ult.de !== EU.uid ? "mandou uma mensagem" : ult.texto) : "";
           let sub, cls;
           if (nl) { sub = prev; cls = "nova"; }
@@ -1013,7 +1018,8 @@
     perfilDe = uid; postsPerfil = null; ir("tPerfil"); renderPerfil();
     const s = await db.collection("telao").where("autor", "==", uid).limit(20).get().catch(() => null);
     if (perfilDe !== uid) return;
-    postsPerfil = s ? s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ms(b.criado) - ms(a.criado)) : [];
+    const desde = inicioDaNoite().getTime();
+    postsPerfil = s ? s.docs.map(d => ({ id: d.id, ...d.data() })).filter(r => !r.criado || ms(r.criado) >= desde).sort((a, b) => ms(b.criado) - ms(a.criado)) : [];
     renderPerfil();
   }
   function renderPerfil() {
@@ -1028,7 +1034,7 @@
     topo.append(acoes);
     const out = [topo];
     if (postsPerfil === null) out.push(el("div", "vazio-s", "Carregando posts…"));
-    else { out.push(el("div", "secao", postsPerfil.length ? "Posts no Trela" : "Ainda não postou")); postsPerfil.forEach(r => out.push(postCard(S.postsMap.get(r.id) || r))); }
+    else { out.push(el("div", "secao", postsPerfil.length ? "Postou hoje" : "Ainda não postou hoje")); postsPerfil.forEach(r => out.push(postCard(S.postsMap.get(r.id) || r))); }
     $("#perfilScroll").replaceChildren(...out);
   }
 
@@ -1040,7 +1046,7 @@
     if (pararChat) pararChat();
     const par = parDe(EU.uid, uid);
     pararChat = db.collection("conversas").doc(par).collection("mensagens").orderBy("criado").limitToLast(150).onSnapshot(s => {
-      mensagens = s.docs.map(d => d.data()); renderChat(); marcarLida();
+      mensagens = s.docs.map(d => ({ ref: d.ref, ...d.data() })); renderChat(); marcarLida();
     }, () => {});
     marcarLida();
   }
@@ -1048,7 +1054,7 @@
   function marcarLida() {
     if (!chatCom || !naoLida(chatCom)) return;
     const par = parDe(EU.uid, chatCom), c = S.conversas.get(chatCom);
-    db.doc("conversas/" + par).set({ membros: [EU.uid, chatCom].sort(), ultima: c.ultima, lidaPor: { ...(c.lidaPor || {}), [EU.uid]: agoraServidor() } }).catch(() => {});
+    db.doc("conversas/" + par).set({ membros: [EU.uid, chatCom].sort(), lidaPor: { [EU.uid]: agoraServidor() } }, { merge: true }).catch(() => {});
   }
   function renderChatTopo() {
     if (!chatCom) return;
@@ -1059,11 +1065,13 @@
   }
   $("#chatQuem").onclick = () => abrirPerfil(chatCom);
   const revelar = new Set();
+  // Até quando a conversa foi apagada "só pra mim"
+  const apagadaAte = outro => ms(((S.conversas.get(outro) || {}).apagadaPor || {})[EU.uid]);
   function renderChat() {
-    const out = [];
+    const out = [], corte = apagadaAte(chatCom);
     if (!ehAmigo(chatCom)) out.push(el("div", "sistema", S.bloqueados.has(chatCom) ? "Tu bloqueou essa pessoa." : "Vocês não são mais amigos, então não dá pra mandar mensagem."));
-    else if (!mensagens.length) out.push(el("div", "sistema", "Vocês são amigos. Manda um oi!"));
-    mensagens.forEach((m, i) => {
+    else if (!mensagens.some(m => !corte || !m.criado || ms(m.criado) > corte)) out.push(el("div", "sistema", corte ? "Conversa apagada. As mensagens novas aparecem aqui." : "Vocês são amigos. Manda um oi!"));
+    mensagens.filter(m => !corte || !m.criado || ms(m.criado) > corte).forEach((m, i) => {
       const mine = m.de === EU.uid, chave = ms(m.criado) + ":" + i;
       if (!mine && ofensivoTexto(m.texto) && !revelar.has(chave)) { const o = el("div", "msg dela oculta", "Mensagem pode ser ofensiva · toca pra ver"); o.onclick = () => { revelar.add(chave); renderChat(); }; out.push(o); return; }
       const b = el("div", "msg " + (mine ? "minha" : "dela"), m.texto); b.append(el("small", "", horaDe(m.criado))); out.push(b);
@@ -1078,13 +1086,38 @@
     const par = parDe(EU.uid, chatCom), c = S.conversas.get(chatCom) || {};
     const batch = db.batch();
     batch.set(db.collection("conversas").doc(par).collection("mensagens").doc(), { de: EU.uid, texto, criado: agoraServidor() });
-    batch.set(db.doc("conversas/" + par), { membros: [EU.uid, chatCom].sort(), ultima: { de: EU.uid, texto: texto.slice(0, 120), criado: agoraServidor() }, lidaPor: { ...(c.lidaPor || {}), [EU.uid]: agoraServidor() } });
+    batch.set(db.doc("conversas/" + par), { membros: [EU.uid, chatCom].sort(), ultima: { de: EU.uid, texto: texto.slice(0, 120), criado: agoraServidor() }, lidaPor: { [EU.uid]: agoraServidor() } }, { merge: true });
     try { await batch.commit(); } catch (err) { inp.value = texto; erroToast("Não deu pra enviar. Tenta de novo."); }
   });
+  function apagarConversa(uid, nome) {
+    const par = parDe(EU.uid, uid);
+    const erro = el("p", ""); erro.style.color = "var(--laranja)";
+    folha([el("h4", "", "Apagar a conversa com " + nome + "?"),
+      el("p", "", "Só pra mim: some do teu celular, mas " + nome + " continua vendo. Pra nós dois: apaga as mensagens dos dois lados."),
+      erro,
+      bt("Apagar só pra mim", "perigo", async () => {
+        try {
+          await db.doc("conversas/" + par).set({ membros: [EU.uid, uid].sort(), apagadaPor: { [EU.uid]: agoraServidor() }, lidaPor: { [EU.uid]: agoraServidor() } }, { merge: true });
+          fecharFolha(); renderChat();
+        } catch (e) { erro.textContent = "Não deu pra apagar agora. Tenta de novo."; }
+      }),
+      bt("Apagar pra nós dois", "perigo", async () => {
+        try {
+          const s = await db.collection("conversas").doc(par).collection("mensagens").get();
+          for (let i = 0; i < s.docs.length; i += 400) {
+            const b = db.batch(); s.docs.slice(i, i + 400).forEach(d => b.delete(d.ref)); await b.commit();
+          }
+          await db.doc("conversas/" + par).set({ membros: [EU.uid, uid].sort(), ultima: null }, { merge: true });
+          fecharFolha(); mensagens = []; renderChat();
+        } catch (e) { erro.textContent = "Não deu pra apagar agora. Tenta de novo."; }
+      }),
+      bt("Cancelar", "", fecharFolha)]);
+  }
   $("#chatMenu").onclick = () => {
     const uid = chatCom, nome = perfil(uid).nome;
     folha([el("h4", "", nome),
       bt("Ver perfil", "", () => { fecharFolha(); abrirPerfil(uid); }),
+      bt("Apagar conversa", "", () => apagarConversa(uid, nome)),
       bt("Desfazer amizade", "", async () => { fecharFolha(); await desfazerAmizade(uid); voltar(); }),
       bt("Bloquear", "perigo", async () => { fecharFolha(); await bloquear(uid); voltar(); }),
       bt("Denunciar pra equipe do Trela", "perigo", async () => {

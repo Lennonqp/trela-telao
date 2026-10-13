@@ -19,7 +19,8 @@ Três páginas:
 - **Foto de perfil**: toca na tua bolinha lá em cima → "Colocar foto de perfil". A foto é cortada em quadrado e diminuída no celular. A equipe vê as fotos novas no balcão e pode remover.
 - **Perfil** de cada pessoa, com os posts dela e o botão de amizade.
 - **Excluir minha conta**: no teu perfil (bolinha lá em cima). Pede a senha ou o Google pra confirmar e apaga perfil, foto, amizades e posts.
-- **Conversas privadas só entre amigos**. Dá pra desfazer amizade, bloquear e denunciar. Mensagem com palavrão chega borrada.
+- **Virada da noite às 6h**: o "Rolou hoje", o telão e o balcão mostram só o que foi postado desde as 6h da manhã. Às 6h zeram sozinhos e começa a noite nova (os posts antigos ficam guardados no banco). Pra mudar o horário: `HORA_VIRADA` no `comum.js`.
+- **Conversas privadas só entre amigos**. As conversas não zeram às 6h; no menu ⋯ do chat tem **Apagar conversa** (só pra mim, ou pra nós dois). Dá pra desfazer amizade, bloquear e denunciar. Mensagem com palavrão chega borrada.
 
 ## 1. Criar o Firebase (gratuito)
 

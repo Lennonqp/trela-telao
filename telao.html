@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610122359">
+<link rel="stylesheet" href="estilo.css?v=202610130003">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d}
   body{display:grid;place-items:center}
@@ -77,10 +77,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610122359"></script>
+<script src="config.js?v=202610130003"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610122359"></script>
-<script src="equipe.js?v=202610122359"></script>
+<script src="comum.js?v=202610130003"></script>
+<script src="equipe.js?v=202610130003"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -121,8 +121,11 @@
   function iniciar() {
     db.doc("config/geral").onSnapshot(s => { $("noite").textContent = (s.exists && s.data().noite) || "Bem-vindos"; }, () => {});
 
+    // Só o que foi postado desde as 6h; às 6h a TV zera e começa a noite nova
+    ouvirNoite(desde => {
+    itens.clear(); prioridade = []; novos = []; atual = null;
     let primeira = true;
-    db.collection("telao").orderBy("criado", "desc").limit(60).onSnapshot(snap => {
+    return db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(60).onSnapshot(snap => {
       snap.docChanges().forEach(c => {
         const id = c.doc.id, r = { id, ...c.doc.data() };
         if (c.type === "removed") {
@@ -145,6 +148,7 @@
       $("nFila").textContent = prioridade.length + novos.length;
       $("fila").hidden = !(prioridade.length + novos.length);
       if (!atual) proximo(); else publicarEstado();
+    }, () => {});
     });
 
     (function loop(t) {

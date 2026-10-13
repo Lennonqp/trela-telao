@@ -91,6 +91,32 @@ function carregarFoto(fotoId) {
   return cacheFotos.get(fotoId);
 }
 
+// ---------- Virada da noite ----------
+// O feed e o telão mostram só o que foi postado desde as 6h da manhã.
+// (Entre meia-noite e 6h ainda vale a noite que começou na véspera.)
+const HORA_VIRADA = 6;
+function inicioDaNoite() {
+  const agora = new Date(), i = new Date(agora);
+  i.setHours(HORA_VIRADA, 0, 0, 0);
+  if (agora < i) i.setDate(i.getDate() - 1);
+  return i;
+}
+function msAteVirada() {
+  const p = new Date(inicioDaNoite()); p.setDate(p.getDate() + 1);
+  return Math.max(1000, p - Date.now() + 2000);
+}
+// Liga um "ouvinte" pra noite atual e troca sozinho de noite às 6h
+function ouvirNoite(montar) {
+  let parar = null, t = null;
+  const ligar = () => {
+    if (parar) parar();
+    parar = montar(firebase.firestore.Timestamp.fromDate(inicioDaNoite()));
+    t = setTimeout(ligar, msAteVirada());
+  };
+  ligar();
+  return () => { if (parar) parar(); clearTimeout(t); };
+}
+
 // ---------- Pessoas ----------
 const PALETA = ["#ff3fa4", "#a95cf2", "#ff5a1f", "#3ddc97", "#ffd166", "#7cc6fe", "#f4a3c8"];
 function corDe(uid) { let h = 0; for (const c of uid) h = (h * 31 + c.charCodeAt(0)) >>> 0; return PALETA[h % PALETA.length]; }

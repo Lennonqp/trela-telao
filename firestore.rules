@@ -99,7 +99,7 @@ service cloud.firestore {
       allow read: if logado() && eu() in resource.data.membros;
       allow create, update: if ativo() && amigos(par)
         && request.resource.data.membros == amizade(par).membros
-        && request.resource.data.keys().hasOnly(['membros', 'ultima', 'lidaPor']);
+        && request.resource.data.keys().hasOnly(['membros', 'ultima', 'lidaPor', 'apagadaPor']);
 
       match /mensagens/{m} {
         allow read: if logado() && amigos(par);
@@ -108,6 +108,8 @@ service cloud.firestore {
           && request.resource.data.de == eu()
           && textoOk(request.resource.data.texto, 1, 500)
           && agora(request.resource.data);
+        // "Apagar pra nós dois": qualquer um dos dois amigos apaga as mensagens da conversa
+        allow delete: if logado() && amigos(par);
       }
     }
 

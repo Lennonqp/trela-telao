@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610122359">
+<link rel="stylesheet" href="estilo.css?v=202610130003">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -92,10 +92,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610122359"></script>
+<script src="config.js?v=202610130003"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610122359"></script>
-<script src="equipe.js?v=202610122359"></script>
+<script src="comum.js?v=202610130003"></script>
+<script src="equipe.js?v=202610130003"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -224,9 +224,10 @@
         return c;
       }), "Nenhuma foto de perfil ainda.");
     }, () => {}));
-    parar.push(db.collection("telao").orderBy("criado", "desc").limit(40).onSnapshot(s => {
-      lista($("telao"), s.docs.map(d => cartao(d, true)), "Nada no telão ainda.");
-    }, () => {}));
+    // Só a noite atual (desde as 6h)
+    parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(40).onSnapshot(s => {
+      lista($("telao"), s.docs.map(d => cartao(d, true)), "Nada no telão nesta noite ainda.");
+    }, () => {})));
   }
 </script>
 </body>

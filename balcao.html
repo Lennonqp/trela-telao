@@ -40,6 +40,12 @@
   .acoes .sim{background:var(--ok);border-color:var(--ok);color:#06210f}
   .acoes .perigo{border-color:var(--laranja);color:var(--laranja)}
   .vazio{color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:10px;padding:16px;text-align:center}
+  .avatares{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+  .avatares .vazio{grid-column:1/-1}
+  .avatar-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;font-size:12px;min-width:0}
+  .avatar-card img{width:64px;height:64px;border-radius:50%;object-fit:cover}
+  .avatar-card span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .avatar-card button{border:1px solid var(--laranja);color:var(--laranja);background:none;border-radius:8px;padding:6px 8px;font:700 10px/1 var(--f-body);text-transform:uppercase;cursor:pointer;width:100%}
   @media (max-width:960px){.cols{grid-template-columns:minmax(0,1fr)}}
   @media (max-width:700px){.topo{grid-template-columns:minmax(0,1fr)}}
 </style>
@@ -76,6 +82,7 @@
       <div>
         <h3>Denúncias <span id="nDen"></span></h3><div class="lista" id="denuncias"></div>
         <h3 style="margin-top:20px">Contas suspensas</h3><div class="lista" id="suspensos"></div>
+        <h3 style="margin-top:20px">Fotos de perfil novas</h3><div class="avatares" id="avatares"></div>
       </div>
       <div><h3>No telão</h3><div class="lista" id="telao"></div></div>
     </div>
@@ -203,6 +210,18 @@
     }, () => {}));
     parar.push(db.collection("suspensos").orderBy("criado", "desc").limit(30).onSnapshot(s => {
       lista($("suspensos"), s.docs.map(cartaoSuspenso), "Ninguém suspenso.");
+    }, () => {}));
+    // Fotos de perfil: as mais recentes, com botão pra remover
+    const nomes = new Map();
+    parar.push(db.collection("avatares").orderBy("criado", "desc").limit(24).onSnapshot(s => {
+      lista($("avatares"), s.docs.map(doc => {
+        const c = el("div", "avatar-card");
+        const img = el("img"); img.src = doc.data().data; img.alt = "Foto de perfil";
+        const n = el("span", "", nomes.get(doc.id) || "…");
+        if (!nomes.has(doc.id)) db.doc("usuarios/" + doc.id).get().then(u => { const nm = u.exists ? u.data().nome : "Alguém"; nomes.set(doc.id, nm); n.textContent = nm; }).catch(() => {});
+        c.append(img, n, botao("Remover", "", () => doc.ref.delete()));
+        return c;
+      }), "Nenhuma foto de perfil ainda.");
     }, () => {}));
     parar.push(db.collection("telao").orderBy("criado", "desc").limit(40).onSnapshot(s => {
       lista($("telao"), s.docs.map(d => cartao(d, true)), "Nada no telão ainda.");

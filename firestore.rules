@@ -43,9 +43,21 @@ service cloud.firestore {
     match /usuarios/{uid} {
       allow read: if logado();
       allow create, update: if logado() && uid == eu()
-        && request.resource.data.keys().hasOnly(['nome', 'cor', 'criado', 'ultimoAcesso'])
+        && request.resource.data.keys().hasOnly(['nome', 'cor', 'criado', 'ultimoAcesso', 'fotoV'])
         && nomeOk(request.resource.data.nome) && !suspeito(request.resource.data.nome)
         && request.resource.data.ultimoAcesso == request.time;
+    }
+
+    // ---------- Fotos de perfil (cada um só mexe na sua; a equipe pode remover) ----------
+    match /avatares/{uid} {
+      allow read: if logado();
+      allow create, update: if ativo() && uid == eu()
+        && request.resource.data.keys().hasOnly(['data', 'criado'])
+        && request.resource.data.data is string
+        && request.resource.data.data.size() < 120000
+        && request.resource.data.data.matches('data:image/jpeg;base64,.*')
+        && request.resource.data.criado == request.time;
+      allow delete: if logado() && (uid == eu() || equipe());
     }
 
     // ---------- Amizades (id = uidMenor_uidMaior) ----------

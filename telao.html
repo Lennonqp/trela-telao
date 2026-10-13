@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610122351">
+<link rel="stylesheet" href="estilo.css?v=202610122359">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d}
   body{display:grid;place-items:center}
@@ -77,15 +77,23 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610122351"></script>
+<script src="config.js?v=202610122359"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610122351"></script>
-<script src="equipe.js?v=202610122351"></script>
+<script src="comum.js?v=202610122359"></script>
+<script src="equipe.js?v=202610122359"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
   const DUR = window.TEMPO_POR_RECADO || 8;
   const BAR_A_CADA = 4; // um recado do Trela "repetir" a cada 4 recados da galera
+  const MAX_GALERA = 10; // só os 10 recados/fotos mais recentes da galera giram no telão (os do Trela não contam)
+
+  // Ids dos 10 recados/fotos mais recentes da galera
+  function ultimosDaGalera() {
+    return new Set([...itens.values()].filter(r => r.tipo !== "bar")
+      .sort((a, b) => (b.criado?.toMillis() || Date.now()) - (a.criado?.toMillis() || Date.now()))
+      .slice(0, MAX_GALERA).map(r => r.id));
+  }
 
   // QR code aponta pra página da galera, no mesmo endereço do telão
   new QRCode($("qrcode"), { text: new URL("./", location.href).href, width: 512, height: 512, colorDark: "#0d0a12", colorLight: "#f6efe6", correctLevel: QRCode.CorrectLevel.M });
@@ -148,11 +156,14 @@
   }
 
   function proximo() {
+    // Recado novo que já saiu dos 10 mais recentes (chegou muita coisa junta) não entra mais
+    const recentes = ultimosDaGalera();
+    novos = novos.filter(x => recentes.has(x));
     let id = prioridade.shift() || novos.shift() || null, eNovo = !!id;
     if (!id) {
       const lista = [...itens.values()].sort((a, b) => (b.criado?.toMillis() || 0) - (a.criado?.toMillis() || 0));
       const bares = lista.filter(r => r.tipo === "bar" && r.repetir);
-      const galera = lista.filter(r => r.tipo !== "bar");
+      const galera = lista.filter(r => r.tipo !== "bar" && recentes.has(r.id));
       if (bares.length && (desdeBar >= BAR_A_CADA || !galera.length)) id = bares[barIdx++ % bares.length].id;
       else if (galera.length) id = galera[rotIdx++ % galera.length].id;
     }

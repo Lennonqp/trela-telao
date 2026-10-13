@@ -65,6 +65,7 @@ Esse mesmo usuário e senha abrem o **telão**. Pra mais alguém da equipe, cria
 - **Denúncias**: quando alguém denuncia uma conversa, aparece **só a última mensagem** da pessoa denunciada. O resto da conversa continua privado. **Suspender** bloqueia a conta de postar, comentar, conversar e adicionar amigos.
 - **Contas suspensas**: dá pra **Reativar**.
 - **No telão**: tudo na rotação, com **Tirar do telão**.
+- **Limite do telão**: só os **10 recados/fotos mais recentes da galera** giram na TV. Quando chega o 11º, o mais antigo sai da rotação (continua no feed do app). Os recados do Trela não contam nesse limite. Pra mudar o número: `MAX_GALERA` no `telao.html`.
 
 ## Filtro
 

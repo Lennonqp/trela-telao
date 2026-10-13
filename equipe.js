@@ -102,9 +102,23 @@ function portaEquipe(caixa, aoLiberar, aoSair) {
   async function conferir(u) {
     telaConferindo();
     let ok = false;
-    try { ok = (await db.doc("equipe/" + u.uid).get()).exists; }
-    catch (e) { return telaNaoEquipe(u); }
-    if (!ok) return telaNaoEquipe(u);
+    try { ok = (await db.doc("equipe/" + u.uid).get({ source: "server" })).exists; }
+    catch (e) {
+      telaNaoEquipe(u);
+      const aviso = el("p", "msg erro");
+      aviso.textContent = e.code === "permission-denied"
+        ? "Diagnóstico: o banco recusou a leitura. As regras do Firestore provavelmente não foram publicadas (ou estão na versão antiga). Cola o firestore.rules de novo em Firestore → Regras e clica em Publicar."
+        : "Diagnóstico: não deu pra falar com o banco (" + (e.code || e.message) + "). Confere a internet e tenta de novo.";
+      caixa.firstChild.prepend(aviso);
+      return;
+    }
+    if (!ok) {
+      telaNaoEquipe(u);
+      const aviso = el("p", "msg");
+      aviso.textContent = "Diagnóstico: o banco respondeu, mas não existe o documento equipe/" + u.uid + ". Confere se a coleção se chama exatamente equipe (minúsculo) e se o ID do documento é igual ao código acima, sem espaço no começo ou no fim. Não use o botão “ID automático”.";
+      caixa.firstChild.append(aviso);
+      return;
+    }
     caixa.replaceChildren(); liberado = true; aoLiberar(u);
   }
 

@@ -46,6 +46,8 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['nome', 'cor', 'criado', 'ultimoAcesso', 'fotoV'])
         && nomeOk(request.resource.data.nome) && !suspeito(request.resource.data.nome)
         && request.resource.data.ultimoAcesso == request.time;
+      // Excluir a própria conta
+      allow delete: if logado() && uid == eu();
     }
 
     // ---------- Fotos de perfil (cada um só mexe na sua; a equipe pode remover) ----------
@@ -181,7 +183,8 @@ service cloud.firestore {
             && request.resource.data.reacoes == {'fogo': 0, 'riso': 0, 'amor': 0}
             && !suspeito(request.resource.data.texto));
       allow update: if equipe() || (ativo() && (reacaoValida() || comentarioContado()));
-      allow delete: if equipe();
+      // A equipe tira qualquer post; cada pessoa pode apagar os seus (ao excluir a conta)
+      allow delete: if equipe() || (logado() && resource.data.get('autor', '') == eu());
 
       match /comentarios/{c} {
         allow read: if logado();

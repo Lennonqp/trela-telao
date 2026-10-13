@@ -619,7 +619,59 @@
         EU.nome = n; marcarPresenca(); fecharFolha(); redesenhar();
       }),
       ...extras,
-      bt("Sair", "perigo", () => { fecharFolha(); auth.signOut(); })]);
+      bt("Sair", "perigo", () => { fecharFolha(); auth.signOut(); }),
+      Object.assign(bt("Excluir minha conta", "", confirmarExclusao), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" })]);
+  }
+
+  // ================= EXCLUIR CONTA =================
+  function confirmarExclusao() {
+    const u = auth.currentUser;
+    const comGoogle = u.providerData.some(p => p.providerId === "google.com");
+    const aviso = el("p", "", "Isso apaga teu perfil, tua foto, tuas amizades e teus posts do telão. Não dá pra desfazer.");
+    const senha = el("input"); senha.type = "password"; senha.placeholder = "Tua senha"; senha.autocomplete = "current-password"; senha.setAttribute("aria-label", "Senha");
+    const erro = el("p", ""); erro.style.color = "var(--laranja)";
+    const sim = bt("Excluir pra sempre", "perigo", async () => {
+      erro.textContent = "";
+      if (!comGoogle && !senha.value) { erro.textContent = "Digita tua senha pra confirmar."; return senha.focus(); }
+      sim.disabled = true; sim.textContent = "Confirmando…";
+      // O Firebase só deixa excluir com login recente, então confirma a identidade antes
+      try {
+        if (comGoogle) await u.reauthenticateWithPopup(new firebase.auth.GoogleAuthProvider());
+        else await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, senha.value));
+      } catch (e) {
+        sim.disabled = false; sim.textContent = "Excluir pra sempre";
+        erro.textContent = e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request" ? "Precisa confirmar com o Google pra excluir."
+          : (e.code === "auth/invalid-credential" || e.code === "auth/wrong-password") ? "Senha errada." : (MSG_ERRO[e.code] || "Não deu pra confirmar. Tenta de novo.");
+        return;
+      }
+      sim.textContent = "Apagando…";
+      try { await excluirConta(u); }
+      catch (e) { sim.disabled = false; sim.textContent = "Excluir pra sempre"; erro.textContent = "Não deu pra excluir agora. Tenta de novo."; }
+    });
+    const conteudo = [el("h4", "", "Excluir tua conta?"), aviso];
+    if (!comGoogle) conteudo.push(senha);
+    else conteudo.push(el("p", "", "Vai abrir o Google pra confirmar que é tu."));
+    conteudo.push(erro, sim, bt("Cancelar", "", fecharFolha));
+    folha(conteudo);
+    if (!comGoogle) setTimeout(() => senha.focus(), 50);
+  }
+
+  async function excluirConta(u) {
+    const uid = u.uid;
+    parar.forEach(f => f()); parar = []; clearInterval(batida);
+    const apagarTudo = async consulta => { const s = await consulta.get().catch(() => null); if (s) await Promise.all(s.docs.map(d => d.ref.delete().catch(() => {}))); };
+    await Promise.all([
+      apagarTudo(db.collection("amizades").where("membros", "array-contains", uid)),
+      apagarTudo(db.collection("bloqueios").where("de", "==", uid)),
+      apagarTudo(db.collection("avisos").doc(uid).collection("itens")),
+      apagarTudo(db.collection("telao").where("autor", "==", uid)),
+      db.doc("avatares/" + uid).delete().catch(() => {})
+    ]);
+    await db.doc("usuarios/" + uid).delete().catch(() => {});
+    await u.delete();
+    guardado.salvar("trela-reagi", {});
+    fecharFolha();
+    erroLogin("Tua conta foi excluída. Valeu por ter usado o Trela!", true);
   }
 
   // ================= ENVIAR RECADO / FOTO =================

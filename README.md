@@ -18,6 +18,7 @@ Três páginas:
   - **No Trela agora**: quem abriu o app nas últimas 3 horas, com botão de adicionar.
 - **Foto de perfil**: toca na tua bolinha lá em cima → "Colocar foto de perfil". A foto é cortada em quadrado e diminuída no celular. A equipe vê as fotos novas no balcão e pode remover.
 - **Perfil** de cada pessoa, com os posts dela e o botão de amizade.
+- **Excluir minha conta**: no teu perfil (bolinha lá em cima). Pede a senha ou o Google pra confirmar e apaga perfil, foto, amizades e posts.
 - **Conversas privadas só entre amigos**. Dá pra desfazer amizade, bloquear e denunciar. Mensagem com palavrão chega borrada.
 
 ## 1. Criar o Firebase (gratuito)

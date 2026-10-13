@@ -1,0 +1,198 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Quem é quem ----------
+    function logado() { return request.auth != null; }
+    function eu() { return request.auth.uid; }
+    // Equipe: contas com um documento em /equipe/{uid} (criado à mão no console)
+    function equipe() { return logado() && exists(/databases/$(database)/documents/equipe/$(eu())); }
+    // Conta ativa: logada e não suspensa pela equipe
+    function ativo() { return logado() && !exists(/databases/$(database)/documents/suspensos/$(eu())); }
+
+    function nomeOk(n) { return n is string && n.size() >= 1 && n.size() <= 20; }
+    function textoOk(t, min, max) { return t is string && t.size() >= min && t.size() <= max; }
+    function agora(d) { return d.criado == request.time; }
+    function corOk(c) { return c in ['neon', 'lilas', 'laranja']; }
+
+    // Segunda barreira do filtro (a primeira fica na página)
+    function suspeito(t) {
+      return t.lower().matches('(?s).*\\b(porra|caralh\\w*|merda|puta|puto|fdp|vsf|pqp|buceta|arromb\\w*|desgra\\w*|vagabund\\w*|viado|corno|foda|fodase|fuder|fudid\\w*|cuzao|piroca|vadia|piranha|macaco|retardad\\w*|otario|nazista)\\b.*')
+        || t.lower().matches('(?s).*(https?://|www[.]|[.]com\\b).*')
+        || t.matches('(?s).*[0-9]{8}.*');
+    }
+
+    function amizade(par) { return get(/databases/$(database)/documents/amizades/$(par)).data; }
+    function amigos(par) { return amizade(par).status == 'aceita' && eu() in amizade(par).membros; }
+    function bloqueado(a, b) {
+      return exists(/databases/$(database)/documents/bloqueios/$(a + '_' + b))
+          || exists(/databases/$(database)/documents/bloqueios/$(b + '_' + a));
+    }
+
+    // ---------- Equipe e suspensões ----------
+    match /equipe/{uid} {
+      allow read: if logado() && uid == eu();
+      allow write: if false;
+    }
+    match /suspensos/{uid} {
+      allow read: if logado() && (uid == eu() || equipe());
+      allow write: if equipe();
+    }
+
+    // ---------- Perfis ----------
+    match /usuarios/{uid} {
+      allow read: if logado();
+      allow create, update: if logado() && uid == eu()
+        && request.resource.data.keys().hasOnly(['nome', 'cor', 'criado', 'ultimoAcesso'])
+        && nomeOk(request.resource.data.nome) && !suspeito(request.resource.data.nome)
+        && request.resource.data.ultimoAcesso == request.time;
+    }
+
+    // ---------- Amizades (id = uidMenor_uidMaior) ----------
+    match /amizades/{par} {
+      allow read: if logado() && eu() in resource.data.membros;
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['membros', 'de', 'para', 'status', 'criado'])
+        && request.resource.data.de == eu()
+        && request.resource.data.status == 'pendente'
+        && request.resource.data.membros.size() == 2
+        && request.resource.data.membros[0] < request.resource.data.membros[1]
+        && par == request.resource.data.membros[0] + '_' + request.resource.data.membros[1]
+        && eu() in request.resource.data.membros
+        && request.resource.data.para in request.resource.data.membros
+        && request.resource.data.para != eu()
+        && !bloqueado(eu(), request.resource.data.para)
+        && agora(request.resource.data);
+      // Só quem recebeu o pedido aceita
+      allow update: if ativo() && resource.data.para == eu() && resource.data.status == 'pendente'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status == 'aceita';
+      // Recusar, cancelar ou desfazer: qualquer um dos dois
+      allow delete: if logado() && eu() in resource.data.membros;
+    }
+
+    // ---------- Bloqueios (id = quemBloqueou_bloqueado) ----------
+    match /bloqueios/{id} {
+      allow read: if logado() && resource.data.de == eu();
+      allow create: if logado() && request.resource.data.de == eu()
+        && request.resource.data.keys().hasOnly(['de', 'alvo', 'criado'])
+        && id == eu() + '_' + request.resource.data.alvo;
+      allow delete: if logado() && resource.data.de == eu();
+    }
+
+    // ---------- Conversas privadas (só entre amigos) ----------
+    match /conversas/{par} {
+      allow read: if logado() && eu() in resource.data.membros;
+      allow create, update: if ativo() && amigos(par)
+        && request.resource.data.membros == amizade(par).membros
+        && request.resource.data.keys().hasOnly(['membros', 'ultima', 'lidaPor']);
+
+      match /mensagens/{m} {
+        allow read: if logado() && amigos(par);
+        allow create: if ativo() && amigos(par)
+          && request.resource.data.keys().hasOnly(['de', 'texto', 'criado'])
+          && request.resource.data.de == eu()
+          && textoOk(request.resource.data.texto, 1, 500)
+          && agora(request.resource.data);
+      }
+    }
+
+    // ---------- Avisos (marcações) ----------
+    match /avisos/{uid}/itens/{id} {
+      allow create: if ativo() && uid != eu()
+        && request.resource.data.keys().hasOnly(['tipo', 'de', 'deNome', 'postId', 'texto', 'criado', 'lida'])
+        && request.resource.data.de == eu() && request.resource.data.lida == false
+        && textoOk(request.resource.data.texto, 0, 60) && agora(request.resource.data);
+      allow read, update, delete: if logado() && uid == eu();
+    }
+
+    // ---------- Denúncias ----------
+    match /denuncias/{id} {
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['de', 'deNome', 'contra', 'contraNome', 'texto', 'criado'])
+        && request.resource.data.de == eu() && textoOk(request.resource.data.texto, 0, 500)
+        && agora(request.resource.data);
+      allow read, delete: if equipe();
+    }
+
+    // ---------- Fila do balcão (fotos e o que o filtro achou suspeito) ----------
+    match /fila/{id} {
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['tipo', 'autor', 'nome', 'texto', 'cor', 'criado', 'motivo', 'fotoId', 'alvo', 'alvoTexto', 'mencoes'])
+        && request.resource.data.autor == eu()
+        && request.resource.data.tipo in ['recado', 'foto', 'comentario']
+        && nomeOk(request.resource.data.nome) && textoOk(request.resource.data.texto, 0, 120)
+        && corOk(request.resource.data.cor) && agora(request.resource.data);
+      allow read, delete: if equipe();
+    }
+
+    // ---------- Fotos (o post guarda só o id) ----------
+    match /fotos/{id} {
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['data', 'criado'])
+        && request.resource.data.data is string
+        && request.resource.data.data.size() < 700000
+        && request.resource.data.data.matches('data:image/jpeg;base64,.*')
+        && agora(request.resource.data);
+      allow read: if logado();
+      allow delete: if equipe();
+    }
+
+    // ---------- Telão e feed "Rolou hoje" ----------
+    function reacaoValida() {
+      let a = resource.data.reacoes;
+      let n = request.resource.data.reacoes;
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reacoes'])
+        && n.keys().hasOnly(['fogo', 'riso', 'amor'])
+        && n.fogo in [a.fogo, a.fogo + 1]
+        && n.riso in [a.riso, a.riso + 1]
+        && n.amor in [a.amor, a.amor + 1];
+    }
+    function comentarioContado() {
+      let n = request.resource.data;
+      return n.diff(resource.data).affectedKeys().hasOnly(['ncoms', 'ultimoCom'])
+        && n.ncoms == resource.data.get('ncoms', 0) + 1
+        && n.ultimoCom.keys().hasOnly(['nome', 'texto'])
+        && nomeOk(n.ultimoCom.nome)
+        && textoOk(n.ultimoCom.texto, 1, 100) && !suspeito(n.ultimoCom.texto);
+    }
+
+    match /telao/{id} {
+      allow read: if logado();
+      allow create: if equipe()
+        || (ativo()
+            && request.resource.data.keys().hasOnly(['tipo', 'autor', 'nome', 'texto', 'cor', 'criado', 'reacoes'])
+            && request.resource.data.tipo == 'recado'
+            && request.resource.data.autor == eu()
+            && nomeOk(request.resource.data.nome) && textoOk(request.resource.data.texto, 2, 120)
+            && corOk(request.resource.data.cor) && agora(request.resource.data)
+            && request.resource.data.reacoes == {'fogo': 0, 'riso': 0, 'amor': 0}
+            && !suspeito(request.resource.data.texto));
+      allow update: if equipe() || (ativo() && (reacaoValida() || comentarioContado()));
+      allow delete: if equipe();
+
+      match /comentarios/{c} {
+        allow read: if logado();
+        allow create: if equipe()
+          || (ativo()
+              && request.resource.data.keys().hasOnly(['autor', 'nome', 'texto', 'criado', 'mencoes'])
+              && request.resource.data.autor == eu()
+              && nomeOk(request.resource.data.nome) && textoOk(request.resource.data.texto, 1, 100)
+              && agora(request.resource.data)
+              && !suspeito(request.resource.data.texto)
+              && exists(/databases/$(database)/documents/telao/$(id)));
+        allow delete: if equipe();
+      }
+    }
+
+    // ---------- Posição da fila e ajustes ----------
+    match /estado/{doc} {
+      allow read: if logado();
+      allow write: if equipe();
+    }
+    match /config/{doc} {
+      allow read: if logado();
+      allow write: if equipe();
+    }
+  }
+}

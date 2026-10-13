@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Telão · Trela</title>
+<link rel="stylesheet" href="estilo.css">
+<style>
+  html,body{height:100%;overflow:hidden;background:#09060d}
+  body{display:grid;place-items:center}
+  .tv{position:relative;width:min(100vw,177.78vh);aspect-ratio:16/9;container-type:inline-size;overflow:hidden;cursor:none}
+  .glow{position:absolute;inset:0;background:radial-gradient(60% 70% at 15% 10%,rgba(169,92,242,.28),transparent 60%),radial-gradient(50% 60% at 95% 100%,rgba(255,63,164,.22),transparent 60%)}
+  .topo{position:absolute;left:4cqw;right:4cqw;top:3.5cqw;display:flex;justify-content:space-between;align-items:flex-start}
+  .logo{font-size:6.5cqw}
+  .noite{text-align:right;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.14em;font-size:1.25cqw;color:var(--muted)}
+  .noite b{display:block;font-family:var(--f-display);font-weight:400;letter-spacing:.02em;font-size:3.2cqw;color:var(--ink);line-height:1.05}
+
+  .palco{position:absolute;left:4cqw;right:26cqw;top:14cqw;bottom:5cqw;display:flex;gap:3cqw;align-items:center}
+  .palco.entra{animation:entra .6s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes entra{from{opacity:0;transform:translateY(2cqw) scale(.98)}to{opacity:1;transform:none}}
+  .foto{flex:none;height:100%;max-width:44%;display:flex;align-items:center}
+  .foto img{max-height:100%;max-width:100%;border-radius:1cqw;border:.5cqw solid var(--ink);transform:rotate(-2deg);box-shadow:0 1.5cqw 4cqw rgba(0,0,0,.5)}
+  .corpo{flex:1;min-width:0;display:flex;flex-direction:column;gap:1.4cqw;justify-content:center;max-height:100%}
+  .selo{align-self:flex-start;font-family:var(--f-mono);font-size:1.3cqw;letter-spacing:.16em;text-transform:uppercase;background:var(--laranja);color:#1a0b05;padding:.4cqw 1.1cqw;border-radius:99px}
+  .novo{background:var(--neon);color:#1d0612}
+  .texto{font-family:var(--f-display);font-weight:400;text-transform:uppercase;line-height:1.02;font-size:5.4cqw;text-wrap:balance;margin:0;overflow-wrap:anywhere}
+  .texto.longo{font-size:4cqw}
+  .texto.foto-leg{font-size:3.4cqw}
+  .texto.vazio{color:var(--muted)}
+  .bar .texto{background:var(--laranja);color:#1a0b05;padding:1.2cqw 1.8cqw;border-radius:1cqw;align-self:flex-start}
+  .de{font-family:var(--f-mono);font-size:1.6cqw;letter-spacing:.1em;text-transform:uppercase;color:var(--c,var(--neon))}
+  .reacs{display:flex;gap:1.2cqw;font-size:1.8cqw;font-variant-numeric:tabular-nums}
+  .reacs span{background:rgba(255,255,255,.06);border-radius:99px;padding:.3cqw 1cqw}
+  .coms{display:flex;flex-direction:column;gap:.5cqw;font-size:1.55cqw;color:var(--ink);max-width:48cqw}
+  .coms div{background:rgba(255,255,255,.06);border-radius:.8cqw;padding:.5cqw 1cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .coms b{color:var(--muted)}
+
+  .qr{position:absolute;right:4cqw;bottom:4cqw;width:18cqw;background:var(--ink);color:#0d0a12;border-radius:1.4cqw;padding:1.4cqw;text-align:center}
+  .qr #qrcode img,.qr #qrcode canvas{width:100%!important;height:auto!important;display:block}
+  .qr p{margin:1cqw 0 0;font-family:var(--f-display);font-size:1.7cqw;line-height:1.05;text-transform:uppercase}
+  .fila{position:absolute;right:4cqw;top:14cqw;width:18cqw;font-family:var(--f-mono);font-size:1.2cqw;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:right}
+  .fila b{display:block;font-family:var(--f-display);font-weight:400;font-size:4cqw;letter-spacing:0;color:var(--ink);line-height:1}
+  .barra{position:absolute;left:0;right:0;bottom:0;height:.6cqw;background:var(--line)}
+  .barra i{display:block;height:100%;width:0;background:var(--neon)}
+  .emoji{position:absolute;bottom:2cqw;font-size:4cqw;pointer-events:none;animation:sobe 2.6s ease-out forwards}
+  @keyframes sobe{0%{opacity:0;transform:translateY(0) scale(.6)}15%{opacity:1;transform:translateY(-4cqw) scale(1.1)}100%{opacity:0;transform:translateY(-34cqw) scale(1)}}
+
+  .cortina{position:fixed;inset:0;display:grid;place-items:center;background:rgba(9,6,13,.92);z-index:5;cursor:default;padding:16px}
+  .cortina > div{display:flex;flex-direction:column;gap:12px;align-items:stretch;width:100%;max-width:340px;text-align:center}
+  .cortina p{color:var(--muted);margin:0;font-size:14px}
+  .cortina .erro{color:var(--laranja);min-height:20px}
+</style>
+</head>
+<body>
+<div class="tv" id="tv">
+  <div class="glow"></div>
+  <div class="topo">
+    <div class="logo">trela</div>
+    <div class="noite">Hoje no Trela<b id="noite">Bem-vindos</b></div>
+  </div>
+  <div class="palco" id="palco"><div class="corpo"><p class="texto vazio">Manda o primeiro recado da noite</p></div></div>
+  <div class="fila" id="fila" hidden>Na fila<b id="nFila">0</b></div>
+  <div class="qr"><div id="qrcode"></div><p>Escaneia e entra no Trela</p></div>
+  <div class="barra"><i id="barra"></i></div>
+</div>
+
+<div class="cortina" id="cortina">
+  <div>
+    <div class="logo" style="font-size:72px">trela</div>
+    <form id="login" novalidate style="display:flex;flex-direction:column;gap:12px;text-align:left" hidden>
+      <div><label for="email">E-mail da equipe</label><input id="email" type="email" autocomplete="username"></div>
+      <div><label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password"></div>
+      <button class="btn" type="submit">Entrar</button>
+      <div class="erro" id="erroLogin"></div>
+    </form>
+    <button class="btn" id="ligar" hidden>Ligar o telão</button>
+    <p>Abre em tela cheia e impede a TV de apagar. Pra sair da tela cheia, aperta Esc.</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="config.js"></script>
+<script src="comum.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const auth = firebase.auth();
+  const DUR = window.TEMPO_POR_RECADO || 8;
+  const BAR_A_CADA = 4; // um recado do Trela "repetir" a cada 4 recados da galera
+
+  // QR code aponta pra página da galera, no mesmo endereço do telão
+  new QRCode($("qrcode"), { text: new URL("./", location.href).href, width: 512, height: 512, colorDark: "#0d0a12", colorLight: "#f6efe6", correctLevel: QRCode.CorrectLevel.M });
+
+  // ---------- Login (o telão precisa estar logado pra avisar os celulares da fila) ----------
+  let iniciado = false;
+  auth.onAuthStateChanged(async u => {
+    $("login").hidden = !!u; $("ligar").hidden = true;
+    if (!u) return;
+    const ehEquipe = await db.doc("equipe/" + u.uid).get().then(s => s.exists).catch(() => false);
+    if (!ehEquipe) {
+      $("erroLogin").textContent = "Essa conta não é da equipe do Trela.";
+      $("login").hidden = false; auth.signOut(); return;
+    }
+    $("ligar").hidden = false;
+    if (!iniciado) { iniciado = true; iniciar(); }
+  });
+  $("login").addEventListener("submit", async e => {
+    e.preventDefault(); $("erroLogin").textContent = "";
+    try { await auth.signInWithEmailAndPassword($("email").value.trim(), $("senha").value); $("erroLogin").textContent = ""; }
+    catch (err) { $("erroLogin").textContent = "E-mail ou senha não conferem."; }
+  });
+  let trava = null;
+  async function manterAcesa() { try { trava = await navigator.wakeLock.request("screen"); } catch (e) {} }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") manterAcesa(); });
+  $("ligar").onclick = async () => {
+    $("cortina").hidden = true;
+    try { await document.documentElement.requestFullscreen(); } catch (e) {}
+    manterAcesa();
+  };
+
+  // ---------- Fila do telão ----------
+  const itens = new Map();         // id -> dados
+  let prioridade = [], novos = [];  // recados do Trela entram em "prioridade", da galera em "novos"
+  let atual = null, inicio = performance.now(), desdeBar = 0, barIdx = 0, rotIdx = 0, pararComs = null;
+
+  function iniciar() {
+    db.doc("config/geral").onSnapshot(s => { $("noite").textContent = (s.exists && s.data().noite) || "Bem-vindos"; }, () => {});
+
+    let primeira = true;
+    db.collection("telao").orderBy("criado", "desc").limit(60).onSnapshot(snap => {
+      snap.docChanges().forEach(c => {
+        const id = c.doc.id, r = { id, ...c.doc.data() };
+        if (c.type === "removed") {
+          itens.delete(id); prioridade = prioridade.filter(x => x !== id); novos = novos.filter(x => x !== id);
+          if (atual === id) proximo();
+          return;
+        }
+        const antes = itens.get(id);
+        itens.set(id, r);
+        if (c.type === "added" && !primeira) (r.tipo === "bar" ? prioridade : novos).push(id);
+        if (c.type === "modified" && id === atual) {
+          for (const k in REACOES) {
+            const n = ((r.reacoes || {})[k] || 0) - ((antes && antes.reacoes || {})[k] || 0);
+            for (let i = 0; i < Math.min(n, 6); i++) setTimeout(() => soltar(REACOES[k]), i * 180);
+          }
+          desenharReacoes(r);
+        }
+      });
+      primeira = false;
+      $("nFila").textContent = prioridade.length + novos.length;
+      $("fila").hidden = !(prioridade.length + novos.length);
+      if (!atual) proximo(); else publicarEstado();
+    });
+
+    (function loop(t) {
+      const p = Math.min(1, (t - inicio) / (DUR * 1000));
+      $("barra").style.width = (p * 100) + "%";
+      if (p >= 1) proximo();
+      requestAnimationFrame(loop);
+    })(performance.now());
+  }
+
+  function proximo() {
+    let id = prioridade.shift() || novos.shift() || null, eNovo = !!id;
+    if (!id) {
+      const lista = [...itens.values()].sort((a, b) => (b.criado?.toMillis() || 0) - (a.criado?.toMillis() || 0));
+      const bares = lista.filter(r => r.tipo === "bar" && r.repetir);
+      const galera = lista.filter(r => r.tipo !== "bar");
+      if (bares.length && (desdeBar >= BAR_A_CADA || !galera.length)) id = bares[barIdx++ % bares.length].id;
+      else if (galera.length) id = galera[rotIdx++ % galera.length].id;
+    }
+    const r = id && itens.get(id);
+    if (r) desdeBar = r.tipo === "bar" ? 0 : desdeBar + 1;
+    mostrar(r || null, eNovo);
+    $("nFila").textContent = prioridade.length + novos.length;
+    $("fila").hidden = !(prioridade.length + novos.length);
+    publicarEstado();
+  }
+
+  function mostrar(r, eNovo) {
+    const palco = $("palco");
+    palco.classList.remove("entra"); void palco.offsetWidth; palco.classList.add("entra");
+    inicio = performance.now();
+    if (pararComs) { pararComs(); pararComs = null; }
+    if (!r) { atual = null; palco.className = "palco entra"; palco.innerHTML = '<div class="corpo"><p class="texto vazio">Manda o primeiro recado da noite</p></div>'; return; }
+    atual = r.id;
+    const bar = r.tipo === "bar";
+    palco.className = "palco entra" + (bar ? " bar" : "");
+    palco.style.setProperty("--c", CORES[r.cor] || "var(--neon)");
+    palco.innerHTML = `<div class="foto" hidden><img alt=""></div><div class="corpo">
+      <span class="selo" hidden></span><p class="texto"></p><div class="de"></div><div class="reacs"></div><div class="coms"></div></div>`;
+    const selo = palco.querySelector(".selo");
+    if (bar) { selo.hidden = false; selo.textContent = "Recado do Trela"; }
+    else if (eNovo) { selo.hidden = false; selo.textContent = "Chegou agora"; selo.classList.add("novo"); }
+    const t = palco.querySelector(".texto");
+    t.textContent = r.texto || ""; t.hidden = !r.texto;
+    t.classList.toggle("longo", (r.texto || "").length > 60);
+    t.classList.toggle("foto-leg", !!r.fotoId);
+    palco.querySelector(".de").textContent = bar ? "" : "— " + r.nome;
+    if (r.fotoId) carregarFoto(r.fotoId).then(d => { if (d && atual === r.id) { palco.querySelector(".foto img").src = d; palco.querySelector(".foto").hidden = false; } });
+    desenharReacoes(r);
+    if (!bar) {
+      pararComs = db.collection("telao").doc(r.id).collection("comentarios").orderBy("criado").limitToLast(3).onSnapshot(s => {
+        const box = palco.querySelector(".coms"); if (!box) return;
+        box.replaceChildren(...s.docs.map(d => {
+          const c = d.data(), div = document.createElement("div"), b = document.createElement("b"); b.textContent = c.nome + ": "; div.append(b);
+          const tags = new Set((c.mencoes || []).map(m => "@" + m.tag.toLowerCase()));
+          c.texto.split(/(@[\p{L}\d_]+)/u).forEach(p => { if (tags.has(p.toLowerCase())) { const s = document.createElement("span"); s.style.color = "var(--neon)"; s.style.fontWeight = "700"; s.textContent = p; div.append(s); } else if (p) div.append(p); });
+          return div;
+        }));
+      }, () => {});
+    }
+  }
+
+  function desenharReacoes(r) {
+    const box = $("palco").querySelector(".reacs"); if (!box) return;
+    box.replaceChildren(...Object.keys(REACOES).filter(k => (r.reacoes || {})[k]).map(k => {
+      const s = document.createElement("span"); s.textContent = REACOES[k] + " " + r.reacoes[k]; return s;
+    }));
+  }
+
+  function soltar(emoji) {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const e = document.createElement("div");
+    e.className = "emoji"; e.textContent = emoji; e.style.left = (6 + Math.random() * 60) + "cqw";
+    $("tv").append(e); setTimeout(() => e.remove(), 2700);
+  }
+
+  // Conta pros celulares onde cada recado está na fila
+  function publicarEstado() {
+    if (!auth.currentUser) return;
+    db.doc("estado/telao").set({
+      atual, proximos: [...prioridade, ...novos].slice(0, 30), dur: DUR, inicio: agoraServidor()
+    }).catch(() => {});
+  }
+</script>
+</body>
+</html>

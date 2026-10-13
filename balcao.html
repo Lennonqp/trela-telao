@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Balcão · Trela</title>
+<link rel="stylesheet" href="estilo.css">
+<style>
+  body{padding:20px 16px 40px}
+  .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+  .logo{font-size:48px}
+  .logo small{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-shadow:none;margin-top:6px}
+  .login{max-width:360px;display:flex;flex-direction:column;gap:12px}
+  .erro{color:var(--laranja);font-size:14px;min-height:20px}
+  .painel{display:flex;flex-direction:column;gap:24px}
+  .topo{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px}
+  .bloco{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .bloco h2{font-family:var(--f-display);font-weight:400;font-size:24px;text-transform:uppercase;margin:0;letter-spacing:0}
+  .bloco p{margin:0;font-size:13px;color:var(--muted)}
+  .bloco.trela{border-color:var(--laranja)}
+  .linha{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .check{display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer;margin:0;text-transform:none;letter-spacing:0;font-family:var(--f-body);color:var(--ink)}
+  .check input{width:18px;height:18px;accent-color:var(--laranja)}
+  .btn.laranja{background:var(--laranja);color:#1a0b05;width:auto;padding:12px 22px;font-size:18px;margin-left:auto}
+  .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+  h3{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:400}
+  .lista{display:flex;flex-direction:column;gap:10px}
+  .card{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+  .card.alerta{border-left-color:var(--laranja)}
+  .card p{margin:0;overflow-wrap:anywhere}
+  .card img{max-width:100%;max-height:220px;border-radius:8px;align-self:flex-start}
+  .card .alvo{font-size:12px;color:var(--muted);border-left:2px solid var(--line);padding-left:8px}
+  .meta{font-family:var(--f-mono);font-size:11px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+  .meta .aviso{color:var(--laranja)}
+  .meta .tipo{color:var(--ink)}
+  .acoes{display:flex;gap:8px}
+  .acoes button{flex:1;border-radius:8px;padding:10px;font:700 12px/1.1 var(--f-body);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink)}
+  .acoes .sim{background:var(--ok);border-color:var(--ok);color:#06210f}
+  .acoes .perigo{border-color:var(--laranja);color:var(--laranja)}
+  .vazio{color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:10px;padding:16px;text-align:center}
+  @media (max-width:960px){.cols{grid-template-columns:minmax(0,1fr)}}
+  @media (max-width:700px){.topo{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">trela<small>Balcão · recados do telão</small></div>
+    <button class="ghost" id="sair" hidden>Sair</button>
+  </header>
+
+  <form class="login" id="login" novalidate>
+    <div><label for="email">E-mail da equipe</label><input id="email" type="email" autocomplete="username"></div>
+    <div><label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password"></div>
+    <button class="btn" type="submit">Entrar</button>
+    <div class="erro" id="erroLogin"></div>
+  </form>
+
+  <div class="painel" id="painel" hidden>
+    <div class="topo">
+      <form class="bloco trela" id="formBar" novalidate>
+        <h2>Recado do Trela</h2>
+        <p>Entra na frente de todos os recados da galera.</p>
+        <div><label for="textoBar">Recado</label><input id="textoBar" maxlength="120" placeholder="Rodada dupla de chopp até as 22h!"></div>
+        <div class="linha">
+          <label class="check"><input type="checkbox" id="repetir"> Repetir durante a noite</label>
+          <button class="btn laranja" type="submit">Mandar pro telão</button>
+        </div>
+      </form>
+      <div class="bloco">
+        <label for="noite">Noite que aparece no telão</label>
+        <input id="noite" maxlength="28" placeholder="Quarta de Karaokê">
+        <p>Recado e comentário limpos vão direto. Aqui cai foto, o que o filtro achou suspeito e as denúncias de conversa.</p>
+      </div>
+    </div>
+
+    <div class="cols">
+      <div><h3>Pra decidir <span id="nFila"></span></h3><div class="lista" id="fila"></div></div>
+      <div>
+        <h3>Denúncias <span id="nDen"></span></h3><div class="lista" id="denuncias"></div>
+        <h3 style="margin-top:20px">Contas suspensas</h3><div class="lista" id="suspensos"></div>
+      </div>
+      <div><h3>No telão</h3><div class="lista" id="telao"></div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="config.js"></script>
+<script src="comum.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const auth = firebase.auth();
+  const FS = firebase.firestore;
+  let parar = [];
+
+  $("login").addEventListener("submit", async e => {
+    e.preventDefault();
+    $("erroLogin").textContent = "";
+    try { await auth.signInWithEmailAndPassword($("email").value.trim(), $("senha").value); }
+    catch (err) { $("erroLogin").textContent = "E-mail ou senha não conferem."; }
+  });
+  $("sair").onclick = () => auth.signOut();
+
+  auth.onAuthStateChanged(async u => {
+    parar.forEach(f => f()); parar = [];
+    $("painel").hidden = true; $("sair").hidden = !u; $("login").hidden = !!u;
+    if (!u) return;
+    const ehEquipe = await db.doc("equipe/" + u.uid).get().then(s => s.exists).catch(() => false);
+    if (!ehEquipe) { $("erroLogin").textContent = "Essa conta não é da equipe do Trela."; auth.signOut(); return; }
+    $("painel").hidden = false;
+    iniciar();
+  });
+
+  const NOME_TIPO = { recado: "Recado", foto: "Foto", comentario: "Comentário", bar: "Recado do Trela" };
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  function botao(texto, classe, acao) { const b = el("button", classe, texto); b.type = "button"; b.onclick = acao; return b; }
+
+  $("formBar").addEventListener("submit", async e => {
+    e.preventDefault();
+    const texto = $("textoBar").value.trim(); if (!texto) return;
+    await db.collection("telao").add({ tipo: "bar", nome: "Trela", texto, cor: "laranja", repetir: $("repetir").checked, criado: agoraServidor(), reacoes: REACOES_ZERO });
+    $("textoBar").value = ""; $("repetir").checked = false;
+  });
+
+  function cartao(doc, noTelao) {
+    const r = doc.data();
+    const c = el("div", "card" + (r.motivo && !noTelao ? " alerta" : ""));
+    c.style.setProperty("--c", CORES[r.cor] || "var(--neon)");
+    if (r.tipo === "comentario") c.append(el("div", "alvo", "Em: " + (r.alvoTexto || "um post")));
+    if (r.fotoId) { const img = el("img"); img.alt = "Foto enviada"; carregarFoto(r.fotoId).then(d => d && (img.src = d)); c.append(img); }
+    if (r.texto) c.append(el("p", "", r.texto));
+    const meta = el("div", "meta");
+    meta.append(el("span", "tipo", NOME_TIPO[r.tipo] || "Recado"));
+    if (r.tipo !== "bar") meta.append(el("span", "", r.nome));
+    meta.append(el("span", "", horaDe(r.criado)));
+    if (r.tipo === "bar" && r.repetir) meta.append(el("span", "", "Repete"));
+    if (noTelao && r.reacoes) { const t = Object.keys(REACOES).filter(k => r.reacoes[k]).map(k => REACOES[k] + r.reacoes[k]).join(" "); if (t) meta.append(el("span", "", t)); }
+    if (noTelao && r.ncoms) meta.append(el("span", "", "💬" + r.ncoms));
+    if (r.motivo && !noTelao) meta.append(el("span", "aviso", r.motivo));
+    const a = el("div", "acoes");
+    if (noTelao) {
+      a.append(botao("Tirar do telão", "", async () => { await doc.ref.delete(); if (r.fotoId) db.doc("fotos/" + r.fotoId).delete().catch(() => {}); }));
+      if (r.tipo === "bar" && r.repetir) a.append(botao("Parar de repetir", "", () => doc.ref.update({ repetir: false })));
+    } else {
+      a.append(botao("Mostrar", "sim", async ev => {
+        ev.target.disabled = true;
+        const batch = db.batch();
+        if (r.tipo === "comentario") {
+          const alvo = db.doc("telao/" + r.alvo);
+          batch.set(alvo.collection("comentarios").doc(), { autor: r.autor, nome: r.nome, texto: r.texto, mencoes: r.mencoes || [], criado: agoraServidor() });
+          batch.update(alvo, { ncoms: FS.FieldValue.increment(1), ultimoCom: { nome: r.nome, texto: r.texto } });
+        } else {
+          const novo = { tipo: r.tipo, autor: r.autor, nome: r.nome, texto: r.texto || "", cor: r.cor, criado: agoraServidor(), reacoes: REACOES_ZERO, deFila: doc.id };
+          if (r.fotoId) novo.fotoId = r.fotoId;
+          batch.set(db.collection("telao").doc(), novo);
+        }
+        batch.delete(doc.ref);
+        try { await batch.commit(); } catch (err) { ev.target.disabled = false; ev.target.textContent = "Não deu, tenta de novo"; }
+      }));
+      a.append(botao("Descartar", "", async () => { await doc.ref.delete(); if (r.fotoId) db.doc("fotos/" + r.fotoId).delete().catch(() => {}); }));
+    }
+    c.append(meta, a);
+    return c;
+  }
+
+  function cartaoDenuncia(doc) {
+    const d = doc.data();
+    const c = el("div", "card alerta"); c.style.setProperty("--c", "var(--laranja)");
+    c.append(el("div", "alvo", "Conversa privada · " + d.deNome + " denunciou " + d.contraNome));
+    c.append(el("p", "", d.texto ? "“" + d.texto + "”" : "(sem mensagem)"));
+    const meta = el("div", "meta"); meta.append(el("span", "tipo", "Denúncia"), el("span", "", horaDe(d.criado))); c.append(meta);
+    const a = el("div", "acoes");
+    a.append(botao("Suspender " + d.contraNome, "perigo", async () => {
+      const b = db.batch();
+      b.set(db.doc("suspensos/" + d.contra), { nome: d.contraNome, motivo: d.texto.slice(0, 200), criado: agoraServidor() });
+      b.delete(doc.ref); await b.commit();
+    }));
+    a.append(botao("Arquivar", "", () => doc.ref.delete()));
+    c.append(a); return c;
+  }
+  function cartaoSuspenso(doc) {
+    const d = doc.data();
+    const c = el("div", "card"); c.style.setProperty("--c", "var(--muted)");
+    c.append(el("p", "", d.nome || "Conta"));
+    const meta = el("div", "meta"); meta.append(el("span", "", "Suspensa às " + horaDe(d.criado))); c.append(meta);
+    const a = el("div", "acoes"); a.append(botao("Reativar", "", () => doc.ref.delete())); c.append(a);
+    return c;
+  }
+
+  function lista(alvo, itens, vazio) {
+    alvo.replaceChildren(...itens);
+    if (!itens.length) alvo.replaceChildren(el("div", "vazio", vazio));
+  }
+
+  function iniciar() {
+    const cfg = db.doc("config/geral");
+    parar.push(cfg.onSnapshot(s => {
+      const d = s.exists ? s.data() : {};
+      if (document.activeElement !== $("noite")) $("noite").value = d.noite || "";
+    }, () => {}));
+    let t; $("noite").oninput = e => { clearTimeout(t); t = setTimeout(() => cfg.set({ noite: e.target.value.trim() }, { merge: true }), 500); };
+
+    parar.push(db.collection("fila").orderBy("criado").onSnapshot(s => {
+      $("nFila").textContent = s.size ? "· " + s.size : "";
+      lista($("fila"), s.docs.map(d => cartao(d, false)), "Nada pra decidir. Fotos e recados suspeitos aparecem aqui.");
+    }, () => {}));
+    parar.push(db.collection("denuncias").orderBy("criado", "desc").limit(30).onSnapshot(s => {
+      $("nDen").textContent = s.size ? "· " + s.size : "";
+      lista($("denuncias"), s.docs.map(cartaoDenuncia), "Nenhuma denúncia. Quando alguém denuncia uma conversa, só a mensagem denunciada aparece aqui.");
+    }, () => {}));
+    parar.push(db.collection("suspensos").orderBy("criado", "desc").limit(30).onSnapshot(s => {
+      lista($("suspensos"), s.docs.map(cartaoSuspenso), "Ninguém suspenso.");
+    }, () => {}));
+    parar.push(db.collection("telao").orderBy("criado", "desc").limit(40).onSnapshot(s => {
+      lista($("telao"), s.docs.map(d => cartao(d, true)), "Nada no telão ainda.");
+    }, () => {}));
+  }
+</script>
+</body>
+</html>

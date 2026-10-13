@@ -37,15 +37,19 @@ Três páginas:
 1. Conta em https://app.netlify.com → **Sites → Add new site → Deploy manually** → arrasta a pasta `trela-telao`.
 2. No Firebase: **Authentication → Configurações → Domínios autorizados → Adicionar domínio** → coloca o endereço do Netlify (ex.: `trela-telao.netlify.app`). Sem isso, o login com Google não abre.
 
-## 3. Criar a conta da equipe
+## 3. Criar o acesso da equipe (sem e-mail)
 
-A equipe usa uma conta normal, marcada como equipe no banco:
+A equipe entra com **usuário e senha**, sem precisar de e-mail:
 
-1. Abre o site (a página da galera) e **cria uma conta** com o e-mail da equipe (ex.: `balcao@trela.com`).
-2. No Firebase, **Authentication → Usuários** → copia o **UID** dessa conta.
-3. **Firestore → Iniciar coleção** → ID da coleção: `equipe` → ID do documento: **cola o UID** → adiciona um campo qualquer (ex.: `nome` = `Balcão`) → Salvar.
+1. Abre `balcao.html` e clica em **Primeira vez? Criar acesso da equipe**.
+2. Escolhe um usuário (ex.: `balcao`) e uma senha, e clica em **Criar acesso**.
+3. A página mostra um código (UID). Clica em **Copiar**.
+4. No Firebase: **Firestore → Iniciar coleção** → ID da coleção: `equipe` → ID do documento: **cola o código** → campo `nome` (string) = `Balcão` → Salvar.
+5. Volta no balcão e clica em **Já liberei, conferir de novo**.
 
-Pronto: com esse login, o `balcao.html` e o `telao.html` abrem. Dica: se entrar no balcão com uma conta que ainda não é da equipe, a própria página mostra o UID pra copiar. A equipe pode entrar com e-mail/senha ou com Google.
+Esse mesmo usuário e senha abrem o **telão**. Pra mais alguém da equipe, cria outro usuário e repete o passo 4 dentro da coleção `equipe`.
+
+> Esqueceu a senha? Sem e-mail não dá pra recuperar: no Firebase, **Authentication → Usuários**, apaga o usuário (ex.: `balcao@equipe.trela`), cria de novo pelo balcão e libera o novo código.
 
 ## Endereços
 

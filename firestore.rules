@@ -177,14 +177,10 @@ service cloud.firestore {
       allow read: if logado();
       allow create: if equipe()
         || (ativo()
-            && request.resource.data.keys().hasOnly(['tipo', 'autor', 'nome', 'texto', 'cor', 'criado', 'reacoes', 'fotoId'])
+            && request.resource.data.keys().hasOnly(['tipo', 'autor', 'nome', 'texto', 'cor', 'criado', 'reacoes'])
+            && request.resource.data.tipo == 'recado'
             && request.resource.data.autor == eu()
-            && nomeOk(request.resource.data.nome)
-            // Recado: texto obrigatório. Foto: vai direto, com legenda opcional e a foto já salva em /fotos
-            && ((request.resource.data.tipo == 'recado' && textoOk(request.resource.data.texto, 2, 120) && !('fotoId' in request.resource.data))
-                || (request.resource.data.tipo == 'foto' && textoOk(request.resource.data.texto, 0, 80)
-                    && request.resource.data.fotoId is string
-                    && exists(/databases/$(database)/documents/fotos/$(request.resource.data.fotoId))))
+            && nomeOk(request.resource.data.nome) && textoOk(request.resource.data.texto, 2, 120)
             && corOk(request.resource.data.cor) && agora(request.resource.data)
             && request.resource.data.reacoes == {'fogo': 0, 'riso': 0, 'amor': 0}
             && !suspeito(request.resource.data.texto));

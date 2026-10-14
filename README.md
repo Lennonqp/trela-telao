@@ -16,7 +16,7 @@ Três páginas:
 - **Galera** (💬 ao lado do logo):
   - **Amigos**: pedidos de amizade, marcações, lista de amigos com quem está online e "visto há X". Tocando num amigo, abre a conversa.
   - **No Trela agora**: quem abriu o app nas últimas 3 horas, com botão de adicionar.
-- **Foto de perfil**: toca na tua bolinha lá em cima → "Colocar foto de perfil". A foto é cortada em quadrado e diminuída no celular. A equipe vê as fotos novas no balcão e pode remover.
+- **Foto de perfil**: toca na tua bolinha lá em cima → "Colocar foto de perfil". A foto é cortada em quadrado e diminuída no celular.
 - **Perfil** de cada pessoa, com os posts dela e o botão de amizade.
 - **Excluir minha conta**: no teu perfil (bolinha lá em cima). Pede a senha ou o Google pra confirmar e apaga perfil, foto, amizades e posts.
 - **Virada da noite às 6h**: o "Rolou hoje", o telão e o balcão mostram só o que foi postado desde as 6h da manhã. Às 6h zeram sozinhos e começa a noite nova (os posts antigos ficam guardados no banco). Pra mudar o horário: `HORA_VIRADA` no `comum.js`.

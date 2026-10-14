@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0d0a12">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610142009">
+<link rel="stylesheet" href="estilo.css?v=202610142013">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -144,6 +144,8 @@
   .perfil-topo p.on{color:var(--ok)}
   .acoes-p{display:flex;gap:8px;width:100%}
   .acoes-p .bt{flex:1}
+  .dia-p{font:700 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--lilas);margin:4px 0 -4px}
+  .mais-p{width:36px;height:36px;padding:0;font-size:18px;letter-spacing:0}
 
   /* Folha e aviso */
   .veu{position:absolute;inset:0;background:rgba(5,3,8,.6);display:flex;align-items:flex-end;z-index:5}
@@ -275,8 +277,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610142009"></script>
-<script src="comum.js?v=202610142009"></script>
+<script src="config.js?v=202610142013"></script>
+<script src="comum.js?v=202610142013"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -989,20 +991,28 @@
         out.push(el("div", "secao", "Te marcaram"));
         S.avisos.slice(0, 8).forEach(a => out.push(linhaPessoa(a.de, "Te marcou em: " + a.texto, "nova", null, true, () => { a.ref.update({ lida: true }).catch(() => {}); abrirComentarios(a.postId); })));
       }
-      out.push(el("div", "secao", "Amigos"));
-      if (!amigos.length) out.push(el("div", "vazio-s", "Nenhum amigo ainda. Vai em No Trela agora e adiciona a galera."));
-      amigos.sort((a, b) => (naoLida(b.id) - naoLida(a.id)) || (online(b) - online(a)) || (ms(S.conversas.get(b.id)?.ultima?.criado) - ms(S.conversas.get(a.id)?.ultima?.criado)))
-        .forEach(p => {
-          let ult = S.conversas.get(p.id)?.ultima; const nl = naoLida(p.id);
-          if (ult && apagadaAte(p.id) && ms(ult.criado) <= apagadaAte(p.id)) ult = null;
-          const prev = ult ? (ult.de === EU.uid ? "Tu: " : "") + (ofensivoTexto(ult.texto) && ult.de !== EU.uid ? "mandou uma mensagem" : ult.texto) : "";
-          let sub, cls;
-          if (nl) { sub = prev; cls = "nova"; }
-          else if (online(p)) { sub = "Online agora" + (prev ? " · " + prev : ""); cls = "on"; }
-          else { sub = (visto(p.ultimoAcesso) || "Amigo") + (prev ? " · " + prev : ""); }
-          out.push(linhaPessoa(p.id, sub, cls, null, nl));
+      if (!amigos.length) {
+        out.push(el("div", "secao", "Amigos"));
+        out.push(el("div", "vazio-s", "Nenhum amigo ainda. Vai em No Trela agora e adiciona a galera."));
+      }
+      // Conversas: só as que têm mensagem visível pra mim (apagar tira daqui)
+      const comConversa = amigos.filter(p => ultimaVisivel(p.id))
+        .sort((a, b) => (naoLida(b.id) - naoLida(a.id)) || (ms(ultimaVisivel(b.id).criado) - ms(ultimaVisivel(a.id).criado)));
+      if (comConversa.length) {
+        out.push(el("div", "secao", "Conversas"));
+        comConversa.forEach(p => {
+          const ult = ultimaVisivel(p.id), nl = naoLida(p.id);
+          const prev = (ult.de === EU.uid ? "Tu: " : "") + (ofensivoTexto(ult.texto) && ult.de !== EU.uid ? "mandou uma mensagem" : ult.texto);
+          out.push(linhaPessoa(p.id, prev, nl ? "nova" : (online(p) ? "on" : ""), botaoMais(p.id), nl));
         });
-      out.push(el("p", "nota", "Só amigos conversam entre si. Tudo fica salvo na tua conta."));
+      }
+      // Amigos sem conversa aberta
+      const semConversa = amigos.filter(p => !ultimaVisivel(p.id)).sort((a, b) => (online(b) - online(a)) || a.nome.localeCompare(b.nome));
+      if (semConversa.length) {
+        out.push(el("div", "secao", comConversa.length ? "Outros amigos" : "Amigos"));
+        semConversa.forEach(p => out.push(linhaPessoa(p.id, online(p) ? "Online agora" : (visto(p.ultimoAcesso) || "Amigo"), online(p) ? "on" : "", botaoMais(p.id))));
+      }
+      if (amigos.length) out.push(el("p", "nota", "Toca no ⋯ pra apagar a conversa ou desfazer a amizade."));
     } else {
       out.push(el("div", "secao", "Tão no Trela agora"));
       if (!agora.length) out.push(el("div", "vazio-s", "Ainda não chegou ninguém. Chama a galera!"));
@@ -1011,6 +1021,34 @@
     }
     $("#galeraScroll").replaceChildren(...out);
   }
+  // Última mensagem que eu ainda vejo (some se a conversa foi apagada)
+  function ultimaVisivel(uid) {
+    const ult = S.conversas.get(uid)?.ultima;
+    if (!ult) return null;
+    if (apagadaAte(uid) && ms(ult.criado) <= apagadaAte(uid)) return null;
+    return ult;
+  }
+  function botaoMais(uid) {
+    const b = el("button", "mini mais-p", "⋯"); b.type = "button"; b.setAttribute("aria-label", "Opções de " + perfil(uid).nome);
+    b.onclick = e => { e.stopPropagation(); menuPessoa(uid); };
+    return b;
+  }
+  function menuPessoa(uid) {
+    const nome = perfil(uid).nome, itens = [avatar(uid, "g"), el("h4", "", nome)];
+    itens.push(bt("Conversar", "sim", () => { fecharFolha(); abrirChat(uid); }));
+    itens.push(bt("Ver perfil", "", () => { fecharFolha(); abrirPerfil(uid); }));
+    if (ultimaVisivel(uid)) itens.push(bt("Apagar conversa", "", () => apagarConversa(uid, nome)));
+    itens.push(bt("Desfazer amizade", "perigo", () => confirmarDesfazer(uid)));
+    itens.push(bt("Cancelar", "", fecharFolha));
+    folha(itens);
+  }
+  function confirmarDesfazer(uid, depois) {
+    const nome = perfil(uid).nome;
+    folha([el("h4", "", "Desfazer a amizade com " + nome + "?"),
+      el("p", "", "Vocês param de poder conversar e " + nome + " sai da tua lista de amigos. Dá pra adicionar de novo depois."),
+      bt("Desfazer amizade", "perigo", async () => { fecharFolha(); await desfazerAmizade(uid); redesenhar(); if (depois) depois(); }),
+      bt("Cancelar", "", fecharFolha)]);
+  }
   const ofensivoTexto = t => !!t && motivoSuspeito(t) === "Palavrão ou ofensa";
 
   // ================= PERFIL =================
@@ -1018,11 +1056,18 @@
   async function abrirPerfil(uid) {
     if (!uid || uid === EU.uid) return;
     perfilDe = uid; postsPerfil = null; ir("tPerfil"); renderPerfil();
-    const s = await db.collection("telao").where("autor", "==", uid).limit(20).get().catch(() => null);
+    const s = await db.collection("telao").where("autor", "==", uid).limit(60).get().catch(() => null);
     if (perfilDe !== uid) return;
-    const desde = inicioDaNoite().getTime();
-    postsPerfil = s ? s.docs.map(d => ({ id: d.id, ...d.data() })).filter(r => !r.criado || ms(r.criado) >= desde).sort((a, b) => ms(b.criado) - ms(a.criado)) : [];
+    postsPerfil = s ? s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ms(b.criado) - ms(a.criado)).slice(0, 15) : [];
     renderPerfil();
+  }
+  // "Hoje", "Ontem" ou a data (a noite vira às 6h)
+  function nomeDoDia(ts) {
+    const t = ms(ts); if (!t) return "Hoje";
+    const noite = inicioDaNoite().getTime(), dia = 24 * 60 * 60 * 1000;
+    if (t >= noite) return "Hoje";
+    if (t >= noite - dia) return "Ontem";
+    return new Date(t).toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" });
   }
   function renderPerfil() {
     const p = perfil(perfilDe);
@@ -1032,11 +1077,21 @@
     const acoes = el("div", "acoes-p"), rel = relacao(p.id);
     if (rel === "recebido") acoes.append(bt("Aceitar amizade", "sim", () => aceitarAmizade(p.id)), bt("Recusar", "", () => desfazerAmizade(p.id)));
     else if (rel === "enviado") acoes.append(bt("Pedido enviado", "", () => {}), bt("Cancelar pedido", "", () => desfazerAmizade(p.id)));
+    else if (rel === "amigo") acoes.append(bt("Conversar", "sim", () => abrirChat(p.id)), bt("Desfazer amizade", "", () => confirmarDesfazer(p.id)));
     else { const b = botaoRelacao(p.id); b.className = b.className.replace("mini", "bt"); acoes.append(b); }
     topo.append(acoes);
     const out = [topo];
     if (postsPerfil === null) out.push(el("div", "vazio-s", "Carregando posts…"));
-    else { out.push(el("div", "secao", postsPerfil.length ? "Postou hoje" : "Ainda não postou hoje")); postsPerfil.forEach(r => out.push(postCard(S.postsMap.get(r.id) || r))); }
+    else if (!postsPerfil.length) out.push(el("div", "secao", "Ainda não postou nada"));
+    else {
+      out.push(el("div", "secao", "Últimos posts"));
+      let diaAnterior = "";
+      postsPerfil.forEach(r => {
+        const dia = nomeDoDia(r.criado);
+        if (dia !== diaAnterior) { out.push(el("div", "dia-p", dia)); diaAnterior = dia; }
+        out.push(postCard(S.postsMap.get(r.id) || r));
+      });
+    }
     $("#perfilScroll").replaceChildren(...out);
   }
 
@@ -1100,7 +1155,7 @@
       bt("Apagar só pra mim", "perigo", async () => {
         try {
           await db.doc("conversas/" + par).set({ membros: [EU.uid, uid].sort(), apagadaPor: { [EU.uid]: agoraServidor() }, lidaPor: { [EU.uid]: agoraServidor() } }, { merge: true });
-          fecharFolha(); renderChat();
+          fecharFolha(); if (telaAtual() === "tChat") renderChat(); else redesenhar();
         } catch (e) { erro.textContent = "Não deu pra apagar agora. Tenta de novo."; }
       }),
       bt("Apagar pra nós dois", "perigo", async () => {
@@ -1110,7 +1165,7 @@
             const b = db.batch(); s.docs.slice(i, i + 400).forEach(d => b.delete(d.ref)); await b.commit();
           }
           await db.doc("conversas/" + par).set({ membros: [EU.uid, uid].sort(), ultima: null }, { merge: true });
-          fecharFolha(); mensagens = []; renderChat();
+          fecharFolha(); if (telaAtual() === "tChat") { mensagens = []; renderChat(); } else redesenhar();
         } catch (e) { erro.textContent = "Não deu pra apagar agora. Tenta de novo."; }
       }),
       bt("Cancelar", "", fecharFolha)]);
@@ -1120,7 +1175,7 @@
     folha([el("h4", "", nome),
       bt("Ver perfil", "", () => { fecharFolha(); abrirPerfil(uid); }),
       bt("Apagar conversa", "", () => apagarConversa(uid, nome)),
-      bt("Desfazer amizade", "", async () => { fecharFolha(); await desfazerAmizade(uid); voltar(); }),
+      bt("Desfazer amizade", "", () => confirmarDesfazer(uid, voltar)),
       bt("Bloquear", "perigo", async () => { fecharFolha(); await bloquear(uid); voltar(); }),
       bt("Denunciar pra equipe do Trela", "perigo", async () => {
         const ult = [...mensagens].reverse().find(m => m.de === uid);

@@ -17,7 +17,8 @@ Três páginas:
   - **Amigos**: pedidos de amizade, marcações, lista de amigos com quem está online e "visto há X". Tocando num amigo, abre a conversa.
   - **No Trela agora**: quem abriu o app nas últimas 3 horas, com botão de adicionar.
 - **Foto de perfil**: toca na tua bolinha lá em cima → "Colocar foto de perfil". A foto é cortada em quadrado e diminuída no celular.
-- **Perfil** de cada pessoa, com os posts dela e o botão de amizade.
+- **Perfil** de cada pessoa, com os **últimos posts** dela (separados por Hoje, Ontem e data), **Conversar** e **Desfazer amizade**.
+- **Lista de conversas**: em Amigos, as conversas abertas ficam em cima e os outros amigos embaixo. O **⋯** de cada pessoa tem Apagar conversa (some da lista) e Desfazer amizade.
 - **Excluir minha conta**: no teu perfil (bolinha lá em cima). Pede a senha ou o Google pra confirmar e apaga perfil, foto, amizades e posts.
 - **Virada da noite às 6h**: o "Rolou hoje", o telão e o balcão mostram só o que foi postado desde as 6h da manhã. Às 6h zeram sozinhos e começa a noite nova (os posts antigos ficam guardados no banco). Pra mudar o horário: `HORA_VIRADA` no `comum.js`.
 - **Conversas privadas só entre amigos**. As conversas não zeram às 6h; no menu ⋯ do chat tem **Apagar conversa** (só pra mim, ou pra nós dois). Dá pra desfazer amizade, bloquear e denunciar. Mensagem com palavrão chega borrada.

@@ -51,7 +51,8 @@ function portaEquipe(caixa, aoLiberar, aoSair) {
       catch (e) {
         msg.className = "msg erro";
         if (e.code === "auth/popup-blocked") msg.textContent = "O navegador bloqueou a janela do Google. Clica de novo ou libera pop-ups pra este site.";
-        else if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") msg.textContent = "Não deu pra entrar com o Google. Tenta de novo.";
+        else if (e.code === "auth/unauthorized-domain") msg.textContent = "Este endereço ainda não está liberado no Firebase: Authentication → Configurações → Domínios autorizados → adicionar " + location.hostname + ".";
+        else if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") msg.textContent = "Não deu pra entrar com o Google (" + (e.code || "erro") + "). Tenta de novo.";
         else msg.className = "msg";
       } finally { g.disabled = false; }
     };

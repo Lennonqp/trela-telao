@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0d0a12">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610130003">
+<link rel="stylesheet" href="estilo.css?v=202610141959">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -275,8 +275,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610130003"></script>
-<script src="comum.js?v=202610130003"></script>
+<script src="config.js?v=202610141959"></script>
+<script src="comum.js?v=202610141959"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -416,7 +416,9 @@
     "auth/weak-password": "A senha precisa ter pelo menos 6 caracteres.",
     "auth/invalid-email": "Confere o e-mail.",
     "auth/too-many-requests": "Muitas tentativas. Espera um pouquinho e tenta de novo.",
-    "auth/network-request-failed": "Sem internet. Confere a conexão."
+    "auth/network-request-failed": "Sem internet. Confere a conexão.",
+    "auth/unauthorized-domain": "Este endereço ainda não está liberado no Firebase (Authentication → Configurações → Domínios autorizados → adicionar " + location.hostname + ").",
+    "auth/operation-not-allowed": "O login com Google não está ativado no Firebase (Authentication → Método de login → Google)."
   };
 
   // Login com Google pela janelinha (popup). O modo "redirecionar" não funciona em

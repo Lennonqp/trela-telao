@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610142007">
+<link rel="stylesheet" href="estilo.css?v=202610142009">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d}
   body{display:grid;place-items:center}
@@ -28,7 +28,9 @@
   .texto.foto-leg{font-size:3.4cqw}
   .texto.vazio{color:var(--muted)}
   .bar .texto{background:var(--laranja);color:#1a0b05;padding:1.2cqw 1.8cqw;border-radius:1cqw;align-self:flex-start}
-  .de{font-family:var(--f-mono);font-size:1.6cqw;letter-spacing:.1em;text-transform:uppercase;color:var(--c,var(--neon))}
+  .de{font-family:var(--f-mono);font-size:2cqw;letter-spacing:.1em;text-transform:uppercase;color:var(--c,var(--neon));display:flex;align-items:center;gap:1.1cqw}
+  .de:empty{display:none}
+  .de .av{flex:none;width:4.2cqw;height:4.2cqw;border-radius:50%;display:grid;place-items:center;font:700 1.9cqw/1 var(--f-body);letter-spacing:0;color:#140c1b;background:var(--cor,var(--lilas)) center/cover no-repeat;box-shadow:0 0 0 .3cqw var(--c,var(--neon))}
   .reacs{display:flex;gap:1.2cqw;font-size:1.8cqw;font-variant-numeric:tabular-nums}
   .reacs span{background:rgba(255,255,255,.06);border-radius:99px;padding:.3cqw 1cqw}
   .coms{display:flex;flex-direction:column;gap:.5cqw;font-size:1.55cqw;color:var(--ink);max-width:48cqw}
@@ -77,10 +79,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610142007"></script>
+<script src="config.js?v=202610142009"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610142007"></script>
-<script src="equipe.js?v=202610142007"></script>
+<script src="comum.js?v=202610142009"></script>
+<script src="equipe.js?v=202610142009"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -198,7 +200,16 @@
     t.textContent = r.texto || ""; t.hidden = !r.texto;
     t.classList.toggle("longo", (r.texto || "").length > 60);
     t.classList.toggle("foto-leg", !!r.fotoId);
-    palco.querySelector(".de").textContent = bar ? "" : "— " + r.nome;
+    const de = palco.querySelector(".de");
+    if (bar) de.textContent = "";
+    else {
+      const av = document.createElement("span"); av.className = "av"; av.textContent = (r.nome || "?")[0].toUpperCase();
+      if (r.autor) {
+        av.style.setProperty("--cor", corDe(r.autor));
+        fotoDoAutor(r.autor).then(f => { if (f && atual === r.id) { av.textContent = ""; av.style.backgroundImage = "url(" + f + ")"; } });
+      }
+      de.replaceChildren(av, document.createTextNode(r.nome));
+    }
     if (r.fotoId) carregarFoto(r.fotoId).then(d => { if (d && atual === r.id) { palco.querySelector(".foto img").src = d; palco.querySelector(".foto").hidden = false; } });
     desenharReacoes(r);
     if (!bar) {
@@ -212,6 +223,18 @@
         }));
       }, () => {});
     }
+  }
+
+  // Foto de perfil de quem mandou (guardada por 10 min pra não buscar toda hora)
+  const fotosAutor = new Map();
+  function fotoDoAutor(uid) {
+    const c = fotosAutor.get(uid);
+    if (c && Date.now() - c.t < 10 * 60 * 1000) return c.p;
+    const p = db.doc("usuarios/" + uid).get()
+      .then(u => u.exists && u.data().fotoV ? db.doc("avatares/" + uid).get().then(a => a.exists ? a.data().data : null) : null)
+      .catch(() => null);
+    fotosAutor.set(uid, { p, t: Date.now() });
+    return p;
   }
 
   function desenharReacoes(r) {

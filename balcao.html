@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610142013">
+<link rel="stylesheet" href="estilo.css?v=202610150919">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -67,7 +67,7 @@
       <div class="bloco">
         <label for="noite">Noite que aparece no telão</label>
         <input id="noite" maxlength="28" placeholder="Quarta de Karaokê">
-        <p>Recado e comentário limpos vão direto. Aqui cai foto, o que o filtro achou suspeito e as denúncias de conversa.</p>
+        <p>Recados, fotos e comentários limpos vão direto pro telão. Aqui cai só o que o filtro achou suspeito e as denúncias de conversa.</p>
       </div>
     </div>
 
@@ -85,10 +85,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610142013"></script>
+<script src="config.js?v=202610150919"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610142013"></script>
-<script src="equipe.js?v=202610142013"></script>
+<script src="comum.js?v=202610150919"></script>
+<script src="equipe.js?v=202610150919"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -196,7 +196,7 @@
 
     parar.push(db.collection("fila").orderBy("criado").onSnapshot(s => {
       $("nFila").textContent = s.size ? "· " + s.size : "";
-      lista($("fila"), s.docs.map(d => cartao(d, false)), "Nada pra decidir. Fotos e recados suspeitos aparecem aqui.");
+      lista($("fila"), s.docs.map(d => cartao(d, false)), "Nada pra decidir. Recados e legendas suspeitos aparecem aqui.");
     }, () => {}));
     parar.push(db.collection("denuncias").orderBy("criado", "desc").limit(30).onSnapshot(s => {
       $("nDen").textContent = s.size ? "· " + s.size : "";

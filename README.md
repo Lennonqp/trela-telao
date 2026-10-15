@@ -63,7 +63,7 @@ Esse mesmo usuário e senha abrem o **telão**. Pra mais alguém da equipe, cria
 ## Balcão
 
 - **Recado do Trela**: entra na frente da fila. "Repetir durante a noite" faz ele voltar a cada 4 recados da galera.
-- **Pra decidir**: todas as fotos e o que o filtro achou suspeito (recados e comentários), com o motivo. **Mostrar** ou **Descartar**.
+- **Pra decidir**: o que o filtro achou suspeito (recados, legendas e comentários), com o motivo. **Mostrar** ou **Descartar**.
 - **Denúncias**: quando alguém denuncia uma conversa, aparece **só a última mensagem** da pessoa denunciada. O resto da conversa continua privado. **Suspender** bloqueia a conta de postar, comentar, conversar e adicionar amigos.
 - **Contas suspensas**: dá pra **Reativar**.
 - **No telão**: tudo na rotação, com **Tirar do telão**.
@@ -72,7 +72,7 @@ Esse mesmo usuário e senha abrem o **telão**. Pra mais alguém da equipe, cria
 ## Filtro
 
 - Limpo vai direto. Cai na fila: palavrão ou ofensa (pega também `p.u.t.a`, `p0rr4`, `poooorra`), link, telefone, @ de perfil de fora do app e texto todo em maiúsculas. Marcar alguém do app com @ é liberado.
-- Toda foto passa pelo balcão.
+- Foto vai direto pro telão (só a legenda passa pelo filtro). A equipe tira qualquer foto com **Tirar do telão**.
 - As palavras ficam no começo do `comum.js`. As principais também estão nas regras do banco (`firestore.rules`, função `suspeito`), que barram quem tentar pular o filtro da página.
 
 ## Ajustes

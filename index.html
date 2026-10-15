@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610151938">
+<link rel="stylesheet" href="estilo.css?v=202610151941">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -295,8 +295,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610151938"></script>
-<script src="comum.js?v=202610151938"></script>
+<script src="config.js?v=202610151941"></script>
+<script src="comum.js?v=202610151941"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -568,7 +568,7 @@
 
   // ================= APP =================
   let batida = null;
-  function marcarPresenca() { if (EU) db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor() }, { merge: true }).catch(() => {}); }
+  function marcarPresenca() { if (EU && document.visibilityState !== "hidden") db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor() }, { merge: true }).catch(() => {}); }
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") marcarPresenca(); });
 
   // ---------- Sugestão de instalar na tela inicial ----------
@@ -596,7 +596,7 @@
   function iniciarApp() {
     setTimeout(mostrarInstalar, 1500);
     pilha = []; ir("tHome"); desenharEu();
-    marcarPresenca(); batida = setInterval(marcarPresenca, 5 * 60 * 1000);
+    marcarPresenca(); batida = setInterval(marcarPresenca, 2 * 60 * 1000);
     const uid = EU.uid;
 
     // Feed "Rolou hoje"
@@ -660,7 +660,9 @@
     };
     ouvirNoBar();
     const iNoBar = setInterval(ouvirNoBar, 15 * 60 * 1000);
-    parar.push(() => { pararNoBar && pararNoBar(); clearInterval(iNoBar); });
+    // Tira da lista quem fechou o app, sem esperar ninguém mexer
+    const iOnline = setInterval(() => { if (EU && telaAtual() === "tGalera") renderGalera(); }, 30 * 1000);
+    parar.push(() => { pararNoBar && pararNoBar(); clearInterval(iNoBar); clearInterval(iOnline); });
     parar.push(pararRastreio);
   }
 
@@ -1052,7 +1054,7 @@
   function renderGalera() {
     const amigos = [...S.amizades.entries()].filter(([, a]) => a.status === "aceita").map(([u]) => perfil(u));
     const pedidos = [...S.amizades.entries()].filter(([, a]) => a.status === "pendente" && a.para === EU.uid).map(([u]) => u);
-    const agora = S.noBar.filter(p => !S.bloqueados.has(p.id));
+    const agora = S.noBar.filter(p => online(p) && !S.bloqueados.has(p.id));
     $("#nAmigos").textContent = amigos.length || ""; $("#nAgora").textContent = agora.length || "";
     const out = [];
     if (abaGalera === "amigos") {
@@ -1094,7 +1096,7 @@
       out.push(el("div", "secao", "Tão no Trela agora"));
       if (!agora.length) out.push(el("div", "vazio-s", "Ainda não chegou ninguém. Chama a galera!"));
       agora.forEach(p => out.push(linhaPessoa(p.id, ehAmigo(p.id) ? "Teu amigo · " + (online(p) ? "online agora" : visto(p.ultimoAcesso).toLowerCase()) : online(p) ? "Online agora" : visto(p.ultimoAcesso), online(p) ? "on" : "", botaoRelacao(p.id, true), false, () => abrirPerfil(p.id))));
-      out.push(el("p", "nota", "Aparece aqui quem abriu o app do Trela nas últimas 3 horas."));
+      out.push(el("p", "nota", "Aparece aqui só quem está com o app do Trela aberto agora."));
     }
     $("#galeraScroll").replaceChildren(...out);
   }

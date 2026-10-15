@@ -123,7 +123,7 @@ function corDe(uid) { let h = 0; for (const c of uid) h = (h * 31 + c.charCodeAt
 const parDe = (a, b) => a < b ? a + "_" + b : b + "_" + a;
 const ms = ts => (ts && ts.toMillis) ? ts.toMillis() : 0;
 const NO_BAR_MS = 3 * 60 * 60 * 1000;   // "No Trela agora" = abriu o app nas últimas 3 h
-const ONLINE_MS = 10 * 60 * 1000;       // bolinha verde = mexeu no app nos últimos 10 min
+const ONLINE_MS = 5 * 60 * 1000;        // online = app aberto (o celular avisa a cada 2 min; sumiu há 5 min, sai da lista)
 function visto(ts) {
   const t = ms(ts); if (!t) return "";
   const d = Date.now() - t;

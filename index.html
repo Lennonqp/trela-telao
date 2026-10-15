@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610151658">
+<link rel="stylesheet" href="estilo.css?v=202610151702">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -177,11 +177,11 @@
 <body>
 <div class="app" id="app">
 
-  <div class="tela carregando" id="tCarregando"><div style="display:flex;flex-direction:column;align-items:center;gap:14px"><div class="logo" style="font-size:72px"><img src="logo.svg?v=2" alt="trela"></div><p id="carregandoTxt" style="margin:0;color:var(--muted);font-size:14px"></p></div></div>
+  <div class="tela carregando" id="tCarregando"><div style="display:flex;flex-direction:column;align-items:center;gap:14px"><div class="logo" style="font-size:72px"><img src="logo.svg?v=3" alt="trela"></div><p id="carregandoTxt" style="margin:0;color:var(--muted);font-size:14px"></p></div></div>
 
   <!-- Login -->
   <div class="tela" id="tLogin" hidden>
-    <div class="logo"><img src="logo.svg?v=2" alt="trela"></div>
+    <div class="logo"><img src="logo.svg?v=3" alt="trela"></div>
     <p class="tag">Entra na <em>noite</em> do Trela</p>
     <button class="entrar google" id="btnGoogle" type="button"><span class="g" aria-hidden="true">G</span> Continuar com Google</button>
     <div class="ou">ou</div>
@@ -202,7 +202,7 @@
   <!-- Home -->
   <div class="tela" id="tHome" hidden>
     <div class="appbar">
-      <div class="logo"><img src="logo.svg?v=2" alt="trela"></div>
+      <div class="logo"><img src="logo.svg?v=3" alt="trela"></div>
       <button class="eu" id="btnEu" type="button" aria-label="Teu perfil"></button>
       <button class="ico" id="btnGalera" type="button" aria-label="Amigos e conversas">💬<span class="badge" id="badge" hidden></span></button>
     </div>
@@ -295,8 +295,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610151658"></script>
-<script src="comum.js?v=202610151658"></script>
+<script src="config.js?v=202610151702"></script>
+<script src="comum.js?v=202610151702"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };

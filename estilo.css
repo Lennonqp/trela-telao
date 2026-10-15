@@ -21,7 +21,7 @@
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--lilas);outline-offset:2px}
 .logo{font-family:var(--f-logo);color:var(--neon);line-height:.9;text-shadow:0 0 6px var(--neon),0 0 22px rgba(255,63,164,.55)}
-.logo img{display:block;height:1.15em;width:auto;max-width:100%;-webkit-filter:drop-shadow(0 0 .08em rgba(169,92,242,.75));filter:drop-shadow(0 0 .08em rgba(169,92,242,.75))}
+.logo img{display:block;height:1.3em;width:auto;max-width:100%}
 #tLogin .logo img,.cortina .logo img,.carregando .logo img{margin:0 auto}
 label{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
 input,textarea{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);font:16px/1.4 var(--f-body);border-radius:12px;padding:12px}

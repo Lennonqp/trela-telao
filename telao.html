@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610151658">
+<link rel="stylesheet" href="estilo.css?v=202610151702">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -88,7 +88,7 @@
 <div class="tv" id="tv">
   <div class="glow"></div>
   <div class="topo">
-    <div class="logo"><img src="logo.svg?v=2" alt="trela"></div>
+    <div class="logo"><img src="logo.svg?v=3" alt="trela"></div>
     <div class="noite">Hoje no Trela<b id="noite">Bem-vindos</b></div>
   </div>
   <div class="palco" id="palco"><div class="corpo"><p class="texto vazio">Manda o primeiro recado da noite</p></div></div>
@@ -105,7 +105,7 @@
 
 <div class="cortina" id="cortina">
   <div>
-    <div class="logo" style="font-size:72px"><img src="logo.svg?v=2" alt="trela"></div>
+    <div class="logo" style="font-size:72px"><img src="logo.svg?v=3" alt="trela"></div>
     <div id="porta" style="display:flex;justify-content:center"></div>
     <button class="btn" id="ligar" hidden>Ligar o telão</button>
     <p class="auto" id="auto" hidden></p>
@@ -118,10 +118,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610151658"></script>
+<script src="config.js?v=202610151702"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610151658"></script>
-<script src="equipe.js?v=202610151658"></script>
+<script src="comum.js?v=202610151702"></script>
+<script src="equipe.js?v=202610151702"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);

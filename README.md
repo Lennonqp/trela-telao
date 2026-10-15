@@ -5,8 +5,8 @@ Três páginas:
 | Página | Quem abre | Onde |
 |---|---|---|
 | `index.html` | A galera, pelo QR code do telão | Celular |
-| `telao.html` | A TV do bar (login da equipe) | Navegador da TV ou notebook ligado nela |
-| `balcao.html` | A equipe (login da equipe) | Celular ou tablet do balcão |
+| `telao` | A TV do bar (login da equipe) | Navegador da TV ou notebook ligado nela |
+| `balcao` | A equipe (login da equipe) | Celular ou tablet do balcão |
 
 ## O que o app da galera faz
 
@@ -57,9 +57,9 @@ Esse mesmo usuário e senha abrem o **telão**. Pra mais alguém da equipe, cria
 
 ## Endereços
 
-- Galera: `https://SEU-SITE.netlify.app/`
-- TV: `https://SEU-SITE.netlify.app/telao.html` → entra com a conta da equipe → **Ligar o telão**
-- Balcão: `https://SEU-SITE.netlify.app/balcao.html`
+- Galera: `https://trela-telao.vercel.app/`
+- TV: `https://trela-telao.vercel.app/telao` → entra com a conta da equipe → **Ligar o telão**
+- Balcão: `https://trela-telao.vercel.app/balcao`
 
 ## Balcão
 

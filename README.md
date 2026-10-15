@@ -63,6 +63,14 @@ Esse mesmo usuário e senha abrem o **telão**. Pra mais alguém da equipe, cria
 - TV: `https://trela-telao.vercel.app/telao` → entra com a conta da equipe → **Ligar o telão**
 - Balcão: `https://trela-telao.vercel.app/balcao`
 
+## Telão em qualquer TV
+
+- **Smart TV com navegador** (Samsung, LG, TV Box, Fire TV, Android TV): abre `trela-telao.vercel.app/telao` no navegador da TV. Ela mostra um **código de 6 números**. No celular da equipe, abre `/bar` → **Conectar uma TV** → digita o código. A TV entra sozinha, sem digitar senha no controle remoto, e liga o telão em 10 segundos (ou na hora, apertando OK).
+- A TV fica conectada mesmo desligando. Pra tirar o acesso, `/bar` → **Desconectar**.
+- **TV sem navegador**: liga um Fire TV Stick, Chromecast com Google TV, TV Box, notebook ou celular deitado no HDMI e abre o mesmo endereço.
+- O telão foi escrito com recursos que navegadores antigos de TV entendem e se ajusta a qualquer resolução (720p, 1080p, 4K).
+- **Precisa ativar uma vez no Firebase**: Authentication → Método de login → **Anônimo** → ativar. É ele que a TV usa pra mostrar o código. Contas anônimas não conseguem postar, comentar nem conversar (as regras bloqueiam).
+
 ## Balcão
 
 - **Recado do Trela**: entra na frente da fila. "Repetir durante a noite" faz ele voltar a cada 4 recados da galera.

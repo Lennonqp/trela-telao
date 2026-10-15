@@ -7,8 +7,14 @@ service cloud.firestore {
     function eu() { return request.auth.uid; }
     // Equipe: contas com um documento em /equipe/{uid} (criado à mão no console)
     function equipe() { return logado() && exists(/databases/$(database)/documents/equipe/$(eu())); }
-    // Conta ativa: logada e não suspensa pela equipe
-    function ativo() { return logado() && !exists(/databases/$(database)/documents/suspensos/$(eu())); }
+    // Conta anônima: só a TV usa (pra mostrar o código de pareamento). Não posta nem conversa.
+    function anonimo() { return request.auth.token.firebase.sign_in_provider == 'anonymous'; }
+    // Pessoa de verdade (Google ou e-mail), não a TV
+    function pessoa() { return logado() && !anonimo(); }
+    // Conta ativa: pessoa logada e não suspensa pela equipe
+    function ativo() { return pessoa() && !exists(/databases/$(database)/documents/suspensos/$(eu())); }
+    // TV pareada pela equipe (conta anônima liberada em /telas)
+    function tela() { return logado() && exists(/databases/$(database)/documents/telas/$(eu())); }
 
     function nomeOk(n) { return n is string && n.size() >= 1 && n.size() <= 20; }
     function textoOk(t, min, max) { return t is string && t.size() >= min && t.size() <= max; }
@@ -39,10 +45,29 @@ service cloud.firestore {
       allow write: if equipe();
     }
 
+    // ---------- TVs (pareamento por código) ----------
+    // A TV anônima cria /pareamentos/{código}; a equipe digita o código em /bar,
+    // cria /telas/{uid da TV} e apaga o pareamento.
+    match /pareamentos/{codigo} {
+      allow create: if logado() && anonimo()
+        && codigo.matches('[0-9]{6}')
+        && request.resource.data.keys().hasOnly(['uid', 'criado'])
+        && request.resource.data.uid == eu()
+        && request.resource.data.criado == request.time;
+      allow read: if equipe() || (logado() && resource.data.uid == eu());
+      allow delete: if equipe() || (logado() && resource.data.uid == eu());
+    }
+    match /telas/{uid} {
+      allow read: if logado() && (uid == eu() || equipe());
+      allow create: if equipe() && request.resource.data.keys().hasOnly(['nome', 'criado'])
+        && request.resource.data.criado == request.time;
+      allow delete: if equipe();
+    }
+
     // ---------- Perfis ----------
     match /usuarios/{uid} {
       allow read: if logado();
-      allow create, update: if logado() && uid == eu()
+      allow create, update: if pessoa() && uid == eu()
         && request.resource.data.keys().hasOnly(['nome', 'cor', 'criado', 'ultimoAcesso', 'fotoV'])
         && nomeOk(request.resource.data.nome) && !suspeito(request.resource.data.nome)
         && request.resource.data.ultimoAcesso == request.time;
@@ -88,7 +113,7 @@ service cloud.firestore {
     // ---------- Bloqueios (id = quemBloqueou_bloqueado) ----------
     match /bloqueios/{id} {
       allow read: if logado() && resource.data.de == eu();
-      allow create: if logado() && request.resource.data.de == eu()
+      allow create: if pessoa() && request.resource.data.de == eu()
         && request.resource.data.keys().hasOnly(['de', 'alvo', 'criado'])
         && id == eu() + '_' + request.resource.data.alvo;
       allow delete: if logado() && resource.data.de == eu();
@@ -209,7 +234,7 @@ service cloud.firestore {
     // ---------- Posição da fila e ajustes ----------
     match /estado/{doc} {
       allow read: if logado();
-      allow write: if equipe();
+      allow write: if equipe() || tela();
     }
     match /config/{doc} {
       allow read: if logado();

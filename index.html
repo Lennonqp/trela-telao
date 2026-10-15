@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610151005">
+<link rel="stylesheet" href="estilo.css?v=202610151008">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -295,8 +295,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610151005"></script>
-<script src="comum.js?v=202610151005"></script>
+<script src="config.js?v=202610151008"></script>
+<script src="comum.js?v=202610151008"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -385,15 +385,49 @@
   }
 
   // ---------- Navegação ----------
+  // Cada tela que abre por cima entra no histórico do navegador, pra o botão
+  // voltar do celular fechar a tela (e não sair do app de volta pra câmera).
   let pilha = [];
-  function ir(id) { document.querySelectorAll("#app .tela").forEach(t => t.hidden = t.id !== id); if (pilha[pilha.length - 1] !== id) pilha.push(id); }
+  const mostrarTela = id => document.querySelectorAll("#app .tela").forEach(t => t.hidden = t.id !== id);
+  function ir(id) {
+    mostrarTela(id);
+    if (pilha[pilha.length - 1] === id) return;
+    pilha.push(id);
+    try {
+      if (pilha.length === 1) history.replaceState({ trela: 1, n: 1 }, "");
+      else history.pushState({ trela: 1, n: pilha.length }, "");
+    } catch (e) {}
+  }
   function telaAtual() { return pilha[pilha.length - 1]; }
-  function voltar() {
+  // Volta uma tela (sem mexer no histórico)
+  function voltarTela() {
+    if (pilha.length <= 1) return;
     if (telaAtual() === "tChat") fecharChat();
     if (telaAtual() === "tComs") fecharComs();
-    if (pilha.length > 1) pilha.pop();
-    ir(telaAtual()); redesenhar();
+    pilha.pop();
+    mostrarTela(telaAtual()); redesenhar();
   }
+  // Botão ‹ do app: usa o histórico, igual ao voltar do celular
+  function voltar() {
+    if (pilha.length <= 1) return;
+    const estado = history.state;
+    if (estado && estado.trela && estado.n === pilha.length) history.back();
+    else voltarTela();
+  }
+  window.addEventListener("popstate", e => {
+    // Com uma janelinha aberta (perfil, menu, confirmação), o voltar só fecha ela
+    if (!$("#veu").hidden && !folhaObrigatoria) {
+      fecharFolha();
+      try { history.pushState({ trela: 1, n: pilha.length }, ""); } catch (err) {}
+      return;
+    }
+    if (!$("#veu").hidden && folhaObrigatoria) {
+      try { history.pushState({ trela: 1, n: pilha.length }, ""); } catch (err) {}
+      return;
+    }
+    const n = e.state && e.state.trela ? e.state.n : 1;
+    while (pilha.length > Math.max(1, n)) voltarTela();
+  });
   document.querySelectorAll("[data-voltar]").forEach(b => b.onclick = voltar);
 
   let folhaObrigatoria = false;

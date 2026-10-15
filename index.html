@@ -4,8 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0d0a12">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610150919">
+<link rel="stylesheet" href="estilo.css?v=202610151005">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -92,6 +99,11 @@
   @keyframes quica{0%,100%{transform:translateY(-1px)}50%{transform:translateY(3px)}}
   .some{opacity:0;pointer-events:none}
   .mais.some{transform:translate(-50%,10px)}
+  .instalar{display:flex;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--lilas);border-radius:14px;padding:12px;margin-top:6px}
+  .instalar img{border-radius:10px;flex:none}
+  .instalar div{flex:1;min-width:0;font-size:13px;color:var(--muted)}
+  .instalar b{display:block;color:var(--ink);font-size:14px}
+  .fechar-i{background:none;border:0;color:var(--muted);font-size:22px;cursor:pointer;padding:0 4px;flex:none}
   .vazio{color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:12px;padding:18px;text-align:center}
 
   /* Comentários e chat */
@@ -219,6 +231,12 @@
         <div class="status" id="status" role="status" hidden></div>
         <p class="regras" id="regras">Xingamento, link ou telefone passam pela equipe antes.</p>
       </form>
+      <div class="instalar" id="instalar" hidden>
+        <img src="icone-192.png" alt="" width="44" height="44">
+        <div><b>Coloca o Trela na tela inicial</b><span id="instalarTxt"></span></div>
+        <button type="button" class="mini sim" id="instalarBtn" hidden>Instalar</button>
+        <button type="button" class="fechar-i" id="instalarFechar" aria-label="Fechar">×</button>
+      </div>
       <h3 class="feed-title" id="feedTitle">Rolou hoje <small id="feedCount"></small></h3>
       <div class="feed" id="feed"><div class="vazio">Carregando…</div></div>
       <div style="height:30px"></div>
@@ -277,8 +295,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610150919"></script>
-<script src="comum.js?v=202610150919"></script>
+<script src="config.js?v=202610151005"></script>
+<script src="comum.js?v=202610151005"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -519,7 +537,30 @@
   function marcarPresenca() { if (EU) db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor() }, { merge: true }).catch(() => {}); }
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") marcarPresenca(); });
 
+  // ---------- Sugestão de instalar na tela inicial ----------
+  let pedidoInstalar = null;
+  window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); pedidoInstalar = e; mostrarInstalar(); });
+  function mostrarInstalar() {
+    const jaInstalado = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+    if (jaInstalado || guardado.ler("trela-instalar-fechado", false) || !EU) return;
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    $("#instalarTxt").textContent = pedidoInstalar ? "Abre que nem app, direto do ícone."
+      : ios ? "No Safari: toca em Compartilhar (□↑) e depois em “Adicionar à Tela de Início”."
+      : "No menu do navegador (⋮), toca em “Adicionar à tela inicial”.";
+    $("#instalarBtn").hidden = !pedidoInstalar;
+    $("#instalar").hidden = false;
+  }
+  $("#instalarBtn").onclick = async () => {
+    if (!pedidoInstalar) return;
+    pedidoInstalar.prompt();
+    const r = await pedidoInstalar.userChoice.catch(() => null);
+    pedidoInstalar = null;
+    if (r && r.outcome === "accepted") $("#instalar").hidden = true; else $("#instalarBtn").hidden = true;
+  };
+  $("#instalarFechar").onclick = () => { $("#instalar").hidden = true; guardado.salvar("trela-instalar-fechado", true); };
+
   function iniciarApp() {
+    setTimeout(mostrarInstalar, 1500);
     pilha = []; ir("tHome"); desenharEu();
     marcarPresenca(); batida = setInterval(marcarPresenca, 5 * 60 * 1000);
     const uid = EU.uid;

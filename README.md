@@ -17,6 +17,7 @@ Três páginas:
   - **Amigos**: pedidos de amizade, marcações, lista de amigos com quem está online e "visto há X". Tocando num amigo, abre a conversa.
   - **No Trela agora**: quem abriu o app nas últimas 3 horas, com botão de adicionar.
 - **Foto de perfil**: toca na tua bolinha lá em cima → "Colocar foto de perfil". A foto é cortada em quadrado e diminuída no celular.
+- **Instalar na tela inicial**: o app tem ícone próprio e abre em tela cheia. Um aviso no feed ensina a adicionar (some quando a pessoa fecha).
 - **Perfil** de cada pessoa, com os **últimos posts** dela (separados por Hoje, Ontem e data), **Conversar** e **Desfazer amizade**.
 - **Lista de conversas**: em Amigos, as conversas abertas ficam em cima e os outros amigos embaixo. O **⋯** de cada pessoa tem Apagar conversa (some da lista) e Desfazer amizade.
 - **Excluir minha conta**: no teu perfil (bolinha lá em cima). Pede a senha ou o Google pra confirmar e apaga perfil, foto, amizades e posts.

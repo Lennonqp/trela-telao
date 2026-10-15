@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610151358">
+<link rel="stylesheet" href="estilo.css?v=202610151507">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -42,7 +42,15 @@
   .acoes .perigo{border-color:var(--laranja);color:var(--laranja)}
   .vazio{color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:10px;padding:16px;text-align:center}
   @media (max-width:960px){.cols{grid-template-columns:minmax(0,1fr)}}
-  @media (max-width:700px){.topo{grid-template-columns:minmax(0,1fr)}}
+  @media (max-width:700px){
+    /* No celular: o que pede ação primeiro, formulários depois */
+    .painel{gap:22px}
+    .topo,.cols{display:contents}
+    .o-fila{order:1}.o-den{order:2}.o-recado{order:3}.o-noite{order:4}.o-telao{order:5}
+    body{padding:16px 14px calc(32px + env(safe-area-inset-bottom))}
+    .logo{font-size:40px}
+    .acoes button{padding:13px 8px}
+  }
 </style>
 </head>
 <body>
@@ -56,7 +64,7 @@
 
   <div class="painel" id="painel" hidden>
     <div class="topo">
-      <form class="bloco trela" id="formBar" novalidate>
+      <form class="bloco trela o-recado" id="formBar" novalidate>
         <h2>Recado do Trela</h2>
         <p>Entra na frente de todos os recados da galera.</p>
         <div><label for="textoBar">Recado</label><input id="textoBar" maxlength="120" placeholder="Rodada dupla de chopp até as 22h!"></div>
@@ -65,7 +73,7 @@
           <button class="btn laranja" type="submit">Mandar pro telão</button>
         </div>
       </form>
-      <div class="bloco">
+      <div class="bloco o-noite">
         <label for="noite">Noite que aparece no telão</label>
         <input id="noite" maxlength="28" placeholder="Quarta de Karaokê">
         <p>Recados, fotos e comentários limpos vão direto pro telão. Aqui cai só o que o filtro achou suspeito e as denúncias de conversa.</p>
@@ -73,12 +81,12 @@
     </div>
 
     <div class="cols">
-      <div><h3>Pra decidir <span id="nFila"></span></h3><div class="lista" id="fila"></div></div>
-      <div>
+      <div class="o-fila"><h3>Pra decidir <span id="nFila"></span></h3><div class="lista" id="fila"></div></div>
+      <div class="o-den">
         <h3>Denúncias <span id="nDen"></span></h3><div class="lista" id="denuncias"></div>
         <h3 style="margin-top:20px">Contas suspensas</h3><div class="lista" id="suspensos"></div>
       </div>
-      <div><h3>No telão</h3><div class="lista" id="telao"></div></div>
+      <div class="o-telao"><h3>No telão</h3><div class="lista" id="telao"></div></div>
     </div>
   </div>
 </div>
@@ -86,10 +94,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610151358"></script>
+<script src="config.js?v=202610151507"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610151358"></script>
-<script src="equipe.js?v=202610151358"></script>
+<script src="comum.js?v=202610151507"></script>
+<script src="equipe.js?v=202610151507"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();

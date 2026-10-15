@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610151358">
+<link rel="stylesheet" href="estilo.css?v=202610151507">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d}
   body{display:grid;place-items:center}
@@ -52,6 +52,14 @@
   .cortina > div{display:flex;flex-direction:column;gap:12px;align-items:stretch;width:100%;max-width:340px;text-align:center}
   .cortina p{color:var(--muted);margin:0;font-size:14px}
   .cortina .erro{color:var(--laranja);min-height:20px}
+  /* Telão num celular em pé: pede pra deitar o celular */
+  .girar{display:none;position:fixed;inset:0;z-index:4;background:var(--bg);flex-direction:column;gap:18px;align-items:center;justify-content:center;text-align:center;padding:24px;cursor:default}
+  .girar .ic{font-size:64px;line-height:1;animation:gira 2.4s ease-in-out infinite}
+  .girar b{font-family:var(--f-display);font-weight:400;font-size:30px;text-transform:uppercase;line-height:1.05}
+  .girar p{margin:0;color:var(--muted);max-width:32ch}
+  @keyframes gira{0%,30%{transform:rotate(0)}55%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+  @media (orientation:portrait) and (max-width:820px){ body.ligado .girar{display:flex} }
+  @media (prefers-reduced-motion:reduce){.girar .ic{animation:none}}
 </style>
 </head>
 <body>
@@ -67,12 +75,18 @@
   <div class="barra"><i id="barra"></i></div>
 </div>
 
+<div class="girar" role="status">
+  <span class="ic" aria-hidden="true">📱</span>
+  <b>Deita o celular</b>
+  <p>O telão foi feito pra tela deitada. Gira o celular, ou espelha ele numa TV.</p>
+</div>
+
 <div class="cortina" id="cortina">
   <div>
     <div class="logo" style="font-size:72px">trela</div>
     <div id="porta" style="display:flex;justify-content:center"></div>
     <button class="btn" id="ligar" hidden>Ligar o telão</button>
-    <p>Abre em tela cheia e impede a TV de apagar. Pra sair da tela cheia, aperta Esc.</p>
+    <p>Abre em tela cheia e impede a tela de apagar. Num celular, deita ele. Pra sair, aperta Esc ou o voltar.</p>
     <a href="bar" style="color:var(--lilas);font-weight:700;text-decoration:none">‹ Voltar pro menu da equipe</a>
   </div>
 </div>
@@ -81,10 +95,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610151358"></script>
+<script src="config.js?v=202610151507"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610151358"></script>
-<script src="equipe.js?v=202610151358"></script>
+<script src="comum.js?v=202610151507"></script>
+<script src="equipe.js?v=202610151507"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -113,7 +127,10 @@
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") manterAcesa(); });
   $("ligar").onclick = async () => {
     $("cortina").hidden = true;
+    document.body.classList.add("ligado");
     try { await document.documentElement.requestFullscreen(); } catch (e) {}
+    // No celular, tenta travar a tela deitada (funciona no Android em tela cheia)
+    try { await screen.orientation.lock("landscape"); } catch (e) {}
     manterAcesa();
   };
 

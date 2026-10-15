@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610151702">
+<link rel="stylesheet" href="estilo.css?v=202610151938">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -23,7 +23,7 @@
   .appbar{flex:none;display:flex;align-items:center;gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--line)}
   .appbar .logo{font-size:38px;margin-right:auto}
   .appbar h3{margin:0 auto 0 0;font:700 16px/1.2 var(--f-body);min-width:0}
-  .ico{position:relative;background:none;border:1px solid var(--line);border-radius:999px;width:40px;height:40px;display:grid;place-items:center;cursor:pointer;font-size:18px;flex:none}
+  .ico{position:relative;background:none;border:1px solid var(--line);border-radius:999px;width:40px;height:40px;display:grid;place-items:center;cursor:pointer;font-size:20px;color:var(--ink);flex:none}
   .ico.voltar{border:0;font-size:26px;width:32px}
   .badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:99px;background:var(--neon);color:#1d0612;font:700 10px/18px var(--f-mono);padding:0 5px}
   .av{position:relative;flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:700 15px/1 var(--f-body);color:#140c1b;background:var(--c,var(--lilas))}
@@ -32,7 +32,7 @@
   .av.com-foto{background-size:cover;background-position:center}
   .troca-foto{position:relative;cursor:pointer;border-radius:50%;margin:0;display:block}
   .troca-foto .av.g{width:88px;height:88px;font-size:34px}
-  .troca-foto .lapis{position:absolute;right:-2px;bottom:-2px;width:30px;height:30px;border-radius:50%;background:var(--neon);display:grid;place-items:center;font-size:14px;box-shadow:0 0 0 3px var(--panel2)}
+  .troca-foto .lapis{position:absolute;right:-2px;bottom:-2px;width:30px;height:30px;border-radius:50%;background:var(--neon);display:grid;place-items:center;font-size:16px;color:#fff;box-shadow:0 0 0 3px var(--panel2)}
   .troca-foto:focus-within{outline:2px solid var(--lilas);outline-offset:3px}
   .av.on::after{content:"";position:absolute;right:-1px;bottom:-1px;width:28%;height:28%;min-width:9px;min-height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 2px var(--bg)}
   .eu{background:none;border:0;padding:0;cursor:pointer;border-radius:50%}
@@ -204,7 +204,7 @@
     <div class="appbar">
       <div class="logo"><img src="logo.svg?v=3" alt="trela"></div>
       <button class="eu" id="btnEu" type="button" aria-label="Teu perfil"></button>
-      <button class="ico" id="btnGalera" type="button" aria-label="Amigos e conversas">💬<span class="badge" id="badge" hidden></span></button>
+      <button class="ico" id="btnGalera" type="button" aria-label="Amigos e conversas"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg><span class="badge" id="badge" hidden></span></button>
     </div>
     <div class="rolagem" id="homeScroll">
       <form id="sendForm" novalidate style="display:flex;flex-direction:column;gap:12px">
@@ -219,7 +219,7 @@
         </div>
         <div>
           <label for="texto" id="rotTexto">Recado</label>
-          <textarea id="texto" maxlength="120" placeholder="Parabéns, Ju! 27 aninhos no Trela 🎉"></textarea>
+          <textarea id="texto" maxlength="120" placeholder="Parabéns, Ju! 27 aninhos no Trela!"></textarea>
           <div class="chars" id="chars">0/120</div>
         </div>
         <div class="cores" id="cores">
@@ -295,8 +295,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610151702"></script>
-<script src="comum.js?v=202610151702"></script>
+<script src="config.js?v=202610151938"></script>
+<script src="comum.js?v=202610151938"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -674,7 +674,8 @@
     // Foto de perfil
     const arq = el("input"); arq.type = "file"; arq.accept = "image/*"; arq.hidden = true; arq.id = "arqPerfil";
     const trocar = el("label", "troca-foto"); trocar.htmlFor = "arqPerfil"; trocar.title = "Trocar foto de perfil";
-    trocar.append(avatar(EU.uid, "g"), el("span", "lapis", "📷"));
+    const lapis = el("span", "lapis"); lapis.innerHTML = '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+    trocar.append(avatar(EU.uid, "g"), lapis);
     const legenda = el("button", "troca", EU.fotoV ? "Trocar foto" : "Colocar foto de perfil"); legenda.type = "button"; legenda.onclick = () => arq.click();
     arq.onchange = async () => {
       const f = arq.files[0]; if (!f) return;
@@ -765,7 +766,7 @@
     $("#campoFoto").hidden = tipo !== "foto";
     $("#rotTexto").textContent = tipo === "foto" ? "Legenda (opcional)" : "Recado";
     $("#texto").maxLength = tipo === "foto" ? 80 : 120;
-    $("#texto").placeholder = tipo === "foto" ? "A mesa mais animada do Trela" : "Parabéns, Ju! 27 aninhos no Trela 🎉";
+    $("#texto").placeholder = tipo === "foto" ? "A mesa mais animada do Trela" : "Parabéns, Ju! 27 aninhos no Trela!";
     $("#regras").textContent = tipo === "foto" ? "A foto vai direto pro telão. A equipe pode tirar a qualquer momento." : "Xingamento, link ou telefone passam pela equipe antes.";
     contar();
   });
@@ -826,7 +827,7 @@
     status("<b>Foi!</b>Entrando na fila do telão…");
     const desenhar = () => {
       if (!estado) return;
-      if (estado.atual === telaoId) { jaApareceu = true; return status("<b>Tá no telão agora!</b>Olha pra TV 👀", "agora"); }
+      if (estado.atual === telaoId) { jaApareceu = true; return status("<b>Tá no telão agora!</b>Olha pra TV!", "agora"); }
       if (jaApareceu) { pararRastreio(); return status("<b>Já passou!</b>Ele volta de vez em quando durante a noite. Manda outro?"); }
       const i = (estado.proximos || []).indexOf(telaoId);
       if (i < 0) return status("<b>Foi!</b>Entrando na fila do telão…");
@@ -868,7 +869,7 @@
       b.onclick = () => reagir(r, k, b); linha.append(b);
     }
     const n = r.ncoms || 0;
-    const cm = el("button", "comentar", n ? "💬 " + n : "💬 Comentar"); cm.type = "button";
+    const cm = el("button", "comentar", n ? n + (n === 1 ? " comentário" : " comentários") : "Comentar"); cm.type = "button";
     cm.onclick = () => abrirComentarios(r.id); linha.append(cm);
     card.append(linha);
     if (r.ultimoCom) {

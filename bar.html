@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0d0a12">
+<title>Equipe · Trela</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="estilo.css?v=202610151358">
+<style>
+  body{min-height:100dvh;padding:28px 16px calc(32px + env(safe-area-inset-bottom));background:radial-gradient(70% 40% at 15% 0%,rgba(169,92,242,.22),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(255,63,164,.18),transparent 70%),var(--bg)}
+  .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+  .logo{font-size:58px}
+  .logo small{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-shadow:none;margin-top:8px}
+  #porta{display:flex;justify-content:center}
+  .ola{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(30px,6vw,44px);line-height:1;text-transform:uppercase;text-wrap:balance}
+  .ola em{font-style:normal;color:var(--laranja)}
+  .noite{margin:6px 0 0;color:var(--muted);font-size:14px}
+  .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .card{position:relative;display:flex;flex-direction:column;gap:10px;padding:22px 20px 20px;border-radius:18px;background:var(--panel);border:1px solid var(--line);color:var(--ink);text-decoration:none;min-height:190px;transition:transform .15s,border-color .15s}
+  .card:hover,.card:focus-visible{transform:translateY(-2px);border-color:var(--c)}
+  .card:focus-visible{outline:2px solid var(--lilas);outline-offset:3px}
+  .card .ic{font-size:30px;line-height:1}
+  .card h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:32px;line-height:1;text-transform:uppercase;color:var(--c)}
+  .card p{margin:0;color:var(--muted);font-size:14px;flex:1}
+  .card .ir{font:700 12px/1 var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--ink)}
+  .card .ir::after{content:" →"}
+  .tv{--c:var(--neon)}
+  .bc{--c:var(--laranja)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--muted);font-variant-numeric:tabular-nums}
+  .chip.tem{background:var(--laranja);border-color:var(--laranja);color:#1a0b05}
+  .extra{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:18px}
+  .extra a{color:var(--lilas);font-weight:700;text-decoration:none}
+  .extra a:hover{text-decoration:underline}
+  .dica{color:var(--muted);font-size:13px;margin:0}
+  @media (max-width:560px){.cards{grid-template-columns:minmax(0,1fr)}.card{min-height:0}}
+  @media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">trela<small>Equipe</small></div>
+    <button class="ghost" id="sair" hidden>Sair</button>
+  </header>
+
+  <div id="porta"></div>
+
+  <main id="menu" hidden style="display:flex;flex-direction:column;gap:26px">
+    <div>
+      <h1 class="ola">Bora abrir a <em>noite</em>?</h1>
+      <p class="noite" id="noite"></p>
+    </div>
+
+    <div class="cards">
+      <a class="card tv" href="telao">
+        <span class="ic" aria-hidden="true">📺</span>
+        <h2>Telão</h2>
+        <p>Abre na TV do bar. Recados e fotos da galera, QR code no canto.</p>
+        <div class="chips"><span class="chip" id="cNoTelao">— no telão hoje</span></div>
+        <span class="ir">Abrir o telão</span>
+      </a>
+      <a class="card bc" href="balcao">
+        <span class="ic" aria-hidden="true">🍻</span>
+        <h2>Balcão</h2>
+        <p>Recado do Trela, noite do dia, o que o filtro barrou e denúncias.</p>
+        <div class="chips"><span class="chip" id="cFila">— pra decidir</span><span class="chip" id="cDen">— denúncias</span></div>
+        <span class="ir">Abrir o balcão</span>
+      </a>
+    </div>
+
+    <div class="extra">
+      <p class="dica">Já tá logado: o telão e o balcão abrem direto.</p>
+      <a href="./" target="_blank" rel="noopener">Ver o app da galera ↗</a>
+    </div>
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="config.js?v=202610151358"></script>
+<script>window.SESSAO_EQUIPE = true;</script>
+<script src="comum.js?v=202610151358"></script>
+<script src="equipe.js?v=202610151358"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const auth = appTrela.auth();
+  let parar = [];
+  $("sair").onclick = () => auth.signOut();
+
+  function chip(elId, n, singular, plural) {
+    const c = $(elId);
+    c.textContent = n + " " + (n === 1 ? singular : plural);
+    c.classList.toggle("tem", n > 0 && elId !== "cNoTelao");
+  }
+
+  portaEquipe($("porta"), () => {
+    $("menu").hidden = false; $("sair").hidden = false;
+    parar.push(db.doc("config/geral").onSnapshot(s => {
+      const n = s.exists && s.data().noite;
+      $("noite").textContent = n ? "Hoje: " + n : "Dá pra escolher o nome da noite no balcão.";
+    }, () => {}));
+    parar.push(db.collection("fila").onSnapshot(s => chip("cFila", s.size, "pra decidir", "pra decidir"), () => {}));
+    parar.push(db.collection("denuncias").onSnapshot(s => chip("cDen", s.size, "denúncia", "denúncias"), () => {}));
+    parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).onSnapshot(
+      s => chip("cNoTelao", s.size, "post hoje", "posts hoje"), () => {})));
+  }, () => {
+    parar.forEach(f => f()); parar = [];
+    $("menu").hidden = true; $("sair").hidden = true;
+  });
+</script>
+</body>
+</html>

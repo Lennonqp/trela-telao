@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610161036">
+<link rel="stylesheet" href="estilo.css?v=202610161507">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -94,10 +94,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610161036"></script>
+<script src="config.js?v=202610161507"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610161036"></script>
-<script src="equipe.js?v=202610161036"></script>
+<script src="comum.js?v=202610161507"></script>
+<script src="equipe.js?v=202610161507"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -203,10 +203,14 @@
     }, () => {}));
     let t; $("noite").oninput = e => { clearTimeout(t); t = setTimeout(() => cfg.set({ noite: e.target.value.trim() }, { merge: true }), 500); };
 
-    parar.push(db.collection("fila").orderBy("criado").onSnapshot(s => {
-      $("nFila").textContent = s.size ? "· " + s.size : "";
-      lista($("fila"), s.docs.map(d => cartao(d, false)), "Nada pra decidir. Recados e legendas suspeitos aparecem aqui.");
-    }, () => {}));
+    // Pra decidir: só o que chegou nesta noite (às 6h zera e apaga o que sobrou)
+    parar.push(ouvirNoite(desde => {
+      limparFilaAntiga(desde);
+      return db.collection("fila").where("criado", ">=", desde).orderBy("criado").onSnapshot(s => {
+        $("nFila").textContent = s.size ? "· " + s.size : "";
+        lista($("fila"), s.docs.map(d => cartao(d, false)), "Nada pra decidir. Recados e legendas suspeitos aparecem aqui.");
+      }, () => {});
+    }));
     parar.push(db.collection("denuncias").orderBy("criado", "desc").limit(30).onSnapshot(s => {
       $("nDen").textContent = s.size ? "· " + s.size : "";
       lista($("denuncias"), s.docs.map(cartaoDenuncia), "Nenhuma denúncia. Quando alguém denuncia uma conversa, só a mensagem denunciada aparece aqui.");

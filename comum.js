@@ -54,7 +54,6 @@ function motivoSuspeito(texto) {
   if (!texto) return "";
   if (/(https?:\/\/|www\.|\b[\w-]+\.(com|net|org|br|ly|io|me|gg|link|site|xyz)\b)/i.test(texto)) return "Tem link";
   if (/(\d[\s.()-]*){8,}/.test(texto)) return "Parece telefone";
-  if (/@[\w.]{3,}/.test(texto)) return "Marca um perfil (@)";
   const palavras = palavrasDe(texto);
   if (palavras.some(p => PALAVRAS_C.has(p) || COMECOS_C.some(c => p.startsWith(c)))) return "Palavrão ou ofensa";
   const letras = texto.replace(/[^A-Za-zÀ-ú]/g, "");
@@ -115,6 +114,17 @@ function ouvirNoite(montar) {
   };
   ligar();
   return () => { if (parar) parar(); clearTimeout(t); };
+}
+
+// A fila "Pra decidir" também vira às 6h: o que ficou sem decisão da noite anterior é apagado
+// (só a equipe consegue, então quem chama é o balcão e o menu da equipe)
+function limparFilaAntiga(desde) {
+  db.collection("fila").where("criado", "<", desde).limit(200).get().then(s => {
+    if (s.empty) return;
+    const b = db.batch();
+    s.docs.forEach(d => { b.delete(d.ref); if (d.data().fotoId) b.delete(db.doc("fotos/" + d.data().fotoId)); });
+    return b.commit();
+  }).catch(() => {});
 }
 
 // ---------- Pessoas ----------

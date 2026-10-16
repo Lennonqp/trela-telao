@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610161030">
+<link rel="stylesheet" href="estilo.css?v=202610161036">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -83,6 +83,7 @@
   .selo{align-self:flex-start;font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:var(--laranja);color:#1a0b05;padding:2px 8px;border-radius:99px}
   .item img.foto{border-radius:8px;width:100%;max-height:360px;object-fit:cover;display:block;background:var(--panel2);min-height:120px}
   .item p{margin:0;overflow-wrap:anywhere}
+  .item:not(.bar) p.msg{color:var(--c);font-weight:600}
   .quem{display:flex;align-items:center;gap:9px;background:none;border:0;padding:0;cursor:pointer;text-align:left;color:var(--ink)}
   .quem span{font:700 13px/1.2 var(--f-body)}
   .quem small{display:block;font:400 10px var(--f-mono);color:var(--muted)}
@@ -295,8 +296,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610161030"></script>
-<script src="comum.js?v=202610161030"></script>
+<script src="config.js?v=202610161036"></script>
+<script src="comum.js?v=202610161036"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -863,7 +864,7 @@
       card.append(q);
     }
     if (r.fotoId) card.append(imgFoto(r.fotoId, "Foto de " + r.nome));
-    if (r.texto) card.append(el("p", "", r.texto));
+    if (r.texto) card.append(el("p", "msg", r.texto));
     const linha = el("div", "linha");
     for (const k in REACOES) {
       const b = el("button", "reagir", REACOES[k] + " " + ((r.reacoes || {})[k] || 0)); b.type = "button";

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610151941">
+<link rel="stylesheet" href="estilo.css?v=202610161030">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -118,10 +118,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610151941"></script>
+<script src="config.js?v=202610161030"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610151941"></script>
-<script src="equipe.js?v=202610151941"></script>
+<script src="comum.js?v=202610161030"></script>
+<script src="equipe.js?v=202610161030"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -304,16 +304,32 @@
     }
   }
 
-  // Foto de perfil de quem mandou (guardada por 10 min pra não buscar toda hora)
-  const fotosAutor = new Map();
+  // Foto de perfil de quem mandou. O telão fica "ouvindo" o perfil de cada autor:
+  // se a pessoa coloca, troca ou tira a foto, muda na hora, até no recado que está na tela.
+  const fotosAutor = {};
   function fotoDoAutor(uid) {
-    const c = fotosAutor.get(uid);
-    if (c && Date.now() - c.t < 10 * 60 * 1000) return c.p;
-    const p = db.doc("usuarios/" + uid).get()
-      .then(u => (u.exists && u.data().fotoV) ? db.doc("avatares/" + uid).get().then(a => a.exists ? a.data().data : null) : null)
-      .catch(() => null);
-    fotosAutor.set(uid, { p: p, t: Date.now() });
-    return p;
+    let c = fotosAutor[uid];
+    if (!c) {
+      c = fotosAutor[uid] = { v: null, p: null };
+      let pronto; c.p = new Promise(function (ok) { pronto = ok; });
+      db.doc("usuarios/" + uid).onSnapshot(function (u) {
+        const v = (u.exists && u.data().fotoV) ? ms(u.data().fotoV) || 1 : 0;
+        if (v === c.v) return;
+        c.v = v;
+        const busca = v ? db.doc("avatares/" + uid).get().then(function (a) { return a.exists ? a.data().data : null; }).catch(function () { return null; }) : Promise.resolve(null);
+        busca.then(function (f) {
+          c.p = Promise.resolve(f);
+          if (pronto) { pronto(f); pronto = null; } else pintarAvatarAtual(uid, f);
+        });
+      }, function () { if (pronto) { pronto(null); pronto = null; } });
+    }
+    return c.p;
+  }
+  function pintarAvatarAtual(uid, f) {
+    const r = atual && itens.get(atual); if (!r || r.autor !== uid) return;
+    const av = $("palco").querySelector(".de .av"); if (!av) return;
+    if (f) { av.textContent = ""; av.style.backgroundImage = "url(" + f + ")"; }
+    else { av.style.backgroundImage = ""; av.textContent = (r.nome || "?").charAt(0).toUpperCase(); }
   }
 
   function desenharReacoes(r) {

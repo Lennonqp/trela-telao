@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610172153">
+<link rel="stylesheet" href="estilo.css?v=202610172156">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -69,6 +69,15 @@
   .foto-botoes{display:flex;margin-top:8px}
   .foto-bt{flex:1;display:flex;align-items:center;justify-content:center;min-height:44px;border:1px solid var(--line);border-radius:12px;color:var(--ink);font:700 13px/1 var(--f-body);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;margin:0}
   .foto-bt + .foto-bt{margin-left:8px}
+  button.foto-bt{background:none}
+  .camera{position:fixed;top:0;left:0;right:0;bottom:0;z-index:50;background:#000;display:flex;flex-direction:column}
+  .camera video{flex:1;min-height:0;width:100%;object-fit:cover;background:#000}
+  .camera.selfie video{transform:scaleX(-1)}
+  .camera .cam-barra{display:flex;align-items:center;justify-content:space-between;padding:18px 22px calc(18px + env(safe-area-inset-bottom));background:#000}
+  .camera .cam-lado{width:84px;background:none;border:0;color:#fff;font:700 14px var(--f-body);cursor:pointer;padding:10px 0}
+  .camera .cam-disparo{width:74px;height:74px;border-radius:50%;border:5px solid #fff;background:var(--neon);cursor:pointer;flex:none}
+  .camera .cam-disparo:active{transform:scale(.92)}
+  .camera .cam-msg{position:absolute;top:40%;left:24px;right:24px;text-align:center;color:#fff;font:600 15px/1.4 var(--f-body)}
   .foto-bt svg{margin-right:8px;flex:none}
   .chars{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-align:right;margin-top:4px}
   .cores{display:flex;gap:8px}
@@ -222,7 +231,7 @@
         <div id="campoFoto" hidden>
           <label class="foto-pick" for="foto"><span id="fotoTxt">Toca aqui ou usa os botões abaixo</span><img id="fotoPrev" alt="Prévia da foto" hidden></label>
           <div class="foto-botoes">
-            <label class="foto-bt" for="fotoCam"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Tirar foto</label>
+            <button type="button" class="foto-bt" id="btCam"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Tirar foto</button>
             <label class="foto-bt" for="foto"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/></svg>Galeria</label>
           </div>
           <input id="foto" type="file" accept="image/*" hidden>
@@ -306,8 +315,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610172153"></script>
-<script src="comum.js?v=202610172153"></script>
+<script src="config.js?v=202610172156"></script>
+<script src="comum.js?v=202610172156"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -360,6 +369,48 @@
   }
 
   // Corta a foto em quadrado e diminui (leve pra carregar em todo canto)
+  // Câmera dentro do próprio app (no Android o seletor do sistema às vezes só mostra a galeria).
+  // Se o navegador não deixar usar a câmera assim, cai no seletor com "capture".
+  function abrirCamera(selfie, reserva) {
+    return new Promise(resolve => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { reserva.click(); return resolve(null); }
+      let stream = null, frontal = !!selfie, fechado = false;
+      const box = el("div", "camera" + (frontal ? " selfie" : ""));
+      const video = el("video"); video.setAttribute("playsinline", ""); video.muted = true; video.autoplay = true;
+      const msg = el("p", "cam-msg", "Abrindo a câmera…");
+      const barra = el("div", "cam-barra");
+      const cancelar = el("button", "cam-lado", "Cancelar"); cancelar.type = "button";
+      const disparo = el("button", "cam-disparo"); disparo.type = "button"; disparo.setAttribute("aria-label", "Tirar foto");
+      const virar = el("button", "cam-lado", "Virar"); virar.type = "button";
+      barra.append(cancelar, disparo, virar); box.append(video, msg, barra); document.body.append(box);
+      const parar = () => { if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; };
+      const fechar = arq => { if (fechado) return; fechado = true; parar(); box.remove(); resolve(arq); };
+      const ligar = async () => {
+        parar(); msg.hidden = false; msg.textContent = "Abrindo a câmera…";
+        box.classList.toggle("selfie", frontal);
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: frontal ? "user" : "environment", width: { ideal: 1600 }, height: { ideal: 1600 } }, audio: false });
+          if (fechado) return parar();
+          video.srcObject = stream; await video.play().catch(() => {}); msg.hidden = true;
+        } catch (e) {
+          // Sem permissão ou sem câmera: usa o seletor do sistema
+          fechar(null); reserva.click();
+        }
+      };
+      cancelar.onclick = () => fechar(null);
+      virar.onclick = () => { frontal = !frontal; ligar(); };
+      disparo.onclick = () => {
+        if (!video.videoWidth) return;
+        const c = document.createElement("canvas"); c.width = video.videoWidth; c.height = video.videoHeight;
+        const g = c.getContext("2d");
+        if (frontal) { g.translate(c.width, 0); g.scale(-1, 1); }   // selfie sai como no espelho, igual à prévia
+        g.drawImage(video, 0, 0, c.width, c.height);
+        c.toBlob(b => fechar(b ? new File([b], "camera.jpg", { type: "image/jpeg" }) : null), "image/jpeg", 0.9);
+      };
+      ligar();
+    });
+  }
+
   function fotoQuadrada(arquivo, lado = 256) {
     return new Promise((ok, erro) => {
       const url = URL.createObjectURL(arquivo), img = new Image();
@@ -692,7 +743,7 @@
     // Câmera frontal direto (no Android o seletor às vezes só mostra a galeria)
     const arqCam = el("input"); arqCam.type = "file"; arqCam.accept = "image/*"; arqCam.setAttribute("capture", "user"); arqCam.hidden = true;
     const legenda = el("div", "troca-opcoes");
-    const btCam = el("button", "troca", "Tirar selfie"); btCam.type = "button"; btCam.onclick = () => arqCam.click();
+    const btCam = el("button", "troca", "Tirar selfie"); btCam.type = "button"; btCam.onclick = async () => { const f = await abrirCamera(true, arqCam); if (f) usarFotoPerfil({ files: [f], value: "" }); };
     const btGal = el("button", "troca", EU.fotoV ? "Trocar pela galeria" : "Escolher da galeria"); btGal.type = "button"; btGal.onclick = () => arq.click();
     legenda.append(btCam, el("span", "", " · "), btGal);
     arqCam.onchange = () => usarFotoPerfil(arqCam);
@@ -796,13 +847,14 @@
   });
   const contar = () => { $("#chars").textContent = $("#texto").value.length + "/" + $("#texto").maxLength; };
   $("#texto").addEventListener("input", contar);
-  const pegarFoto = async e => {
-    const f = e.target.files[0]; if (!f) return;
+  const pegarFoto = async e => { await usarFotoTelao(e.target.files[0]); e.target.value = ""; };
+  async function usarFotoTelao(f) {
+    if (!f) return;
     $("#fotoTxt").textContent = "Preparando a foto…"; $("#fotoTxt").hidden = false;
     try { foto = await comprimirFoto(f); $("#fotoPrev").src = foto; $("#fotoPrev").hidden = false; $("#fotoTxt").hidden = true; }
     catch (err) { foto = null; $("#fotoPrev").hidden = true; $("#fotoTxt").textContent = "Não deu pra abrir essa foto. Tenta outra."; }
-    e.target.value = "";
-  };
+  }
+  $("#btCam").onclick = async () => usarFotoTelao(await abrirCamera(false, $("#fotoCam")));
   $("#foto").addEventListener("change", pegarFoto);
   $("#fotoCam").addEventListener("change", pegarFoto);
   function status(html, classe) { const s = $("#status"); s.hidden = false; s.className = "status " + (classe || ""); s.innerHTML = html; }

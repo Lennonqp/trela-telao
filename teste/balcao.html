@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610222016">
+<link rel="stylesheet" href="estilo.css?v=202610222028">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -99,12 +99,12 @@
 
     <section class="bloco concurso o-concurso" aria-labelledby="tituloConcurso">
       <h2 id="tituloConcurso">Concurso e ranking</h2>
-      <p>Liga a votação e o app mostra o concurso pra galera. Cada pessoa curte cada foto uma vez só (deslizando pra direita ou no coração). O ranking conta só as fotos desta noite.</p>
+      <p>Liga a votação e o app mostra o concurso pra galera. Na hora de postar, cada pessoa pode marcar uma foto pra concorrer. A galera curte pelo Rolou hoje (uma curtida por pessoa em cada foto) e quem tiver mais curtidas sobe no ranking.</p>
       <div class="linha">
         <input type="text" id="nomeConcurso" maxlength="40" placeholder="Melhor fantasia" aria-label="Nome do concurso">
         <label class="check neon"><input type="checkbox" id="concursoAtivo"> Votação ligada</label>
       </div>
-      <h3 style="margin:6px 0 0">Mais curtidas da noite <span id="nCurtidas"></span></h3>
+      <h3 style="margin:6px 0 0">Ranking da noite <span id="nCurtidas"></span></h3>
       <div class="ranking" id="ranking"></div>
     </section>
 
@@ -122,10 +122,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610222016"></script>
+<script src="config.js?v=202610222028"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610222016"></script>
-<script src="equipe.js?v=202610222016"></script>
+<script src="comum.js?v=202610222028"></script>
+<script src="equipe.js?v=202610222028"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -165,12 +165,13 @@
     if (r.tipo !== "bar") meta.append(el("span", "", r.nome));
     meta.append(el("span", "", horaDe(r.criado)));
     if (r.tipo === "bar" && r.repetir) meta.append(el("span", "", "Repete"));
+    if (r.concorre) meta.append(el("span", "aviso", "Concorrendo"));
     if (noTelao && r.reacoes) { const t = Object.keys(REACOES).filter(k => r.reacoes[k]).map(k => REACOES[k] + r.reacoes[k]).join(" "); if (t) meta.append(el("span", "", t)); }
     if (noTelao && r.ncoms) meta.append(el("span", "", r.ncoms + (r.ncoms === 1 ? " comentário" : " comentários")));
     if (r.motivo && !noTelao) meta.append(el("span", "aviso", r.motivo));
     const a = el("div", "acoes");
     if (noTelao) {
-      a.append(botao("Tirar do telão", "", async () => { await doc.ref.delete(); if (r.fotoId) db.doc("fotos/" + r.fotoId).delete().catch(() => {}); }));
+      a.append(botao("Tirar do telão", "", async () => { await doc.ref.delete(); if (r.fotoId) db.doc("fotos/" + r.fotoId).delete().catch(() => {}); if (r.vaga) db.doc("concorrentes/" + r.vaga).delete().catch(() => {}); }));
       if (r.tipo === "bar" && r.repetir) a.append(botao("Parar de repetir", "", () => doc.ref.update({ repetir: false })));
     } else {
       a.append(botao("Mostrar", "sim", async ev => {
@@ -289,13 +290,26 @@
       v.append(img, el("p", "", (r.nome || "") + (r.texto ? " · " + r.texto : "")), el("p", "", "Toca pra fechar"));
       v.onclick = () => v.remove(); document.body.append(v);
     }
+    // Com fotos marcadas pra concorrer, o ranking mostra só elas (inclusive as com 0 curtida).
+    // Sem nenhuma marcada, mostra as fotos mais curtidas da noite.
+    let porPost = {}, concorrentes = null, totalCurtidas = 0;
+    const recalcular = () => {
+      let lista = Object.keys(porPost).map(id => ({ id, n: porPost[id] }));
+      if (concorrentes && concorrentes.length) lista = concorrentes.map(id => ({ id, n: porPost[id] || 0 }));
+      $("nCurtidas").textContent = (concorrentes && concorrentes.length ? "· " + concorrentes.length + (concorrentes.length === 1 ? " foto concorrendo" : " fotos concorrendo") + " " : "")
+        + (totalCurtidas ? "· " + totalCurtidas + (totalCurtidas === 1 ? " curtida" : " curtidas") : "");
+      desenharRanking(lista.sort((a, b) => b.n - a.n));
+    };
     parar.push(ouvirNoite(desde => db.collection("curtidas").where("criado", ">=", desde).onSnapshot(s => {
-      const por = {};
-      s.docs.forEach(d => { const p = d.data().post; por[p] = (por[p] || 0) + 1; });
-      $("nCurtidas").textContent = s.size ? "· " + s.size + (s.size === 1 ? " curtida" : " curtidas") : "";
-      desenharRanking(Object.keys(por).map(id => ({ id, n: por[id] })).sort((a, b) => b.n - a.n));
+      porPost = {}; totalCurtidas = s.size;
+      s.docs.forEach(d => { const p = d.data().post; porPost[p] = (porPost[p] || 0) + 1; });
+      recalcular();
     }, () => { lista($("ranking"), [], "Não deu pra ler as curtidas. Confere se as regras novas do Firestore foram publicadas."); })));
-
+    parar.push(ouvirNoite(desde => {
+      const d = desde.toDate ? desde.toDate() : desde;
+      const k = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      return db.collection("concorrentes").where("noite", "==", k).onSnapshot(s => { concorrentes = s.docs.map(x => x.data().post); recalcular(); }, () => {});
+    }));
     // Só a noite atual (desde as 6h)
     parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(40).onSnapshot(s => {
       lista($("telao"), s.docs.map(d => cartao(d, true)), "Nada no telão nesta noite ainda.");

@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610222016">
+<link rel="stylesheet" href="estilo.css?v=202610222028">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -40,32 +40,19 @@
   .rolagem{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 
 
-  /* Fotos da noite (deslizar estilo Tinder) */
-  .votar{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:linear-gradient(120deg,rgba(255,63,164,.18),rgba(169,92,242,.18));border:1px solid var(--neon);border-radius:16px;padding:14px;color:var(--ink);cursor:pointer;margin-top:6px}
-  .votar .vi{flex:none;width:44px;height:44px;border-radius:12px;background:var(--neon);color:#1d0612;display:grid;place-items:center}
-  .votar b{display:block;font:700 15px/1.2 var(--f-body)}
-  .votar span{display:block;font-size:12px;color:var(--muted);margin-top:3px}
-  .votar .seta{margin-left:auto;color:var(--neon);font-size:22px}
-  #tFotos .deck-area{flex:1;min-height:0;position:relative;margin:14px 16px 0}
-  .carta{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:22px;overflow:hidden;background:var(--panel);border:1px solid var(--line);box-shadow:0 18px 40px rgba(0,0,0,.45);touch-action:none;user-select:none;-webkit-user-select:none;will-change:transform}
-  .carta.atras{transform:scale(.94) translateY(14px);opacity:.7}
-  .carta.solta{transition:transform .32s ease-out,opacity .32s ease-out}
-  .carta img.ft{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;background:#000}
-  .carta .info{position:absolute;left:0;right:0;bottom:0;padding:60px 16px 16px;background:linear-gradient(transparent,rgba(0,0,0,.85));display:flex;align-items:flex-end;gap:10px}
-  .carta .info b{display:block;font:700 18px/1.2 var(--f-body)}
-  .carta .info span{display:block;font-size:14px;color:#e9dff2;margin-top:2px;overflow-wrap:anywhere}
-  .carta .selo-sw{position:absolute;top:24px;padding:6px 14px;border:4px solid;border-radius:10px;font:400 34px/1 var(--f-display);letter-spacing:.04em;opacity:0;pointer-events:none}
-  .carta .selo-sw.curti{left:20px;color:var(--ok);border-color:var(--ok);transform:rotate(-14deg)}
-  .carta .selo-sw.passo{right:20px;color:var(--laranja);border-color:var(--laranja);transform:rotate(14deg)}
-  .deck-acoes{flex:none;display:flex;justify-content:center;align-items:center;gap:28px;padding:16px 0 calc(16px + env(safe-area-inset-bottom))}
-  .deck-acoes button{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;font-size:28px;cursor:pointer;background:var(--panel);border:2px solid var(--line)}
-  .deck-acoes .nao{color:var(--laranja);border-color:var(--laranja)}
-  .deck-acoes .sim{color:var(--neon);border-color:var(--neon);width:78px;height:78px;font-size:34px}
-  .deck-acoes button:active{transform:scale(.92)}
-  .deck-acoes button:disabled{opacity:.3}
-  .deck-vazio{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;color:var(--muted);padding:20px;border:1px dashed var(--line);border-radius:22px}
-  .deck-vazio b{color:var(--ink);font:400 26px/1.05 var(--f-display);text-transform:uppercase}
-  .deck-dica{flex:none;text-align:center;font-size:12px;color:var(--muted);margin:10px 16px 0}
+  .curtir{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--neon);color:var(--neon);border-radius:999px;padding:6px 12px;font:700 13px/1 var(--f-body);cursor:pointer;font-variant-numeric:tabular-nums}
+  .curtir.feito{background:var(--neon);color:#1d0612}
+  .curtir:disabled{cursor:default}
+  .curtir:not(.feito):disabled{border-color:var(--line);color:var(--muted)}
+  .curtir.pulso svg{animation:pulso .45s ease-out}
+  @keyframes pulso{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+  .concorrendo{align-self:flex-start;background:rgba(255,63,164,.14);color:var(--neon);border:1px solid var(--neon);border-radius:999px;font:700 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 9px}
+  .concorrer{display:flex;align-items:center;gap:10px;background:rgba(255,63,164,.1);border:1px solid var(--neon);border-radius:12px;padding:12px;font:600 14px/1.3 var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);cursor:pointer;margin:0}
+  .concorrer input{width:20px;height:20px;accent-color:var(--neon);flex:none}
+  .concorrer input:disabled + span{color:var(--muted)}
+  .banner-concurso{background:linear-gradient(120deg,rgba(255,63,164,.2),rgba(169,92,242,.2));border:1px solid var(--neon);border-radius:16px;padding:14px}
+  .banner-concurso b{display:block;font:400 24px/1.05 var(--f-display);text-transform:uppercase}
+  .banner-concurso p{margin:6px 0 0;font-size:13px;color:var(--muted)}
   .concurso-tag{display:inline-block;background:var(--neon);color:#1d0612;font:700 10px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border-radius:999px;margin-bottom:6px}
   .match{position:fixed;top:0;left:0;right:0;bottom:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;text-align:center;background:radial-gradient(60% 40% at 50% 40%,rgba(255,63,164,.35),transparent 70%),rgba(8,5,12,.94);animation:sobeF .25s ease-out}
   .match h2{font:400 64px/.95 var(--f-logo);color:var(--neon);text-transform:none;margin:0;text-shadow:0 0 18px rgba(255,63,164,.6)}
@@ -259,6 +246,11 @@
       <button class="ico" id="btnGalera" type="button" aria-label="Amigos e conversas"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg><span class="badge" id="badge" hidden></span></button>
     </div>
     <div class="rolagem" id="homeScroll">
+      <div class="banner-concurso" id="bannerConcurso" hidden>
+        <em class="concurso-tag">Concurso</em>
+        <b id="bcNome"></b>
+        <p id="bcTxt"></p>
+      </div>
       <form id="sendForm" novalidate style="display:flex;flex-direction:column;gap:12px">
         <h2>Manda pro <em>telão</em></h2>
         <div class="abas" role="tablist">
@@ -274,6 +266,7 @@
           <input id="foto" type="file" accept="image/*" hidden>
           <input id="fotoCam" type="file" accept="image/*" capture="environment" hidden>
         </div>
+        <label class="concorrer" id="campoConcorrer" hidden><input type="checkbox" id="concorrer"> <span id="concorrerTxt">Concorrer</span></label>
         <div>
           <label for="texto" id="rotTexto">Recado</label>
           <textarea id="texto" maxlength="120" placeholder="Parabéns, Ju! 27 aninhos no Trela!"></textarea>
@@ -288,11 +281,6 @@
         <div class="status" id="status" role="status" hidden></div>
         <p class="regras" id="regras">Xingamento, link ou telefone passam pela equipe antes.</p>
       </form>
-      <button type="button" class="votar" id="btnVotar">
-        <span class="vi"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="12" height="16" rx="2" transform="rotate(8 13 11)"/><rect x="4" y="5" width="12" height="16" rx="2"/></svg></span>
-        <div><em class="concurso-tag" id="votarTag" hidden></em><b id="votarTit">Curtir as fotos da noite</b><span id="votarSub">Desliza: pra direita curte, pra esquerda passa</span></div>
-        <i class="seta" aria-hidden="true">›</i>
-      </button>
       <div class="instalar" id="instalar" hidden>
         <img src="icone-192.png" alt="" width="44" height="44">
         <div><b>Coloca o Trela na tela inicial</b><span id="instalarTxt"></span></div>
@@ -317,17 +305,6 @@
       <input id="comsInput" maxlength="100" placeholder="Comenta aí… usa @ pra marcar" aria-label="Comentário" autocomplete="off">
       <button type="submit" aria-label="Enviar">↑</button>
     </form>
-  </div>
-
-  <!-- Fotos da noite -->
-  <div class="tela sub" id="tFotos" hidden>
-    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3 id="fotosTit">Fotos da noite</h3></div>
-    <p class="deck-dica" id="deckDica">Arrasta pra direita pra curtir, pra esquerda pra passar.</p>
-    <div class="deck-area" id="deck"></div>
-    <div class="deck-acoes">
-      <button type="button" class="nao" id="btPasso" aria-label="Passar"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      <button type="button" class="sim" id="btCurti" aria-label="Curtir"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg></button>
-    </div>
   </div>
 
   <!-- Galera -->
@@ -368,8 +345,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610222016"></script>
-<script src="comum.js?v=202610222016"></script>
+<script src="config.js?v=202610222028"></script>
+<script src="comum.js?v=202610222028"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -384,7 +361,7 @@
     amizades: new Map(),   // outroUid -> { status, de, para }
     conversas: new Map(),  // outroUid -> { ultima, lidaPor }
     avisos: [],            // marcações não lidas
-    fotosNoite: [],        // fotos postadas nesta noite (pro deslizar)
+    jaConcorri: false,     // já marquei uma foto pra concorrer nesta noite
     curti: new Set(),      // fotos que eu curti
     concurso: "",          // nome do concurso ligado no balcão (ex.: Melhor fantasia)
     bloqueados: new Set(),
@@ -759,22 +736,21 @@
       S.avisos = snap.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() })).sort((a, b) => ms(b.criado) - ms(a.criado));
       if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added").forEach(c => { const a = c.doc.data();
         if (a.tipo === "match") { c.doc.ref.update({ lida: true }).catch(() => {}); return mostrarMatch(a.de); }
+        if (a.tipo === "curtida") return toast(a.de, a.deNome + " curtiu tua foto", () => { c.doc.ref.update({ lida: true }).catch(() => {}); abrirPerfil(a.de); });
         toast(a.de, a.deNome + " te marcou num comentário", () => { c.doc.ref.update({ lida: true }); abrirComentarios(a.postId); }); });
       primeiroAviso = false; redesenhar();
     }, () => {}));
 
-    // Fotos da noite (pro deslizar) e o que eu já curti
-    parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(200).onSnapshot(snap => {
-      S.fotosNoite = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(r => r.fotoId && r.tipo !== "bar");
-      atualizarBotaoVotar();
-    }, () => {})));
+    // Fotos que eu já curti (pro botão ficar marcado)
     parar.push(db.collection("curtidas").where("de", "==", uid).onSnapshot(snap => {
-      snap.docs.forEach(d => S.curti.add(d.data().post)); atualizarBotaoVotar();
+      snap.docs.forEach(d => S.curti.add(d.data().post)); redesenhar();
     }, () => {}));
+    // Já tenho foto concorrendo nesta noite?
+    parar.push(ouvirNoite(() => db.doc("concorrentes/" + chaveNoite() + "_" + uid).onSnapshot(d => { S.jaConcorri = d.exists; atualizarConcurso(); }, () => {})));
     // Concurso ligado no balcão
     parar.push(db.doc("config/geral").onSnapshot(s => {
       const c = s.exists && s.data().concurso;
-      S.concurso = c && c.ativo && c.nome ? c.nome : ""; atualizarBotaoVotar();
+      S.concurso = c && c.ativo && c.nome ? c.nome : ""; atualizarConcurso(); redesenhar();
     }, () => {}));
 
     // Bloqueios que eu fiz
@@ -912,7 +888,7 @@
     $("#texto").maxLength = tipo === "foto" ? 80 : 120;
     $("#texto").placeholder = tipo === "foto" ? "A mesa mais animada do Trela" : "Parabéns, Ju! 27 aninhos no Trela!";
     $("#regras").textContent = tipo === "foto" ? "A foto vai direto pro telão. A equipe pode tirar a qualquer momento." : "Xingamento, link ou telefone passam pela equipe antes.";
-    contar();
+    contar(); atualizarConcurso();
   });
   document.querySelectorAll("#cores button").forEach(b => b.onclick = () => {
     document.querySelectorAll("#cores button").forEach(x => x.setAttribute("aria-pressed", x === b));
@@ -946,7 +922,16 @@
       if (tipo === "foto") base.fotoId = (await db.collection("fotos").add({ data: foto, criado: agoraServidor() })).id;
       let telaoId = null, filaId = null;
       if (!motivo) {
-        try { telaoId = (await db.collection("telao").add({ ...base, reacoes: REACOES_ZERO })).id; }
+        const vaiConcorrer = tipo === "foto" && S.concurso && !S.jaConcorri && $("#concorrer").checked;
+        try {
+          if (vaiConcorrer) {
+            // Post e "vaga" no concurso juntos: se já tiver vaga nesta noite, o banco recusa os dois
+            const ref = db.collection("telao").doc(), vaga = chaveNoite() + "_" + EU.uid, b = db.batch();
+            b.set(ref, { ...base, reacoes: REACOES_ZERO, concorre: true, vaga });
+            b.set(db.doc("concorrentes/" + vaga), { post: ref.id, noite: chaveNoite(), de: EU.uid, criado: agoraServidor() });
+            await b.commit(); telaoId = ref.id; $("#concorrer").checked = false;
+          } else telaoId = (await db.collection("telao").add({ ...base, reacoes: REACOES_ZERO })).id;
+        }
         catch (err) { filaId = (await db.collection("fila").add({ ...base, motivo: "Barrado pelo servidor" })).id; }
       } else {
         const r = { ...base, motivo: tipo === "foto" ? "Legenda: " + motivo : motivo };
@@ -1008,10 +993,14 @@
       q.onclick = () => r.autor && abrirPerfil(r.autor);
       card.append(q);
     }
+    if (r.concorre && S.concurso) card.append(el("span", "concorrendo", "Concorrendo · " + S.concurso));
     if (r.fotoId) card.append(imgFoto(r.fotoId, "Foto de " + r.nome));
     if (r.texto) card.append(el("p", "msg", r.texto));
     const linha = el("div", "linha");
+    const ehFoto = r.fotoId && r.tipo !== "bar";
+    if (ehFoto) linha.append(botaoCurtir(r));
     for (const k in REACOES) {
+      if (ehFoto && k === "amor") continue;   // nas fotos o coração é o botão Curtir
       const b = el("button", "reagir", REACOES[k] + " " + ((r.reacoes || {})[k] || 0)); b.type = "button";
       b.setAttribute("aria-pressed", !!(reagi[r.id] && reagi[r.id][k]));
       b.onclick = () => reagir(r, k, b); linha.append(b);
@@ -1041,95 +1030,39 @@
     if (k === "amor" && r.fotoId) curtirFoto(r);
   }
 
-  // ---------- Fotos da noite: deslizar estilo Tinder ----------
-  // Pra direita = curtir (conta no ranking do balcão e vira um coração no telão). Pra esquerda = passar.
-  // Se a dona da foto também curtiu uma foto tua nesta noite: deu match!
-  const chaveNoite = () => { const d = inicioDaNoite(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); };
-  let passei = guardado.ler("trela-passei", {});
-  let matchesVistos = guardado.ler("trela-matches", {});
-  function passadasDaNoite() { const k = chaveNoite(); if (passei.noite !== k) passei = { noite: k, ids: {} }; return passei; }
-  function fotosParaDeslizar() {
-    const p = passadasDaNoite().ids;
-    return S.fotosNoite.filter(r => r.autor && r.autor !== EU.uid && !S.curti.has(r.id) && !p[r.id] && !S.bloqueados.has(r.autor));
-  }
-  function atualizarBotaoVotar() {
-    const c = S.concurso, pend = S.fotosNoite.length ? fotosParaDeslizar().length : 0;
-    $("#votarTag").hidden = !c; $("#votarTag").textContent = c ? "Concurso" : "";
-    $("#votarTit").textContent = c ? "Vota: " + c : "Curtir as fotos da noite";
-    $("#votarSub").textContent = !S.fotosNoite.length ? "Ainda não tem foto nesta noite. Manda a primeira!"
-      : pend ? pend + (pend === 1 ? " foto esperando teu voto" : " fotos esperando teu voto") + " · desliza pra curtir"
-      : "Tu já viu todas as fotos. Volta quando chegar mais!";
-    $("#fotosTit").textContent = c ? c : "Fotos da noite";
-  }
-  $("#btnVotar").onclick = () => { ir("tFotos"); montarDeck(); };
 
-  let deckFila = [], arrastando = null;
-  function montarDeck() {
-    deckFila = fotosParaDeslizar();
-    desenharDeck();
-  }
-  function desenharDeck() {
-    const deck = $("#deck"); deck.replaceChildren();
-    const tem = deckFila.length > 0;
-    $("#btCurti").disabled = !tem; $("#btPasso").disabled = !tem;
-    if (!tem) {
-      const v = el("div", "deck-vazio");
-      v.append(el("b", "", S.fotosNoite.length ? "Acabaram as fotos" : "Nenhuma foto ainda"),
-        el("p", "", S.fotosNoite.length ? "Tu já passou por todas as fotos da noite. Quando chegar mais, elas aparecem aqui." : "Manda uma foto pro telão e chama a galera pra curtir."));
-      const volta = bt("Voltar pro início", "", voltar); volta.style.maxWidth = "260px"; v.append(volta);
-      deck.append(v); return;
-    }
-    // desenha a de trás primeiro, a da frente por cima
-    deckFila.slice(0, 2).reverse().forEach((r, i, arr) => deck.append(carta(r, i === arr.length - 1)));
-  }
-  function carta(r, frente) {
-    const c = el("div", "carta" + (frente ? "" : " atras")); c.dataset.id = r.id;
-    c.append(el("span", "selo-sw curti", "Curti"), el("span", "selo-sw passo", "Passo"));
-    const img = imgFoto(r.fotoId, "Foto de " + r.nome); img.className = "ft"; c.prepend(img);
-    const info = el("div", "info"); const t = el("div");
-    t.append(el("b", "", r.nome || "")); if (r.texto) t.append(el("span", "", r.texto));
-    info.append(r.autor ? avatar(r.autor) : el("span"), t); c.append(info);
-    if (frente) prepararArrasto(c, r);
-    return c;
-  }
-  function prepararArrasto(c, r) {
-    let x0 = 0, y0 = 0, dx = 0, t0 = 0, ativo = false;
-    const curti = c.querySelector(".curti"), passo = c.querySelector(".passo");
-    const mover = () => {
-      c.style.transform = "translateX(" + dx + "px) rotate(" + (dx / 18) + "deg)";
-      curti.style.opacity = Math.max(0, Math.min(1, dx / 90)); passo.style.opacity = Math.max(0, Math.min(1, -dx / 90));
+  // ---------- Curtir fotos (tipo Tinder) e concurso ----------
+  // Curtir a foto de alguém avisa a pessoa ("Fulano curtiu tua foto"). Se as duas curtirem a foto uma da outra: match.
+  // Com o concurso ligado no balcão, cada pessoa pode marcar UMA foto por noite pra concorrer; as curtidas sobem ela no ranking.
+  const chaveNoite = () => { const d = inicioDaNoite(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+  let matchesVistos = guardado.ler("trela-matches", {});
+  const CORACAO = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
+  function botaoCurtir(r) {
+    const n = (r.reacoes || {}).amor || 0, minha = r.autor === EU.uid, ja = S.curti.has(r.id);
+    const b = el("button", "curtir" + (ja ? " feito" : "")); b.type = "button";
+    b.innerHTML = CORACAO; b.append(el("span", "", minha ? n + (n === 1 ? " curtida" : " curtidas") : (ja ? "Curtiu" : "Curtir") + (n ? " · " + n : "")));
+    b.setAttribute("aria-pressed", ja);
+    if (minha || ja) b.disabled = true;
+    else b.onclick = () => {
+      b.disabled = true; b.classList.add("feito", "pulso"); b.setAttribute("aria-pressed", "true");
+      b.lastChild.textContent = "Curtiu · " + (n + 1);
+      curtirFoto(r);
     };
-    c.addEventListener("pointerdown", e => { ativo = true; x0 = e.clientX; y0 = e.clientY; dx = 0; t0 = Date.now(); c.classList.remove("solta"); try { c.setPointerCapture(e.pointerId); } catch (err) {} });
-    c.addEventListener("pointermove", e => { if (!ativo) return; dx = e.clientX - x0; mover(); });
-    const soltar = () => {
-      if (!ativo) return; ativo = false;
-      const rapido = Math.abs(dx) / Math.max(1, Date.now() - t0) > 0.6 && Math.abs(dx) > 40;
-      if (dx > 110 || (rapido && dx > 0)) decidir(true);
-      else if (dx < -110 || (rapido && dx < 0)) decidir(false);
-      else { c.classList.add("solta"); dx = 0; mover(); }
-    };
-    c.addEventListener("pointerup", soltar); c.addEventListener("pointercancel", soltar);
+    return b;
   }
-  function decidir(curtiu) {
-    const r = deckFila[0]; if (!r) return;
-    const c = $("#deck").querySelector('.carta:not(.atras)');
+  function atualizarConcurso() {
+    const c = S.concurso;
+    $("#bannerConcurso").hidden = !c;
     if (c) {
-      c.classList.add("solta");
-      c.querySelector(curtiu ? ".curti" : ".passo").style.opacity = 1;
-      c.style.transform = "translateX(" + (curtiu ? 1 : -1) * (window.innerWidth + 200) + "px) rotate(" + (curtiu ? 24 : -24) + "deg)";
-      c.style.opacity = 0;
+      $("#bcNome").textContent = c;
+      $("#bcTxt").textContent = S.jaConcorri ? "Tua foto já está concorrendo. Agora é curtir as fotos da galera no Rolou hoje!" : "Manda uma foto marcando \u201cConcorrer\u201d e curte as fotos da galera no Rolou hoje. Quanto mais curtidas, mais a foto sobe.";
     }
-    deckFila.shift();
-    if (curtiu) curtirFoto(r);
-    else { passadasDaNoite().ids[r.id] = 1; guardado.salvar("trela-passei", passei); }
-    setTimeout(() => { desenharDeck(); atualizarBotaoVotar(); }, 260);
+    const pode = !!c && tipo === "foto";
+    $("#campoConcorrer").hidden = !pode;
+    $("#concorrer").disabled = S.jaConcorri;
+    if (S.jaConcorri) $("#concorrer").checked = false;
+    $("#concorrerTxt").textContent = S.jaConcorri ? "Tu já tem uma foto concorrendo nesta noite" : "Concorrer em \u201c" + c + "\u201d (só 1 foto por pessoa)";
   }
-  $("#btCurti").onclick = () => decidir(true);
-  $("#btPasso").onclick = () => decidir(false);
-  document.addEventListener("keydown", e => {
-    if (telaAtual() !== "tFotos" || !$("#veu").hidden) return;
-    if (e.key === "ArrowRight") decidir(true); else if (e.key === "ArrowLeft") decidir(false);
-  });
 
   async function curtirFoto(r) {
     if (!r.autor || r.autor === EU.uid || S.curti.has(r.id)) return;
@@ -1142,6 +1075,8 @@
     try {
       await db.doc("curtidas/" + r.id + "_" + EU.uid).set({ post: r.id, de: EU.uid, para: r.autor, criado: agoraServidor() });
     } catch (e) { return; }
+    // Avisa quem postou
+    db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "curtida", de: EU.uid, deNome: EU.nome, postId: r.id, texto: (r.texto || "").slice(0, 60), criado: agoraServidor(), lida: false }).catch(() => {});
     // A outra pessoa já curtiu alguma foto minha nesta noite?
     try {
       const s = await db.collection("curtidas").where("de", "==", r.autor).where("para", "==", EU.uid).limit(10).get();
@@ -1165,7 +1100,7 @@
       : rel === "recebido" ? bt("Aceitar amizade", "sim", () => { aceitarAmizade(uid); fechar(); })
       : rel === "enviado" ? bt("Pedido de amizade já enviado", "", fechar)
       : bt("Adicionar " + p.nome, "sim", () => { pedirAmizade(uid); fechar(); });
-    m.append(el("h2", "", "Deu match!"), duo, el("p", "", "Tu e " + p.nome + " curtiram a foto um do outro."), acao, bt("Continuar curtindo", "", fechar));
+    m.append(el("h2", "", "Deu match!"), duo, el("p", "", "Tu e " + p.nome + " curtiram a foto um do outro."), acao, bt("Fechar", "", fechar));
     document.body.append(m);
   }
 
@@ -1346,6 +1281,8 @@
         out.push(el("div", "secao", "Novidades"));
         S.avisos.slice(0, 8).forEach(a => out.push(a.tipo === "match"
           ? linhaPessoa(a.de, "Deu match! Vocês curtiram a foto um do outro", "nova", botaoRelacao(a.de, true), true, () => { a.ref.update({ lida: true }).catch(() => {}); abrirPerfil(a.de); })
+          : a.tipo === "curtida"
+          ? linhaPessoa(a.de, "Curtiu tua foto" + (a.texto ? ": " + a.texto : ""), "nova", botaoRelacao(a.de, true), true, () => { a.ref.update({ lida: true }).catch(() => {}); abrirPerfil(a.de); })
           : linhaPessoa(a.de, "Te marcou em: " + a.texto, "nova", null, true, () => { a.ref.update({ lida: true }).catch(() => {}); abrirComentarios(a.postId); })));
       }
       if (!amigos.length) {

@@ -202,7 +202,13 @@ service cloud.firestore {
       allow read: if logado();
       allow create: if equipe()
         || (ativo()
-            && request.resource.data.keys().hasOnly(['tipo', 'autor', 'nome', 'texto', 'cor', 'criado', 'reacoes', 'fotoId'])
+            && request.resource.data.keys().hasOnly(['tipo', 'autor', 'nome', 'texto', 'cor', 'criado', 'reacoes', 'fotoId', 'concorre', 'vaga'])
+            // Concurso: a foto só concorre junto com a "vaga" da pessoa na noite (uma por pessoa)
+            && (!('concorre' in request.resource.data)
+                || (request.resource.data.concorre == true && request.resource.data.tipo == 'foto'
+                    && request.resource.data.vaga is string
+                    && getAfter(/databases/$(database)/documents/concorrentes/$(request.resource.data.vaga)).data.post == id
+                    && getAfter(/databases/$(database)/documents/concorrentes/$(request.resource.data.vaga)).data.de == eu()))
             && request.resource.data.autor == eu()
             && nomeOk(request.resource.data.nome)
             // Recado: texto obrigatório. Foto: vai direto, com legenda opcional e a foto já salva em /fotos
@@ -243,6 +249,20 @@ service cloud.firestore {
         && request.resource.data.para != eu()
         && agora(request.resource.data);
       allow delete: if equipe() || (logado() && resource.data.de == eu());
+    }
+
+    // ---------- Concurso: uma "vaga" por pessoa por noite (id = noite_uid) ----------
+    match /concorrentes/{vaga} {
+      allow read: if logado();
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['post', 'noite', 'de', 'criado'])
+        && request.resource.data.de == eu()
+        && request.resource.data.noite is string && request.resource.data.noite.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && vaga == request.resource.data.noite + '_' + eu()
+        && existsAfter(/databases/$(database)/documents/telao/$(request.resource.data.post))
+        && agora(request.resource.data);
+      // Sem update: não dá pra trocar a foto que concorre. A equipe pode tirar.
+      allow delete: if equipe();
     }
 
     // ---------- Posição da fila e ajustes ----------

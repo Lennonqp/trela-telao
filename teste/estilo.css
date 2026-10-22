@@ -1,0 +1,35 @@
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Yellowtail&family=Archivo:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap");
+
+:root{
+  --bg:#0d0a12;
+  --panel:#17121f;
+  --line:#2c2338;
+  --ink:#f6efe6;
+  --muted:#a597b5;
+  --neon:#ff3fa4;
+  --lilas:#a95cf2;
+  --laranja:#ff5a1f;
+  --ok:#3ddc97;
+  --f-logo:"Yellowtail","Brush Script MT",cursive;
+  --f-display:"Anton","Impact","Arial Narrow",sans-serif;
+  --f-body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"Space Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--lilas);outline-offset:2px}
+.logo{font-family:var(--f-logo);color:var(--neon);line-height:.9;text-shadow:0 0 6px var(--neon),0 0 22px rgba(255,63,164,.55)}
+.logo img{display:block;height:1.3em;width:auto;max-width:100%}
+#tLogin .logo img,.cortina .logo img,.carregando .logo img{margin:0 auto}
+label{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+input,textarea{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);font:16px/1.4 var(--f-body);border-radius:12px;padding:12px}
+textarea{resize:none;min-height:110px}
+.btn{background:var(--neon);color:#1d0612;border:0;border-radius:999px;padding:15px;font:400 21px/1 var(--f-display);letter-spacing:.04em;text-transform:uppercase;cursor:pointer;width:100%}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{background:none;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:8px 14px;font:700 12px/1 var(--f-body);text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Versão de teste: selo pra ninguém confundir com o site oficial */
+body::after{content:"VERSÃO DE TESTE";position:fixed;left:50%;top:calc(4px + env(safe-area-inset-top));-webkit-transform:translateX(-50%);transform:translateX(-50%);z-index:9999;pointer-events:none;background:#ffd166;color:#1a1300;font:800 10px/1 var(--f-mono,monospace);letter-spacing:.14em;padding:5px 10px;border-radius:999px;opacity:.92}

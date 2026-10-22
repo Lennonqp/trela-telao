@@ -231,6 +231,20 @@ service cloud.firestore {
       }
     }
 
+    // ---------- Curtidas das fotos (deslizar / concurso) ----------
+    // id = idDoPost_quemCurtiu, então cada pessoa só curte cada foto uma vez
+    match /curtidas/{id} {
+      allow read: if equipe() || (logado() && (resource.data.de == eu() || resource.data.para == eu()));
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['post', 'de', 'para', 'criado'])
+        && request.resource.data.de == eu()
+        && id == request.resource.data.post + '_' + eu()
+        && request.resource.data.para == get(/databases/$(database)/documents/telao/$(request.resource.data.post)).data.autor
+        && request.resource.data.para != eu()
+        && agora(request.resource.data);
+      allow delete: if equipe() || (logado() && resource.data.de == eu());
+    }
+
     // ---------- Posição da fila e ajustes ----------
     match /estado/{doc} {
       allow read: if logado();

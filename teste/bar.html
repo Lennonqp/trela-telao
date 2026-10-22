@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<base href="/teste/">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0d0a12">
+<title>Equipe · Trela</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="estilo.css?v=202610222016">
+<style>
+  body{min-height:100dvh;padding:28px 16px calc(32px + env(safe-area-inset-bottom));background:radial-gradient(70% 40% at 15% 0%,rgba(169,92,242,.22),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(255,63,164,.18),transparent 70%),var(--bg)}
+  .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+  .logo{font-size:58px}
+  .logo small{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-shadow:none;margin-top:8px}
+  #porta{display:flex;justify-content:center}
+  .ola{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(30px,6vw,44px);line-height:1;text-transform:uppercase;text-wrap:balance}
+  .ola em{font-style:normal;color:var(--laranja)}
+  .noite{margin:6px 0 0;color:var(--muted);font-size:14px}
+  .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .card{position:relative;display:flex;flex-direction:column;gap:10px;padding:22px 20px 20px;border-radius:18px;background:var(--panel);border:1px solid var(--line);color:var(--ink);text-decoration:none;min-height:190px;transition:transform .15s,border-color .15s}
+  .card:hover,.card:focus-visible{transform:translateY(-2px);border-color:var(--c)}
+  .card:focus-visible{outline:2px solid var(--lilas);outline-offset:3px}
+  .card .ic{font-size:30px;line-height:1}
+  .card h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:32px;line-height:1;text-transform:uppercase;color:var(--c)}
+  .card p{margin:0;color:var(--muted);font-size:14px;flex:1}
+  .card .ir{font:700 12px/1 var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--ink)}
+  .card .ir::after{content:" →"}
+  .tv{--c:var(--neon)}
+  .bc{--c:var(--laranja)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--muted);font-variant-numeric:tabular-nums}
+  .chip.tem{background:var(--laranja);border-color:var(--laranja);color:#1a0b05}
+  .conectar{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
+  .conectar-topo{display:flex;align-items:flex-start}
+  .conectar-topo .ic{font-size:28px;line-height:1;margin-right:14px}
+  .conectar h2{margin:0 0 4px;font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1;text-transform:uppercase;color:var(--lilas)}
+  .conectar p{margin:0;color:var(--muted);font-size:14px}
+  .conectar p b{color:var(--ink)}
+  #formTv{display:flex;gap:10px;margin-top:16px}
+  #codigoTv{flex:1;min-width:0;font:400 30px/1 var(--f-display);letter-spacing:.2em;text-align:center;padding:12px}
+  #formTv .btn{width:auto;padding:0 22px;font-size:18px}
+  @media (max-width:440px){ #codigoTv{font-size:24px;letter-spacing:.1em;padding:12px 6px} #formTv .btn{padding:0 16px;font-size:16px} }
+  .msg-tv{min-height:20px;margin-top:10px!important}
+  .msg-tv.ok{color:var(--ok)!important}.msg-tv.erro{color:var(--laranja)!important}
+  .tv-item{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px;font-size:14px}
+  .tv-item span{color:var(--muted)}
+  .extra{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:18px}
+  .extra a{color:var(--lilas);font-weight:700;text-decoration:none}
+  .extra a:hover{text-decoration:underline}
+  .dica{color:var(--muted);font-size:13px;margin:0}
+  @media (max-width:560px){.cards{grid-template-columns:minmax(0,1fr)}.card{min-height:0}}
+  @media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><img src="logo.svg?v=3" alt="trela"><small>Equipe</small></div>
+    <button class="ghost" id="sair" hidden>Sair</button>
+  </header>
+
+  <div id="porta"></div>
+
+  <main id="menu" hidden style="display:flex;flex-direction:column;gap:26px">
+    <div>
+      <h1 class="ola">Bora abrir a <em>noite</em>?</h1>
+      <p class="noite" id="noite"></p>
+    </div>
+
+    <div class="cards">
+      <a class="card tv" href="telao">
+        <span class="ic"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="13" rx="2"/><path d="M8 21h8M9 2.5l3 2.5 3-2.5"/></svg></span>
+        <h2>Telão</h2>
+        <p>Abre na TV do bar. Recados e fotos da galera, QR code no canto.</p>
+        <div class="chips"><span class="chip" id="cNoTelao">— no telão hoje</span></div>
+        <span class="ir">Abrir o telão</span>
+      </a>
+      <a class="card bc" href="balcao">
+        <span class="ic"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12l-1.5 15a2 2 0 0 1-2 1.8h-5a2 2 0 0 1-2-1.8z"/><path d="M6.5 9h11"/></svg></span>
+        <h2>Balcão</h2>
+        <p>Recado do Trela, noite do dia, o que o filtro barrou e denúncias.</p>
+        <div class="chips"><span class="chip" id="cFila">— pra decidir</span><span class="chip" id="cDen">— denúncias</span></div>
+        <span class="ir">Abrir o balcão</span>
+      </a>
+    </div>
+
+    <section class="conectar" aria-labelledby="tituloTv">
+      <div class="conectar-topo">
+        <span class="ic"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1.6"/><path d="M8.5 15.5a5 5 0 0 1 0-7M15.5 8.5a5 5 0 0 1 0 7M5.6 18.4a9 9 0 0 1 0-12.8M18.4 5.6a9 9 0 0 1 0 12.8"/></svg></span>
+        <div><h2 id="tituloTv">Conectar uma TV</h2>
+        <p>Abre <b>trela-telao.vercel.app/telao</b> no navegador da TV. Ela mostra um código: digita aqui.</p></div>
+      </div>
+      <form id="formTv" novalidate>
+        <input id="codigoTv" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="000 000" aria-label="Código que aparece na TV">
+        <button class="btn" type="submit" id="btnTv">Conectar</button>
+      </form>
+      <p class="msg-tv" id="msgTv" role="status"></p>
+      <div id="listaTvs"></div>
+    </section>
+
+    <div class="extra">
+      <p class="dica">Já tá logado: o telão e o balcão abrem direto.</p>
+      <a href="./" target="_blank" rel="noopener">Ver o app da galera ↗</a>
+    </div>
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="config.js?v=202610222016"></script>
+<script>window.SESSAO_EQUIPE = true;</script>
+<script src="comum.js?v=202610222016"></script>
+<script src="equipe.js?v=202610222016"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const auth = appTrela.auth();
+  let parar = [];
+  $("sair").onclick = () => auth.signOut();
+
+  function chip(elId, n, singular, plural) {
+    const c = $(elId);
+    c.textContent = n + " " + (n === 1 ? singular : plural);
+    c.classList.toggle("tem", n > 0 && elId !== "cNoTelao");
+  }
+
+  // ---------- Conectar uma TV pelo código ----------
+  $("codigoTv").addEventListener("input", e => {
+    const d = e.target.value.replace(/\D/g, "").slice(0, 6);
+    e.target.value = d.length > 3 ? d.slice(0, 3) + " " + d.slice(3) : d;
+  });
+  const msgTv = (t, cls) => { $("msgTv").textContent = t; $("msgTv").className = "msg-tv " + (cls || ""); };
+  $("formTv").addEventListener("submit", async e => {
+    e.preventDefault();
+    const codigo = $("codigoTv").value.replace(/\D/g, "");
+    if (codigo.length !== 6) return msgTv("O código tem 6 números.", "erro");
+    $("btnTv").disabled = true; msgTv("Conectando…");
+    try {
+      const ref = db.doc("pareamentos/" + codigo), s = await ref.get();
+      if (!s.exists) { msgTv("Não achei esse código. Confere na TV (ele troca a cada 10 minutos).", "erro"); return; }
+      const d = s.data(), idade = Date.now() - ms(d.criado);
+      if (d.criado && idade > 15 * 60 * 1000) { await ref.delete().catch(() => {}); msgTv("Esse código expirou. Recarrega a página na TV pra gerar outro.", "erro"); return; }
+      const b = db.batch();
+      b.set(db.doc("telas/" + d.uid), { nome: "TV " + new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }), criado: agoraServidor() });
+      b.delete(ref);
+      await b.commit();
+      $("codigoTv").value = "";
+      msgTv("Pronto! A TV já tá entrando no telão.", "ok");
+    } catch (err) {
+      msgTv(err.code === "permission-denied" ? "As regras do Firestore estão desatualizadas. Publica o firestore.rules de novo." : "Não deu pra conectar agora. Tenta de novo.", "erro");
+    } finally { $("btnTv").disabled = false; }
+  });
+  function listarTvs(s) {
+    const box = $("listaTvs"); box.innerHTML = "";
+    s.docs.forEach(doc => {
+      const linha = document.createElement("div"); linha.className = "tv-item";
+      const t = document.createElement("span"); t.textContent = (doc.data().nome || "TV") + " · conectada às " + horaDe(doc.data().criado);
+      const bt = document.createElement("button"); bt.className = "ghost"; bt.type = "button"; bt.textContent = "Desconectar";
+      bt.onclick = () => doc.ref.delete();
+      linha.appendChild(t); linha.appendChild(bt); box.appendChild(linha);
+    });
+  }
+
+  portaEquipe($("porta"), () => {
+    $("menu").hidden = false; $("sair").hidden = false;
+    parar.push(db.collection("telas").onSnapshot(listarTvs, () => {}));
+    parar.push(db.doc("config/geral").onSnapshot(s => {
+      const n = s.exists && s.data().noite;
+      $("noite").textContent = n ? "Hoje: " + n : "Dá pra escolher o nome da noite no balcão.";
+    }, () => {}));
+    parar.push(ouvirNoite(desde => {
+      limparFilaAntiga(desde);
+      return db.collection("fila").where("criado", ">=", desde).onSnapshot(s => chip("cFila", s.size, "pra decidir", "pra decidir"), () => {});
+    }));
+    parar.push(db.collection("denuncias").onSnapshot(s => chip("cDen", s.size, "denúncia", "denúncias"), () => {}));
+    parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).onSnapshot(
+      s => chip("cNoTelao", s.size, "post hoje", "posts hoje"), () => {})));
+  }, () => {
+    parar.forEach(f => f()); parar = [];
+    $("menu").hidden = true; $("sair").hidden = true;
+  });
+</script>
+</body>
+</html>

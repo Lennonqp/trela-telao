@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610271659">
+<link rel="stylesheet" href="estilo.css?v=202610271724">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -269,10 +269,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271659"></script>
+<script src="config.js?v=202610271724"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610271659"></script>
-<script src="equipe.js?v=202610271659"></script>
+<script src="comum.js?v=202610271724"></script>
+<script src="equipe.js?v=202610271724"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -386,6 +386,7 @@
     ACOES.forEach(k => {
       $("lig-" + k).onchange = e => {
         const d = { ativo: e.target.checked };
+        if (e.target.checked) d.desde = agoraServidor();   // o app usa pra saber que é um evento novo
         if (k === "enquete" && e.target.checked && !(A.enquete && A.enquete.id)) d.id = novoId();
         if (k === "contagem" && e.target.checked) d.ate = horarioAlvo();
         if (k === "concurso" && e.target.checked) d.encerrado = false;
@@ -461,7 +462,7 @@
       const lider = res.ops.slice().sort((a, b) => b.n - a.n)[0];
       anunciar((A.enquete.pergunta || "Enquete") + " Ganhou: " + lider.txt + " (" + Math.round(lider.n * 100 / res.total) + "%)", "eMsg");
     };
-    $("eNova").onclick = () => salvar("enquete", { id: novoId() });
+    $("eNova").onclick = () => salvar("enquete", { id: novoId(), desde: agoraServidor() });
     $("sSortear").onclick = sortear;
     $("sAnunciar").onclick = () => {
       if (!sorteadoAgora) return;

@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610271659">
+<link rel="stylesheet" href="estilo.css?v=202610271724">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -38,6 +38,61 @@
   .av.on::after{content:"";position:absolute;right:-1px;bottom:-1px;width:28%;height:28%;min-width:9px;min-height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 2px var(--bg)}
   .eu{background:none;border:0;padding:0;cursor:pointer;border-radius:50%}
   .rolagem{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+
+
+  /* Sino, faixas de evento e tela do evento */
+  .faixas{display:flex;flex-direction:column;margin:-16px -16px 2px}
+  .faixa{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-bottom:1px solid rgba(0,0,0,.25);padding:12px 16px;cursor:pointer;color:var(--ink);background:linear-gradient(90deg,color-mix(in srgb,var(--c) 30%,transparent),color-mix(in srgb,var(--c) 10%,transparent));background-color:rgba(255,255,255,.04);border-left:4px solid var(--c);animation:faixaEntra .35s ease-out}
+  @keyframes faixaEntra{from{transform:translateY(-8px);opacity:0}to{transform:none;opacity:1}}
+  .faixa .fx-ic{flex:none;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--c);color:#140c1b}
+  .faixa .fx-txt{flex:1;min-width:0;display:flex;flex-direction:column}
+  .faixa small{font:700 10px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--c)}
+  .faixa b{font:700 15px/1.25 var(--f-body);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .faixa .fx-sub{font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .faixa .fx-rel{font:400 20px/1 var(--f-display);margin-top:3px;font-variant-numeric:tabular-nums;color:var(--c)}
+  .faixa .fx-seta,.aviso-l .fx-seta{flex:none;font-style:normal;font-size:28px;line-height:1;color:var(--c,var(--muted))}
+  .faixa.nova .fx-ic{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--c)}
+  .ev-topo{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:18px 8px 4px}
+  .ev-topo .ev-ic{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;background:var(--c);color:#140c1b;box-shadow:0 0 30px color-mix(in srgb,var(--c) 45%,transparent)}
+  .ev-topo small{font:700 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--c);margin-top:6px}
+  .ev-topo h2{margin:0;font-size:30px;line-height:1.05;text-wrap:balance}
+  .ev-premio{margin:4px 0 0;background:color-mix(in srgb,var(--c) 18%,transparent);border:1px solid var(--c);border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px}
+  .ev-bloco{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .ev-bloco h4{margin:0;font:400 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .ev-txt{margin:0;font:600 16px/1.35 var(--f-body)}
+  .ev-mut{margin:0;font-size:13px;color:var(--muted)}
+  .ev-ok{margin:0;color:var(--ok);font-weight:600}
+  .ev-passos{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+  .ev-prev{min-height:120px;border:1px dashed var(--line);border-radius:12px;display:grid;place-items:center;color:var(--muted);font-size:13px;overflow:hidden}
+  .ev-prev img{max-width:100%;max-height:260px;display:block}
+  .ev-grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .ev-foto{background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+  .ev-foto img.foto{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:0;margin:0;display:block}
+  .ev-info{padding:8px 10px 4px;min-width:0}
+  .ev-info b{display:block;font-size:13px}
+  .ev-info span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ev-foto .curtir{margin:6px 10px 10px;justify-content:center}
+  .curtir{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--neon);color:var(--neon);border-radius:999px;padding:7px 12px;font:700 13px/1 var(--f-body);cursor:pointer;font-variant-numeric:tabular-nums}
+  .curtir.feito{background:var(--neon);color:#1d0612}
+  .curtir:disabled{cursor:default}
+  .curtir:not(.feito):disabled{border-color:var(--line);color:var(--muted)}
+  .curtir.pulso svg{animation:pulso .45s ease-out}
+  @keyframes pulso{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+  .ev-op{position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--ink);font:600 15px/1.2 var(--f-body);cursor:pointer}
+  .ev-op i{position:absolute;top:0;left:0;bottom:0;background:rgba(169,92,242,.28);transition:width .4s}
+  .ev-op span,.ev-op b{position:relative}
+  .ev-op.meu{border-color:var(--lilas);box-shadow:0 0 0 1px var(--lilas) inset}
+  .ev-relogio{text-align:center;font:400 64px/1 var(--f-display);font-variant-numeric:tabular-nums;color:#ffd166;padding:10px 0}
+  .ev-musica{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:8px;font-size:14px}
+  .ev-musica span{color:var(--muted);font-size:12px;flex:none}
+  .selo-acao{align-self:flex-start;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);border:1px solid var(--c);border-radius:999px;font:700 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 9px}
+  .aviso-l{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--ink);cursor:pointer;font:14px/1.35 var(--f-body)}
+  .aviso-l.nova{border-color:var(--neon);background:rgba(255,63,164,.07)}
+  .aviso-l.ev{border-left:4px solid var(--c)}
+  .aviso-l.ev.nova{border-color:var(--c)}
+  .aviso-l .av-ic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--c);color:#140c1b}
+  .aviso-l .av-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .aviso-l small{font-size:12px;color:var(--muted)}
 
   /* Login */
   #tLogin{justify-content:center;padding:28px 24px;gap:14px;overflow-y:auto;background:radial-gradient(70% 45% at 50% 18%,rgba(255,63,164,.22),transparent 70%),radial-gradient(60% 40% at 50% 100%,rgba(169,92,242,.25),transparent 70%),var(--bg)}
@@ -220,9 +275,11 @@
     <div class="appbar">
       <div class="logo"><img src="logo.svg?v=3" alt="trela"></div>
       <button class="eu" id="btnEu" type="button" aria-label="Teu perfil"></button>
+      <button class="ico" id="btnSino" type="button" aria-label="Notificações"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="badge" id="badgeSino" hidden></span></button>
       <button class="ico" id="btnGalera" type="button" aria-label="Amigos e conversas"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg><span class="badge" id="badge" hidden></span></button>
     </div>
     <div class="rolagem" id="homeScroll">
+      <div class="faixas" id="faixas" hidden></div>
       <form id="sendForm" novalidate style="display:flex;flex-direction:column;gap:12px">
         <h2>Manda pro <em>telão</em></h2>
         <div class="abas" role="tablist">
@@ -278,6 +335,20 @@
     </form>
   </div>
 
+  <!-- Notificações (sino) -->
+  <div class="tela sub" id="tAvisos" hidden>
+    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Notificações</h3></div>
+    <div class="rolagem" id="avisosScroll"></div>
+  </div>
+
+  <!-- Evento (ação especial) -->
+  <div class="tela sub" id="tEvento" hidden>
+    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3 id="eventoTit">Evento</h3></div>
+    <div class="rolagem" id="eventoScroll"></div>
+    <input id="evFoto" type="file" accept="image/*" hidden>
+    <input id="evFotoCam" type="file" accept="image/*" capture="environment" hidden>
+  </div>
+
   <!-- Galera -->
   <div class="tela sub" id="tGalera" hidden>
     <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Galera</h3></div>
@@ -316,8 +387,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271659"></script>
-<script src="comum.js?v=202610271659"></script>
+<script src="config.js?v=202610271724"></script>
+<script src="comum.js?v=202610271724"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -331,7 +402,14 @@
     posts: [], postsMap: new Map(),
     amizades: new Map(),   // outroUid -> { status, de, para }
     conversas: new Map(),  // outroUid -> { ultima, lidaPor }
-    avisos: [],            // marcações não lidas
+    avisos: [],            // notificações não lidas
+    avisosTodos: [],       // últimas notificações (lidas ou não) pro sino
+    acoes: {},             // eventos ligados no balcão (config/acoes)
+    postsAcao: [],         // fotos do concurso/desafio desta noite
+    curti: new Set(),      // fotos que eu já curti
+    jaConcorri: false,     // já tenho foto no concurso desta noite
+    votos: [], meuVoto: null,   // enquete atual
+    minhasMusicas: [],     // meus pedidos de música desta noite
     bloqueados: new Set(),
     noBar: []              // perfis que abriram o app nas últimas 3 h
   };
@@ -504,6 +582,12 @@
     t.onclick = () => { t.hidden = true; aoTocar && aoTocar(); };
     clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3500);
   }
+  function toastEvento(e) {
+    const t = $("#toast"), ic = el("span", "av p"); ic.innerHTML = e.m.ic.replace('width="22" height="22"', 'width="16" height="16"'); ic.style.setProperty("--c", e.m.cor); ic.style.color = "#140c1b";
+    t.replaceChildren(ic, el("span", "", "Começou: " + e.m.rotulo + " · " + e.m.titulo(e.c))); t.hidden = false;
+    t.onclick = () => { t.hidden = true; abrirEvento(e.k); };
+    clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 5000);
+  }
   function erroToast(texto) { const t = $("#toast"); t.replaceChildren(el("span", "", texto)); t.style.borderColor = "var(--laranja)"; t.hidden = false; t.onclick = () => t.hidden = true; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; t.style.borderColor = ""; }, 3500); }
 
   let redesenhoAgendado = false;
@@ -514,7 +598,9 @@
       if (!EU) return;
       renderBadge(); desenharEu();
       const t = telaAtual();
-      if (t === "tHome") { renderFeed(); checarMais(); }
+      if (t === "tHome") { renderFaixas(); renderFeed(); checarMais(); }
+      if (t === "tEvento") renderEvento();
+      if (t === "tAvisos") renderAvisos();
       if (t === "tGalera") renderGalera();
       if (t === "tPerfil") renderPerfil();
       if (t === "tComs") renderComs();
@@ -700,11 +786,45 @@
 
     // Marcações
     let primeiroAviso = true;
-    parar.push(db.collection("avisos").doc(uid).collection("itens").where("lida", "==", false).limit(30).onSnapshot(snap => {
-      S.avisos = snap.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() })).sort((a, b) => ms(b.criado) - ms(a.criado));
-      if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added").forEach(c => { const a = c.doc.data(); toast(a.de, a.deNome + " te marcou num comentário", () => { c.doc.ref.update({ lida: true }); abrirComentarios(a.postId); }); });
+    parar.push(db.collection("avisos").doc(uid).collection("itens").orderBy("criado", "desc").limit(30).onSnapshot(snap => {
+      S.avisosTodos = snap.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() }));
+      S.avisos = S.avisosTodos.filter(a => !a.lida);
+      if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added" && !c.doc.data().lida).forEach(c => { const a = c.doc.data();
+        if (a.tipo === "curtida") return toast(a.de, a.deNome + " curtiu tua foto", () => { c.doc.ref.update({ lida: true }); abrirPerfil(a.de); });
+        toast(a.de, a.deNome + " te marcou num comentário", () => { c.doc.ref.update({ lida: true }); abrirComentarios(a.postId); }); });
       primeiroAviso = false; redesenhar();
     }, () => {}));
+
+    // ---- Eventos ligados no balcão ----
+    let primeiraConfig = true, pararPostsAcao = null, pararVotos = null, votosDe = null;
+    parar.push(db.doc("config/acoes").onSnapshot(d => {
+      const antes = S.acoes; S.acoes = d.exists ? d.data() : {};
+      // avisa na hora quando a equipe liga algo novo
+      if (!primeiraConfig) eventosAtivos().filter(e => !(antes[e.k] && antes[e.k].ativo) || chaveEvento(e.k, e.c) !== chaveEvento(e.k, antes[e.k] || {}))
+        .forEach(e => toastEvento(e));
+      primeiraConfig = false;
+      // fotos do concurso/desafio só quando um dos dois está ligado
+      const precisa = !!((S.acoes.concurso && S.acoes.concurso.ativo) || (S.acoes.desafio && S.acoes.desafio.ativo));
+      if (precisa && !pararPostsAcao) pararPostsAcao = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
+        S.postsAcao = q.docs.map(x => ({ id: x.id, ...x.data() })).filter(r => r.acao && r.fotoId); redesenhar();
+      }, () => {}));
+      if (!precisa && pararPostsAcao) { pararPostsAcao(); pararPostsAcao = null; S.postsAcao = []; }
+      // votos da enquete atual
+      const enq = S.acoes.enquete && S.acoes.enquete.ativo && S.acoes.enquete.id;
+      if (enq !== votosDe) {
+        if (pararVotos) pararVotos(); pararVotos = null; votosDe = enq; S.votos = []; S.meuVoto = null;
+        if (enq) pararVotos = db.collection("enquetes").doc(enq).collection("votos").onSnapshot(q => {
+          S.votos = q.docs.map(x => x.data().opcao); const m = q.docs.find(x => x.id === uid); S.meuVoto = m ? m.data().opcao : null; redesenhar();
+        }, () => {});
+      }
+      redesenhar();
+    }, () => {}));
+    parar.push(() => { if (pararPostsAcao) pararPostsAcao(); if (pararVotos) pararVotos(); pararPostsAcao = pararVotos = null; votosDe = null; });
+    parar.push(db.collection("curtidas").where("de", "==", uid).onSnapshot(q => { q.docs.forEach(x => S.curti.add(x.data().post)); redesenhar(); }, () => {}));
+    parar.push(ouvirNoite(() => db.doc("concorrentes/" + chaveNoite() + "_" + uid).onSnapshot(x => { S.jaConcorri = x.exists; redesenhar(); }, () => {})));
+    parar.push(ouvirNoite(desde => db.collection("musicas").where("autor", "==", uid).onSnapshot(q => {
+      S.minhasMusicas = q.docs.map(x => x.data()).filter(m => ms(m.criado) >= desde.toMillis() || !m.criado).sort((a, b) => ms(b.criado) - ms(a.criado)); redesenhar();
+    }, () => {})));
 
     // Bloqueios que eu fiz
     parar.push(db.collection("bloqueios").where("de", "==", uid).onSnapshot(snap => {
@@ -936,6 +1056,7 @@
       q.onclick = () => r.autor && abrirPerfil(r.autor);
       card.append(q);
     }
+    if (r.acao && EVENTOS[r.acao]) { const tag = el("span", "selo-acao", EVENTOS[r.acao].rotulo); tag.style.setProperty("--c", EVENTOS[r.acao].cor); card.append(tag); }
     if (r.fotoId) card.append(imgFoto(r.fotoId, "Foto de " + r.nome));
     if (r.texto) card.append(el("p", "msg", r.texto));
     const linha = el("div", "linha");
@@ -966,7 +1087,281 @@
     reagi[r.id] = { ...(reagi[r.id] || {}), [k]: true }; guardado.salvar("trela-reagi", reagi);
     b.setAttribute("aria-pressed", "true");
     db.doc("telao/" + r.id).update({ ["reacoes." + k]: FS.FieldValue.increment(1) }).catch(() => {});
+    if (k === "amor" && r.fotoId && r.autor && r.autor !== EU.uid) {
+      S.curti.add(r.id);
+      db.doc("curtidas/" + r.id + "_" + EU.uid).set({ post: r.id, de: EU.uid, para: r.autor, criado: agoraServidor() })
+        .then(() => db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "curtida", de: EU.uid, deNome: EU.nome, postId: r.id, texto: (r.texto || "").slice(0, 60), criado: agoraServidor(), lida: false }))
+        .catch(() => {});
+    }
   }
+
+  // =================== EVENTOS (ações especiais ligadas no balcão) ===================
+  // O balcão liga/desliga em config/acoes. Aqui: faixa no topo da home, tela de cada evento e o sino.
+  const SVG = (p, w) => '<svg viewBox="0 0 24 24" width="' + (w || 22) + '" height="' + (w || 22) + '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+  const EVENTOS = {
+    concurso: { cor: "var(--neon)", rotulo: "Concurso", ic: SVG('<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6"/>'),
+      titulo: c => c.nome || "Concurso de fotos", resumo: c => "Manda tua foto pra concorrer e curte as da galera" },
+    desafio: { cor: "var(--laranja)", rotulo: "Desafio", ic: SVG('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/>'),
+      titulo: c => c.titulo || "Desafio da noite", resumo: c => c.premio ? "Prêmio: " + c.premio : "Cumpre o desafio e manda a foto" },
+    enquete: { cor: "var(--lilas)", rotulo: "Enquete", ic: SVG('<path d="M5 20V10M12 20V4M19 20v-7"/>'),
+      titulo: c => c.pergunta || "Enquete", resumo: c => "Toca pra votar" },
+    sorteio: { cor: "var(--ok)", rotulo: "Sorteio", ic: SVG('<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/>'),
+      titulo: c => c.premio ? "Sorteio: " + c.premio : "Vai rolar sorteio!", resumo: c => "Toca pra ver como participar" },
+    musica: { cor: "#7cc6fe", rotulo: "Pedidos de música", ic: SVG('<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>'),
+      titulo: c => "Pede tua música", resumo: c => "A equipe recebe teu pedido na hora" },
+    contagem: { cor: "#ffd166", rotulo: "Contagem", ic: SVG('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'),
+      titulo: c => c.titulo || "Falta pouco", resumo: c => "" }
+  };
+  const ORDEM_EV = ["concurso", "desafio", "enquete", "sorteio", "contagem", "musica"];
+  const chaveNoite = () => { const d = inicioDaNoite(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+  const chaveEvento = (k, c) => k + ":" + (ms(c.desde) || 0) + (k === "enquete" ? ":" + (c.id || "") : "");
+  let eventosVistos = guardado.ler("trela-eventos-vistos", {});
+  const eventosAtivos = () => ORDEM_EV.filter(k => S.acoes[k] && S.acoes[k].ativo).map(k => ({ k, c: S.acoes[k], m: EVENTOS[k] }));
+  const eventoNovo = e => !eventosVistos[chaveEvento(e.k, e.c)];
+  function marcarEventoVisto(e) { eventosVistos[chaveEvento(e.k, e.c)] = 1; guardado.salvar("trela-eventos-vistos", eventosVistos); }
+
+  function ate(c) { return c && c.ate && c.ate.toDate ? c.ate.toDate() : null; }
+  function faltam(d) {
+    const s = Math.max(0, Math.round((d - Date.now()) / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
+    return s <= 0 ? "Acabou!" : (h ? h + ":" + String(m).padStart(2, "0") : String(m)) + ":" + String(ss).padStart(2, "0");
+  }
+  // Atualiza todos os relógios da tela a cada segundo
+  setInterval(() => {
+    const d = ate(S.acoes.contagem); if (!d) return;
+    document.querySelectorAll(".cont-relogio").forEach(x => x.textContent = faltam(d));
+  }, 1000);
+
+  // ---- Faixas no topo da home ----
+  function renderFaixas() {
+    const box = $("#faixas"), evs = eventosAtivos();
+    box.hidden = !evs.length;
+    box.replaceChildren(...evs.map(e => {
+      const f = el("button", "faixa" + (eventoNovo(e) ? " nova" : "")); f.type = "button"; f.style.setProperty("--c", e.m.cor);
+      const ic = el("span", "fx-ic"); ic.innerHTML = e.m.ic;
+      const t = el("span", "fx-txt");
+      t.append(el("small", "", e.m.rotulo + (eventoNovo(e) ? " · novo" : "")), el("b", "", e.m.titulo(e.c)));
+      if (e.k === "contagem") { const r = el("span", "cont-relogio fx-rel"); r.textContent = ate(e.c) ? faltam(ate(e.c)) : ""; t.append(r); }
+      else if (e.m.resumo(e.c)) t.append(el("span", "fx-sub", e.m.resumo(e.c)));
+      f.append(ic, t, el("i", "fx-seta", "›"));
+      f.setAttribute("aria-label", e.m.rotulo + ": " + e.m.titulo(e.c) + ". Abrir");
+      f.onclick = () => abrirEvento(e.k);
+      return f;
+    }));
+  }
+
+  // ---- Tela do evento ----
+  let eventoAberto = null, fotoEvento = null;
+  function abrirEvento(k) {
+    const e = eventosAtivos().find(x => x.k === k); if (!e) return;
+    marcarEventoVisto(e); eventoAberto = k; fotoEvento = null;
+    ir("tEvento"); renderEvento(); renderFaixas(); renderBadge();
+  }
+  const pBloco = (titulo, ...filhos) => { const b = el("section", "ev-bloco"); if (titulo) b.append(el("h4", "", titulo)); b.append(...filhos); return b; };
+  function renderEvento() {
+    const e = eventosAtivos().find(x => x.k === eventoAberto);
+    const sc = $("#eventoScroll");
+    if (!e) { $("#eventoTit").textContent = "Evento"; return sc.replaceChildren(el("div", "vazio", "Esse evento foi encerrado pela equipe. Fica de olho no sino pros próximos!")); }
+    const { k, c, m } = e;
+    $("#eventoTit").textContent = m.rotulo;
+    const topo = el("div", "ev-topo"); topo.style.setProperty("--c", m.cor);
+    const ic = el("span", "ev-ic"); ic.innerHTML = m.ic.replace('width="22" height="22"', 'width="30" height="30"');
+    topo.append(ic, el("small", "", m.rotulo), el("h2", "", m.titulo(c)));
+    const out = [topo];
+    const premio = c.premio ? el("p", "ev-premio", "Prêmio: " + c.premio) : null;
+
+    if (k === "concurso") {
+      if (premio) topo.append(premio);
+      out.push(pBloco("Como funciona", passos([
+        "Manda uma foto tua marcando pra concorrer. Só vale uma foto por pessoa nesta noite.",
+        "A galera curte as fotos aqui ou no Rolou hoje. Cada pessoa curte cada foto uma vez.",
+        "A foto com mais curtidas leva" + (c.premio ? " o prêmio" : "") + ". O resultado sai no telão."])));
+      out.push(S.jaConcorri ? pBloco("Tua foto", el("p", "ev-ok", "Tua foto já está concorrendo. Agora é chamar a galera pra curtir!")) : blocoMandarFoto("concurso", "Mandar minha foto pro concurso"));
+      out.push(pBloco("Fotos concorrendo", gradeFotos("concurso", "Ninguém mandou ainda. Manda a primeira!")));
+    }
+    if (k === "desafio") {
+      if (premio) topo.append(premio);
+      out.push(pBloco("O desafio", el("p", "ev-txt", c.titulo || ""), c.regras ? el("p", "ev-mut", c.regras) : el("span")));
+      out.push(pBloco("Como participar", passos(["Cumpre o desafio e tira a foto.", "Manda a foto por aqui. Ela vai pro telão e pro Rolou hoje.", "A equipe escolhe quem mandou melhor e anuncia no telão."])));
+      out.push(blocoMandarFoto("desafio", "Mandar minha foto do desafio"));
+      out.push(pBloco("Quem já mandou", gradeFotos("desafio", "Ninguém mandou ainda. Sai na frente!")));
+    }
+    if (k === "enquete") out.push(blocoEnquete(c));
+    if (k === "sorteio") {
+      const regra = { agora: "Pra participar é só estar com o app do Trela aberto na hora do sorteio.", postou: "Participa quem mandou um recado ou foto pro telão nesta noite.",
+        desafio: "Participa quem mandou foto pro desafio da noite.", concurso: "Participa quem está com foto no concurso." }[c.quem || "agora"];
+      out.push(pBloco("Como participar", el("p", "ev-txt", regra), el("p", "ev-mut", "A equipe sorteia na hora e o nome aparece no telão.")));
+      const ir2 = c.quem === "postou" ? bt("Mandar um recado pro telão", "sim", () => { voltar(); setTimeout(() => $("#texto").focus(), 300); })
+        : (c.quem === "desafio" || c.quem === "concurso") && S.acoes[c.quem] && S.acoes[c.quem].ativo ? bt("Ir pro " + EVENTOS[c.quem].rotulo.toLowerCase(), "sim", () => abrirEvento(c.quem)) : null;
+      if (ir2) out.push(ir2);
+    }
+    if (k === "musica") out.push(blocoMusica());
+    if (k === "contagem") {
+      const d = ate(c);
+      const r = el("div", "ev-relogio cont-relogio", d ? faltam(d) : "--:--");
+      out.push(pBloco("", r, el("p", "ev-mut", d ? "Até as " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "")));
+    }
+    // não perde o que está sendo digitado quando chega dado novo
+    const guard = {}, foco = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.k : null;
+    sc.querySelectorAll("input[data-k]").forEach(i => guard[i.dataset.k] = i.value);
+    sc.replaceChildren(...out);
+    sc.querySelectorAll("input[data-k]").forEach(i => { if (guard[i.dataset.k] != null) i.value = guard[i.dataset.k]; if (foco === i.dataset.k) i.focus(); });
+  }
+  function passos(lista) { const ol = el("ol", "ev-passos"); lista.forEach(t => ol.append(el("li", "", t))); return ol; }
+
+  // Mandar foto pro concurso/desafio
+  function blocoMandarFoto(acao, rotulo) {
+    const b = pBloco("Participar");
+    const prev = el("div", "ev-prev"); 
+    if (fotoEvento && fotoEvento.acao === acao) { const im = el("img"); im.src = fotoEvento.data; im.alt = "Prévia"; prev.append(im); } else prev.append(el("span", "", "Nenhuma foto escolhida"));
+    const bts = el("div", "foto-botoes");
+    const cam = el("button", "foto-bt"); cam.type = "button"; cam.innerHTML = SVG('<path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>', 18) + "Tirar foto";
+    const gal = el("button", "foto-bt"); gal.type = "button"; gal.innerHTML = SVG('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/>', 18) + "Galeria";
+    const usar = async f => { if (!f) return; try { fotoEvento = { acao, data: await comprimirFoto(f) }; renderEvento(); } catch (e) { erroToast("Não deu pra abrir essa foto. Tenta outra."); } };
+    cam.onclick = async () => usar(await abrirCamera(false, $("#evFotoCam")));
+    gal.onclick = () => { $("#evFoto").onchange = ev => { usar(ev.target.files[0]); ev.target.value = ""; }; $("#evFoto").click(); };
+    $("#evFotoCam").onchange = ev => { usar(ev.target.files[0]); ev.target.value = ""; };
+    bts.append(cam, gal);
+    const leg = el("input"); leg.dataset.k = "leg-" + acao; leg.maxLength = 80; leg.placeholder = "Legenda (opcional)"; leg.setAttribute("aria-label", "Legenda");
+    const envia = bt(rotulo, "sim", async () => {
+      if (!fotoEvento || fotoEvento.acao !== acao) return erroToast("Escolhe uma foto primeiro.");
+      const texto = leg.value.trim();
+      if (motivoSuspeito(texto)) return erroToast("Tira palavrão, link ou telefone da legenda.");
+      envia.disabled = true; envia.textContent = "Mandando…";
+      try {
+        const fotoId = (await db.collection("fotos").add({ data: fotoEvento.data, criado: agoraServidor() })).id;
+        const ref = db.collection("telao").doc();
+        const post = { tipo: "foto", autor: EU.uid, nome: EU.nome, texto, cor, criado: agoraServidor(), reacoes: REACOES_ZERO, fotoId, acao };
+        const lote = db.batch();
+        if (acao === "concurso") {
+          post.vaga = chaveNoite() + "_" + EU.uid;
+          lote.set(db.doc("concorrentes/" + post.vaga), { post: ref.id, noite: chaveNoite(), de: EU.uid, criado: agoraServidor() });
+        }
+        lote.set(ref, post);
+        await lote.commit();
+        fotoEvento = null; toast(EU.uid, acao === "concurso" ? "Tua foto está concorrendo!" : "Foto do desafio enviada!");
+        renderEvento();
+      } catch (e) {
+        envia.disabled = false; envia.textContent = rotulo;
+        erroToast(acao === "concurso" ? "Não deu. Tu já tem uma foto concorrendo nesta noite?" : "Não deu pra mandar. Tenta de novo.");
+      }
+    });
+    b.append(prev, bts, leg, envia);
+    return b;
+  }
+  function gradeFotos(acao, vazio) {
+    const fotos = S.postsAcao.filter(p => p.acao === acao && !(p.autor && S.bloqueados.has(p.autor)))
+      .sort((a, b) => ((b.reacoes || {}).amor || 0) - ((a.reacoes || {}).amor || 0) || ms(b.criado) - ms(a.criado));
+    if (!fotos.length) return el("div", "vazio-s", vazio);
+    const g = el("div", "ev-grade");
+    fotos.forEach(r => {
+      const card = el("div", "ev-foto");
+      const img = imgFoto(r.fotoId, "Foto de " + r.nome); card.append(img);
+      const info = el("div", "ev-info"); info.append(el("b", "", r.autor === EU.uid ? "Tu" : r.nome));
+      if (r.texto) info.append(el("span", "", r.texto));
+      card.append(info, botaoCurtir(r));
+      g.append(card);
+    });
+    return g;
+  }
+
+  // ---- Curtir (conta no concurso e avisa quem postou) ----
+  const CORACAO = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
+  function botaoCurtir(r) {
+    const n = (r.reacoes || {}).amor || 0, minha = r.autor === EU.uid, ja = S.curti.has(r.id) || !!(reagi[r.id] && reagi[r.id].amor);
+    const b = el("button", "curtir" + (ja ? " feito" : "")); b.type = "button"; b.innerHTML = CORACAO;
+    b.append(el("span", "", minha ? String(n) : (ja ? "Curtiu" : "Curtir") + (n ? " · " + n : "")));
+    b.setAttribute("aria-pressed", ja); b.setAttribute("aria-label", minha ? n + " curtidas na tua foto" : "Curtir a foto de " + r.nome);
+    if (minha || ja) b.disabled = true;
+    else b.onclick = () => { b.disabled = true; b.classList.add("feito", "pulso"); b.lastChild.textContent = "Curtiu · " + (n + 1); curtirFoto(r); };
+    return b;
+  }
+  async function curtirFoto(r) {
+    if (!r.autor || r.autor === EU.uid || S.curti.has(r.id)) return;
+    S.curti.add(r.id);
+    if (!(reagi[r.id] && reagi[r.id].amor)) {
+      reagi[r.id] = { ...(reagi[r.id] || {}), amor: true }; guardado.salvar("trela-reagi", reagi);
+      db.doc("telao/" + r.id).update({ "reacoes.amor": FS.FieldValue.increment(1) }).catch(() => {});
+    }
+    try { await db.doc("curtidas/" + r.id + "_" + EU.uid).set({ post: r.id, de: EU.uid, para: r.autor, criado: agoraServidor() }); } catch (e) { return; }
+    db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "curtida", de: EU.uid, deNome: EU.nome, postId: r.id, texto: (r.texto || "").slice(0, 60), criado: agoraServidor(), lida: false }).catch(() => {});
+  }
+
+  // ---- Enquete ----
+  function blocoEnquete(c) {
+    const ops = (c.opcoes || []).map((t, i) => ({ t, i })).filter(o => o.t);
+    const meu = S.meuVoto, total = S.votos.length;
+    const b = pBloco(meu == null ? "Escolhe uma opção" : "Resultado até agora · " + total + (total === 1 ? " voto" : " votos"));
+    ops.forEach(o => {
+      const n = S.votos.filter(v => v === o.i).length, pct = total ? Math.round(n * 100 / total) : 0;
+      const op = el("button", "ev-op" + (meu === o.i ? " meu" : "")); op.type = "button";
+      if (meu != null) { const barra = el("i"); barra.style.width = pct + "%"; op.append(barra, el("span", "", o.t), el("b", "", pct + "%")); }
+      else op.append(el("span", "", o.t));
+      op.onclick = () => votar(c, o.i);
+      b.append(op);
+    });
+    b.append(el("p", "ev-mut", meu == null ? "Um voto por pessoa. Depois dá pra trocar." : "Tu votou em “" + (ops.find(o => o.i === meu) || {}).t + "”. Toca em outra opção pra trocar."));
+    return b;
+  }
+  function votar(c, i) {
+    S.meuVoto = i; renderEvento();
+    db.collection("enquetes").doc(c.id).collection("votos").doc(EU.uid).set({ opcao: i, criado: agoraServidor() }).catch(() => erroToast("Não deu pra votar agora."));
+  }
+
+  // ---- Pedidos de música ----
+  let ultimoPedido = 0;
+  function blocoMusica() {
+    const b = pBloco("Qual música tu quer ouvir?");
+    const inp = el("input"); inp.dataset.k = "musica"; inp.maxLength = 80; inp.placeholder = "Ex.: Evidências - Chitãozinho & Xororó"; inp.setAttribute("aria-label", "Música");
+    const envia = bt("Pedir música", "sim", async () => {
+      const t = inp.value.trim();
+      if (t.length < 2) return erroToast("Escreve o nome da música.");
+      if (motivoSuspeito(t)) return erroToast("Esse pedido não passou no filtro.");
+      if (Date.now() - ultimoPedido < 60000) return erroToast("Calma! Espera um minutinho pra pedir outra.");
+      envia.disabled = true;
+      try { await db.collection("musicas").add({ autor: EU.uid, nome: EU.nome, texto: t, criado: agoraServidor() }); ultimoPedido = Date.now(); inp.value = ""; toast(EU.uid, "Pedido enviado pra equipe!"); }
+      catch (e) { erroToast("Não deu pra pedir agora."); }
+      envia.disabled = false;
+    });
+    b.append(inp, envia, el("p", "ev-mut", "A equipe vê a lista de pedidos. Não dá pra garantir que toca, mas ajuda!"));
+    const meus = S.minhasMusicas;
+    const lista = pBloco("Teus pedidos desta noite");
+    if (!meus.length) lista.append(el("div", "vazio-s", "Nenhum pedido ainda."));
+    meus.forEach(m => { const l = el("div", "ev-musica"); l.append(el("b", "", m.texto), el("span", "", horaDe(m.criado))); lista.append(l); });
+    const w = el("div"); w.append(b, lista); w.style.cssText = "display:flex;flex-direction:column;gap:12px"; return w;
+  }
+
+  // ---- Sino (notificações) ----
+  $("#btnSino").onclick = () => { ir("tAvisos"); renderAvisos(); setTimeout(lerAvisos, 1500); };
+  function lerAvisos() { S.avisos.forEach(a => a.ref.update({ lida: true }).catch(() => {})); eventosAtivos().forEach(marcarEventoVisto); renderBadge(); renderFaixas(); }
+  function contaSino() { return S.avisos.length + eventosAtivos().filter(eventoNovo).length; }
+  function textoAviso(a) {
+    if (a.tipo === "curtida") return "curtiu tua foto" + (a.texto ? ": “" + a.texto + "”" : "");
+    return "te marcou num comentário: “" + a.texto + "”";
+  }
+  function renderAvisos() {
+    const out = [], evs = eventosAtivos();
+    if (evs.length) {
+      out.push(el("div", "secao", "Rolando agora"));
+      evs.forEach(e => {
+        const l = el("button", "aviso-l ev" + (eventoNovo(e) ? " nova" : "")); l.type = "button"; l.style.setProperty("--c", e.m.cor);
+        const ic = el("span", "av-ic"); ic.innerHTML = e.m.ic;
+        const t = el("span", "av-t"); t.append(el("b", "", e.m.rotulo + ": " + e.m.titulo(e.c)), el("small", "", "Toca pra ver e participar"));
+        l.append(ic, t, el("i", "fx-seta", "›")); l.onclick = () => abrirEvento(e.k); out.push(l);
+      });
+    }
+    out.push(el("div", "secao", "Notificações"));
+    if (!S.avisosTodos.length) out.push(el("div", "vazio-s", "Nada por aqui ainda. Quando alguém te marcar ou curtir tua foto, aparece aqui."));
+    S.avisosTodos.forEach(a => {
+      const l = el("button", "aviso-l" + (a.lida ? "" : " nova")); l.type = "button";
+      const t = el("span", "av-t"); const linha = el("span", ""); linha.append(el("b", "", a.deNome + " "), textoAviso(a));
+      t.append(linha, el("small", "", horaDe(a.criado)));
+      l.append(avatar(a.de), t);
+      l.onclick = () => { a.ref.update({ lida: true }).catch(() => {}); a.tipo === "curtida" ? abrirPerfil(a.de) : abrirComentarios(a.postId); };
+      out.push(l);
+    });
+    $("#avisosScroll").replaceChildren(...out);
+  }
+
   const hs = $("#homeScroll");
   function checarMais() {
     const noFim = hs.scrollTop + hs.clientHeight >= hs.scrollHeight - 30;
@@ -1091,8 +1486,10 @@
   function renderBadge() {
     const pedidos = [...S.amizades.values()].filter(a => a.status === "pendente" && a.para === EU.uid).length;
     const msgs = [...S.conversas.keys()].filter(u => ehAmigo(u) && naoLida(u)).length;
-    const n = pedidos + msgs + S.avisos.length;
+    const n = pedidos + msgs;
     $("#badge").hidden = !n; $("#badge").textContent = n;
+    const ns = contaSino();
+    $("#badgeSino").hidden = !ns; $("#badgeSino").textContent = ns > 9 ? "9+" : ns;
   }
 
   function botaoRelacao(uid, compacto) {
@@ -1139,10 +1536,6 @@
           const sim = el("button", "mini sim", "Aceitar"); sim.type = "button"; sim.onclick = () => aceitarAmizade(u);
           out.push(linhaPessoa(u, "Quer ser teu amigo", "nova", [no, sim], false, () => abrirPerfil(u)));
         });
-      }
-      if (S.avisos.length) {
-        out.push(el("div", "secao", "Te marcaram"));
-        S.avisos.slice(0, 8).forEach(a => out.push(linhaPessoa(a.de, "Te marcou em: " + a.texto, "nova", null, true, () => { a.ref.update({ lida: true }).catch(() => {}); abrirComentarios(a.postId); })));
       }
       if (!amigos.length) {
         out.push(el("div", "secao", "Amigos"));

@@ -286,10 +286,14 @@ service cloud.firestore {
         && nomeOk(request.resource.data.nome)
         && textoOk(request.resource.data.musica, 2, 80) && !suspeito(request.resource.data.musica)
         && agora(request.resource.data);
-      // Só a equipe muda o status (fila -> cantando -> feito)
-      allow update: if equipe()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
-        && request.resource.data.status in ['fila', 'cantando', 'feito'];
+      // A própria galera controla: quem canta termina (cantando -> feito) e o próximo sobe (fila -> cantando).
+      // Também dá pra desistir da própria vez (fila -> feito). A equipe pode tudo.
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && (equipe()
+            || (ativo() && (
+                 (resource.data.status == 'cantando' && request.resource.data.status == 'feito')
+              || (resource.data.status == 'fila' && request.resource.data.status == 'cantando')
+              || (resource.data.autor == eu() && resource.data.status == 'fila' && request.resource.data.status == 'feito'))));
       // Sair da fila (a pessoa) ou remover (equipe)
       allow delete: if equipe() || (logado() && resource.data.autor == eu());
     }

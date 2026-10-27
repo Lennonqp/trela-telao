@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610271907">
+<link rel="stylesheet" href="estilo.css?v=202610271933">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -125,6 +125,7 @@
   .kr-agora .kr-t b{font-size:18px}
   .kr-prox .kr-pos{color:var(--neon)}
   .kr-grande{font-size:17px}
+  .ev-erro{margin:0;color:var(--laranja);font-size:13px;font-weight:600}
   .ev-musica{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:8px;font-size:14px}
   .ev-musica span{color:var(--muted);font-size:12px;flex:none}
   .selo-acao{align-self:flex-start;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);border:1px solid var(--c);border-radius:999px;font:700 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 9px}
@@ -476,8 +477,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271907"></script>
-<script src="comum.js?v=202610271907"></script>
+<script src="config.js?v=202610271933"></script>
+<script src="comum.js?v=202610271933"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -922,11 +923,12 @@
       const minha = agora && agora.autor === uid ? "cantando" : (fila[0] && fila[0].autor === uid ? "proximo" : null);
       if (minha && minha !== minhaVezAntes && S.acoes.karaoke && S.acoes.karaoke.ativo) {
         if (minha === "cantando") toastKaraoke("Tua vez! Sobe pro palco e solta a voz");
+        else if (!agora) toastKaraoke("O palco tá livre e tu é o primeiro! Toca aqui pra começar");
         else toastKaraoke("Tu é o próximo no karaokê. Vai se preparando!");
         if (navigator.vibrate) try { navigator.vibrate([200, 100, 200]); } catch (e) {}
       }
-      minhaVezAntes = minha; redesenhar();
-    }, () => {})));
+      minhaVezAntes = minha; S.karaokeErro = ""; redesenhar();
+    }, e => { console.warn("[Trela] fila do karaokê", e && e.code); S.karaokeErro = e && e.code === "permission-denied" ? "regras" : "rede"; redesenhar(); })));
 
     // Bloqueios que eu fiz
     parar.push(db.collection("bloqueios").where("de", "==", uid).onSnapshot(snap => {
@@ -1492,6 +1494,25 @@
     l.append(pos, avatar(x.autor, "p"), t);
     return l;
   }
+  // A própria galera controla a fila
+  async function passarVez(b) {
+    const agora = karaokeAgora(), prox = karaokeProximo(); if (!agora) return;
+    b.disabled = true;
+    const lote = db.batch();
+    lote.update(db.doc("karaoke/" + agora.id), { status: "feito" });
+    if (prox) lote.update(db.doc("karaoke/" + prox.id), { status: "cantando" });
+    try { await lote.commit(); toast(EU.uid, prox ? "Mandou bem! Agora é a vez do " + prox.nome : "Mandou bem!"); }
+    catch (e) { b.disabled = false; erroToast(e && e.code === "permission-denied" ? "O banco recusou. As regras novas precisam ser publicadas." : "Não deu. Tenta de novo."); }
+  }
+  async function assumirPalco(b) {
+    const agora = karaokeAgora(), eu = karaokeFila()[0]; if (!eu || eu.autor !== EU.uid) return;
+    b.disabled = true;
+    const lote = db.batch();
+    if (agora) lote.update(db.doc("karaoke/" + agora.id), { status: "feito" });
+    lote.update(db.doc("karaoke/" + eu.id), { status: "cantando" });
+    try { await lote.commit(); }
+    catch (e) { b.disabled = false; erroToast(e && e.code === "permission-denied" ? "O banco recusou. As regras novas precisam ser publicadas." : "Não deu. Tenta de novo."); }
+  }
   function blocoKaraoke() {
     const w = el("div"); w.style.cssText = "display:flex;flex-direction:column;gap:12px";
     const agora = karaokeAgora(), fila = karaokeFila(), prox = fila[0];
@@ -1504,10 +1525,25 @@
     w.append(palco);
     // Minha situação
     const eu = pBloco("Tua vez");
-    if (euCantando) eu.append(el("p", "ev-ok kr-grande", "É tua vez! Sobe pro palco e solta a voz."));
-    else if (minhaPos >= 0) {
+    if (S.karaokeErro) eu.append(el("p", "ev-erro", S.karaokeErro === "regras"
+      ? "A fila não carregou: o banco recusou. Avisa a equipe pra publicar as regras novas do karaokê."
+      : "A fila não carregou. Confere a internet e abre de novo."));
+    if (euCantando) {
+      // Quem está cantando passa a vez quando terminar
+      eu.append(el("p", "ev-ok kr-grande", "Tu tá no palco! Solta a voz."), el("p", "ev-mut", "Tua música: " + agora.musica));
+      const terminei = bt(prox ? "Terminei! Passar a vez pro " + prox.nome : "Terminei!", "sim", () => passarVez(terminei));
+      eu.append(terminei);
+    } else if (minhaPos === 0 && !agora) {
+      eu.append(el("p", "ev-ok kr-grande", "É tua vez! O palco tá livre."), el("p", "ev-mut", "Tua música: " + fila[0].musica));
+      const comecar = bt("Começar a cantar", "sim", () => assumirPalco(comecar));
+      eu.append(comecar);
+    } else if (minhaPos >= 0) {
       eu.append(el("p", "ev-txt", minhaPos === 0 ? "Tu é o próximo! Vai se preparando." : "Tu é o " + (minhaPos + 1) + "º da fila."),
         el("p", "ev-mut", "Tua música: " + fila[minhaPos].musica));
+      if (minhaPos === 0 && agora) {
+        const assumir = bt(agora.nome + " já terminou? Começar minha vez", "", () => assumirPalco(assumir));
+        eu.append(assumir);
+      }
       const sair = bt("Sair da fila", "", async () => { sair.disabled = true; await db.doc("karaoke/" + fila[minhaPos].id).delete().catch(() => erroToast("Não deu pra sair agora.")); });
       eu.append(sair);
     } else {
@@ -1518,9 +1554,13 @@
         if (motivoSuspeito(m)) return erroToast("Essa música não passou no filtro.");
         entra.disabled = true;
         try { await db.collection("karaoke").add({ autor: EU.uid, nome: EU.nome, musica: m, status: "fila", criado: agoraServidor() }); inp.value = ""; toast(EU.uid, "Tu tá na fila do karaokê!"); }
-        catch (e) { erroToast("Não deu pra entrar na fila agora."); entra.disabled = false; }
+        catch (e) {
+          console.warn("[Trela] entrar na fila", e && e.code, e && e.message);
+          erroToast(e && e.code === "permission-denied" ? "O banco recusou. Avisa a equipe: as regras novas do karaokê precisam ser publicadas." : "Não deu pra entrar na fila agora. Confere a internet.");
+          entra.disabled = false;
+        }
       });
-      eu.append(el("p", "ev-mut", "Escolhe a música e entra na fila. O app te avisa quando tu for o próximo."), inp, entra);
+      eu.append(el("p", "ev-mut", "Escolhe a música e entra na fila. O app te avisa quando tu for o próximo, e quem tá cantando passa a vez quando terminar."), inp, entra);
     }
     w.append(eu);
     // Fila completa

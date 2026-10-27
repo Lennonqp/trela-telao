@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610222028">
+<link rel="stylesheet" href="estilo.css?v=202610172156">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -42,28 +42,12 @@
   .acoes .sim{background:var(--ok);border-color:var(--ok);color:#06210f}
   .acoes .perigo{border-color:var(--laranja);color:var(--laranja)}
   .vazio{color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:10px;padding:16px;text-align:center}
-  .concurso{border-color:var(--neon)}
-  .concurso .linha input[type=text]{flex:1;min-width:180px}
-  .check.neon input{accent-color:var(--neon)}
-  .ranking{display:flex;flex-direction:column;gap:8px}
-  .rk{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px 12px 8px 8px}
-  .rk.top{border-color:var(--neon);background:rgba(255,63,164,.08)}
-  .rk .pos{flex:none;width:34px;text-align:center;font:400 28px/1 var(--f-display);color:var(--muted)}
-  .rk.top .pos{color:var(--neon)}
-  .rk img{flex:none;width:64px;height:64px;object-fit:cover;border-radius:8px;background:var(--panel)}
-  .rk .quem{flex:1;min-width:0}
-  .rk .quem b{display:block;font-size:15px}
-  .rk .quem span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .rk .n{flex:none;text-align:right;font:400 26px/1 var(--f-display);color:var(--ink)}
-  .rk .n small{display:block;font:400 10px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
-  .rk .ver{flex:none}
-  .rk-foto{max-width:100%;max-height:70vh;border-radius:10px;display:block;margin:0 auto}
   @media (max-width:960px){.cols{grid-template-columns:minmax(0,1fr)}}
   @media (max-width:700px){
     /* No celular: o que pede ação primeiro, formulários depois */
     .painel{gap:22px}
     .topo,.cols{display:contents}
-    .o-fila{order:1}.o-den{order:2}.o-concurso{order:3}.o-recado{order:4}.o-noite{order:5}.o-telao{order:6}
+    .o-fila{order:1}.o-den{order:2}.o-recado{order:3}.o-noite{order:4}.o-telao{order:5}
     body{padding:16px 14px calc(32px + env(safe-area-inset-bottom))}
     .logo{font-size:40px}
     .acoes button{padding:13px 8px}
@@ -97,17 +81,6 @@
       </div>
     </div>
 
-    <section class="bloco concurso o-concurso" aria-labelledby="tituloConcurso">
-      <h2 id="tituloConcurso">Concurso e ranking</h2>
-      <p>Liga a votação e o app mostra o concurso pra galera. Na hora de postar, cada pessoa pode marcar uma foto pra concorrer. A galera curte pelo Rolou hoje (uma curtida por pessoa em cada foto) e quem tiver mais curtidas sobe no ranking.</p>
-      <div class="linha">
-        <input type="text" id="nomeConcurso" maxlength="40" placeholder="Melhor fantasia" aria-label="Nome do concurso">
-        <label class="check neon"><input type="checkbox" id="concursoAtivo"> Votação ligada</label>
-      </div>
-      <h3 style="margin:6px 0 0">Ranking da noite <span id="nCurtidas"></span></h3>
-      <div class="ranking" id="ranking"></div>
-    </section>
-
     <div class="cols">
       <div class="o-fila"><h3>Pra decidir <span id="nFila"></span></h3><div class="lista" id="fila"></div></div>
       <div class="o-den">
@@ -122,10 +95,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610222028"></script>
+<script src="config.js?v=202610172156"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610222028"></script>
-<script src="equipe.js?v=202610222028"></script>
+<script src="comum.js?v=202610172156"></script>
+<script src="equipe.js?v=202610172156"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -165,13 +138,12 @@
     if (r.tipo !== "bar") meta.append(el("span", "", r.nome));
     meta.append(el("span", "", horaDe(r.criado)));
     if (r.tipo === "bar" && r.repetir) meta.append(el("span", "", "Repete"));
-    if (r.concorre) meta.append(el("span", "aviso", "Concorrendo"));
     if (noTelao && r.reacoes) { const t = Object.keys(REACOES).filter(k => r.reacoes[k]).map(k => REACOES[k] + r.reacoes[k]).join(" "); if (t) meta.append(el("span", "", t)); }
     if (noTelao && r.ncoms) meta.append(el("span", "", r.ncoms + (r.ncoms === 1 ? " comentário" : " comentários")));
     if (r.motivo && !noTelao) meta.append(el("span", "aviso", r.motivo));
     const a = el("div", "acoes");
     if (noTelao) {
-      a.append(botao("Tirar do telão", "", async () => { await doc.ref.delete(); if (r.fotoId) db.doc("fotos/" + r.fotoId).delete().catch(() => {}); if (r.vaga) db.doc("concorrentes/" + r.vaga).delete().catch(() => {}); }));
+      a.append(botao("Tirar do telão", "", async () => { await doc.ref.delete(); if (r.fotoId) db.doc("fotos/" + r.fotoId).delete().catch(() => {}); }));
       if (r.tipo === "bar" && r.repetir) a.append(botao("Parar de repetir", "", () => doc.ref.update({ repetir: false })));
     } else {
       a.append(botao("Mostrar", "sim", async ev => {
@@ -247,69 +219,6 @@
     parar.push(db.collection("suspensos").orderBy("criado", "desc").limit(30).onSnapshot(s => {
       lista($("suspensos"), s.docs.map(cartaoSuspenso), "Ninguém suspenso.");
     }, () => {}));
-
-    // ---------- Concurso ----------
-    parar.push(cfg.onSnapshot(s => {
-      const c = (s.exists && s.data().concurso) || {};
-      if (document.activeElement !== $("nomeConcurso")) $("nomeConcurso").value = c.nome || "";
-      $("concursoAtivo").checked = !!c.ativo;
-    }, () => {}));
-    const salvarConcurso = () => cfg.set({ concurso: { nome: $("nomeConcurso").value.trim() || "Melhor fantasia", ativo: $("concursoAtivo").checked } }, { merge: true });
-    let tc; $("nomeConcurso").oninput = () => { clearTimeout(tc); tc = setTimeout(salvarConcurso, 600); };
-    $("concursoAtivo").onchange = salvarConcurso;
-
-    // Ranking: conta as curtidas da noite por foto
-    const postsRk = new Map();
-    const pegarPost = id => {
-      if (!postsRk.has(id)) postsRk.set(id, db.doc("telao/" + id).get().then(d => d.exists ? d.data() : null).catch(() => null));
-      return postsRk.get(id);
-    };
-    let ultimaContagem = [];
-    async function desenharRanking(contagem) {
-      ultimaContagem = contagem;
-      const top = contagem.slice(0, 10);
-      const posts = await Promise.all(top.map(c => pegarPost(c.id)));
-      if (contagem !== ultimaContagem) return;
-      const itens = []; let pos = 0, anterior = -1;
-      top.forEach((c, i) => {
-        const r = posts[i]; if (!r) return;      // foto tirada do telão
-        if (c.n !== anterior) { pos = itens.length + 1; anterior = c.n; }
-        const linha = el("div", "rk" + (pos === 1 ? " top" : ""));
-        const img = el("img"); img.alt = "Foto de " + r.nome; if (r.fotoId) carregarFoto(r.fotoId).then(d => d && (img.src = d));
-        const quem = el("div", "quem"); quem.append(el("b", "", r.nome || ""), el("span", "", r.texto || horaDe(r.criado)));
-        const n = el("div", "n", String(c.n)); n.append(el("small", "", c.n === 1 ? "curtida" : "curtidas"));
-        const ver = botao("Ver", "ghost ver", () => verFoto(r));
-        linha.append(el("div", "pos", pos + "º"), img, quem, n, ver);
-        itens.push(linha);
-      });
-      lista($("ranking"), itens, "Nenhuma curtida ainda nesta noite. Quando a galera começar a curtir as fotos, o ranking aparece aqui.");
-    }
-    function verFoto(r) {
-      const v = el("div"); v.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;z-index:50;background:rgba(5,3,8,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;cursor:pointer";
-      const img = el("img", "rk-foto"); carregarFoto(r.fotoId).then(d => d && (img.src = d));
-      v.append(img, el("p", "", (r.nome || "") + (r.texto ? " · " + r.texto : "")), el("p", "", "Toca pra fechar"));
-      v.onclick = () => v.remove(); document.body.append(v);
-    }
-    // Com fotos marcadas pra concorrer, o ranking mostra só elas (inclusive as com 0 curtida).
-    // Sem nenhuma marcada, mostra as fotos mais curtidas da noite.
-    let porPost = {}, concorrentes = null, totalCurtidas = 0;
-    const recalcular = () => {
-      let lista = Object.keys(porPost).map(id => ({ id, n: porPost[id] }));
-      if (concorrentes && concorrentes.length) lista = concorrentes.map(id => ({ id, n: porPost[id] || 0 }));
-      $("nCurtidas").textContent = (concorrentes && concorrentes.length ? "· " + concorrentes.length + (concorrentes.length === 1 ? " foto concorrendo" : " fotos concorrendo") + " " : "")
-        + (totalCurtidas ? "· " + totalCurtidas + (totalCurtidas === 1 ? " curtida" : " curtidas") : "");
-      desenharRanking(lista.sort((a, b) => b.n - a.n));
-    };
-    parar.push(ouvirNoite(desde => db.collection("curtidas").where("criado", ">=", desde).onSnapshot(s => {
-      porPost = {}; totalCurtidas = s.size;
-      s.docs.forEach(d => { const p = d.data().post; porPost[p] = (porPost[p] || 0) + 1; });
-      recalcular();
-    }, () => { lista($("ranking"), [], "Não deu pra ler as curtidas. Confere se as regras novas do Firestore foram publicadas."); })));
-    parar.push(ouvirNoite(desde => {
-      const d = desde.toDate ? desde.toDate() : desde;
-      const k = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-      return db.collection("concorrentes").where("noite", "==", k).onSnapshot(s => { concorrentes = s.docs.map(x => x.data().post); recalcular(); }, () => {});
-    }));
     // Só a noite atual (desde as 6h)
     parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(40).onSnapshot(s => {
       lista($("telao"), s.docs.map(d => cartao(d, true)), "Nada no telão nesta noite ainda.");

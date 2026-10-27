@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610222028">
+<link rel="stylesheet" href="estilo.css?v=202610172156">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -38,29 +38,6 @@
   .av.on::after{content:"";position:absolute;right:-1px;bottom:-1px;width:28%;height:28%;min-width:9px;min-height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 2px var(--bg)}
   .eu{background:none;border:0;padding:0;cursor:pointer;border-radius:50%}
   .rolagem{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-
-
-  .curtir{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--neon);color:var(--neon);border-radius:999px;padding:6px 12px;font:700 13px/1 var(--f-body);cursor:pointer;font-variant-numeric:tabular-nums}
-  .curtir.feito{background:var(--neon);color:#1d0612}
-  .curtir:disabled{cursor:default}
-  .curtir:not(.feito):disabled{border-color:var(--line);color:var(--muted)}
-  .curtir.pulso svg{animation:pulso .45s ease-out}
-  @keyframes pulso{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
-  .concorrendo{align-self:flex-start;background:rgba(255,63,164,.14);color:var(--neon);border:1px solid var(--neon);border-radius:999px;font:700 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 9px}
-  .concorrer{display:flex;align-items:center;gap:10px;background:rgba(255,63,164,.1);border:1px solid var(--neon);border-radius:12px;padding:12px;font:600 14px/1.3 var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);cursor:pointer;margin:0}
-  .concorrer input{width:20px;height:20px;accent-color:var(--neon);flex:none}
-  .concorrer input:disabled + span{color:var(--muted)}
-  .banner-concurso{background:linear-gradient(120deg,rgba(255,63,164,.2),rgba(169,92,242,.2));border:1px solid var(--neon);border-radius:16px;padding:14px}
-  .banner-concurso b{display:block;font:400 24px/1.05 var(--f-display);text-transform:uppercase}
-  .banner-concurso p{margin:6px 0 0;font-size:13px;color:var(--muted)}
-  .concurso-tag{display:inline-block;background:var(--neon);color:#1d0612;font:700 10px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border-radius:999px;margin-bottom:6px}
-  .match{position:fixed;top:0;left:0;right:0;bottom:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;text-align:center;background:radial-gradient(60% 40% at 50% 40%,rgba(255,63,164,.35),transparent 70%),rgba(8,5,12,.94);animation:sobeF .25s ease-out}
-  .match h2{font:400 64px/.95 var(--f-logo);color:var(--neon);text-transform:none;margin:0;text-shadow:0 0 18px rgba(255,63,164,.6)}
-  .match p{margin:0;color:var(--muted);max-width:300px}
-  .match .duo{display:flex;align-items:center}
-  .match .duo .av{width:104px;height:104px;font-size:40px;box-shadow:0 0 0 4px var(--bg),0 0 24px rgba(255,63,164,.5)}
-  .match .duo .av + .av{margin-left:-18px}
-  .match .bt{width:100%;max-width:300px}
 
   /* Login */
   #tLogin{justify-content:center;padding:28px 24px;gap:14px;overflow-y:auto;background:radial-gradient(70% 45% at 50% 18%,rgba(255,63,164,.22),transparent 70%),radial-gradient(60% 40% at 50% 100%,rgba(169,92,242,.25),transparent 70%),var(--bg)}
@@ -246,11 +223,6 @@
       <button class="ico" id="btnGalera" type="button" aria-label="Amigos e conversas"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg><span class="badge" id="badge" hidden></span></button>
     </div>
     <div class="rolagem" id="homeScroll">
-      <div class="banner-concurso" id="bannerConcurso" hidden>
-        <em class="concurso-tag">Concurso</em>
-        <b id="bcNome"></b>
-        <p id="bcTxt"></p>
-      </div>
       <form id="sendForm" novalidate style="display:flex;flex-direction:column;gap:12px">
         <h2>Manda pro <em>telão</em></h2>
         <div class="abas" role="tablist">
@@ -266,7 +238,6 @@
           <input id="foto" type="file" accept="image/*" hidden>
           <input id="fotoCam" type="file" accept="image/*" capture="environment" hidden>
         </div>
-        <label class="concorrer" id="campoConcorrer" hidden><input type="checkbox" id="concorrer"> <span id="concorrerTxt">Concorrer</span></label>
         <div>
           <label for="texto" id="rotTexto">Recado</label>
           <textarea id="texto" maxlength="120" placeholder="Parabéns, Ju! 27 aninhos no Trela!"></textarea>
@@ -345,8 +316,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610222028"></script>
-<script src="comum.js?v=202610222028"></script>
+<script src="config.js?v=202610172156"></script>
+<script src="comum.js?v=202610172156"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -361,9 +332,6 @@
     amizades: new Map(),   // outroUid -> { status, de, para }
     conversas: new Map(),  // outroUid -> { ultima, lidaPor }
     avisos: [],            // marcações não lidas
-    jaConcorri: false,     // já marquei uma foto pra concorrer nesta noite
-    curti: new Set(),      // fotos que eu curti
-    concurso: "",          // nome do concurso ligado no balcão (ex.: Melhor fantasia)
     bloqueados: new Set(),
     noBar: []              // perfis que abriram o app nas últimas 3 h
   };
@@ -734,23 +702,8 @@
     let primeiroAviso = true;
     parar.push(db.collection("avisos").doc(uid).collection("itens").where("lida", "==", false).limit(30).onSnapshot(snap => {
       S.avisos = snap.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() })).sort((a, b) => ms(b.criado) - ms(a.criado));
-      if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added").forEach(c => { const a = c.doc.data();
-        if (a.tipo === "match") { c.doc.ref.update({ lida: true }).catch(() => {}); return mostrarMatch(a.de); }
-        if (a.tipo === "curtida") return toast(a.de, a.deNome + " curtiu tua foto", () => { c.doc.ref.update({ lida: true }).catch(() => {}); abrirPerfil(a.de); });
-        toast(a.de, a.deNome + " te marcou num comentário", () => { c.doc.ref.update({ lida: true }); abrirComentarios(a.postId); }); });
+      if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added").forEach(c => { const a = c.doc.data(); toast(a.de, a.deNome + " te marcou num comentário", () => { c.doc.ref.update({ lida: true }); abrirComentarios(a.postId); }); });
       primeiroAviso = false; redesenhar();
-    }, () => {}));
-
-    // Fotos que eu já curti (pro botão ficar marcado)
-    parar.push(db.collection("curtidas").where("de", "==", uid).onSnapshot(snap => {
-      snap.docs.forEach(d => S.curti.add(d.data().post)); redesenhar();
-    }, () => {}));
-    // Já tenho foto concorrendo nesta noite?
-    parar.push(ouvirNoite(() => db.doc("concorrentes/" + chaveNoite() + "_" + uid).onSnapshot(d => { S.jaConcorri = d.exists; atualizarConcurso(); }, () => {})));
-    // Concurso ligado no balcão
-    parar.push(db.doc("config/geral").onSnapshot(s => {
-      const c = s.exists && s.data().concurso;
-      S.concurso = c && c.ativo && c.nome ? c.nome : ""; atualizarConcurso(); redesenhar();
     }, () => {}));
 
     // Bloqueios que eu fiz
@@ -866,7 +819,6 @@
     await Promise.all([
       apagarTudo(db.collection("amizades").where("membros", "array-contains", uid)),
       apagarTudo(db.collection("bloqueios").where("de", "==", uid)),
-      apagarTudo(db.collection("curtidas").where("de", "==", uid)),
       apagarTudo(db.collection("avisos").doc(uid).collection("itens")),
       apagarTudo(db.collection("telao").where("autor", "==", uid)),
       db.doc("avatares/" + uid).delete().catch(() => {})
@@ -888,7 +840,7 @@
     $("#texto").maxLength = tipo === "foto" ? 80 : 120;
     $("#texto").placeholder = tipo === "foto" ? "A mesa mais animada do Trela" : "Parabéns, Ju! 27 aninhos no Trela!";
     $("#regras").textContent = tipo === "foto" ? "A foto vai direto pro telão. A equipe pode tirar a qualquer momento." : "Xingamento, link ou telefone passam pela equipe antes.";
-    contar(); atualizarConcurso();
+    contar();
   });
   document.querySelectorAll("#cores button").forEach(b => b.onclick = () => {
     document.querySelectorAll("#cores button").forEach(x => x.setAttribute("aria-pressed", x === b));
@@ -922,16 +874,7 @@
       if (tipo === "foto") base.fotoId = (await db.collection("fotos").add({ data: foto, criado: agoraServidor() })).id;
       let telaoId = null, filaId = null;
       if (!motivo) {
-        const vaiConcorrer = tipo === "foto" && S.concurso && !S.jaConcorri && $("#concorrer").checked;
-        try {
-          if (vaiConcorrer) {
-            // Post e "vaga" no concurso juntos: se já tiver vaga nesta noite, o banco recusa os dois
-            const ref = db.collection("telao").doc(), vaga = chaveNoite() + "_" + EU.uid, b = db.batch();
-            b.set(ref, { ...base, reacoes: REACOES_ZERO, concorre: true, vaga });
-            b.set(db.doc("concorrentes/" + vaga), { post: ref.id, noite: chaveNoite(), de: EU.uid, criado: agoraServidor() });
-            await b.commit(); telaoId = ref.id; $("#concorrer").checked = false;
-          } else telaoId = (await db.collection("telao").add({ ...base, reacoes: REACOES_ZERO })).id;
-        }
+        try { telaoId = (await db.collection("telao").add({ ...base, reacoes: REACOES_ZERO })).id; }
         catch (err) { filaId = (await db.collection("fila").add({ ...base, motivo: "Barrado pelo servidor" })).id; }
       } else {
         const r = { ...base, motivo: tipo === "foto" ? "Legenda: " + motivo : motivo };
@@ -993,14 +936,10 @@
       q.onclick = () => r.autor && abrirPerfil(r.autor);
       card.append(q);
     }
-    if (r.concorre && S.concurso) card.append(el("span", "concorrendo", "Concorrendo · " + S.concurso));
     if (r.fotoId) card.append(imgFoto(r.fotoId, "Foto de " + r.nome));
     if (r.texto) card.append(el("p", "msg", r.texto));
     const linha = el("div", "linha");
-    const ehFoto = r.fotoId && r.tipo !== "bar";
-    if (ehFoto) linha.append(botaoCurtir(r));
     for (const k in REACOES) {
-      if (ehFoto && k === "amor") continue;   // nas fotos o coração é o botão Curtir
       const b = el("button", "reagir", REACOES[k] + " " + ((r.reacoes || {})[k] || 0)); b.type = "button";
       b.setAttribute("aria-pressed", !!(reagi[r.id] && reagi[r.id][k]));
       b.onclick = () => reagir(r, k, b); linha.append(b);
@@ -1027,83 +966,7 @@
     reagi[r.id] = { ...(reagi[r.id] || {}), [k]: true }; guardado.salvar("trela-reagi", reagi);
     b.setAttribute("aria-pressed", "true");
     db.doc("telao/" + r.id).update({ ["reacoes." + k]: FS.FieldValue.increment(1) }).catch(() => {});
-    if (k === "amor" && r.fotoId) curtirFoto(r);
   }
-
-
-  // ---------- Curtir fotos (tipo Tinder) e concurso ----------
-  // Curtir a foto de alguém avisa a pessoa ("Fulano curtiu tua foto"). Se as duas curtirem a foto uma da outra: match.
-  // Com o concurso ligado no balcão, cada pessoa pode marcar UMA foto por noite pra concorrer; as curtidas sobem ela no ranking.
-  const chaveNoite = () => { const d = inicioDaNoite(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
-  let matchesVistos = guardado.ler("trela-matches", {});
-  const CORACAO = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
-  function botaoCurtir(r) {
-    const n = (r.reacoes || {}).amor || 0, minha = r.autor === EU.uid, ja = S.curti.has(r.id);
-    const b = el("button", "curtir" + (ja ? " feito" : "")); b.type = "button";
-    b.innerHTML = CORACAO; b.append(el("span", "", minha ? n + (n === 1 ? " curtida" : " curtidas") : (ja ? "Curtiu" : "Curtir") + (n ? " · " + n : "")));
-    b.setAttribute("aria-pressed", ja);
-    if (minha || ja) b.disabled = true;
-    else b.onclick = () => {
-      b.disabled = true; b.classList.add("feito", "pulso"); b.setAttribute("aria-pressed", "true");
-      b.lastChild.textContent = "Curtiu · " + (n + 1);
-      curtirFoto(r);
-    };
-    return b;
-  }
-  function atualizarConcurso() {
-    const c = S.concurso;
-    $("#bannerConcurso").hidden = !c;
-    if (c) {
-      $("#bcNome").textContent = c;
-      $("#bcTxt").textContent = S.jaConcorri ? "Tua foto já está concorrendo. Agora é curtir as fotos da galera no Rolou hoje!" : "Manda uma foto marcando \u201cConcorrer\u201d e curte as fotos da galera no Rolou hoje. Quanto mais curtidas, mais a foto sobe.";
-    }
-    const pode = !!c && tipo === "foto";
-    $("#campoConcorrer").hidden = !pode;
-    $("#concorrer").disabled = S.jaConcorri;
-    if (S.jaConcorri) $("#concorrer").checked = false;
-    $("#concorrerTxt").textContent = S.jaConcorri ? "Tu já tem uma foto concorrendo nesta noite" : "Concorrer em \u201c" + c + "\u201d (só 1 foto por pessoa)";
-  }
-
-  async function curtirFoto(r) {
-    if (!r.autor || r.autor === EU.uid || S.curti.has(r.id)) return;
-    S.curti.add(r.id);
-    // coração no telão também (mesmo botão do feed)
-    if (!(reagi[r.id] && reagi[r.id].amor)) {
-      reagi[r.id] = { ...(reagi[r.id] || {}), amor: true }; guardado.salvar("trela-reagi", reagi);
-      db.doc("telao/" + r.id).update({ "reacoes.amor": FS.FieldValue.increment(1) }).catch(() => {});
-    }
-    try {
-      await db.doc("curtidas/" + r.id + "_" + EU.uid).set({ post: r.id, de: EU.uid, para: r.autor, criado: agoraServidor() });
-    } catch (e) { return; }
-    // Avisa quem postou
-    db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "curtida", de: EU.uid, deNome: EU.nome, postId: r.id, texto: (r.texto || "").slice(0, 60), criado: agoraServidor(), lida: false }).catch(() => {});
-    // A outra pessoa já curtiu alguma foto minha nesta noite?
-    try {
-      const s = await db.collection("curtidas").where("de", "==", r.autor).where("para", "==", EU.uid).limit(10).get();
-      const desde = inicioDaNoite().getTime();
-      const deVolta = s.docs.some(d => ms(d.data().criado) >= desde);
-      const k = chaveNoite() + ":" + r.autor;
-      if (deVolta && !matchesVistos[k]) {
-        matchesVistos[k] = 1; guardado.salvar("trela-matches", matchesVistos);
-        db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "match", de: EU.uid, deNome: EU.nome, postId: r.id, texto: "", criado: agoraServidor(), lida: false }).catch(() => {});
-        mostrarMatch(r.autor);
-      }
-    } catch (e) {}
-  }
-  function mostrarMatch(uid) {
-    if (document.querySelector(".match")) return;
-    const p = perfil(uid), m = el("div", "match"); m.setAttribute("role", "dialog"); m.setAttribute("aria-label", "Deu match");
-    const duo = el("div", "duo"); duo.append(avatar(EU.uid), avatar(uid));
-    const fechar = () => m.remove();
-    const rel = relacao(uid);
-    const acao = rel === "amigo" ? bt("Conversar com " + p.nome, "sim", () => { fechar(); abrirChat(uid); })
-      : rel === "recebido" ? bt("Aceitar amizade", "sim", () => { aceitarAmizade(uid); fechar(); })
-      : rel === "enviado" ? bt("Pedido de amizade já enviado", "", fechar)
-      : bt("Adicionar " + p.nome, "sim", () => { pedirAmizade(uid); fechar(); });
-    m.append(el("h2", "", "Deu match!"), duo, el("p", "", "Tu e " + p.nome + " curtiram a foto um do outro."), acao, bt("Fechar", "", fechar));
-    document.body.append(m);
-  }
-
   const hs = $("#homeScroll");
   function checarMais() {
     const noFim = hs.scrollTop + hs.clientHeight >= hs.scrollHeight - 30;
@@ -1278,12 +1141,8 @@
         });
       }
       if (S.avisos.length) {
-        out.push(el("div", "secao", "Novidades"));
-        S.avisos.slice(0, 8).forEach(a => out.push(a.tipo === "match"
-          ? linhaPessoa(a.de, "Deu match! Vocês curtiram a foto um do outro", "nova", botaoRelacao(a.de, true), true, () => { a.ref.update({ lida: true }).catch(() => {}); abrirPerfil(a.de); })
-          : a.tipo === "curtida"
-          ? linhaPessoa(a.de, "Curtiu tua foto" + (a.texto ? ": " + a.texto : ""), "nova", botaoRelacao(a.de, true), true, () => { a.ref.update({ lida: true }).catch(() => {}); abrirPerfil(a.de); })
-          : linhaPessoa(a.de, "Te marcou em: " + a.texto, "nova", null, true, () => { a.ref.update({ lida: true }).catch(() => {}); abrirComentarios(a.postId); })));
+        out.push(el("div", "secao", "Te marcaram"));
+        S.avisos.slice(0, 8).forEach(a => out.push(linhaPessoa(a.de, "Te marcou em: " + a.texto, "nova", null, true, () => { a.ref.update({ lida: true }).catch(() => {}); abrirComentarios(a.postId); })));
       }
       if (!amigos.length) {
         out.push(el("div", "secao", "Amigos"));

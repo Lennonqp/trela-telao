@@ -237,7 +237,7 @@ service cloud.firestore {
       }
     }
 
-    // ---------- Curtidas das fotos (deslizar / concurso) ----------
+    // ---------- Curtidas das fotos (concurso e Rolou hoje) ----------
     // id = idDoPost_quemCurtiu, então cada pessoa só curte cada foto uma vez
     match /curtidas/{id} {
       // A TV pareada também lê, pra mostrar o pódio do concurso
@@ -276,7 +276,7 @@ service cloud.firestore {
       allow delete: if equipe() || (logado() && uid == eu());
     }
 
-    // ---------- Karaokê: fila da noite (todo mundo vê; a equipe chama) ----------
+    // ---------- Karaokê: fila da noite (todo mundo vê; a própria galera passa a vez) ----------
     match /karaoke/{id} {
       allow read: if logado();
       allow create: if ativo()
@@ -295,18 +295,6 @@ service cloud.firestore {
               || (resource.data.status == 'fila' && request.resource.data.status == 'cantando')
               || (resource.data.autor == eu() && resource.data.status == 'fila' && request.resource.data.status == 'feito'))));
       // Sair da fila (a pessoa) ou remover (equipe)
-      allow delete: if equipe() || (logado() && resource.data.autor == eu());
-    }
-
-    // ---------- Pedidos de música ----------
-    match /musicas/{id} {
-      allow create: if ativo()
-        && request.resource.data.keys().hasOnly(['autor', 'nome', 'texto', 'criado'])
-        && request.resource.data.autor == eu()
-        && nomeOk(request.resource.data.nome)
-        && textoOk(request.resource.data.texto, 2, 80) && !suspeito(request.resource.data.texto)
-        && agora(request.resource.data);
-      allow read: if equipe() || (logado() && resource.data.autor == eu());
       allow delete: if equipe() || (logado() && resource.data.autor == eu());
     }
 

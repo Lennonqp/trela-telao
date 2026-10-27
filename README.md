@@ -80,6 +80,22 @@ Esse mesmo usuário e senha abrem o **telão**. Pra mais alguém da equipe, cria
 - **No telão**: tudo na rotação, com **Tirar do telão**.
 - **Limite do telão**: só os **10 recados/fotos mais recentes da galera** giram na TV. Quando chega o 11º, o mais antigo sai da rotação (continua no feed do app). Os recados do Trela não contam nesse limite. Pra mudar o número: `MAX_GALERA` no `telao.html`.
 
+## Ações especiais (eventos da noite)
+
+No balcão, a área **Ações especiais** liga e desliga cada evento (ou todos de uma vez, pela chave "Todas as ações"):
+
+- **Concurso de fotos**: a galera manda uma foto pra concorrer (1 por pessoa por noite) e curte as fotos. O balcão vê o ranking ao vivo; no telão as fotos passam de 4 em 4, depois o ranking. "Anunciar vencedor" faz a festa no telão e mostra o vencedor no app.
+- **Desafio da noite**: desafio, regras e prêmio; a galera manda a foto e a equipe escolhe quem ganhou (festa no telão).
+- **Enquete**: até 4 opções, resultado ao vivo no balcão, no app e no telão.
+- **Sorteio**: entre quem está com o app aberto, quem postou na noite, quem fez o desafio ou quem está no concurso.
+- **Karaokê**: a galera entra na fila pelo app; quem canta toca em "Terminei" e a vez passa pro próximo. Só aparece no app, não no telão.
+- **Contagem regressiva**: happy hour, show… relógio no app e no telão.
+
+No app, eventos ligados aparecem na faixa "Ao vivo", no sino de notificações e no menu ≡ → Eventos da noite.
+Participações, votos, curtidas e fila zeram às 6h. **Depois de atualizar o site, publique de novo o `firestore.rules`.**
+
+A pasta `/teste` é uma cópia pra testar mudanças antes (selo amarelo "VERSÃO DE TESTE"), usando o mesmo banco.
+
 ## Filtro
 
 - Limpo vai direto. Cai na fila: palavrão ou ofensa (pega também `p.u.t.a`, `p0rr4`, `poooorra`), link, telefone, @ de perfil de fora do app e texto todo em maiúsculas. Marcar alguém do app com @ é liberado.

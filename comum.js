@@ -150,3 +150,4 @@ const guardado = {
   ler(k, padrao) { try { const v = localStorage.getItem(k); return v === null ? padrao : JSON.parse(v); } catch (e) { return padrao; } },
   salvar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 };
+

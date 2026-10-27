@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610172156">
+<link rel="stylesheet" href="estilo.css?v=202610271953">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -54,6 +54,140 @@
   .emoji{position:absolute;bottom:calc(var(--u) * 2);font-size:calc(var(--u) * 4);pointer-events:none;animation:sobe 2.6s ease-out forwards}
   @keyframes sobe{0%{opacity:0;transform:translateY(0) scale(.6)}15%{opacity:1;transform:translateY(calc(var(--u) * -4)) scale(1.1)}100%{opacity:0;transform:translateY(calc(var(--u) * -34)) scale(1)}}
 
+
+  /* ---------- Eventos (ações especiais) ---------- */
+  .com-vivo .palco{bottom:calc(var(--u) * 9)}
+  .vivo{position:absolute;left:calc(var(--u) * 4);right:calc(var(--u) * 26);bottom:calc(var(--u) * 2.6);height:calc(var(--u) * 4.6);display:flex;align-items:center;background:rgba(255,255,255,.06);border:calc(var(--u) * .15) solid var(--c,var(--neon));border-radius:calc(var(--u) * 1.2);padding:0 calc(var(--u) * 1.4) 0 calc(var(--u) * .6);overflow:hidden}
+  .vivo .vi-ic{flex:none;width:calc(var(--u) * 3.4);height:calc(var(--u) * 3.4);border-radius:calc(var(--u) * .8);display:flex;align-items:center;justify-content:center;background:var(--c,var(--neon));color:#140c1b;margin-right:calc(var(--u) * 1.2)}
+  .vivo .vi-ic svg{width:calc(var(--u) * 2.2);height:calc(var(--u) * 2.2)}
+  .vivo .vi-rot{flex:none;font-family:var(--f-mono);font-size:calc(var(--u) * 1.15);letter-spacing:.16em;text-transform:uppercase;color:var(--c,var(--neon));margin-right:calc(var(--u) * 1.4)}
+  .vivo .vi-txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:700 calc(var(--u) * 1.9)/1.1 var(--f-body)}
+  .vivo .vi-txt.troca{animation:viTroca .5s ease-out}
+  @keyframes viTroca{from{opacity:0;transform:translateY(calc(var(--u) * 1))}to{opacity:1;transform:none}}
+  .vivo .vi-cta{flex:none;font-family:var(--f-mono);font-size:calc(var(--u) * 1.05);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-left:calc(var(--u) * 1.4)}
+  .selo-ev{background:var(--c2,var(--neon));color:#140c1b}
+
+  .evento{align-items:stretch}
+  .ev-tv{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+  .ev-cab{display:flex;align-items:center}
+  .ev-cab .ev-ic{flex:none;width:calc(var(--u) * 5.6);height:calc(var(--u) * 5.6);border-radius:calc(var(--u) * 1.3);display:flex;align-items:center;justify-content:center;background:var(--c);color:#140c1b;margin-right:calc(var(--u) * 2);box-shadow:0 0 calc(var(--u) * 3) var(--c)}
+  .ev-cab .ev-ic svg{width:calc(var(--u) * 3.4);height:calc(var(--u) * 3.4)}
+  .ev-cab small{display:block;font-family:var(--f-mono);font-size:calc(var(--u) * 1.4);letter-spacing:.18em;text-transform:uppercase;color:var(--c)}
+  .ev-cab h2{margin:calc(var(--u) * .4) 0 0;font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 4);line-height:1;color:var(--ink);overflow:hidden;max-height:calc(var(--u) * 8.2)}
+  .ev-cab h2.longo{font-size:calc(var(--u) * 3)}
+  .ev-cab > div{min-width:0}
+  .ev-cab .premio{display:inline-block;margin-top:calc(var(--u) * .8);font:700 calc(var(--u) * 1.7)/1 var(--f-body);border:calc(var(--u) * .15) solid var(--c);border-radius:99px;padding:calc(var(--u) * .5) calc(var(--u) * 1.3)}
+  .ev-corpo{margin-top:calc(var(--u) * 1.6)}
+  .ev-cta{margin:calc(var(--u) * 1.4) 0 0;font-family:var(--f-mono);font-size:calc(var(--u) * 1.3);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .ev-cta b{color:var(--ink)}
+  .podio{display:flex;align-items:flex-end}
+  .podio .lug{width:calc(var(--u) * 11);margin-right:calc(var(--u) * 2.2);text-align:center}
+  .podio .lug .im{position:relative;width:calc(var(--u) * 11);height:calc(var(--u) * 11);border-radius:calc(var(--u) * 1.2);overflow:hidden;border:calc(var(--u) * .35) solid var(--ink);background:var(--panel)}
+  .podio .lug.p1 .im{width:calc(var(--u) * 13);height:calc(var(--u) * 13);border-color:var(--c);box-shadow:0 0 calc(var(--u) * 3) var(--c)}
+  .podio .lug.p1{width:calc(var(--u) * 13)}
+  .podio .lug img{width:100%;height:100%;object-fit:cover;display:block}
+  .podio .lug .pos{position:absolute;left:calc(var(--u) * .7);top:calc(var(--u) * .7);background:var(--c);color:#140c1b;font-family:var(--f-display);font-size:calc(var(--u) * 2.2);line-height:1;padding:calc(var(--u) * .35) calc(var(--u) * .8);border-radius:calc(var(--u) * .6)}
+  .podio .lug.p2 .pos,.podio .lug.p3 .pos{background:var(--ink)}
+  .podio .lug b{display:block;margin-top:calc(var(--u) * .8);font:700 calc(var(--u) * 1.8)/1.1 var(--f-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .podio .lug span{display:block;margin-top:calc(var(--u) * .3);font-family:var(--f-mono);font-size:calc(var(--u) * 1.3);letter-spacing:.08em;color:var(--c)}
+  .ev-vazio{font-family:var(--f-display);text-transform:uppercase;font-size:calc(var(--u) * 3);color:var(--muted);line-height:1.05}
+  .ev-regra{font:600 calc(var(--u) * 2)/1.3 var(--f-body);color:var(--ink);margin:0;max-width:calc(var(--u) * 60)}
+  .miniaturas{display:flex;margin-top:calc(var(--u) * 1.4)}
+  .miniaturas img{width:calc(var(--u) * 7.5);height:calc(var(--u) * 7.5);object-fit:cover;border-radius:calc(var(--u) * .9);border:calc(var(--u) * .25) solid var(--ink);margin-right:calc(var(--u) * 1.2);transform:rotate(-2deg);background:var(--panel)}
+  .miniaturas img:nth-child(even){transform:rotate(2deg)}
+  .ev-n{font-family:var(--f-mono);font-size:calc(var(--u) * 1.3);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:calc(var(--u) * 1.2)}
+  .barras-tv > div + div{margin-top:calc(var(--u) * 1.1)}
+  .barras-tv > div{position:relative;height:calc(var(--u) * 4.2);border-radius:calc(var(--u) * 1);background:rgba(255,255,255,.06);overflow:hidden;display:flex;align-items:center;justify-content:space-between;padding:0 calc(var(--u) * 1.6);max-width:calc(var(--u) * 62)}
+  .barras-tv i{position:absolute;left:0;top:0;bottom:0;background:var(--c);opacity:.45;transition:width .6s}
+  .barras-tv .lider i{opacity:.8}
+  .barras-tv span,.barras-tv b{position:relative;font:700 calc(var(--u) * 2.1)/1 var(--f-body)}
+  .barras-tv b{font-family:var(--f-display);font-weight:400;font-size:calc(var(--u) * 2.6)}
+  .relogio-tv{font-family:var(--f-display);font-size:calc(var(--u) * 13);line-height:.9;color:var(--c);font-variant-numeric:tabular-nums;text-shadow:0 0 calc(var(--u) * 3) var(--c)}
+  .ev-grande{font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 6);line-height:.95;color:var(--c);margin:0}
+
+  /* ---- Modo concurso (dourado) ---- */
+  :root{--ouro:#ffc94d}
+  .modo-concurso .glow{background:radial-gradient(60% 70% at 15% 10%,rgba(255,201,77,.30),transparent 60%),radial-gradient(50% 60% at 95% 100%,rgba(255,63,164,.22),transparent 60%)}
+  .modo-concurso .barra i{background:var(--ouro)}
+  .conc .conc-cab{display:flex;flex-direction:column}
+  .conc-aviso{align-self:flex-start;display:flex;align-items:center;background:var(--ouro);color:#2a1c00;font:700 calc(var(--u) * 1.35)/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;padding:calc(var(--u) * .55) calc(var(--u) * 1.2);border-radius:99px;animation:pisca 2s ease-in-out infinite}
+  .conc-aviso i{width:calc(var(--u) * .9);height:calc(var(--u) * .9);border-radius:50%;background:#2a1c00;margin-right:calc(var(--u) * .8)}
+  @keyframes pisca{0%,100%{box-shadow:0 0 0 0 rgba(255,201,77,.6)}50%{box-shadow:0 0 0 calc(var(--u) * .8) rgba(255,201,77,0)}}
+  .conc-tit{display:flex;align-items:center;margin-top:calc(var(--u) * 1.2)}
+  .conc-tit .ev-ic{flex:none;width:calc(var(--u) * 4.4);height:calc(var(--u) * 4.4);border-radius:calc(var(--u) * 1);display:flex;align-items:center;justify-content:center;background:var(--ouro);color:#2a1c00;margin-right:calc(var(--u) * 1.4);box-shadow:0 0 calc(var(--u) * 2.4) rgba(255,201,77,.7)}
+  .conc-tit .ev-ic svg{width:calc(var(--u) * 2.8);height:calc(var(--u) * 2.8)}
+  .conc-tit small{display:block;font-family:var(--f-mono);font-size:calc(var(--u) * 1.2);letter-spacing:.16em;text-transform:uppercase;color:var(--ouro)}
+  .conc-tit h2{margin:calc(var(--u) * .3) 0 0;font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 3.4);line-height:1;color:var(--ink)}
+  .conc-tit .premio{margin-left:calc(var(--u) * 2);font:700 calc(var(--u) * 1.5)/1 var(--f-body);border:calc(var(--u) * .15) solid var(--ouro);color:var(--ouro);border-radius:99px;padding:calc(var(--u) * .5) calc(var(--u) * 1.2);white-space:nowrap}
+  .grade4{display:flex;margin-top:calc(var(--u) * 2)}
+  .g4{width:calc(var(--u) * 15.4);margin-right:calc(var(--u) * 2);text-align:center}
+  .g4 .im{width:calc(var(--u) * 15.4);height:calc(var(--u) * 15.4);border-radius:calc(var(--u) * 1.1);overflow:hidden;border:calc(var(--u) * .3) solid var(--ouro);background:var(--panel);box-shadow:0 calc(var(--u) * 1) calc(var(--u) * 2.4) rgba(0,0,0,.5)}
+  .g4:nth-child(odd) .im{transform:rotate(-1.5deg)}
+  .g4:nth-child(even) .im{transform:rotate(1.5deg)}
+  .g4 img{width:100%;height:100%;object-fit:cover;display:block}
+  .g4 b{display:block;margin-top:calc(var(--u) * .9);font:700 calc(var(--u) * 1.7)/1.1 var(--f-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .g4 span{display:block;margin-top:calc(var(--u) * .3);font-family:var(--f-mono);font-size:calc(var(--u) * 1.25);letter-spacing:.08em;color:var(--ouro)}
+  .conc .podio{margin-top:0}
+  .conc .podio .lug.p1 .im{border-color:var(--ouro);box-shadow:0 0 calc(var(--u) * 3) var(--ouro)}
+  .conc .podio .lug .pos{background:var(--ouro);color:#2a1c00}
+  .conc .podio .lug.p2 .pos,.conc .podio .lug.p3 .pos{background:var(--ink)}
+  .conc .podio .lug span{color:var(--ouro)}
+  .rank-tv{display:flex;align-items:flex-end;margin-top:calc(var(--u) * 2)}
+  .resto{list-style:none;margin:0 0 calc(var(--u) * 3) calc(var(--u) * 1);padding:0;counter-reset:pos 3;min-width:calc(var(--u) * 16)}
+  .resto li{counter-increment:pos;display:flex;align-items:center;font:600 calc(var(--u) * 1.6)/1 var(--f-body);padding:calc(var(--u) * .6) 0;border-bottom:1px solid var(--line)}
+  .resto li::before{content:counter(pos) "º";font-family:var(--f-display);color:var(--muted);width:calc(var(--u) * 3)}
+  .resto b{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .resto span{font-family:var(--f-mono);color:var(--ouro);margin-left:calc(var(--u) * 1)}
+
+  /* ---------- Celebração do vencedor ---------- */
+  .festa{position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;overflow:hidden;background:#050308;display:flex;align-items:center;justify-content:center}
+  .festa .feixe{position:absolute;top:calc(var(--u) * -10);width:calc(var(--u) * 22);height:calc(var(--u) * 90);background:linear-gradient(rgba(255,230,170,.35),rgba(255,230,170,0));transform-origin:50% 0;filter:blur(calc(var(--u) * .6))}
+  .festa .feixe.f1{left:calc(var(--u) * 18);animation:varre1 2.2s ease-in-out infinite alternate}
+  .festa .feixe.f2{right:calc(var(--u) * 18);animation:varre2 2.6s ease-in-out infinite alternate}
+  @keyframes varre1{from{transform:rotate(28deg)}to{transform:rotate(-22deg)}}
+  @keyframes varre2{from{transform:rotate(-28deg)}to{transform:rotate(22deg)}}
+  .festa .susp{position:relative;text-align:center}
+  .festa .susp small{display:block;font-family:var(--f-mono);font-size:calc(var(--u) * 1.6);letter-spacing:.24em;text-transform:uppercase;color:var(--ouro)}
+  .festa .susp h2{margin:calc(var(--u) * 1.4) 0 0;font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 7.5);line-height:1;color:var(--ink);animation:tambor .5s ease-in-out infinite alternate}
+  @keyframes tambor{from{transform:scale(1);opacity:.85}to{transform:scale(1.06);opacity:1}}
+  .festa .pontos{margin-top:calc(var(--u) * 2.4);display:flex;justify-content:center}
+  .festa .pontos i{width:calc(var(--u) * 1.4);height:calc(var(--u) * 1.4);border-radius:50%;background:var(--ouro);margin:0 calc(var(--u) * .7);animation:ponto 1s ease-in-out infinite}
+  .festa .pontos i:nth-child(2){animation-delay:.2s}.festa .pontos i:nth-child(3){animation-delay:.4s}
+  @keyframes ponto{0%,100%{opacity:.2;transform:translateY(0)}50%{opacity:1;transform:translateY(calc(var(--u) * -1))}}
+  .festa .clarao{position:absolute;top:0;left:0;right:0;bottom:0;background:#fff;opacity:0;pointer-events:none}
+  .festa .clarao.vai{animation:clarao .9s ease-out forwards}
+  @keyframes clarao{0%{opacity:.95}100%{opacity:0}}
+  .festa .raios{position:absolute;left:50%;top:50%;width:calc(var(--u) * 160);height:calc(var(--u) * 160);margin:calc(var(--u) * -80) 0 0 calc(var(--u) * -80);background:repeating-conic-gradient(from 0deg,rgba(255,201,77,.13) 0deg 10deg,transparent 10deg 20deg);animation:gira-r 30s linear infinite;border-radius:50%}
+  @keyframes gira-r{to{transform:rotate(360deg)}}
+  .festa .rev{position:relative;display:flex;align-items:center;padding:0 calc(var(--u) * 6)}
+  .festa .rev .ft{position:relative;flex:none;margin-right:calc(var(--u) * 5);animation:surge .9s cubic-bezier(.2,1.4,.4,1) both}
+  .festa .rev .ft .im{width:calc(var(--u) * 30);height:calc(var(--u) * 30);border-radius:calc(var(--u) * 2);overflow:hidden;border:calc(var(--u) * .7) solid var(--ouro);box-shadow:0 0 calc(var(--u) * 6) rgba(255,201,77,.75);transform:rotate(-3deg);background:var(--panel)}
+  .festa .rev .ft .im.redondo{border-radius:50%}
+  .festa .rev .ft img{width:100%;height:100%;object-fit:cover;display:block}
+  .festa .rev .ft .letra{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font:700 calc(var(--u) * 14)/1 var(--f-body);color:#2a1c00;background:var(--ouro)}
+  .festa .rev .coroa{position:absolute;left:50%;top:calc(var(--u) * -8.5);width:calc(var(--u) * 12);margin-left:calc(var(--u) * -6);color:var(--ouro);filter:drop-shadow(0 0 calc(var(--u) * 1.5) rgba(255,201,77,.9));animation:coroa 1.2s .5s cubic-bezier(.2,1.5,.4,1) both}
+  @keyframes coroa{from{opacity:0;transform:translateY(calc(var(--u) * -8)) rotate(-20deg)}to{opacity:1;transform:rotate(-8deg)}}
+  @keyframes surge{from{opacity:0;transform:scale(.4) rotate(-12deg)}to{opacity:1;transform:none}}
+  .festa .rev .tx{min-width:0;max-width:calc(var(--u) * 52)}
+  .festa .rev .tx > *{animation:sobeTx .7s ease-out both}
+  .festa .rev .tx > *:nth-child(2){animation-delay:.25s}.festa .rev .tx > *:nth-child(3){animation-delay:.5s}.festa .rev .tx > *:nth-child(4){animation-delay:.75s}.festa .rev .tx > *:nth-child(5){animation-delay:1s}
+  @keyframes sobeTx{from{opacity:0;transform:translateY(calc(var(--u) * 3))}to{opacity:1;transform:none}}
+  .festa .rev small{display:block;font-family:var(--f-mono);font-size:calc(var(--u) * 1.6);letter-spacing:.22em;text-transform:uppercase;color:var(--ouro)}
+  .festa .rev .ven{margin:calc(var(--u) * .8) 0 0;font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 3.4);line-height:1;color:var(--ink);letter-spacing:.04em}
+  .festa .rev .nome{margin:calc(var(--u) * .6) 0 0;font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 10);line-height:.92;color:var(--ouro);overflow-wrap:anywhere;text-shadow:0 0 calc(var(--u) * 2) rgba(255,201,77,.45)}
+  @supports ((-webkit-background-clip:text) or (background-clip:text)){
+    .festa .rev .nome{text-shadow:none;background:linear-gradient(100deg,#ffb52e 20%,#fff3c4 40%,#ffc94d 60%,#ff9f1c 80%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:sobeTx .7s .5s ease-out both,brilho 2.4s 1.2s linear infinite}
+  }
+  .festa .rev .nome.longo{font-size:calc(var(--u) * 6.6)}
+  @keyframes brilho{from{background-position:200% 0}to{background-position:0 0}}
+  .festa .rev .det{margin:calc(var(--u) * 1.4) 0 0;font:700 calc(var(--u) * 2.2)/1.2 var(--f-body);color:var(--ink)}
+  .festa .rev .pr{display:inline-block;margin-top:calc(var(--u) * 1.6);font:700 calc(var(--u) * 2)/1 var(--f-body);background:var(--ouro);color:#2a1c00;border-radius:99px;padding:calc(var(--u) * .9) calc(var(--u) * 2)}
+  .festa .rev .parab{display:block;margin-top:calc(var(--u) * 2);font-family:var(--f-logo);font-size:calc(var(--u) * 5);color:var(--neon);text-shadow:0 0 calc(var(--u) * 1.5) rgba(255,63,164,.6)}
+  .confete{position:absolute;top:calc(var(--u) * -3);width:calc(var(--u) * .9);height:calc(var(--u) * 1.6);pointer-events:none;animation-name:cai;animation-timing-function:linear;animation-fill-mode:forwards}
+  @keyframes cai{0%{transform:translate3d(0,0,0) rotate(0)}100%{transform:translate3d(var(--dx),calc(var(--u) * 66),0) rotate(var(--rot))}}
+  .festa.sai{animation:festaSai .8s ease-in forwards}
+  @keyframes festaSai{to{opacity:0}}
+  @media (prefers-reduced-motion:reduce){.festa *{animation-duration:.01s!important;animation-iteration-count:1!important}}
   .cortina{position:fixed;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;overflow:auto;background:rgba(9,6,13,.92);z-index:5;cursor:default;padding:16px}
   .cortina > div > * + *{margin-top:12px}
   .cortina > div{display:flex;flex-direction:column;align-items:stretch;width:100%;max-width:440px;text-align:center}
@@ -94,6 +228,7 @@
   <div class="palco" id="palco"><div class="corpo"><p class="texto vazio">Manda o primeiro recado da noite</p></div></div>
   <div class="fila" id="fila" hidden>Na fila<b id="nFila">0</b></div>
   <div class="qr"><div id="qrcode"></div><p>Escaneia e entra no Trela</p></div>
+  <div class="vivo" id="vivo" hidden><span class="vi-ic" id="viIc"></span><span class="vi-rot">Ao vivo</span><span class="vi-txt" id="viTxt"></span><span class="vi-cta" id="viCta">Participa pelo app</span></div>
   <div class="barra"><i id="barra"></i></div>
 </div>
 
@@ -118,10 +253,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610172156"></script>
+<script src="config.js?v=202610271953"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610172156"></script>
-<script src="equipe.js?v=202610172156"></script>
+<script src="comum.js?v=202610271953"></script>
+<script src="equipe.js?v=202610271953"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -187,6 +322,9 @@
   const itens = new Map();          // id -> dados
   let prioridade = [], novos = [];  // recados do Trela entram em "prioridade", da galera em "novos"
   let atual = null, inicio = Date.now(), desdeBar = 0, barIdx = 0, rotIdx = 0, pararComs = null;
+  let durAtual = DUR, desdeEv = 0, evIdx = 0;
+  const EV_A_CADA = 3;          // uma tela de evento a cada 3 recados da galera
+  const DUR_EV = DUR + 4;       // tela de evento fica um pouco mais
 
   function ultimosDaGalera() {
     const lista = Array.from(itens.values()).filter(r => r.tipo !== "bar")
@@ -196,6 +334,7 @@
 
   function iniciar() {
     db.doc("config/geral").onSnapshot(s => { $("noite").textContent = (s.exists && s.data().noite) || "Bem-vindos"; }, () => {});
+    iniciarEventos();
 
     // Só o que foi postado desde as 6h; às 6h a TV zera e começa a noite nova
     ouvirNoite(desde => {
@@ -229,27 +368,46 @@
 
     // Relógio da troca de recado (setInterval funciona melhor que requestAnimationFrame em TV)
     setInterval(() => {
-      const p = Math.min(1, (Date.now() - inicio) / (DUR * 1000));
+      const p = Math.min(1, (Date.now() - inicio) / (durAtual * 1000));
       $("barra").style.width = (p * 100) + "%";
       if (p >= 1) proximo();
     }, 100);
   }
 
   function proximo() {
+    if (festaRodando) return;
     // Recado novo que já saiu dos 10 mais recentes (chegou muita coisa junta) não entra mais
     const recentes = ultimosDaGalera();
     novos = novos.filter(x => recentes.has(x));
     let id = prioridade.shift() || novos.shift() || null;
     const eNovo = !!id;
+    // Sequência do concurso em andamento: 4 fotos por vez e depois o ranking
+    if (!eNovo && seqConc.length) {
+      mostrarConcurso(seqConc.shift());
+      publicarEstado();
+      return;
+    }
+    // Tela de evento: entra na roda (nunca na frente de recado novo ou do Trela)
+    const evs = eventosAtivos();
+    if (!eNovo && evs.length && (desdeEv >= EV_A_CADA || !temRoda())) {
+      desdeEv = 0;
+      const kEv = evs[evIdx++ % evs.length].k;
+      if (kEv === "concurso" && montarSeqConcurso()) mostrarConcurso(seqConc.shift());
+      else mostrarEvento(kEv);
+      $("nFila").textContent = prioridade.length + novos.length;
+      $("fila").hidden = !(prioridade.length + novos.length);
+      publicarEstado();
+      return;
+    }
     if (!id) {
       const lista = Array.from(itens.values()).sort((a, b) => mil(b.criado) - mil(a.criado));
       const bares = lista.filter(r => r.tipo === "bar" && r.repetir);
-      const galera = lista.filter(r => r.tipo !== "bar" && recentes.has(r.id));
+      const galera = lista.filter(r => r.tipo !== "bar" && recentes.has(r.id) && !foraDaRoda(r));
       if (bares.length && (desdeBar >= BAR_A_CADA || !galera.length)) id = bares[barIdx++ % bares.length].id;
       else if (galera.length) id = galera[rotIdx++ % galera.length].id;
     }
     const r = id && itens.get(id);
-    if (r) desdeBar = r.tipo === "bar" ? 0 : desdeBar + 1;
+    if (r) { desdeBar = r.tipo === "bar" ? 0 : desdeBar + 1; desdeEv++; }
     mostrar(r || null, eNovo);
     $("nFila").textContent = prioridade.length + novos.length;
     $("fila").hidden = !(prioridade.length + novos.length);
@@ -259,7 +417,7 @@
   function mostrar(r, eNovo) {
     const palco = $("palco");
     palco.classList.remove("entra"); void palco.offsetWidth; palco.classList.add("entra");
-    inicio = Date.now();
+    inicio = Date.now(); durAtual = DUR; itemConc = null; $("tv").classList.remove("modo-concurso");
     if (pararComs) { pararComs(); pararComs = null; }
     if (!r) { atual = null; palco.className = "palco entra"; palco.innerHTML = '<div class="corpo"><p class="texto vazio">Manda o primeiro recado da noite</p></div>'; return; }
     atual = r.id;
@@ -270,6 +428,11 @@
       '<span class="selo" hidden></span><p class="texto"></p><div class="de"></div><div class="reacs"></div><div class="coms"></div></div>';
     const selo = palco.querySelector(".selo");
     if (bar) { selo.hidden = false; selo.textContent = "Recado do Trela"; }
+    else if (r.acao && EVENTOS[r.acao]) {
+      selo.hidden = false; selo.classList.add("selo-ev"); selo.style.setProperty("--c2", EVENTOS[r.acao].cor);
+      const c = A[r.acao] || {};
+      selo.textContent = r.acao === "concurso" ? "Concorrendo · " + (c.nome || "Concurso") : "Desafio da noite";
+    }
     else if (eNovo) { selo.hidden = false; selo.textContent = "Chegou agora"; selo.classList.add("novo"); }
     const t = palco.querySelector(".texto");
     t.textContent = r.texto || ""; t.hidden = !r.texto;
@@ -345,6 +508,282 @@
     const e = document.createElement("div");
     e.className = "emoji"; e.textContent = emoji; e.style.left = "calc(var(--u) * " + (6 + Math.random() * 60) + ")";
     $("tv").appendChild(e); setTimeout(() => { if (e.parentNode) e.parentNode.removeChild(e); }, 2700);
+  }
+
+
+  // =================== EVENTOS (ações especiais ligadas no balcão) ===================
+  function svgIc(p) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>'; }
+  const EVENTOS = {
+    concurso: { cor: "var(--neon)", rotulo: "Concurso", ic: svgIc('<path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>'), titulo: c => c.nome || "Concurso de fotos" },
+    desafio: { cor: "var(--laranja)", rotulo: "Desafio da noite", ic: svgIc('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/>'), titulo: c => c.titulo || "Desafio da noite" },
+    enquete: { cor: "var(--lilas)", rotulo: "Enquete", ic: svgIc('<path d="M5 20V10M12 20V4M19 20v-7"/>'), titulo: c => c.pergunta || "Enquete" },
+    sorteio: { cor: "var(--ok)", rotulo: "Sorteio", ic: svgIc('<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/>'), titulo: c => c.premio ? "Sorteio: " + c.premio : "Vai rolar sorteio!" },
+    musica: { cor: "#7cc6fe", rotulo: "Pedidos de música", ic: svgIc('<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>'), titulo: c => "Pede tua música pelo app" },
+    contagem: { cor: "#ffd166", rotulo: "Contagem", ic: svgIc('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'), titulo: c => c.titulo || "Falta pouco" }
+  };
+  // O karaokê não aparece no telão (só no app)
+  const ORDEM_EV = ["concurso", "desafio", "enquete", "sorteio", "contagem"];
+  let A = {}, postsAcao = [], curtidasPor = {}, votos = [];
+  function eventosAtivos() { return ORDEM_EV.filter(k => A[k] && A[k].ativo).map(k => ({ k: k, c: A[k], m: EVENTOS[k] })); }
+  function temRoda() {
+    return Array.from(itens.values()).some(r => (r.tipo !== "bar" && !foraDaRoda(r)) || r.repetir);
+  }
+  // Com o concurso ligado, as fotos dele passam de 4 em 4 (e depois o ranking), não uma por uma
+  function foraDaRoda(r) { return r.acao === "concurso" && A.concurso && A.concurso.ativo; }
+  function ateDe(c) { return c && c.ate && c.ate.toDate ? c.ate.toDate() : null; }
+  function faltam(d) {
+    const s = Math.max(0, Math.round((d - Date.now()) / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
+    if (s <= 0) return "Acabou!";
+    return (h ? h + ":" + (m < 10 ? "0" : "") + m : String(m)) + ":" + (ss < 10 ? "0" : "") + ss;
+  }
+  const escHtml = t => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+  function iniciarEventos() {
+    let pararPosts = null, pararCurt = null, pararVotos = null, votosDe = null;
+    db.doc("config/acoes").onSnapshot(d => {
+      A = d.exists ? d.data() : {};
+      const precisaFotos = !!((A.concurso && A.concurso.ativo) || (A.desafio && A.desafio.ativo));
+      if (precisaFotos && !pararPosts) {
+        pararPosts = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
+          postsAcao = q.docs.map(x => junta({ id: x.id }, x.data())).filter(r => r.acao && r.fotoId); atualizarEventoNaTela();
+        }, () => {}));
+        pararCurt = ouvirNoite(desde => db.collection("curtidas").where("criado", ">=", desde).onSnapshot(q => {
+          curtidasPor = {}; q.docs.forEach(x => { const p = x.data().post; curtidasPor[p] = (curtidasPor[p] || 0) + 1; }); atualizarEventoNaTela();
+        }, () => {}));
+      }
+      if (!precisaFotos && pararPosts) { pararPosts(); pararPosts = null; if (pararCurt) pararCurt(); pararCurt = null; postsAcao = []; }
+      const enq = A.enquete && A.enquete.ativo && A.enquete.id;
+      if (enq !== votosDe) {
+        if (pararVotos) pararVotos(); pararVotos = null; votosDe = enq; votos = [];
+        if (enq) pararVotos = db.collection("enquetes").doc(enq).collection("votos").onSnapshot(q => { votos = q.docs.map(x => x.data().opcao); atualizarEventoNaTela(); }, () => {});
+      }
+      if (!(A.concurso && A.concurso.ativo)) seqConc = [];
+      talvezCelebrar();
+      desenharVivo(false);
+      // evento desligado enquanto estava na tela: passa pro próximo
+      if (atual && String(atual).indexOf("ev:") === 0 && !(A[atual.slice(3)] && A[atual.slice(3)].ativo)) proximo();
+      else atualizarEventoNaTela();
+    }, () => {});
+    // Faixa "Ao vivo" alterna a cada 5 s; relógios a cada 1 s
+    let viIdx = 0;
+    setInterval(() => { viIdx++; desenharVivo(true, viIdx); }, 5000);
+    setInterval(() => {
+      const d = ateDe(A.contagem); if (!d) return;
+      const els = document.querySelectorAll(".cont-tv");
+      for (let i = 0; i < els.length; i++) els[i].textContent = faltam(d);
+    }, 1000);
+  }
+
+  let viAtual = 0;
+  function desenharVivo(trocar, idx) {
+    const evs = eventosAtivos(), box = $("vivo");
+    box.hidden = !evs.length; $("tv").classList.toggle("com-vivo", !!evs.length); if (!evs.length) return;
+    if (idx != null) viAtual = idx;
+    const e = evs[viAtual % evs.length];
+    box.style.setProperty("--c", e.m.cor);
+    $("viIc").innerHTML = e.m.ic;
+    const t = $("viTxt");
+    if (e.k === "contagem") { const d = ateDe(e.c); t.innerHTML = escHtml(e.m.titulo(e.c)) + ' <span class="cont-tv">' + (d ? faltam(d) : "") + "</span>"; }
+    else t.textContent = (e.k === "sorteio" || e.k === "musica" ? "" : e.m.rotulo + ": ") + e.m.titulo(e.c);
+    $("viCta").textContent = e.k === "contagem" ? "" : (evs.length > 1 ? (viAtual % evs.length + 1) + "/" + evs.length + " · " : "") + "Participa pelo app";
+    if (trocar) { t.classList.remove("troca"); void t.offsetWidth; t.classList.add("troca"); }
+  }
+
+  function mostrarEvento(k) {
+    const palco = $("palco");
+    palco.classList.remove("entra"); void palco.offsetWidth;
+    if (pararComs) { pararComs(); pararComs = null; }
+    inicio = Date.now(); durAtual = DUR_EV; atual = "ev:" + k; itemConc = null;
+    $("tv").classList.toggle("modo-concurso", k === "concurso");
+    palco.className = "palco entra evento";
+    palco.style.setProperty("--c", EVENTOS[k].cor);
+    desenharEventoNoPalco(k);
+  }
+  function atualizarEventoNaTela() {
+    if (atual && String(atual).indexOf("ev:") === 0) desenharEventoNoPalco(atual.slice(3));
+  }
+  function rankingConcurso() {
+    return postsAcao.filter(p => p.acao === "concurso").map(p => ({ p: p, n: curtidasPor[p.id] != null ? curtidasPor[p.id] : ((p.reacoes || {}).amor || 0) }))
+      .sort((a, b) => b.n - a.n || mil(a.p.criado) - mil(b.p.criado));
+  }
+  // ---- Concurso: páginas de 4 fotos + ranking ----
+  let seqConc = [], itemConc = null;
+  const POR_PAGINA = 4;
+  function montarSeqConcurso() {
+    const fotos = postsAcao.filter(p => p.acao === "concurso").sort((a, b) => mil(a.criado) - mil(b.criado));
+    if (!fotos.length) return false;
+    seqConc = [];
+    for (let i = 0; i < fotos.length; i += POR_PAGINA) seqConc.push({ tipo: "pag", ids: fotos.slice(i, i + POR_PAGINA).map(p => p.id), n: i / POR_PAGINA + 1, de: Math.ceil(fotos.length / POR_PAGINA) });
+    seqConc.push({ tipo: "rank" });
+    return true;
+  }
+  function mostrarConcurso(item) {
+    const palco = $("palco");
+    palco.classList.remove("entra"); void palco.offsetWidth;
+    if (pararComs) { pararComs(); pararComs = null; }
+    inicio = Date.now(); atual = "ev:concurso"; itemConc = item;
+    durAtual = item.tipo === "rank" ? DUR_EV + 2 : DUR_EV;
+    palco.className = "palco entra evento";
+    palco.style.setProperty("--c", "var(--ouro)");
+    $("tv").classList.add("modo-concurso");
+    desenharEventoNoPalco("concurso");
+  }
+  function cabConcurso(c, sub) {
+    return '<div class="conc-cab"><div class="conc-aviso"><i></i>Votação aberta · curte tua favorita no app</div>' +
+      '<div class="conc-tit"><span class="ev-ic">' + EVENTOS.concurso.ic + '</span><div><small>Concurso' + (sub ? " · " + escHtml(sub) : "") + "</small><h2>" + escHtml(c.nome || "Concurso de fotos") + "</h2></div>" +
+      (c.premio ? '<span class="premio">Prêmio: ' + escHtml(c.premio) + "</span>" : "") + "</div></div>";
+  }
+  function desenharConcurso(c) {
+    const palco = $("palco"), it = itemConc, rk = rankingConcurso();
+    const curt = id => { const x = rk.filter(y => y.p.id === id)[0]; return x ? x.n : 0; };
+    let corpo = "";
+    if (it.tipo === "pag") {
+      const fotos = it.ids.map(id => postsAcao.filter(p => p.id === id)[0]).filter(Boolean);
+      corpo = '<div class="grade4">' + fotos.map(p => {
+        const n = curt(p.id);
+        return '<div class="g4"><div class="im"><img data-foto="' + escHtml(p.fotoId) + '" alt=""></div><b>' + escHtml(p.nome) + "</b><span>" + n + (n === 1 ? " curtida" : " curtidas") + "</span></div>";
+      }).join("") + "</div>";
+      palco.innerHTML = '<div class="ev-tv conc">' + cabConcurso(c, "fotos " + it.n + " de " + it.de) + corpo +
+        '<p class="ev-cta">Curte pelo app: <b>menu</b> › <b>Eventos da noite</b> · o ranking vem já já</p></div>';
+    } else {
+      const top = rk.slice(0, 3), resto = rk.slice(3, 8);
+      const ordem = top.length >= 2 ? [1, 0, 2] : [0];
+      corpo = '<div class="rank-tv"><div class="podio">' + ordem.filter(i => top[i]).map(i => {
+        const x = top[i];
+        return '<div class="lug p' + (i + 1) + '"><div class="im"><img data-foto="' + escHtml(x.p.fotoId) + '" alt=""><span class="pos">' + (i + 1) + 'º</span></div>' +
+          "<b>" + escHtml(x.p.nome) + "</b><span>" + x.n + (x.n === 1 ? " curtida" : " curtidas") + "</span></div>";
+      }).join("") + "</div>" +
+      (resto.length ? '<ol class="resto" start="4">' + resto.map(x => "<li><b>" + escHtml(x.p.nome) + "</b><span>" + x.n + "</span></li>").join("") + "</ol>" : "") + "</div>";
+      palco.innerHTML = '<div class="ev-tv conc">' + cabConcurso(c, "ranking agora") + corpo +
+        '<p class="ev-cta">Ainda dá tempo: curte pelo app e muda o ranking!</p></div>';
+    }
+    const imgs = palco.querySelectorAll("img[data-foto]");
+    for (let i = 0; i < imgs.length; i++) { const im = imgs[i]; carregarFoto(im.getAttribute("data-foto")).then(dd => { if (dd) im.src = dd; }); }
+  }
+
+  function desenharEventoNoPalco(k) {
+    if (k === "concurso" && itemConc) return desenharConcurso(A.concurso || {});
+    const c = A[k] || {}, m = EVENTOS[k], palco = $("palco");
+    let corpo = "", cta = 'Participa pelo app: toca no <b>menu</b> e vai em <b>Eventos da noite</b>';
+    const premio = c.premio && k !== "sorteio" ? '<span class="premio">Prêmio: ' + escHtml(c.premio) + "</span>" : "";
+    if (k === "concurso") {
+      const rk = rankingConcurso().slice(0, 3);
+      if (!rk.length) corpo = '<div class="ev-vazio">Ninguém concorrendo ainda.<br>Manda a tua foto!</div>';
+      else {
+        // pódio: 2º, 1º, 3º
+        const ordem = rk.length >= 2 ? [1, 0, 2] : [0];
+        corpo = '<div class="podio">' + ordem.filter(i => rk[i]).map(i => {
+          const x = rk[i];
+          return '<div class="lug p' + (i + 1) + '"><div class="im"><img data-foto="' + escHtml(x.p.fotoId) + '" alt=""><span class="pos">' + (i + 1) + 'º</span></div>' +
+            "<b>" + escHtml(x.p.nome) + "</b><span>" + x.n + (x.n === 1 ? " curtida" : " curtidas") + "</span></div>";
+        }).join("") + "</div>";
+      }
+      cta = "Manda tua foto e curte as da galera: <b>menu</b> › <b>Eventos da noite</b>";
+    } else if (k === "desafio") {
+      const ent = postsAcao.filter(p => p.acao === "desafio").sort((a, b) => mil(b.criado) - mil(a.criado));
+      corpo = (c.regras ? '<p class="ev-regra">' + escHtml(c.regras) + "</p>" : "") +
+        (ent.length ? '<div class="miniaturas">' + ent.slice(0, 5).map(p => '<img data-foto="' + escHtml(p.fotoId) + '" alt="">').join("") + "</div>" +
+          '<div class="ev-n">' + ent.length + (ent.length === 1 ? " pessoa já mandou" : " pessoas já mandaram") + "</div>"
+          : '<div class="ev-vazio">Ninguém mandou ainda. Sai na frente!</div>');
+      cta = "Manda a foto do desafio: <b>menu</b> › <b>Eventos da noite</b>";
+    } else if (k === "enquete") {
+      const ops = (c.opcoes || []).map((t, i) => ({ t: t, i: i, n: 0 })).filter(o => o.t);
+      votos.forEach(v => { for (let j = 0; j < ops.length; j++) if (ops[j].i === v) ops[j].n++; });
+      const total = ops.reduce((a, o) => a + o.n, 0), max = Math.max.apply(null, [0].concat(ops.map(o => o.n)));
+      corpo = '<div class="barras-tv">' + ops.map(o => {
+        const pct = total ? Math.round(o.n * 100 / total) : 0;
+        return '<div class="' + (o.n && o.n === max ? "lider" : "") + '"><i style="width:' + pct + '%"></i><span>' + escHtml(o.t) + "</span><b>" + pct + "%</b></div>";
+      }).join("") + '</div><div class="ev-n">' + total + (total === 1 ? " voto" : " votos") + " até agora</div>";
+      cta = "Vota pelo app: <b>menu</b> › <b>Eventos da noite</b>";
+    } else if (k === "sorteio") {
+      const regra = { agora: "Participa quem estiver com o app do Trela aberto na hora", postou: "Participa quem mandou recado ou foto pro telão hoje",
+        desafio: "Participa quem mandou foto pro desafio", concurso: "Participa quem está com foto no concurso" }[c.quem || "agora"];
+      corpo = (c.premio ? '<p class="ev-grande">' + escHtml(c.premio) + "</p>" : "") + '<p class="ev-regra" style="margin-top:calc(var(--u) * 1.6)">' + escHtml(regra) + ".</p>";
+      cta = "Fica de olho: o nome sai aqui no telão";
+    } else if (k === "musica") {
+      corpo = '<p class="ev-regra">Escolhe a música e manda pelo app. A equipe recebe na hora.</p>';
+      cta = "Pede pelo app: <b>menu</b> › <b>Eventos da noite</b>";
+    } else if (k === "contagem") {
+      const d = ateDe(c);
+      corpo = '<div class="relogio-tv cont-tv">' + (d ? faltam(d) : "--:--") + "</div>" +
+        (d ? '<div class="ev-n">Até as ' + (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes() + "</div>" : "");
+      cta = "";
+    }
+    const tit = k === "sorteio" ? "Vai rolar sorteio!" : m.titulo(c);
+    palco.innerHTML = '<div class="ev-tv"><div class="ev-cab"><span class="ev-ic">' + m.ic + '</span><div><small>' + escHtml(m.rotulo) + '</small><h2' + (tit.length > 30 ? ' class="longo"' : "") + ">" +
+      escHtml(tit) + "</h2>" + premio + '</div></div><div class="ev-corpo">' + corpo + "</div>" + (cta ? '<p class="ev-cta">' + cta + "</p>" : "") + "</div>";
+    const imgs = palco.querySelectorAll("img[data-foto]");
+    for (let i = 0; i < imgs.length; i++) { const im = imgs[i]; carregarFoto(im.getAttribute("data-foto")).then(dd => { if (dd) im.src = dd; }); }
+  }
+
+
+  // =================== CELEBRAÇÃO DO VENCEDOR ===================
+  // O balcão grava config/acoes.anuncio; aqui vira um show: suspense, clarão, foto com coroa, nome dourado e confete.
+  const COROA = '<svg viewBox="0 0 64 40" fill="currentColor" aria-hidden="true"><path d="M4 34 0 8l16 12L32 0l16 20L64 8l-4 26z"/><rect x="4" y="35" width="56" height="5" rx="2"/></svg>';
+  const SUSPENSE = { concurso: "E quem levou foi...", desafio: "Quem mandou melhor foi...", sorteio: "E o sorteado é...", enquete: "E a galera escolheu..." };
+  const RESULTADO = { concurso: "Vencedor(a)", desafio: "Vencedor(a) do desafio", sorteio: "Sorteado(a)", enquete: "Mais votado" };
+  let festaRodando = false, ultimoAnuncio = null, primeiroAnuncio = true;
+  function talvezCelebrar() {
+    const an = A.anuncio;
+    if (!an || !an.id) { primeiroAnuncio = false; return; }
+    if (an.id === ultimoAnuncio) return;
+    const recente = an.criado && an.criado.toMillis ? Date.now() - an.criado.toMillis() < 90000 : true;
+    ultimoAnuncio = an.id;
+    if (primeiroAnuncio && !recente) { primeiroAnuncio = false; return; }   // TV ligou depois: não repete anúncio velho
+    primeiroAnuncio = false;
+    celebrar(an);
+  }
+  function celebrar(an) {
+    if (festaRodando) { const v = $("festa"); if (v && v.parentNode) v.parentNode.removeChild(v); }
+    festaRodando = true;
+    durAtual = 9999; inicio = Date.now();           // segura a roda enquanto a festa acontece
+    const tv = $("tv"), f = document.createElement("div");
+    f.className = "festa"; f.id = "festa";
+    f.innerHTML = '<div class="feixe f1"></div><div class="feixe f2"></div><div class="susp"><small>' + escHtml(an.rotulo || "") + "</small><h2>" +
+      escHtml(SUSPENSE[an.tipo] || "E quem levou foi...") + '</h2><div class="pontos"><i></i><i></i><i></i></div></div><div class="clarao"></div>';
+    tv.appendChild(f);
+    // carrega a foto durante o suspense
+    let foto = null;
+    const carrega = an.fotoId ? carregarFoto(an.fotoId) : (an.uid ? fotoDoAutor(an.uid) : Promise.resolve(null));
+    carrega.then(d => { foto = d; }).catch(() => {});
+    setTimeout(() => revelar(f, an, () => foto), 4200);
+  }
+  function revelar(f, an, pegaFoto) {
+    if (!f.parentNode) return;
+    const foto = pegaFoto();
+    const nome = an.nome || "";
+    const fotoHtml = an.tipo === "enquete" ? "" :
+      '<div class="ft"><span class="coroa">' + COROA + '</span><div class="im' + (an.fotoId ? "" : " redondo") + '">' +
+      (foto ? '<img src="' + foto + '" alt="">' : '<div class="letra">' + escHtml(nome.charAt(0).toUpperCase()) + "</div>") + "</div></div>";
+    f.innerHTML = '<div class="raios"></div><div class="rev">' + fotoHtml + '<div class="tx"><small>' + escHtml(an.rotulo || "") + '</small><div class="ven">' +
+      escHtml(RESULTADO[an.tipo] || "Vencedor(a)") + '</div><div class="nome' + (nome.length > 12 ? " longo" : "") + '">' + escHtml(nome) + "</div>" +
+      (an.detalhe ? '<div class="det">' + escHtml(an.detalhe) + "</div>" : "<div></div>") +
+      (an.premio ? '<div><span class="pr">Prêmio: ' + escHtml(an.premio) + "</span></div>" : "<div></div>") +
+      '<span class="parab">Parabéns!</span></div></div><div class="clarao vai"></div>';
+    confete(f, 110);
+    const mais = setInterval(() => { if (f.parentNode) confete(f, 30); }, 2500);
+    setTimeout(() => {
+      clearInterval(mais);
+      f.className += " sai";
+      setTimeout(() => { if (f.parentNode) f.parentNode.removeChild(f); festaRodando = false; proximo(); }, 800);
+    }, 16000);
+  }
+  function confete(box, n) {
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const cores = ["#ffc94d", "#ff3fa4", "#a95cf2", "#3ddc97", "#7cc6fe", "#f6efe6", "#ff5a1f"];
+    for (let i = 0; i < n; i++) {
+      const c = document.createElement("i");
+      c.className = "confete";
+      c.style.left = (Math.random() * 100) + "%";
+      c.style.background = cores[i % cores.length];
+      c.style.setProperty("--dx", "calc(var(--u) * " + (Math.random() * 16 - 8).toFixed(1) + ")");
+      c.style.setProperty("--rot", (Math.random() * 900 - 450).toFixed(0) + "deg");
+      c.style.animationDuration = (3 + Math.random() * 3).toFixed(2) + "s";
+      c.style.animationDelay = (Math.random() * 1.2).toFixed(2) + "s";
+      if (i % 3 === 0) { c.style.borderRadius = "50%"; c.style.height = c.style.width; }
+      box.appendChild(c);
+      setTimeout(() => { if (c.parentNode) c.parentNode.removeChild(c); }, 7600);
+    }
   }
 
   // Conta pros celulares onde cada recado está na fila

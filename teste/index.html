@@ -1296,7 +1296,7 @@
   document.addEventListener("keydown", e => { if (e.key === "Escape" && menuAberto()) fecharMenu(); });
   $("#gvPerfil").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
   $("#gvSair").onclick = () => { fecharMenu(); auth.signOut(); };
-  document.querySelectorAll(".gv-item").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".gv-item[data-ir]").forEach(b => b.onclick = () => {
     const d = b.dataset.ir; fecharMenu();
     if (d === "eventos") abrirEventos();
     else if (d === "avisos") $("#btnSino").click();
@@ -1640,6 +1640,7 @@
     if (eu) card.append(el("p", "ev-mut", "Chega no balcão pra pegar teu prêmio!"));
     card.append(bt(eu ? "Bora!" : "Parabéns!", "sim", () => v.remove()));
     v.append(card); document.body.append(v);
+    setTimeout(() => { if (v.parentNode) v.remove(); }, 20000);   // fecha sozinho
     if (!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
       const cores = ["#ffc94d", "#ff3fa4", "#a95cf2", "#3ddc97", "#7cc6fe", "#f6efe6"];
       for (let i = 0; i < 70; i++) {

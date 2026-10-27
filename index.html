@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610172156">
+<link rel="stylesheet" href="estilo.css?v=202610271953">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -37,6 +37,126 @@
   .av.on::after{content:"";position:absolute;right:-1px;bottom:-1px;width:28%;height:28%;min-width:9px;min-height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 2px var(--bg)}
   .eu{background:none;border:0;padding:0;cursor:pointer;border-radius:50%}
   .rolagem{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+
+
+  /* Sino, faixas de evento e tela do evento */
+  /* Faixa "Ao vivo" (uma linha só) */
+  .aovivo{flex:none;display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid var(--line);background:linear-gradient(90deg,rgba(255,63,164,.16),rgba(169,92,242,.10) 60%,transparent);padding:10px 16px;color:var(--ink);cursor:pointer;text-align:left;font:14px/1.2 var(--f-body)}
+  .aovivo .av-ic{flex:none;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--c,var(--neon));color:#140c1b;animation:pulsoVivo 1.8s infinite}
+  @keyframes pulsoVivo{0%{box-shadow:0 0 0 0 rgba(255,63,164,.6)}70%{box-shadow:0 0 0 8px rgba(255,63,164,0)}100%{box-shadow:0 0 0 0 rgba(255,63,164,0)}}
+  .aovivo .av-rot{flex:none;font:700 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--c,var(--neon))}
+  .aovivo .av-txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+  .aovivo .av-txt.troca{animation:trocaTxt .35s ease-out}
+  @keyframes trocaTxt{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .aovivo .av-mais{flex:none;font:700 11px/1 var(--f-mono);background:rgba(255,255,255,.1);border-radius:999px;padding:4px 7px;color:var(--ink)}
+  .aovivo .av-seta{flex:none;font-style:normal;font-size:24px;line-height:1;color:var(--muted)}
+  @media (prefers-reduced-motion:reduce){.aovivo .av-ic,.aovivo .av-txt.troca{animation:none}}
+  /* Lista de eventos */
+  .ev-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;color:var(--ink);cursor:pointer}
+  .ev-card .ec-ic{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--c);color:#140c1b}
+  .ev-card .ec-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .ev-card small{font:700 10px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--c)}
+  .ev-card b{font:700 16px/1.25 var(--f-body)}
+  .ev-card span{font-size:13px;color:var(--muted)}
+  .ev-card .ec-rel{font:400 22px/1 var(--f-display);color:var(--c);font-variant-numeric:tabular-nums}
+  .ev-card .ec-novo{flex:none;font:700 9px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;background:var(--neon);color:#1d0612;border-radius:999px;padding:4px 7px}
+  .ev-card .fx-seta,.aviso-l .fx-seta{flex:none;font-style:normal;font-size:26px;line-height:1;color:var(--muted)}
+  /* Menu lateral */
+  .ponto{position:absolute;top:2px;right:2px;width:10px;height:10px;border-radius:50%;background:var(--neon);box-shadow:0 0 0 2px var(--bg)}
+  .gaveta-fundo{position:fixed;top:0;left:0;right:0;bottom:0;z-index:30;background:rgba(5,3,8,.6);animation:aparece .2s ease-out}
+  @keyframes aparece{from{opacity:0}to{opacity:1}}
+  .gaveta{position:fixed;top:0;bottom:0;right:0;z-index:31;width:min(84vw,320px);background:var(--panel2);border-left:1px solid var(--line);padding:calc(16px + env(safe-area-inset-top)) 12px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:4px;overflow-y:auto;animation:gavetaEntra .22s ease-out}
+  @keyframes gavetaEntra{from{transform:translateX(100%)}to{transform:none}}
+  .gv-topo{display:flex;align-items:center;gap:12px;padding:4px 4px 16px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+  .gv-topo > div{flex:1;min-width:0}
+  .gv-topo b{display:block;font:700 17px/1.2 var(--f-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gv-topo .eu .av{width:48px;height:48px;font-size:20px}
+  .gv-link{background:none;border:0;padding:3px 0 0;color:var(--lilas);font:600 13px var(--f-body);cursor:pointer}
+  .gv-item{display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;border-radius:12px;padding:13px 12px;color:var(--ink);font:600 15px/1.2 var(--f-body);cursor:pointer;text-align:left}
+  .gv-item:hover,.gv-item:focus-visible{background:rgba(255,255,255,.06)}
+  .gv-item svg{flex:none;color:var(--muted)}
+  .gv-item span{flex:1}
+  .gv-n{flex:none;font:700 11px/1 var(--f-mono);font-style:normal;background:var(--neon);color:#1d0612;border-radius:999px;padding:4px 7px;min-width:20px;text-align:center}
+  .gv-sair{margin-top:auto;border-top:1px solid var(--line);border-radius:0 0 12px 12px;color:var(--laranja)}
+  .gv-sair svg{color:var(--laranja)}
+  .gv-rodape{margin:0;padding:16px 12px 0;font-size:11px;color:var(--muted)}
+  .ev-topo{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:18px 8px 4px}
+  .ev-topo .ev-ic{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;background:var(--c);color:#140c1b;box-shadow:0 0 30px color-mix(in srgb,var(--c) 45%,transparent)}
+  .ev-topo small{font:700 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--c);margin-top:6px}
+  .ev-topo h2{margin:0;font-size:30px;line-height:1.05;text-wrap:balance}
+  .ev-premio{margin:4px 0 0;background:color-mix(in srgb,var(--c) 18%,transparent);border:1px solid var(--c);border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px}
+  .ev-bloco{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .ev-bloco h4{margin:0;font:400 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .ev-txt{margin:0;font:600 16px/1.35 var(--f-body)}
+  .ev-mut{margin:0;font-size:13px;color:var(--muted)}
+  .ev-ok{margin:0;color:var(--ok);font-weight:600}
+  .ev-passos{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+  .ev-prev{min-height:120px;border:1px dashed var(--line);border-radius:12px;display:grid;place-items:center;color:var(--muted);font-size:13px;overflow:hidden}
+  .ev-prev img{max-width:100%;max-height:260px;display:block}
+  .ev-grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .ev-foto{background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+  .ev-foto img.foto{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:0;margin:0;display:block}
+  .ev-info{padding:8px 10px 4px;min-width:0}
+  .ev-info b{display:block;font-size:13px}
+  .ev-info span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ev-foto .curtir{margin:6px 10px 10px;justify-content:center}
+  .curtir{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--neon);color:var(--neon);border-radius:999px;padding:7px 12px;font:700 13px/1 var(--f-body);cursor:pointer;font-variant-numeric:tabular-nums}
+  .curtir.feito{background:var(--neon);color:#1d0612}
+  .curtir:disabled{cursor:default}
+  .curtir:not(.feito):disabled{border-color:var(--line);color:var(--muted)}
+  .curtir.pulso svg{animation:pulso .45s ease-out}
+  @keyframes pulso{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+  .ev-op{position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--ink);font:600 15px/1.2 var(--f-body);cursor:pointer}
+  .ev-op i{position:absolute;top:0;left:0;bottom:0;background:rgba(169,92,242,.28);transition:width .4s}
+  .ev-op span,.ev-op b{position:relative}
+  .ev-op.meu{border-color:var(--lilas);box-shadow:0 0 0 1px var(--lilas) inset}
+  .ev-relogio{text-align:center;font:400 64px/1 var(--f-display);font-variant-numeric:tabular-nums;color:#ffd166;padding:10px 0}
+
+  .kr-linha{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+  .ev-bloco h4 + .kr-linha{border-top:0}
+  .kr-linha.eu .kr-t b{color:var(--neon)}
+  .kr-pos{flex:none;min-width:58px;font:700 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .kr-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .kr-t b{font-size:15px}
+  .kr-t span{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .kr-agora{background:rgba(124,198,254,.12);border:1px solid #7cc6fe;border-radius:12px;padding:10px}
+  .kr-agora .kr-pos{color:#7cc6fe}
+  .kr-agora .kr-t b{font-size:18px}
+  .kr-prox .kr-pos{color:var(--neon)}
+  .kr-grande{font-size:17px}
+  .ev-erro{margin:0;color:var(--laranja);font-size:13px;font-weight:600}
+  .ev-musica{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:8px;font-size:14px}
+  .ev-musica span{color:var(--muted);font-size:12px;flex:none}
+  .selo-acao{align-self:flex-start;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);border:1px solid var(--c);border-radius:999px;font:700 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 9px}
+  .aviso-l{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--ink);cursor:pointer;font:14px/1.35 var(--f-body)}
+  .aviso-l.nova{border-color:var(--neon);background:rgba(255,63,164,.07)}
+  .aviso-l.ev{border-left:4px solid var(--c)}
+  .aviso-l.ev.nova{border-color:var(--c)}
+  .aviso-l .av-ic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--c);color:#140c1b}
+  .aviso-l .av-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .aviso-l small{font-size:12px;color:var(--muted)}
+
+
+  /* Cartão de vencedor */
+  .vence{position:fixed;top:0;left:0;right:0;bottom:0;z-index:45;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(70% 50% at 50% 40%,rgba(255,201,77,.28),transparent 70%),rgba(6,4,10,.95);overflow:hidden;animation:aparece .3s ease-out}
+  .vence .card-v{position:relative;width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+  .vence .coroa-v{width:84px;color:#ffc94d;filter:drop-shadow(0 0 12px rgba(255,201,77,.8));animation:coroaV .9s .2s cubic-bezier(.2,1.5,.4,1) both;margin-bottom:-14px;position:relative;z-index:1}
+  @keyframes coroaV{from{opacity:0;transform:translateY(-30px) rotate(-20deg)}to{opacity:1;transform:rotate(-6deg)}}
+  .vence .ft-v{width:200px;height:200px;border-radius:22px;overflow:hidden;border:5px solid #ffc94d;box-shadow:0 0 40px rgba(255,201,77,.6);background:var(--panel);animation:surgeV .7s cubic-bezier(.2,1.4,.4,1) both;display:grid;place-items:center;font:700 80px/1 var(--f-body);color:#2a1c00}
+  .vence .ft-v.redondo{border-radius:50%;background:#ffc94d}
+  .vence .ft-v img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0;margin:0;max-height:none}
+  .vence .ft-v .av{width:100%;height:100%;font-size:80px;border-radius:0}
+  @keyframes surgeV{from{opacity:0;transform:scale(.4) rotate(-10deg)}to{opacity:1;transform:rotate(-2deg)}}
+  .vence small{font:700 11px/1 var(--f-mono);letter-spacing:.18em;text-transform:uppercase;color:#ffc94d;margin-top:8px}
+  .vence .tit-v{font:400 22px/1 var(--f-display);text-transform:uppercase;color:var(--ink);letter-spacing:.04em}
+  .vence .nome-v{font:400 54px/.95 var(--f-display);text-transform:uppercase;color:#ffc94d;text-shadow:0 0 20px rgba(255,201,77,.45);overflow-wrap:anywhere}
+  .vence .nome-v.longo{font-size:38px}
+  .vence .det-v{font-weight:700;font-size:15px}
+  .vence .pr-v{background:#ffc94d;color:#2a1c00;border-radius:999px;padding:7px 16px;font-weight:700;font-size:14px}
+  .vence .eu-v{font:400 64px/1 var(--f-logo);color:var(--neon);text-shadow:0 0 18px rgba(255,63,164,.6)}
+  .vence .bt{width:100%;margin-top:10px}
+  .vence .conf{position:absolute;top:-20px;width:8px;height:14px;animation:caiV linear forwards;pointer-events:none}
+  @keyframes caiV{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--rot))}}
 
   /* Login */
   #tLogin{justify-content:center;padding:28px 24px;gap:14px;overflow-y:auto;background:radial-gradient(70% 45% at 50% 18%,rgba(255,63,164,.22),transparent 70%),radial-gradient(60% 40% at 50% 100%,rgba(169,92,242,.25),transparent 70%),var(--bg)}
@@ -218,9 +338,17 @@
   <div class="tela" id="tHome" hidden>
     <div class="appbar">
       <div class="logo"><img src="logo.svg?v=3" alt="trela"></div>
-      <button class="eu" id="btnEu" type="button" aria-label="Teu perfil"></button>
+      <button class="ico" id="btnSino" type="button" aria-label="Notificações"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="badge" id="badgeSino" hidden></span></button>
       <button class="ico" id="btnGalera" type="button" aria-label="Amigos e conversas"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg><span class="badge" id="badge" hidden></span></button>
+      <button class="ico" id="btnMenu" type="button" aria-label="Menu" aria-expanded="false" aria-controls="gaveta"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="ponto" id="pontoMenu" hidden></span></button>
     </div>
+    <button type="button" class="aovivo" id="aoVivo" hidden aria-label="Eventos da noite">
+      <span class="av-ic" id="aoVivoIc" aria-hidden="true"></span>
+      <span class="av-rot">Ao vivo</span>
+      <span class="av-txt" id="aoVivoTxt"></span>
+      <span class="av-mais" id="aoVivoMais" hidden></span>
+      <i class="av-seta" aria-hidden="true">›</i>
+    </button>
     <div class="rolagem" id="homeScroll">
       <form id="sendForm" novalidate style="display:flex;flex-direction:column;gap:12px">
         <h2>Manda pro <em>telão</em></h2>
@@ -277,6 +405,26 @@
     </form>
   </div>
 
+  <!-- Notificações (sino) -->
+  <div class="tela sub" id="tAvisos" hidden>
+    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Notificações</h3></div>
+    <div class="rolagem" id="avisosScroll"></div>
+  </div>
+
+  <!-- Lista de eventos da noite -->
+  <div class="tela sub" id="tEventos" hidden>
+    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Eventos da noite</h3></div>
+    <div class="rolagem" id="eventosScroll"></div>
+  </div>
+
+  <!-- Evento (ação especial) -->
+  <div class="tela sub" id="tEvento" hidden>
+    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3 id="eventoTit">Evento</h3></div>
+    <div class="rolagem" id="eventoScroll"></div>
+    <input id="evFoto" type="file" accept="image/*" hidden>
+    <input id="evFotoCam" type="file" accept="image/*" capture="environment" hidden>
+  </div>
+
   <!-- Galera -->
   <div class="tela sub" id="tGalera" hidden>
     <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Galera</h3></div>
@@ -308,6 +456,19 @@
     </form>
   </div>
 
+  <!-- Menu lateral (≡) -->
+  <div class="gaveta-fundo" id="gavetaFundo" hidden></div>
+  <nav class="gaveta" id="gaveta" aria-label="Menu" hidden>
+    <div class="gv-topo">
+      <button class="eu" id="btnEu" type="button" aria-label="Teu perfil"></button>
+      <div><b id="gvNome"></b><button type="button" class="gv-link" id="gvPerfil">Ver e editar perfil</button></div>
+      <button class="ico" id="gvFechar" type="button" aria-label="Fechar menu">×</button>
+    </div>
+    <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
+    <button type="button" class="gv-item gv-sair" id="gvSair"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span>Sair da conta</span></button>
+    <p class="gv-rodape">Trela</p>
+  </nav>
+
   <div class="veu" id="veu" hidden><div class="folha" id="folha"></div></div>
   <div class="toast" id="toast" hidden role="status"></div>
 </div>
@@ -315,8 +476,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610172156"></script>
-<script src="comum.js?v=202610172156"></script>
+<script src="config.js?v=202610271953"></script>
+<script src="comum.js?v=202610271953"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -330,7 +491,14 @@
     posts: [], postsMap: new Map(),
     amizades: new Map(),   // outroUid -> { status, de, para }
     conversas: new Map(),  // outroUid -> { ultima, lidaPor }
-    avisos: [],            // marcações não lidas
+    avisos: [],            // notificações não lidas
+    avisosTodos: [],       // últimas notificações (lidas ou não) pro sino
+    acoes: {},             // eventos ligados no balcão (config/acoes)
+    postsAcao: [],         // fotos do concurso/desafio desta noite
+    curti: new Set(),      // fotos que eu já curti
+    jaConcorri: false,     // já tenho foto no concurso desta noite
+    votos: [], meuVoto: null,   // enquete atual
+    karaoke: [],           // fila do karaokê desta noite (todo mundo vê)
     bloqueados: new Set(),
     noBar: []              // perfis que abriram o app nas últimas 3 h
   };
@@ -477,6 +645,7 @@
     else voltarTela();
   }
   window.addEventListener("popstate", e => {
+    if (menuAberto()) { fecharMenu(); try { history.pushState({ trela: 1, n: pilha.length }, ""); } catch (err) {} return; }
     // Com uma janelinha aberta (perfil, menu, confirmação), o voltar só fecha ela
     if (!$("#veu").hidden && !folhaObrigatoria) {
       fecharFolha();
@@ -503,6 +672,12 @@
     t.onclick = () => { t.hidden = true; aoTocar && aoTocar(); };
     clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3500);
   }
+  function toastEvento(e) {
+    const t = $("#toast"), ic = el("span", "av p"); ic.innerHTML = e.m.ic.replace('width="22" height="22"', 'width="16" height="16"'); ic.style.setProperty("--c", e.m.cor); ic.style.color = "#140c1b";
+    t.replaceChildren(ic, el("span", "", "Começou: " + e.m.rotulo + " · " + e.m.titulo(e.c))); t.hidden = false;
+    t.onclick = () => { t.hidden = true; abrirEvento(e.k); };
+    clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 5000);
+  }
   function erroToast(texto) { const t = $("#toast"); t.replaceChildren(el("span", "", texto)); t.style.borderColor = "var(--laranja)"; t.hidden = false; t.onclick = () => t.hidden = true; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; t.style.borderColor = ""; }, 3500); }
 
   let redesenhoAgendado = false;
@@ -513,7 +688,10 @@
       if (!EU) return;
       renderBadge(); desenharEu();
       const t = telaAtual();
-      if (t === "tHome") { renderFeed(); checarMais(); }
+      if (t === "tHome") { renderFaixas(); renderFeed(); checarMais(); }
+      if (t === "tEvento") renderEvento();
+      if (t === "tEventos") renderEventos();
+      if (t === "tAvisos") renderAvisos();
       if (t === "tGalera") renderGalera();
       if (t === "tPerfil") renderPerfil();
       if (t === "tComs") renderComs();
@@ -699,11 +877,57 @@
 
     // Marcações
     let primeiroAviso = true;
-    parar.push(db.collection("avisos").doc(uid).collection("itens").where("lida", "==", false).limit(30).onSnapshot(snap => {
-      S.avisos = snap.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() })).sort((a, b) => ms(b.criado) - ms(a.criado));
-      if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added").forEach(c => { const a = c.doc.data(); toast(a.de, a.deNome + " te marcou num comentário", () => { c.doc.ref.update({ lida: true }); abrirComentarios(a.postId); }); });
+    parar.push(db.collection("avisos").doc(uid).collection("itens").orderBy("criado", "desc").limit(30).onSnapshot(snap => {
+      S.avisosTodos = snap.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() }));
+      S.avisos = S.avisosTodos.filter(a => !a.lida);
+      if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added" && !c.doc.data().lida).forEach(c => { const a = c.doc.data();
+        if (a.tipo === "curtida") return toast(a.de, a.deNome + " curtiu tua foto", () => { c.doc.ref.update({ lida: true }); abrirPerfil(a.de); });
+        toast(a.de, a.deNome + " te marcou num comentário", () => { c.doc.ref.update({ lida: true }); abrirComentarios(a.postId); }); });
       primeiroAviso = false; redesenhar();
     }, () => {}));
+
+    // ---- Eventos ligados no balcão ----
+    let primeiraConfig = true, pararPostsAcao = null, pararVotos = null, votosDe = null;
+    parar.push(db.doc("config/acoes").onSnapshot(d => {
+      const antes = S.acoes; S.acoes = d.exists ? d.data() : {};
+      // avisa na hora quando a equipe liga algo novo
+      if (!primeiraConfig) eventosAtivos().filter(e => !(antes[e.k] && antes[e.k].ativo) || chaveEvento(e.k, e.c) !== chaveEvento(e.k, antes[e.k] || {}))
+        .forEach(e => toastEvento(e));
+      primeiraConfig = false;
+      talvezMostrarVencedor();
+      // fotos do concurso/desafio só quando um dos dois está ligado
+      const precisa = !!((S.acoes.concurso && S.acoes.concurso.ativo) || (S.acoes.desafio && S.acoes.desafio.ativo));
+      if (precisa && !pararPostsAcao) pararPostsAcao = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
+        S.postsAcao = q.docs.map(x => ({ id: x.id, ...x.data() })).filter(r => r.acao && r.fotoId); redesenhar();
+      }, () => {}));
+      if (!precisa && pararPostsAcao) { pararPostsAcao(); pararPostsAcao = null; S.postsAcao = []; }
+      // votos da enquete atual
+      const enq = S.acoes.enquete && S.acoes.enquete.ativo && S.acoes.enquete.id;
+      if (enq !== votosDe) {
+        if (pararVotos) pararVotos(); pararVotos = null; votosDe = enq; S.votos = []; S.meuVoto = null;
+        if (enq) pararVotos = db.collection("enquetes").doc(enq).collection("votos").onSnapshot(q => {
+          S.votos = q.docs.map(x => x.data().opcao); const m = q.docs.find(x => x.id === uid); S.meuVoto = m ? m.data().opcao : null; redesenhar();
+        }, () => {});
+      }
+      redesenhar();
+    }, () => {}));
+    parar.push(() => { if (pararPostsAcao) pararPostsAcao(); if (pararVotos) pararVotos(); pararPostsAcao = pararVotos = null; votosDe = null; });
+    parar.push(db.collection("curtidas").where("de", "==", uid).onSnapshot(q => { q.docs.forEach(x => S.curti.add(x.data().post)); redesenhar(); }, () => {}));
+    parar.push(ouvirNoite(() => db.doc("concorrentes/" + chaveNoite() + "_" + uid).onSnapshot(x => { S.jaConcorri = x.exists; redesenhar(); }, () => {})));
+    // Fila do karaokê (todo mundo vê) + aviso quando chega a minha vez
+    let minhaVezAntes = null;
+    parar.push(ouvirNoite(desde => db.collection("karaoke").where("criado", ">=", desde).orderBy("criado").onSnapshot(q => {
+      S.karaoke = q.docs.map(x => ({ id: x.id, ...x.data() }));
+      const fila = karaokeFila(), agora = karaokeAgora();
+      const minha = agora && agora.autor === uid ? "cantando" : (fila[0] && fila[0].autor === uid ? "proximo" : null);
+      if (minha && minha !== minhaVezAntes && S.acoes.karaoke && S.acoes.karaoke.ativo) {
+        if (minha === "cantando") toastKaraoke("Tua vez! Sobe pro palco e solta a voz");
+        else if (!agora) toastKaraoke("O palco tá livre e tu é o primeiro! Toca aqui pra começar");
+        else toastKaraoke("Tu é o próximo no karaokê. Vai se preparando!");
+        if (navigator.vibrate) try { navigator.vibrate([200, 100, 200]); } catch (e) {}
+      }
+      minhaVezAntes = minha; S.karaokeErro = ""; redesenhar();
+    }, e => { console.warn("[Trela] fila do karaokê", e && e.code); S.karaokeErro = e && e.code === "permission-denied" ? "regras" : "rede"; redesenhar(); })));
 
     // Bloqueios que eu fiz
     parar.push(db.collection("bloqueios").where("de", "==", uid).onSnapshot(snap => {
@@ -729,7 +953,7 @@
   }
 
   function desenharEu() { if (!EU) return; const b = $("#btnEu"); b.replaceChildren(avatar(EU.uid)); b.title = EU.nome; }
-  $("#btnEu").onclick = abrirMeuPerfil;
+  $("#btnEu").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
   function abrirMeuPerfil() {
     const inp = el("input"); inp.maxLength = 20; inp.value = EU.nome; inp.setAttribute("aria-label", "Teu nome");
     const metodo = (auth.currentUser.providerData[0] || {}).providerId === "google.com" ? "Google" : "e-mail";
@@ -935,6 +1159,7 @@
       q.onclick = () => r.autor && abrirPerfil(r.autor);
       card.append(q);
     }
+    if (r.acao && EVENTOS[r.acao]) { const tag = el("span", "selo-acao", EVENTOS[r.acao].rotulo); tag.style.setProperty("--c", EVENTOS[r.acao].cor); card.append(tag); }
     if (r.fotoId) card.append(imgFoto(r.fotoId, "Foto de " + r.nome));
     if (r.texto) card.append(el("p", "msg", r.texto));
     const linha = el("div", "linha");
@@ -965,7 +1190,468 @@
     reagi[r.id] = { ...(reagi[r.id] || {}), [k]: true }; guardado.salvar("trela-reagi", reagi);
     b.setAttribute("aria-pressed", "true");
     db.doc("telao/" + r.id).update({ ["reacoes." + k]: FS.FieldValue.increment(1) }).catch(() => {});
+    if (k === "amor" && r.fotoId && r.autor && r.autor !== EU.uid) {
+      S.curti.add(r.id);
+      db.doc("curtidas/" + r.id + "_" + EU.uid).set({ post: r.id, de: EU.uid, para: r.autor, criado: agoraServidor() })
+        .then(() => db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "curtida", de: EU.uid, deNome: EU.nome, postId: r.id, texto: (r.texto || "").slice(0, 60), criado: agoraServidor(), lida: false }))
+        .catch(() => {});
+    }
   }
+
+  // =================== EVENTOS (ações especiais ligadas no balcão) ===================
+  // O balcão liga/desliga em config/acoes. Aqui: faixa no topo da home, tela de cada evento e o sino.
+  const SVG = (p, w) => '<svg viewBox="0 0 24 24" width="' + (w || 22) + '" height="' + (w || 22) + '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+  const EVENTOS = {
+    concurso: { cor: "var(--neon)", rotulo: "Concurso", ic: SVG('<path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>'),
+      titulo: c => c.nome || "Concurso de fotos", resumo: c => "Manda tua foto pra concorrer e curte as da galera" },
+    desafio: { cor: "var(--laranja)", rotulo: "Desafio", ic: SVG('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/>'),
+      titulo: c => c.titulo || "Desafio da noite", resumo: c => c.premio ? "Prêmio: " + c.premio : "Cumpre o desafio e manda a foto" },
+    enquete: { cor: "var(--lilas)", rotulo: "Enquete", ic: SVG('<path d="M5 20V10M12 20V4M19 20v-7"/>'),
+      titulo: c => c.pergunta || "Enquete", resumo: c => "Toca pra votar" },
+    sorteio: { cor: "var(--ok)", rotulo: "Sorteio", ic: SVG('<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/>'),
+      titulo: c => c.premio ? "Sorteio: " + c.premio : "Vai rolar sorteio!", resumo: c => "Toca pra ver como participar" },
+    karaoke: { cor: "#7cc6fe", rotulo: "Karaokê", ic: SVG('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>'),
+      titulo: c => karaokeAgora() ? "Cantando: " + karaokeAgora().nome : "Karaokê aberto", resumo: c => karaokeProximo() ? "Próximo: " + karaokeProximo().nome : "Entra na fila e escolhe tua música" },
+    contagem: { cor: "#ffd166", rotulo: "Contagem", ic: SVG('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'),
+      titulo: c => c.titulo || "Falta pouco", resumo: c => "" }
+  };
+  const ORDEM_EV = ["concurso", "desafio", "enquete", "sorteio", "contagem", "karaoke"];
+  const chaveNoite = () => { const d = inicioDaNoite(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+  const chaveEvento = (k, c) => k + ":" + (ms(c.desde) || 0) + (k === "enquete" ? ":" + (c.id || "") : "");
+  let eventosVistos = guardado.ler("trela-eventos-vistos", {});
+  const eventosAtivos = () => ORDEM_EV.filter(k => S.acoes[k] && S.acoes[k].ativo).map(k => ({ k, c: S.acoes[k], m: EVENTOS[k] }));
+  const eventoNovo = e => !eventosVistos[chaveEvento(e.k, e.c)];
+  function marcarEventoVisto(e) { eventosVistos[chaveEvento(e.k, e.c)] = 1; guardado.salvar("trela-eventos-vistos", eventosVistos); }
+
+  function ate(c) { return c && c.ate && c.ate.toDate ? c.ate.toDate() : null; }
+  function faltam(d) {
+    const s = Math.max(0, Math.round((d - Date.now()) / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
+    return s <= 0 ? "Acabou!" : (h ? h + ":" + String(m).padStart(2, "0") : String(m)) + ":" + String(ss).padStart(2, "0");
+  }
+  // Atualiza todos os relógios da tela a cada segundo
+  setInterval(() => {
+    const d = ate(S.acoes.contagem); if (!d) return;
+    document.querySelectorAll(".cont-relogio").forEach(x => x.textContent = faltam(d));
+  }, 1000);
+
+  // ---- Faixa "Ao vivo" (uma linha que alterna entre os eventos ligados) ----
+  let aoVivoI = 0;
+  function textoEvento(e) {
+    if (e.k === "contagem") { const d = ate(e.c); return e.m.titulo(e.c) + (d ? " " + faltam(d) : ""); }
+    const t = e.m.titulo(e.c);
+    return t.toLowerCase().startsWith(e.m.rotulo.toLowerCase()) ? t : e.m.rotulo + " · " + t;
+  }
+  function renderAoVivo(trocar) {
+    const evs = eventosAtivos(), b = $("#aoVivo");
+    b.hidden = !evs.length; if (!evs.length) return;
+    const e = evs[aoVivoI % evs.length], t = $("#aoVivoTxt");
+    b.style.setProperty("--c", e.m.cor);
+    $("#aoVivoIc").innerHTML = e.m.ic.replace('width="22" height="22"', 'width="16" height="16"');
+    t.textContent = textoEvento(e);
+    if (trocar) { t.classList.remove("troca"); void t.offsetWidth; t.classList.add("troca"); }
+    const novos = evs.filter(eventoNovo).length;
+    $("#aoVivoMais").hidden = evs.length < 2; $("#aoVivoMais").textContent = (aoVivoI % evs.length + 1) + "/" + evs.length;
+    b.setAttribute("aria-label", "Ao vivo: " + evs.map(x => x.m.rotulo).join(", ") + (novos ? ". " + novos + " novo" + (novos > 1 ? "s" : "") : "") + ". Abrir eventos");
+  }
+  setInterval(() => {
+    const evs = EU ? eventosAtivos() : [];
+    if (evs.length > 1) { aoVivoI++; renderAoVivo(true); }
+    else if (evs.length === 1 && evs[0].k === "contagem") renderAoVivo(false);
+  }, 4000);
+  $("#aoVivo").onclick = () => { const evs = eventosAtivos(); evs.length === 1 ? abrirEvento(evs[0].k) : abrirEventos(); };
+  const renderFaixas = () => renderAoVivo(false);
+
+  // ---- Lista de eventos ----
+  function abrirEventos() { ir("tEventos"); renderEventos(); }
+  function renderEventos() {
+    const evs = eventosAtivos(), out = [];
+    if (!evs.length) out.push(el("div", "vazio", "Nenhum evento rolando agora. Quando a equipe começar algum, aparece aqui e no sino."));
+    evs.forEach(e => {
+      const c = el("button", "ev-card"); c.type = "button"; c.style.setProperty("--c", e.m.cor);
+      const ic = el("span", "ec-ic"); ic.innerHTML = e.m.ic;
+      const t = el("span", "ec-t"); t.append(el("small", "", e.m.rotulo), el("b", "", e.m.titulo(e.c)));
+      if (e.k === "contagem") { const d = ate(e.c); t.append(el("span", "ec-rel cont-relogio", d ? faltam(d) : "")); }
+      else if (e.m.resumo(e.c)) t.append(el("span", "", e.m.resumo(e.c)));
+      c.append(ic, t); if (eventoNovo(e)) c.append(el("em", "ec-novo", "Novo"));
+      c.append(el("i", "fx-seta", "›"));
+      c.onclick = () => abrirEvento(e.k);
+      out.push(c);
+    });
+    $("#eventosScroll").replaceChildren(...out);
+  }
+
+  // ---- Menu lateral (≡) ----
+  const menuAberto = () => !$("#gaveta").hidden;
+  function abrirMenu() {
+    $("#gvNome").textContent = EU ? EU.nome : ""; desenharEu();
+    $("#gaveta").hidden = false; $("#gavetaFundo").hidden = false; $("#btnMenu").setAttribute("aria-expanded", "true");
+    renderBadge();
+    setTimeout(() => { const f = $("#gaveta").querySelector(".gv-item"); if (f) f.focus(); }, 50);
+  }
+  function fecharMenu() { $("#gaveta").hidden = true; $("#gavetaFundo").hidden = true; $("#btnMenu").setAttribute("aria-expanded", "false"); }
+  $("#btnMenu").onclick = abrirMenu;
+  $("#gvFechar").onclick = fecharMenu;
+  $("#gavetaFundo").onclick = fecharMenu;
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && menuAberto()) fecharMenu(); });
+  $("#gvPerfil").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
+  $("#gvSair").onclick = () => { fecharMenu(); auth.signOut(); };
+  document.querySelectorAll(".gv-item[data-ir]").forEach(b => b.onclick = () => {
+    const d = b.dataset.ir; fecharMenu();
+    if (d === "eventos") abrirEventos();
+    else if (d === "avisos") $("#btnSino").click();
+    else if (d === "galera") abrirGalera();
+    else if (d === "feed") { while (pilha.length > 1) voltarTela(); setTimeout(() => $("#homeScroll").scrollTo({ top: $("#feedTitle").offsetTop - 10, behavior: "smooth" }), 50); }
+    else if (d === "telao") { while (pilha.length > 1) voltarTela(); setTimeout(() => { $("#homeScroll").scrollTo({ top: 0, behavior: "smooth" }); $("#texto").focus({ preventScroll: true }); }, 50); }
+    else if (d === "instalar") { while (pilha.length > 1) voltarTela(); $("#instalar").hidden = false; $("#homeScroll").scrollTo({ top: $("#instalar").offsetTop - 10, behavior: "smooth" }); }
+  });
+
+  // ---- Tela do evento ----
+  let eventoAberto = null, fotoEvento = null;
+  function abrirEvento(k) {
+    const e = eventosAtivos().find(x => x.k === k); if (!e) return;
+    marcarEventoVisto(e); eventoAberto = k; fotoEvento = null;
+    ir("tEvento"); renderEvento(); renderFaixas(); renderBadge();
+  }
+  const pBloco = (titulo, ...filhos) => { const b = el("section", "ev-bloco"); if (titulo) b.append(el("h4", "", titulo)); b.append(...filhos); return b; };
+  function renderEvento() {
+    const e = eventosAtivos().find(x => x.k === eventoAberto);
+    const sc = $("#eventoScroll");
+    if (!e) { $("#eventoTit").textContent = "Evento"; return sc.replaceChildren(el("div", "vazio", "Esse evento foi encerrado pela equipe. Fica de olho no sino pros próximos!")); }
+    const { k, c, m } = e;
+    $("#eventoTit").textContent = m.rotulo;
+    const topo = el("div", "ev-topo"); topo.style.setProperty("--c", m.cor);
+    const ic = el("span", "ev-ic"); ic.innerHTML = m.ic.replace('width="22" height="22"', 'width="30" height="30"');
+    topo.append(ic, el("small", "", m.rotulo), el("h2", "", m.titulo(c)));
+    const out = [topo];
+    const premio = c.premio ? el("p", "ev-premio", "Prêmio: " + c.premio) : null;
+
+    if (k === "concurso") {
+      if (premio) topo.append(premio);
+      out.push(pBloco("Como funciona", passos([
+        "Manda uma foto tua marcando pra concorrer. Só vale uma foto por pessoa nesta noite.",
+        "A galera curte as fotos aqui ou no Rolou hoje. Cada pessoa curte cada foto uma vez.",
+        "A foto com mais curtidas leva" + (c.premio ? " o prêmio" : "") + ". O resultado sai no telão."])));
+      out.push(S.jaConcorri ? pBloco("Tua foto", el("p", "ev-ok", "Tua foto já está concorrendo. Agora é chamar a galera pra curtir!")) : blocoMandarFoto("concurso", "Mandar minha foto pro concurso"));
+      out.push(pBloco("Fotos concorrendo", gradeFotos("concurso", "Ninguém mandou ainda. Manda a primeira!")));
+    }
+    if (k === "desafio") {
+      if (premio) topo.append(premio);
+      out.push(pBloco("O desafio", el("p", "ev-txt", c.titulo || ""), c.regras ? el("p", "ev-mut", c.regras) : el("span")));
+      out.push(pBloco("Como participar", passos(["Cumpre o desafio e tira a foto.", "Manda a foto por aqui. Ela vai pro telão e pro Rolou hoje.", "A equipe escolhe quem mandou melhor e anuncia no telão."])));
+      out.push(blocoMandarFoto("desafio", "Mandar minha foto do desafio"));
+      out.push(pBloco("Quem já mandou", gradeFotos("desafio", "Ninguém mandou ainda. Sai na frente!")));
+    }
+    if (k === "enquete") out.push(blocoEnquete(c));
+    if (k === "sorteio") {
+      const regra = { agora: "Pra participar é só estar com o app do Trela aberto na hora do sorteio.", postou: "Participa quem mandou um recado ou foto pro telão nesta noite.",
+        desafio: "Participa quem mandou foto pro desafio da noite.", concurso: "Participa quem está com foto no concurso." }[c.quem || "agora"];
+      out.push(pBloco("Como participar", el("p", "ev-txt", regra), el("p", "ev-mut", "A equipe sorteia na hora e o nome aparece no telão.")));
+      const ir2 = c.quem === "postou" ? bt("Mandar um recado pro telão", "sim", () => { voltar(); setTimeout(() => $("#texto").focus(), 300); })
+        : (c.quem === "desafio" || c.quem === "concurso") && S.acoes[c.quem] && S.acoes[c.quem].ativo ? bt("Ir pro " + EVENTOS[c.quem].rotulo.toLowerCase(), "sim", () => abrirEvento(c.quem)) : null;
+      if (ir2) out.push(ir2);
+    }
+    if (k === "karaoke") out.push(blocoKaraoke());
+    if (k === "contagem") {
+      const d = ate(c);
+      const r = el("div", "ev-relogio cont-relogio", d ? faltam(d) : "--:--");
+      out.push(pBloco("", r, el("p", "ev-mut", d ? "Até as " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "")));
+    }
+    // não perde o que está sendo digitado quando chega dado novo
+    const guard = {}, foco = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.k : null;
+    sc.querySelectorAll("input[data-k]").forEach(i => guard[i.dataset.k] = i.value);
+    sc.replaceChildren(...out);
+    sc.querySelectorAll("input[data-k]").forEach(i => { if (guard[i.dataset.k] != null) i.value = guard[i.dataset.k]; if (foco === i.dataset.k) i.focus(); });
+  }
+  function passos(lista) { const ol = el("ol", "ev-passos"); lista.forEach(t => ol.append(el("li", "", t))); return ol; }
+
+  // Mandar foto pro concurso/desafio
+  function blocoMandarFoto(acao, rotulo) {
+    const b = pBloco("Participar");
+    const prev = el("div", "ev-prev"); 
+    if (fotoEvento && fotoEvento.acao === acao) { const im = el("img"); im.src = fotoEvento.data; im.alt = "Prévia"; prev.append(im); } else prev.append(el("span", "", "Nenhuma foto escolhida"));
+    const bts = el("div", "foto-botoes");
+    const cam = el("button", "foto-bt"); cam.type = "button"; cam.innerHTML = SVG('<path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>', 18) + "Tirar foto";
+    const gal = el("button", "foto-bt"); gal.type = "button"; gal.innerHTML = SVG('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/>', 18) + "Galeria";
+    const usar = async f => { if (!f) return; try { fotoEvento = { acao, data: await comprimirFoto(f) }; renderEvento(); } catch (e) { erroToast("Não deu pra abrir essa foto. Tenta outra."); } };
+    cam.onclick = async () => usar(await abrirCamera(false, $("#evFotoCam")));
+    gal.onclick = () => { $("#evFoto").onchange = ev => { usar(ev.target.files[0]); ev.target.value = ""; }; $("#evFoto").click(); };
+    $("#evFotoCam").onchange = ev => { usar(ev.target.files[0]); ev.target.value = ""; };
+    bts.append(cam, gal);
+    const leg = el("input"); leg.dataset.k = "leg-" + acao; leg.maxLength = 80; leg.placeholder = "Legenda (opcional)"; leg.setAttribute("aria-label", "Legenda");
+    const envia = bt(rotulo, "sim", async () => {
+      if (!fotoEvento || fotoEvento.acao !== acao) return erroToast("Escolhe uma foto primeiro.");
+      const texto = leg.value.trim();
+      if (motivoSuspeito(texto)) return erroToast("Tira palavrão, link ou telefone da legenda.");
+      envia.disabled = true; envia.textContent = "Mandando…";
+      let etapa = "foto";
+      try {
+        const fotoId = (await db.collection("fotos").add({ data: fotoEvento.data, criado: agoraServidor() })).id;
+        etapa = "post";
+        const ref = db.collection("telao").doc();
+        const post = { tipo: "foto", autor: EU.uid, nome: EU.nome, texto, cor, criado: agoraServidor(), reacoes: REACOES_ZERO, fotoId, acao };
+        const lote = db.batch();
+        if (acao === "concurso") {
+          post.vaga = chaveNoite() + "_" + EU.uid;
+          lote.set(db.doc("concorrentes/" + post.vaga), { post: ref.id, noite: chaveNoite(), de: EU.uid, criado: agoraServidor() });
+        }
+        lote.set(ref, post);
+        await lote.commit();
+        fotoEvento = null; toast(EU.uid, acao === "concurso" ? "Tua foto está concorrendo!" : "Foto do desafio enviada!");
+        renderEvento();
+      } catch (e) {
+        envia.disabled = false; envia.textContent = rotulo;
+        console.warn("[Trela] erro ao mandar foto do evento", etapa, e && e.code, e && e.message);
+        // Descobre o motivo de verdade antes de avisar
+        let motivo = "Não deu pra mandar. Confere a internet e tenta de novo.";
+        if (etapa === "foto") motivo = "Não deu pra enviar a foto. Tenta uma foto menor ou confere a internet.";
+        else if (e && e.code === "permission-denied") {
+          let jaTem = false;
+          if (acao === "concurso") jaTem = await db.doc("concorrentes/" + chaveNoite() + "_" + EU.uid).get().then(d => d.exists).catch(() => false);
+          motivo = jaTem ? "Tu já tem uma foto concorrendo nesta noite. Só vale uma por pessoa."
+            : "O sistema recusou o envio. Avisa a equipe: as regras novas do banco precisam ser publicadas.";
+          if (jaTem) { S.jaConcorri = true; renderEvento(); }
+        }
+        erroToast(motivo);
+      }
+    });
+    b.append(prev, bts, leg, envia);
+    return b;
+  }
+  function gradeFotos(acao, vazio) {
+    const fotos = S.postsAcao.filter(p => p.acao === acao && !(p.autor && S.bloqueados.has(p.autor)))
+      .sort((a, b) => ((b.reacoes || {}).amor || 0) - ((a.reacoes || {}).amor || 0) || ms(b.criado) - ms(a.criado));
+    if (!fotos.length) return el("div", "vazio-s", vazio);
+    const g = el("div", "ev-grade");
+    fotos.forEach(r => {
+      const card = el("div", "ev-foto");
+      const img = imgFoto(r.fotoId, "Foto de " + r.nome); card.append(img);
+      const info = el("div", "ev-info"); info.append(el("b", "", r.autor === EU.uid ? "Tu" : r.nome));
+      if (r.texto) info.append(el("span", "", r.texto));
+      card.append(info, botaoCurtir(r));
+      g.append(card);
+    });
+    return g;
+  }
+
+  // ---- Curtir (conta no concurso e avisa quem postou) ----
+  const CORACAO = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
+  function botaoCurtir(r) {
+    const n = (r.reacoes || {}).amor || 0, minha = r.autor === EU.uid, ja = S.curti.has(r.id) || !!(reagi[r.id] && reagi[r.id].amor);
+    const b = el("button", "curtir" + (ja ? " feito" : "")); b.type = "button"; b.innerHTML = CORACAO;
+    b.append(el("span", "", minha ? String(n) : (ja ? "Curtiu" : "Curtir") + (n ? " · " + n : "")));
+    b.setAttribute("aria-pressed", ja); b.setAttribute("aria-label", minha ? n + " curtidas na tua foto" : "Curtir a foto de " + r.nome);
+    if (minha || ja) b.disabled = true;
+    else b.onclick = () => { b.disabled = true; b.classList.add("feito", "pulso"); b.lastChild.textContent = "Curtiu · " + (n + 1); curtirFoto(r); };
+    return b;
+  }
+  async function curtirFoto(r) {
+    if (!r.autor || r.autor === EU.uid || S.curti.has(r.id)) return;
+    S.curti.add(r.id);
+    if (!(reagi[r.id] && reagi[r.id].amor)) {
+      reagi[r.id] = { ...(reagi[r.id] || {}), amor: true }; guardado.salvar("trela-reagi", reagi);
+      db.doc("telao/" + r.id).update({ "reacoes.amor": FS.FieldValue.increment(1) }).catch(() => {});
+    }
+    try { await db.doc("curtidas/" + r.id + "_" + EU.uid).set({ post: r.id, de: EU.uid, para: r.autor, criado: agoraServidor() }); } catch (e) { return; }
+    db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "curtida", de: EU.uid, deNome: EU.nome, postId: r.id, texto: (r.texto || "").slice(0, 60), criado: agoraServidor(), lida: false }).catch(() => {});
+  }
+
+  // ---- Enquete ----
+  function blocoEnquete(c) {
+    const ops = (c.opcoes || []).map((t, i) => ({ t, i })).filter(o => o.t);
+    const meu = S.meuVoto, total = S.votos.length;
+    const b = pBloco(meu == null ? "Escolhe uma opção" : "Resultado até agora · " + total + (total === 1 ? " voto" : " votos"));
+    ops.forEach(o => {
+      const n = S.votos.filter(v => v === o.i).length, pct = total ? Math.round(n * 100 / total) : 0;
+      const op = el("button", "ev-op" + (meu === o.i ? " meu" : "")); op.type = "button";
+      if (meu != null) { const barra = el("i"); barra.style.width = pct + "%"; op.append(barra, el("span", "", o.t), el("b", "", pct + "%")); }
+      else op.append(el("span", "", o.t));
+      op.onclick = () => votar(c, o.i);
+      b.append(op);
+    });
+    b.append(el("p", "ev-mut", meu == null ? "Um voto por pessoa. Depois dá pra trocar." : "Tu votou em “" + (ops.find(o => o.i === meu) || {}).t + "”. Toca em outra opção pra trocar."));
+    return b;
+  }
+  function votar(c, i) {
+    S.meuVoto = i; renderEvento();
+    db.collection("enquetes").doc(c.id).collection("votos").doc(EU.uid).set({ opcao: i, criado: agoraServidor() }).catch(() => erroToast("Não deu pra votar agora."));
+  }
+
+  // ---- Karaokê: a galera entra na fila, todo mundo vê quem canta e quem é o próximo ----
+  const karaokeFila = () => S.karaoke.filter(x => x.status === "fila");
+  const karaokeAgora = () => S.karaoke.filter(x => x.status === "cantando")[0] || null;
+  const karaokeProximo = () => karaokeFila()[0] || null;
+  function toastKaraoke(texto) {
+    const t = $("#toast"), ic = el("span", "av p"); ic.innerHTML = EVENTOS.karaoke.ic.replace('width="22" height="22"', 'width="16" height="16"'); ic.style.setProperty("--c", EVENTOS.karaoke.cor); ic.style.color = "#140c1b";
+    t.replaceChildren(ic, el("span", "", texto)); t.hidden = false;
+    t.onclick = () => { t.hidden = true; abrirEvento("karaoke"); };
+    clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 7000);
+  }
+  function linhaKaraoke(x, rotulo, cls) {
+    const l = el("div", "kr-linha" + (cls ? " " + cls : "") + (x.autor === EU.uid ? " eu" : ""));
+    const pos = el("span", "kr-pos", rotulo);
+    const t = el("div", "kr-t"); t.append(el("b", "", x.autor === EU.uid ? "Tu" : x.nome), el("span", "", x.musica));
+    l.append(pos, avatar(x.autor, "p"), t);
+    return l;
+  }
+  // A própria galera controla a fila
+  async function passarVez(b) {
+    const agora = karaokeAgora(), prox = karaokeProximo(); if (!agora) return;
+    b.disabled = true;
+    const lote = db.batch();
+    lote.update(db.doc("karaoke/" + agora.id), { status: "feito" });
+    if (prox) lote.update(db.doc("karaoke/" + prox.id), { status: "cantando" });
+    try { await lote.commit(); toast(EU.uid, prox ? "Mandou bem! Agora é a vez do " + prox.nome : "Mandou bem!"); }
+    catch (e) { b.disabled = false; erroToast(e && e.code === "permission-denied" ? "O banco recusou. As regras novas precisam ser publicadas." : "Não deu. Tenta de novo."); }
+  }
+  async function assumirPalco(b) {
+    const agora = karaokeAgora(), eu = karaokeFila()[0]; if (!eu || eu.autor !== EU.uid) return;
+    b.disabled = true;
+    const lote = db.batch();
+    if (agora) lote.update(db.doc("karaoke/" + agora.id), { status: "feito" });
+    lote.update(db.doc("karaoke/" + eu.id), { status: "cantando" });
+    try { await lote.commit(); }
+    catch (e) { b.disabled = false; erroToast(e && e.code === "permission-denied" ? "O banco recusou. As regras novas precisam ser publicadas." : "Não deu. Tenta de novo."); }
+  }
+  function blocoKaraoke() {
+    const w = el("div"); w.style.cssText = "display:flex;flex-direction:column;gap:12px";
+    const agora = karaokeAgora(), fila = karaokeFila(), prox = fila[0];
+    const minhaPos = fila.findIndex(x => x.autor === EU.uid), euCantando = agora && agora.autor === EU.uid;
+    // Palco: cantando agora + próximo
+    const palco = pBloco("No palco");
+    if (agora) palco.append(linhaKaraoke(agora, "Agora", "kr-agora"));
+    else palco.append(el("div", "vazio-s", "Ninguém cantando agora."));
+    if (prox) palco.append(linhaKaraoke(prox, "Próximo", "kr-prox"));
+    w.append(palco);
+    // Minha situação
+    const eu = pBloco("Tua vez");
+    if (S.karaokeErro) eu.append(el("p", "ev-erro", S.karaokeErro === "regras"
+      ? "A fila não carregou: o banco recusou. Avisa a equipe pra publicar as regras novas do karaokê."
+      : "A fila não carregou. Confere a internet e abre de novo."));
+    if (euCantando) {
+      // Quem está cantando passa a vez quando terminar
+      eu.append(el("p", "ev-ok kr-grande", "Tu tá no palco! Solta a voz."), el("p", "ev-mut", "Tua música: " + agora.musica));
+      const terminei = bt(prox ? "Terminei! Passar a vez pro " + prox.nome : "Terminei!", "sim", () => passarVez(terminei));
+      eu.append(terminei);
+    } else if (minhaPos === 0 && !agora) {
+      eu.append(el("p", "ev-ok kr-grande", "É tua vez! O palco tá livre."), el("p", "ev-mut", "Tua música: " + fila[0].musica));
+      const comecar = bt("Começar a cantar", "sim", () => assumirPalco(comecar));
+      eu.append(comecar);
+    } else if (minhaPos >= 0) {
+      eu.append(el("p", "ev-txt", minhaPos === 0 ? "Tu é o próximo! Vai se preparando." : "Tu é o " + (minhaPos + 1) + "º da fila."),
+        el("p", "ev-mut", "Tua música: " + fila[minhaPos].musica));
+      if (minhaPos === 0 && agora) {
+        const assumir = bt(agora.nome + " já terminou? Começar minha vez", "", () => assumirPalco(assumir));
+        eu.append(assumir);
+      }
+      const sair = bt("Sair da fila", "", async () => { sair.disabled = true; await db.doc("karaoke/" + fila[minhaPos].id).delete().catch(() => erroToast("Não deu pra sair agora.")); });
+      eu.append(sair);
+    } else {
+      const inp = el("input"); inp.dataset.k = "karaoke"; inp.maxLength = 80; inp.placeholder = "Música e artista. Ex.: Evidências - Chitãozinho & Xororó"; inp.setAttribute("aria-label", "Música que tu vai cantar");
+      const entra = bt("Entrar na fila", "sim", async () => {
+        const m = inp.value.trim();
+        if (m.length < 2) return erroToast("Escreve a música que tu vai cantar.");
+        if (motivoSuspeito(m)) return erroToast("Essa música não passou no filtro.");
+        entra.disabled = true;
+        try { await db.collection("karaoke").add({ autor: EU.uid, nome: EU.nome, musica: m, status: "fila", criado: agoraServidor() }); inp.value = ""; toast(EU.uid, "Tu tá na fila do karaokê!"); }
+        catch (e) {
+          console.warn("[Trela] entrar na fila", e && e.code, e && e.message);
+          erroToast(e && e.code === "permission-denied" ? "O banco recusou. Avisa a equipe: as regras novas do karaokê precisam ser publicadas." : "Não deu pra entrar na fila agora. Confere a internet.");
+          entra.disabled = false;
+        }
+      });
+      eu.append(el("p", "ev-mut", "Escolhe a música e entra na fila. O app te avisa quando tu for o próximo, e quem tá cantando passa a vez quando terminar."), inp, entra);
+    }
+    w.append(eu);
+    // Fila completa
+    const lista = pBloco("Fila" + (fila.length ? " · " + fila.length + (fila.length === 1 ? " pessoa" : " pessoas") : ""));
+    if (!fila.length) lista.append(el("div", "vazio-s", "Fila vazia. Sai na frente!"));
+    fila.forEach((x, i) => lista.append(linhaKaraoke(x, (i + 1) + "º", i === 0 ? "kr-prox-l" : "")));
+    w.append(lista);
+    return w;
+  }
+
+  // ---- Sino (notificações) ----
+  $("#btnSino").onclick = () => { ir("tAvisos"); renderAvisos(); setTimeout(lerAvisos, 1500); };
+  function lerAvisos() { S.avisos.forEach(a => a.ref.update({ lida: true }).catch(() => {})); eventosAtivos().forEach(marcarEventoVisto); renderBadge(); renderFaixas(); }
+  function contaSino() { return S.avisos.length + eventosAtivos().filter(eventoNovo).length; }
+  function textoAviso(a) {
+    if (a.tipo === "curtida") return "curtiu tua foto" + (a.texto ? ": “" + a.texto + "”" : "");
+    return "te marcou num comentário: “" + a.texto + "”";
+  }
+  function renderAvisos() {
+    const out = [], evs = eventosAtivos();
+    if (evs.length) {
+      out.push(el("div", "secao", "Rolando agora"));
+      evs.forEach(e => {
+        const l = el("button", "aviso-l ev" + (eventoNovo(e) ? " nova" : "")); l.type = "button"; l.style.setProperty("--c", e.m.cor);
+        const ic = el("span", "av-ic"); ic.innerHTML = e.m.ic;
+        const t = el("span", "av-t"); t.append(el("b", "", e.m.rotulo + ": " + e.m.titulo(e.c)), el("small", "", "Toca pra ver e participar"));
+        l.append(ic, t, el("i", "fx-seta", "›")); l.onclick = () => abrirEvento(e.k); out.push(l);
+      });
+    }
+    out.push(el("div", "secao", "Notificações"));
+    if (!S.avisosTodos.length) out.push(el("div", "vazio-s", "Nada por aqui ainda. Quando alguém te marcar ou curtir tua foto, aparece aqui."));
+    S.avisosTodos.forEach(a => {
+      const l = el("button", "aviso-l" + (a.lida ? "" : " nova")); l.type = "button";
+      const t = el("span", "av-t"); const linha = el("span", ""); linha.append(el("b", "", a.deNome + " "), textoAviso(a));
+      t.append(linha, el("small", "", horaDe(a.criado)));
+      l.append(avatar(a.de), t);
+      l.onclick = () => { a.ref.update({ lida: true }).catch(() => {}); a.tipo === "curtida" ? abrirPerfil(a.de) : abrirComentarios(a.postId); };
+      out.push(l);
+    });
+    $("#avisosScroll").replaceChildren(...out);
+  }
+
+
+  // ---- Cartão de vencedor (o balcão anuncia; aparece pra todo mundo com o app aberto) ----
+  const COROA_V = '<svg viewBox="0 0 64 40" fill="currentColor" aria-hidden="true"><path d="M4 34 0 8l16 12L32 0l16 20L64 8l-4 26z"/><rect x="4" y="35" width="56" height="5" rx="2"/></svg>';
+  let ultimoAnuncio = null, primeiroAnuncio = true;
+  function talvezMostrarVencedor() {
+    const an = S.acoes.anuncio;
+    if (!an || !an.id) { primeiroAnuncio = false; return; }
+    if (an.id === ultimoAnuncio) return;
+    const recente = an.criado && an.criado.toMillis ? Date.now() - an.criado.toMillis() < 120000 : true;
+    const visto = guardado.ler("trela-anuncio-visto", "") === an.id;
+    ultimoAnuncio = an.id;
+    if ((primeiroAnuncio && !recente) || visto) { primeiroAnuncio = false; return; }
+    primeiroAnuncio = false;
+    // espera o suspense do telão pra revelar junto
+    setTimeout(() => mostrarVencedor(an), 4200);
+  }
+  function mostrarVencedor(an) {
+    guardado.salvar("trela-anuncio-visto", an.id);
+    const velho = document.querySelector(".vence"); if (velho) velho.remove();
+    const v = el("div", "vence"); v.setAttribute("role", "dialog"); v.setAttribute("aria-label", "Vencedor");
+    const card = el("div", "card-v");
+    const eu = an.uid && EU && an.uid === EU.uid;
+    const coroa = el("span", "coroa-v"); coroa.innerHTML = COROA_V;
+    const ft = el("div", "ft-v" + (an.fotoId ? "" : " redondo"));
+    if (an.fotoId) ft.append(imgFoto(an.fotoId, "Foto de " + an.nome));
+    else if (an.uid && an.tipo !== "enquete") ft.append(avatar(an.uid));
+    else ft.textContent = (an.nome || "?").charAt(0).toUpperCase();
+    const ROT = { concurso: "Vencedor(a)", desafio: "Vencedor(a) do desafio", sorteio: "Sorteado(a)", enquete: "A galera escolheu" };
+    card.append(...(an.tipo === "enquete" ? [] : [coroa, ft]), el("small", "", an.rotulo || ""));
+    if (eu) card.append(el("div", "eu-v", "Tu ganhou!"));
+    else card.append(el("div", "tit-v", ROT[an.tipo] || "Vencedor(a)"));
+    card.append(el("div", "nome-v" + ((an.nome || "").length > 12 ? " longo" : ""), an.nome || ""));
+    if (an.detalhe) card.append(el("div", "det-v", an.detalhe));
+    if (an.premio) card.append(el("div", "pr-v", "Prêmio: " + an.premio));
+    if (eu) card.append(el("p", "ev-mut", "Chega no balcão pra pegar teu prêmio!"));
+    card.append(bt(eu ? "Bora!" : "Parabéns!", "sim", () => v.remove()));
+    v.append(card); document.body.append(v);
+    setTimeout(() => { if (v.parentNode) v.remove(); }, 20000);   // fecha sozinho
+    if (!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+      const cores = ["#ffc94d", "#ff3fa4", "#a95cf2", "#3ddc97", "#7cc6fe", "#f6efe6"];
+      for (let i = 0; i < 70; i++) {
+        const c = el("i", "conf"); c.style.left = Math.random() * 100 + "%"; c.style.background = cores[i % cores.length];
+        c.style.setProperty("--dx", (Math.random() * 120 - 60).toFixed(0) + "px"); c.style.setProperty("--rot", (Math.random() * 900 - 450).toFixed(0) + "deg");
+        c.style.animationDuration = (2.5 + Math.random() * 2.5).toFixed(2) + "s"; c.style.animationDelay = (Math.random() * .8).toFixed(2) + "s";
+        if (i % 3 === 0) { c.style.borderRadius = "50%"; c.style.height = "8px"; }
+        v.append(c);
+      }
+    }
+  }
+
   const hs = $("#homeScroll");
   function checarMais() {
     const noFim = hs.scrollTop + hs.clientHeight >= hs.scrollHeight - 30;
@@ -1090,8 +1776,13 @@
   function renderBadge() {
     const pedidos = [...S.amizades.values()].filter(a => a.status === "pendente" && a.para === EU.uid).length;
     const msgs = [...S.conversas.keys()].filter(u => ehAmigo(u) && naoLida(u)).length;
-    const n = pedidos + msgs + S.avisos.length;
+    const n = pedidos + msgs;
     $("#badge").hidden = !n; $("#badge").textContent = n;
+    const ns = contaSino();
+    $("#badgeSino").hidden = !ns; $("#badgeSino").textContent = ns > 9 ? "9+" : ns;
+    const nev = eventosAtivos().length, novos = eventosAtivos().filter(eventoNovo).length;
+    $("#gvEventos").hidden = !nev; $("#gvEventos").textContent = nev;
+    $("#pontoMenu").hidden = !novos;
   }
 
   function botaoRelacao(uid, compacto) {
@@ -1138,10 +1829,6 @@
           const sim = el("button", "mini sim", "Aceitar"); sim.type = "button"; sim.onclick = () => aceitarAmizade(u);
           out.push(linhaPessoa(u, "Quer ser teu amigo", "nova", [no, sim], false, () => abrirPerfil(u)));
         });
-      }
-      if (S.avisos.length) {
-        out.push(el("div", "secao", "Te marcaram"));
-        S.avisos.slice(0, 8).forEach(a => out.push(linhaPessoa(a.de, "Te marcou em: " + a.texto, "nova", null, true, () => { a.ref.update({ lida: true }).catch(() => {}); abrirComentarios(a.postId); })));
       }
       if (!amigos.length) {
         out.push(el("div", "secao", "Amigos"));

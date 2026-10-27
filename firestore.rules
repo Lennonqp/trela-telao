@@ -240,7 +240,8 @@ service cloud.firestore {
     // ---------- Curtidas das fotos (deslizar / concurso) ----------
     // id = idDoPost_quemCurtiu, então cada pessoa só curte cada foto uma vez
     match /curtidas/{id} {
-      allow read: if equipe() || (logado() && (resource.data.de == eu() || resource.data.para == eu()));
+      // A TV pareada também lê, pra mostrar o pódio do concurso
+      allow read: if equipe() || tela() || (logado() && (resource.data.de == eu() || resource.data.para == eu()));
       allow create: if ativo()
         && request.resource.data.keys().hasOnly(['post', 'de', 'para', 'criado'])
         && request.resource.data.de == eu()

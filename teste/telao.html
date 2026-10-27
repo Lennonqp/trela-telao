@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610271749">
+<link rel="stylesheet" href="estilo.css?v=202610271755">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -55,6 +55,56 @@
   .emoji{position:absolute;bottom:calc(var(--u) * 2);font-size:calc(var(--u) * 4);pointer-events:none;animation:sobe 2.6s ease-out forwards}
   @keyframes sobe{0%{opacity:0;transform:translateY(0) scale(.6)}15%{opacity:1;transform:translateY(calc(var(--u) * -4)) scale(1.1)}100%{opacity:0;transform:translateY(calc(var(--u) * -34)) scale(1)}}
 
+
+  /* ---------- Eventos (ações especiais) ---------- */
+  .com-vivo .palco{bottom:calc(var(--u) * 9)}
+  .vivo{position:absolute;left:calc(var(--u) * 4);right:calc(var(--u) * 26);bottom:calc(var(--u) * 2.6);height:calc(var(--u) * 4.6);display:flex;align-items:center;background:rgba(255,255,255,.06);border:calc(var(--u) * .15) solid var(--c,var(--neon));border-radius:calc(var(--u) * 1.2);padding:0 calc(var(--u) * 1.4) 0 calc(var(--u) * .6);overflow:hidden}
+  .vivo .vi-ic{flex:none;width:calc(var(--u) * 3.4);height:calc(var(--u) * 3.4);border-radius:calc(var(--u) * .8);display:flex;align-items:center;justify-content:center;background:var(--c,var(--neon));color:#140c1b;margin-right:calc(var(--u) * 1.2)}
+  .vivo .vi-ic svg{width:calc(var(--u) * 2.2);height:calc(var(--u) * 2.2)}
+  .vivo .vi-rot{flex:none;font-family:var(--f-mono);font-size:calc(var(--u) * 1.15);letter-spacing:.16em;text-transform:uppercase;color:var(--c,var(--neon));margin-right:calc(var(--u) * 1.4)}
+  .vivo .vi-txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:700 calc(var(--u) * 1.9)/1.1 var(--f-body)}
+  .vivo .vi-txt.troca{animation:viTroca .5s ease-out}
+  @keyframes viTroca{from{opacity:0;transform:translateY(calc(var(--u) * 1))}to{opacity:1;transform:none}}
+  .vivo .vi-cta{flex:none;font-family:var(--f-mono);font-size:calc(var(--u) * 1.05);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-left:calc(var(--u) * 1.4)}
+  .selo-ev{background:var(--c2,var(--neon));color:#140c1b}
+
+  .evento{align-items:stretch}
+  .ev-tv{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+  .ev-cab{display:flex;align-items:center}
+  .ev-cab .ev-ic{flex:none;width:calc(var(--u) * 5.6);height:calc(var(--u) * 5.6);border-radius:calc(var(--u) * 1.3);display:flex;align-items:center;justify-content:center;background:var(--c);color:#140c1b;margin-right:calc(var(--u) * 2);box-shadow:0 0 calc(var(--u) * 3) var(--c)}
+  .ev-cab .ev-ic svg{width:calc(var(--u) * 3.4);height:calc(var(--u) * 3.4)}
+  .ev-cab small{display:block;font-family:var(--f-mono);font-size:calc(var(--u) * 1.4);letter-spacing:.18em;text-transform:uppercase;color:var(--c)}
+  .ev-cab h2{margin:calc(var(--u) * .4) 0 0;font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 4);line-height:1;color:var(--ink);overflow:hidden;max-height:calc(var(--u) * 8.2)}
+  .ev-cab h2.longo{font-size:calc(var(--u) * 3)}
+  .ev-cab > div{min-width:0}
+  .ev-cab .premio{display:inline-block;margin-top:calc(var(--u) * .8);font:700 calc(var(--u) * 1.7)/1 var(--f-body);border:calc(var(--u) * .15) solid var(--c);border-radius:99px;padding:calc(var(--u) * .5) calc(var(--u) * 1.3)}
+  .ev-corpo{margin-top:calc(var(--u) * 1.6)}
+  .ev-cta{margin:calc(var(--u) * 1.4) 0 0;font-family:var(--f-mono);font-size:calc(var(--u) * 1.3);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .ev-cta b{color:var(--ink)}
+  .podio{display:flex;align-items:flex-end}
+  .podio .lug{width:calc(var(--u) * 11);margin-right:calc(var(--u) * 2.2);text-align:center}
+  .podio .lug .im{position:relative;width:calc(var(--u) * 11);height:calc(var(--u) * 11);border-radius:calc(var(--u) * 1.2);overflow:hidden;border:calc(var(--u) * .35) solid var(--ink);background:var(--panel)}
+  .podio .lug.p1 .im{width:calc(var(--u) * 13);height:calc(var(--u) * 13);border-color:var(--c);box-shadow:0 0 calc(var(--u) * 3) var(--c)}
+  .podio .lug.p1{width:calc(var(--u) * 13)}
+  .podio .lug img{width:100%;height:100%;object-fit:cover;display:block}
+  .podio .lug .pos{position:absolute;left:calc(var(--u) * .7);top:calc(var(--u) * .7);background:var(--c);color:#140c1b;font-family:var(--f-display);font-size:calc(var(--u) * 2.2);line-height:1;padding:calc(var(--u) * .35) calc(var(--u) * .8);border-radius:calc(var(--u) * .6)}
+  .podio .lug.p2 .pos,.podio .lug.p3 .pos{background:var(--ink)}
+  .podio .lug b{display:block;margin-top:calc(var(--u) * .8);font:700 calc(var(--u) * 1.8)/1.1 var(--f-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .podio .lug span{display:block;margin-top:calc(var(--u) * .3);font-family:var(--f-mono);font-size:calc(var(--u) * 1.3);letter-spacing:.08em;color:var(--c)}
+  .ev-vazio{font-family:var(--f-display);text-transform:uppercase;font-size:calc(var(--u) * 3);color:var(--muted);line-height:1.05}
+  .ev-regra{font:600 calc(var(--u) * 2)/1.3 var(--f-body);color:var(--ink);margin:0;max-width:calc(var(--u) * 60)}
+  .miniaturas{display:flex;margin-top:calc(var(--u) * 1.4)}
+  .miniaturas img{width:calc(var(--u) * 7.5);height:calc(var(--u) * 7.5);object-fit:cover;border-radius:calc(var(--u) * .9);border:calc(var(--u) * .25) solid var(--ink);margin-right:calc(var(--u) * 1.2);transform:rotate(-2deg);background:var(--panel)}
+  .miniaturas img:nth-child(even){transform:rotate(2deg)}
+  .ev-n{font-family:var(--f-mono);font-size:calc(var(--u) * 1.3);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:calc(var(--u) * 1.2)}
+  .barras-tv > div + div{margin-top:calc(var(--u) * 1.1)}
+  .barras-tv > div{position:relative;height:calc(var(--u) * 4.2);border-radius:calc(var(--u) * 1);background:rgba(255,255,255,.06);overflow:hidden;display:flex;align-items:center;justify-content:space-between;padding:0 calc(var(--u) * 1.6);max-width:calc(var(--u) * 62)}
+  .barras-tv i{position:absolute;left:0;top:0;bottom:0;background:var(--c);opacity:.45;transition:width .6s}
+  .barras-tv .lider i{opacity:.8}
+  .barras-tv span,.barras-tv b{position:relative;font:700 calc(var(--u) * 2.1)/1 var(--f-body)}
+  .barras-tv b{font-family:var(--f-display);font-weight:400;font-size:calc(var(--u) * 2.6)}
+  .relogio-tv{font-family:var(--f-display);font-size:calc(var(--u) * 13);line-height:.9;color:var(--c);font-variant-numeric:tabular-nums;text-shadow:0 0 calc(var(--u) * 3) var(--c)}
+  .ev-grande{font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 6);line-height:.95;color:var(--c);margin:0}
   .cortina{position:fixed;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;overflow:auto;background:rgba(9,6,13,.92);z-index:5;cursor:default;padding:16px}
   .cortina > div > * + *{margin-top:12px}
   .cortina > div{display:flex;flex-direction:column;align-items:stretch;width:100%;max-width:440px;text-align:center}
@@ -95,6 +145,7 @@
   <div class="palco" id="palco"><div class="corpo"><p class="texto vazio">Manda o primeiro recado da noite</p></div></div>
   <div class="fila" id="fila" hidden>Na fila<b id="nFila">0</b></div>
   <div class="qr"><div id="qrcode"></div><p>Escaneia e entra no Trela</p></div>
+  <div class="vivo" id="vivo" hidden><span class="vi-ic" id="viIc"></span><span class="vi-rot">Ao vivo</span><span class="vi-txt" id="viTxt"></span><span class="vi-cta" id="viCta">Participa pelo app</span></div>
   <div class="barra"><i id="barra"></i></div>
 </div>
 
@@ -119,10 +170,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271749"></script>
+<script src="config.js?v=202610271755"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610271749"></script>
-<script src="equipe.js?v=202610271749"></script>
+<script src="comum.js?v=202610271755"></script>
+<script src="equipe.js?v=202610271755"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -188,6 +239,9 @@
   const itens = new Map();          // id -> dados
   let prioridade = [], novos = [];  // recados do Trela entram em "prioridade", da galera em "novos"
   let atual = null, inicio = Date.now(), desdeBar = 0, barIdx = 0, rotIdx = 0, pararComs = null;
+  let durAtual = DUR, desdeEv = 0, evIdx = 0;
+  const EV_A_CADA = 3;          // uma tela de evento a cada 3 recados da galera
+  const DUR_EV = DUR + 4;       // tela de evento fica um pouco mais
 
   function ultimosDaGalera() {
     const lista = Array.from(itens.values()).filter(r => r.tipo !== "bar")
@@ -197,6 +251,7 @@
 
   function iniciar() {
     db.doc("config/geral").onSnapshot(s => { $("noite").textContent = (s.exists && s.data().noite) || "Bem-vindos"; }, () => {});
+    iniciarEventos();
 
     // Só o que foi postado desde as 6h; às 6h a TV zera e começa a noite nova
     ouvirNoite(desde => {
@@ -230,7 +285,7 @@
 
     // Relógio da troca de recado (setInterval funciona melhor que requestAnimationFrame em TV)
     setInterval(() => {
-      const p = Math.min(1, (Date.now() - inicio) / (DUR * 1000));
+      const p = Math.min(1, (Date.now() - inicio) / (durAtual * 1000));
       $("barra").style.width = (p * 100) + "%";
       if (p >= 1) proximo();
     }, 100);
@@ -242,6 +297,16 @@
     novos = novos.filter(x => recentes.has(x));
     let id = prioridade.shift() || novos.shift() || null;
     const eNovo = !!id;
+    // Tela de evento: entra na roda (nunca na frente de recado novo ou do Trela)
+    const evs = eventosAtivos();
+    if (!eNovo && evs.length && (desdeEv >= EV_A_CADA || !temRoda())) {
+      desdeEv = 0;
+      mostrarEvento(evs[evIdx++ % evs.length].k);
+      $("nFila").textContent = prioridade.length + novos.length;
+      $("fila").hidden = !(prioridade.length + novos.length);
+      publicarEstado();
+      return;
+    }
     if (!id) {
       const lista = Array.from(itens.values()).sort((a, b) => mil(b.criado) - mil(a.criado));
       const bares = lista.filter(r => r.tipo === "bar" && r.repetir);
@@ -250,7 +315,7 @@
       else if (galera.length) id = galera[rotIdx++ % galera.length].id;
     }
     const r = id && itens.get(id);
-    if (r) desdeBar = r.tipo === "bar" ? 0 : desdeBar + 1;
+    if (r) { desdeBar = r.tipo === "bar" ? 0 : desdeBar + 1; desdeEv++; }
     mostrar(r || null, eNovo);
     $("nFila").textContent = prioridade.length + novos.length;
     $("fila").hidden = !(prioridade.length + novos.length);
@@ -260,7 +325,7 @@
   function mostrar(r, eNovo) {
     const palco = $("palco");
     palco.classList.remove("entra"); void palco.offsetWidth; palco.classList.add("entra");
-    inicio = Date.now();
+    inicio = Date.now(); durAtual = DUR;
     if (pararComs) { pararComs(); pararComs = null; }
     if (!r) { atual = null; palco.className = "palco entra"; palco.innerHTML = '<div class="corpo"><p class="texto vazio">Manda o primeiro recado da noite</p></div>'; return; }
     atual = r.id;
@@ -271,6 +336,11 @@
       '<span class="selo" hidden></span><p class="texto"></p><div class="de"></div><div class="reacs"></div><div class="coms"></div></div>';
     const selo = palco.querySelector(".selo");
     if (bar) { selo.hidden = false; selo.textContent = "Recado do Trela"; }
+    else if (r.acao && EVENTOS[r.acao]) {
+      selo.hidden = false; selo.classList.add("selo-ev"); selo.style.setProperty("--c2", EVENTOS[r.acao].cor);
+      const c = A[r.acao] || {};
+      selo.textContent = r.acao === "concurso" ? "Concorrendo · " + (c.nome || "Concurso") : "Desafio da noite";
+    }
     else if (eNovo) { selo.hidden = false; selo.textContent = "Chegou agora"; selo.classList.add("novo"); }
     const t = palco.querySelector(".texto");
     t.textContent = r.texto || ""; t.hidden = !r.texto;
@@ -346,6 +416,150 @@
     const e = document.createElement("div");
     e.className = "emoji"; e.textContent = emoji; e.style.left = "calc(var(--u) * " + (6 + Math.random() * 60) + ")";
     $("tv").appendChild(e); setTimeout(() => { if (e.parentNode) e.parentNode.removeChild(e); }, 2700);
+  }
+
+
+  // =================== EVENTOS (ações especiais ligadas no balcão) ===================
+  function svgIc(p) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>'; }
+  const EVENTOS = {
+    concurso: { cor: "var(--neon)", rotulo: "Concurso", ic: svgIc('<path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>'), titulo: c => c.nome || "Concurso de fotos" },
+    desafio: { cor: "var(--laranja)", rotulo: "Desafio da noite", ic: svgIc('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/>'), titulo: c => c.titulo || "Desafio da noite" },
+    enquete: { cor: "var(--lilas)", rotulo: "Enquete", ic: svgIc('<path d="M5 20V10M12 20V4M19 20v-7"/>'), titulo: c => c.pergunta || "Enquete" },
+    sorteio: { cor: "var(--ok)", rotulo: "Sorteio", ic: svgIc('<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/>'), titulo: c => c.premio ? "Sorteio: " + c.premio : "Vai rolar sorteio!" },
+    musica: { cor: "#7cc6fe", rotulo: "Pedidos de música", ic: svgIc('<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>'), titulo: c => "Pede tua música pelo app" },
+    contagem: { cor: "#ffd166", rotulo: "Contagem", ic: svgIc('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'), titulo: c => c.titulo || "Falta pouco" }
+  };
+  const ORDEM_EV = ["concurso", "desafio", "enquete", "sorteio", "contagem", "musica"];
+  let A = {}, postsAcao = [], curtidasPor = {}, votos = [];
+  function eventosAtivos() { return ORDEM_EV.filter(k => A[k] && A[k].ativo).map(k => ({ k: k, c: A[k], m: EVENTOS[k] })); }
+  function temRoda() {
+    return Array.from(itens.values()).some(r => r.tipo !== "bar" || r.repetir);
+  }
+  function ateDe(c) { return c && c.ate && c.ate.toDate ? c.ate.toDate() : null; }
+  function faltam(d) {
+    const s = Math.max(0, Math.round((d - Date.now()) / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
+    if (s <= 0) return "Acabou!";
+    return (h ? h + ":" + (m < 10 ? "0" : "") + m : String(m)) + ":" + (ss < 10 ? "0" : "") + ss;
+  }
+  const escHtml = t => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+  function iniciarEventos() {
+    let pararPosts = null, pararCurt = null, pararVotos = null, votosDe = null;
+    db.doc("config/acoes").onSnapshot(d => {
+      A = d.exists ? d.data() : {};
+      const precisaFotos = !!((A.concurso && A.concurso.ativo) || (A.desafio && A.desafio.ativo));
+      if (precisaFotos && !pararPosts) {
+        pararPosts = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
+          postsAcao = q.docs.map(x => junta({ id: x.id }, x.data())).filter(r => r.acao && r.fotoId); atualizarEventoNaTela();
+        }, () => {}));
+        pararCurt = ouvirNoite(desde => db.collection("curtidas").where("criado", ">=", desde).onSnapshot(q => {
+          curtidasPor = {}; q.docs.forEach(x => { const p = x.data().post; curtidasPor[p] = (curtidasPor[p] || 0) + 1; }); atualizarEventoNaTela();
+        }, () => {}));
+      }
+      if (!precisaFotos && pararPosts) { pararPosts(); pararPosts = null; if (pararCurt) pararCurt(); pararCurt = null; postsAcao = []; }
+      const enq = A.enquete && A.enquete.ativo && A.enquete.id;
+      if (enq !== votosDe) {
+        if (pararVotos) pararVotos(); pararVotos = null; votosDe = enq; votos = [];
+        if (enq) pararVotos = db.collection("enquetes").doc(enq).collection("votos").onSnapshot(q => { votos = q.docs.map(x => x.data().opcao); atualizarEventoNaTela(); }, () => {});
+      }
+      desenharVivo(false);
+      // evento desligado enquanto estava na tela: passa pro próximo
+      if (atual && String(atual).indexOf("ev:") === 0 && !(A[atual.slice(3)] && A[atual.slice(3)].ativo)) proximo();
+      else atualizarEventoNaTela();
+    }, () => {});
+    // Faixa "Ao vivo" alterna a cada 5 s; relógios a cada 1 s
+    let viIdx = 0;
+    setInterval(() => { viIdx++; desenharVivo(true, viIdx); }, 5000);
+    setInterval(() => {
+      const d = ateDe(A.contagem); if (!d) return;
+      const els = document.querySelectorAll(".cont-tv");
+      for (let i = 0; i < els.length; i++) els[i].textContent = faltam(d);
+    }, 1000);
+  }
+
+  let viAtual = 0;
+  function desenharVivo(trocar, idx) {
+    const evs = eventosAtivos(), box = $("vivo");
+    box.hidden = !evs.length; $("tv").classList.toggle("com-vivo", !!evs.length); if (!evs.length) return;
+    if (idx != null) viAtual = idx;
+    const e = evs[viAtual % evs.length];
+    box.style.setProperty("--c", e.m.cor);
+    $("viIc").innerHTML = e.m.ic;
+    const t = $("viTxt");
+    if (e.k === "contagem") { const d = ateDe(e.c); t.innerHTML = escHtml(e.m.titulo(e.c)) + ' <span class="cont-tv">' + (d ? faltam(d) : "") + "</span>"; }
+    else t.textContent = (e.k === "sorteio" || e.k === "musica" ? "" : e.m.rotulo + ": ") + e.m.titulo(e.c);
+    $("viCta").textContent = e.k === "contagem" ? "" : (evs.length > 1 ? (viAtual % evs.length + 1) + "/" + evs.length + " · " : "") + "Participa pelo app";
+    if (trocar) { t.classList.remove("troca"); void t.offsetWidth; t.classList.add("troca"); }
+  }
+
+  function mostrarEvento(k) {
+    const palco = $("palco");
+    palco.classList.remove("entra"); void palco.offsetWidth;
+    if (pararComs) { pararComs(); pararComs = null; }
+    inicio = Date.now(); durAtual = DUR_EV; atual = "ev:" + k;
+    palco.className = "palco entra evento";
+    palco.style.setProperty("--c", EVENTOS[k].cor);
+    desenharEventoNoPalco(k);
+  }
+  function atualizarEventoNaTela() {
+    if (atual && String(atual).indexOf("ev:") === 0) desenharEventoNoPalco(atual.slice(3));
+  }
+  function rankingConcurso() {
+    return postsAcao.filter(p => p.acao === "concurso").map(p => ({ p: p, n: curtidasPor[p.id] != null ? curtidasPor[p.id] : ((p.reacoes || {}).amor || 0) }))
+      .sort((a, b) => b.n - a.n || mil(a.p.criado) - mil(b.p.criado));
+  }
+  function desenharEventoNoPalco(k) {
+    const c = A[k] || {}, m = EVENTOS[k], palco = $("palco");
+    let corpo = "", cta = 'Participa pelo app: toca no <b>menu</b> e vai em <b>Eventos da noite</b>';
+    const premio = c.premio && k !== "sorteio" ? '<span class="premio">Prêmio: ' + escHtml(c.premio) + "</span>" : "";
+    if (k === "concurso") {
+      const rk = rankingConcurso().slice(0, 3);
+      if (!rk.length) corpo = '<div class="ev-vazio">Ninguém concorrendo ainda.<br>Manda a tua foto!</div>';
+      else {
+        // pódio: 2º, 1º, 3º
+        const ordem = rk.length >= 2 ? [1, 0, 2] : [0];
+        corpo = '<div class="podio">' + ordem.filter(i => rk[i]).map(i => {
+          const x = rk[i];
+          return '<div class="lug p' + (i + 1) + '"><div class="im"><img data-foto="' + escHtml(x.p.fotoId) + '" alt=""><span class="pos">' + (i + 1) + 'º</span></div>' +
+            "<b>" + escHtml(x.p.nome) + "</b><span>" + x.n + (x.n === 1 ? " curtida" : " curtidas") + "</span></div>";
+        }).join("") + "</div>";
+      }
+      cta = "Manda tua foto e curte as da galera: <b>menu</b> › <b>Eventos da noite</b>";
+    } else if (k === "desafio") {
+      const ent = postsAcao.filter(p => p.acao === "desafio").sort((a, b) => mil(b.criado) - mil(a.criado));
+      corpo = (c.regras ? '<p class="ev-regra">' + escHtml(c.regras) + "</p>" : "") +
+        (ent.length ? '<div class="miniaturas">' + ent.slice(0, 5).map(p => '<img data-foto="' + escHtml(p.fotoId) + '" alt="">').join("") + "</div>" +
+          '<div class="ev-n">' + ent.length + (ent.length === 1 ? " pessoa já mandou" : " pessoas já mandaram") + "</div>"
+          : '<div class="ev-vazio">Ninguém mandou ainda. Sai na frente!</div>');
+      cta = "Manda a foto do desafio: <b>menu</b> › <b>Eventos da noite</b>";
+    } else if (k === "enquete") {
+      const ops = (c.opcoes || []).map((t, i) => ({ t: t, i: i, n: 0 })).filter(o => o.t);
+      votos.forEach(v => { for (let j = 0; j < ops.length; j++) if (ops[j].i === v) ops[j].n++; });
+      const total = ops.reduce((a, o) => a + o.n, 0), max = Math.max.apply(null, [0].concat(ops.map(o => o.n)));
+      corpo = '<div class="barras-tv">' + ops.map(o => {
+        const pct = total ? Math.round(o.n * 100 / total) : 0;
+        return '<div class="' + (o.n && o.n === max ? "lider" : "") + '"><i style="width:' + pct + '%"></i><span>' + escHtml(o.t) + "</span><b>" + pct + "%</b></div>";
+      }).join("") + '</div><div class="ev-n">' + total + (total === 1 ? " voto" : " votos") + " até agora</div>";
+      cta = "Vota pelo app: <b>menu</b> › <b>Eventos da noite</b>";
+    } else if (k === "sorteio") {
+      const regra = { agora: "Participa quem estiver com o app do Trela aberto na hora", postou: "Participa quem mandou recado ou foto pro telão hoje",
+        desafio: "Participa quem mandou foto pro desafio", concurso: "Participa quem está com foto no concurso" }[c.quem || "agora"];
+      corpo = (c.premio ? '<p class="ev-grande">' + escHtml(c.premio) + "</p>" : "") + '<p class="ev-regra" style="margin-top:calc(var(--u) * 1.6)">' + escHtml(regra) + ".</p>";
+      cta = "Fica de olho: o nome sai aqui no telão";
+    } else if (k === "musica") {
+      corpo = '<p class="ev-regra">Escolhe a música e manda pelo app. A equipe recebe na hora.</p>';
+      cta = "Pede pelo app: <b>menu</b> › <b>Eventos da noite</b>";
+    } else if (k === "contagem") {
+      const d = ateDe(c);
+      corpo = '<div class="relogio-tv cont-tv">' + (d ? faltam(d) : "--:--") + "</div>" +
+        (d ? '<div class="ev-n">Até as ' + (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes() + "</div>" : "");
+      cta = "";
+    }
+    const tit = k === "sorteio" ? "Vai rolar sorteio!" : m.titulo(c);
+    palco.innerHTML = '<div class="ev-tv"><div class="ev-cab"><span class="ev-ic">' + m.ic + '</span><div><small>' + escHtml(m.rotulo) + '</small><h2' + (tit.length > 30 ? ' class="longo"' : "") + ">" +
+      escHtml(tit) + "</h2>" + premio + '</div></div><div class="ev-corpo">' + corpo + "</div>" + (cta ? '<p class="ev-cta">' + cta + "</p>" : "") + "</div>";
+    const imgs = palco.querySelectorAll("img[data-foto]");
+    for (let i = 0; i < imgs.length; i++) { const im = imgs[i]; carregarFoto(im.getAttribute("data-foto")).then(dd => { if (dd) im.src = dd; }); }
   }
 
   // Conta pros celulares onde cada recado está na fila

@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610271850">
+<link rel="stylesheet" href="estilo.css?v=202610271907">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -101,6 +101,8 @@
     .rk-bts{flex:1 1 100%;padding-left:40px}
     .rk-bts .mini{flex:1;padding:9px 6px}
   }
+  #kPalco .pos,#kFila .pos{width:auto;min-width:30px;font-size:16px;margin-right:4px}
+  #kPalco .pos{color:#7cc6fe}
   .rk .mini.perigo{border-color:var(--laranja);color:var(--laranja)}
   .rk .mini:disabled{opacity:.5;cursor:default}
   .rk .mini.forte{background:var(--c,var(--neon));border-color:var(--c,var(--neon));color:#140c1b}
@@ -250,12 +252,16 @@
           <p class="anunciado" id="sMsg" role="status"></p>
         </article>
 
-        <!-- Pedidos de música -->
-        <article class="acao" id="ac-musica" style="--c:#7cc6fe">
-          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg></span><div><h3>Pedidos de música</h3><p>A galera pede música pelo app e a lista aparece aqui.</p><span class="estado" id="est-musica">Desligado</span></div>
-          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-musica" aria-label="Ligar Pedidos de música"><span></span></label></div>
-          <p class="sub-t">Pedidos da noite <span id="mTotal"></span></p>
-          <div class="ranking" id="mLista"></div>
+        <!-- Karaokê -->
+        <article class="acao" id="ac-karaoke" style="--c:#7cc6fe">
+          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg></span><div><h3>Karaokê</h3><p>A galera entra na fila pelo app escolhendo a música. Todo mundo vê no app quem canta e quem é o próximo (não aparece no telão).</p><span class="estado" id="est-karaoke">Desligado</span></div>
+          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-karaoke" aria-label="Ligar Karaokê"><span></span></label></div>
+          <p class="sub-t">No palco</p>
+          <div class="ranking" id="kPalco"></div>
+          <div class="acao-bts"><button type="button" class="forte" id="kProximo">Chamar próximo</button><button type="button" id="kTerminou">Terminou (sem chamar)</button></div>
+          <p class="sub-t">Fila <span id="kTotal"></span></p>
+          <div class="ranking" id="kFila"></div>
+          <p class="anunciado" id="kMsg" role="status"></p>
         </article>
 
         <!-- Contagem regressiva -->
@@ -290,10 +296,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271850"></script>
+<script src="config.js?v=202610271907"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610271850"></script>
-<script src="equipe.js?v=202610271850"></script>
+<script src="comum.js?v=202610271907"></script>
+<script src="equipe.js?v=202610271907"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -394,7 +400,7 @@
 
   // =================== AÇÕES ESPECIAIS ===================
   // Tudo fica em config/acoes (a equipe liga/desliga e configura). O app e o telão leem de lá.
-  const ACOES = ["concurso", "desafio", "enquete", "sorteio", "musica", "contagem"];
+  const ACOES = ["concurso", "desafio", "enquete", "sorteio", "karaoke", "contagem"];
   let A = {};                // config/acoes atual
   let postsNoite = [];       // posts da noite (pra concurso, desafio e sorteio)
   let curtidasPor = {};      // curtidas por post nesta noite
@@ -444,7 +450,7 @@
       [0, 1, 2, 3].forEach(i => { if (document.activeElement !== $("eO" + i)) $("eO" + i).value = ops[i] || ""; });
       if (A.sorteio && A.sorteio.quem && document.activeElement !== $("sQuem")) $("sQuem").value = A.sorteio.quem;
       if (A.contagem && A.contagem.hora && document.activeElement !== $("tHora")) $("tHora").value = A.contagem.hora;
-      ouvirVotos(); desenharConcurso(); desenharDesafio(); contarSorteio();
+      ouvirVotos(); desenharConcurso(); desenharDesafio(); contarSorteio(); desenharKaraoke();
     }, () => {}));
 
     // Posts e curtidas da noite
@@ -456,17 +462,12 @@
       curtidasPor = curtidasDemo(); q.docs.forEach(d => { const p = d.data().post; curtidasPor[p] = (curtidasPor[p] || 0) + 1; });
       desenharConcurso();
     }, () => {})));
-    // Pedidos de música
-    parar.push(ouvirNoite(desde => db.collection("musicas").where("criado", ">=", desde).orderBy("criado").onSnapshot(q => {
-      $("mTotal").textContent = q.size ? "· " + q.size : "";
-      const itens = q.docs.map(d => {
-        const m = d.data(), linha = el("div", "musica"), t = el("div");
-        t.append(el("b", "", m.texto), el("span", "", (m.nome || "") + " · " + horaDe(m.criado)));
-        linha.append(t, botao("Tocou", "mini", () => d.ref.delete().catch(() => {})));
-        return linha;
-      });
-      lista($("mLista"), itens, A.musica && A.musica.ativo ? "Nenhum pedido ainda." : "Liga pra galera poder pedir música pelo app.");
-    }, () => {})));
+    // Karaokê: quem canta agora + fila
+    parar.push(ouvirNoite(desde => db.collection("karaoke").where("criado", ">=", desde).orderBy("criado").onSnapshot(q => {
+      kItens = q.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() })); desenharKaraoke();
+    }, () => { lista($("kFila"), [], "Não deu pra ler a fila. Confere se as regras novas do banco foram publicadas."); })));
+    $("kProximo").onclick = () => chamarProximo(true);
+    $("kTerminou").onclick = () => chamarProximo(false);
 
     // Botões
     $("cAnunciar").onclick = () => {
@@ -534,6 +535,43 @@
       await db.collection("telao").add({ tipo: "bar", nome: "Trela", texto: texto.slice(0, 120), cor: "laranja", repetir: false, criado: agoraServidor(), reacoes: REACOES_ZERO });
       msg(msgId, "Mandado pro telão às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + ". Entra na frente dos recados.");
     } catch (e) { msg(msgId, "Não deu pra mandar. Tenta de novo.", true); }
+  }
+
+
+  // ---- Karaokê ----
+  let kItens = [];
+  const kFila = () => kItens.filter(x => x.status === "fila");
+  const kAgora = () => kItens.filter(x => x.status === "cantando")[0] || null;
+  function linhaK(x, rot, bts, top) {
+    const l = el("div", "rk" + (top ? " top" : ""));
+    const q = el("div", "quem"); q.append(el("b", "", x.nome || ""), el("span", "", x.musica || ""));
+    l.append(el("div", "pos", rot), q);
+    const b = el("div", "rk-bts"); bts.forEach(x2 => b.append(x2)); l.append(b);
+    return l;
+  }
+  function desenharKaraoke() {
+    const ag = kAgora(), fila = kFila();
+    lista($("kPalco"), ag ? [linhaK(ag, "Agora", [], true)] : [], "Ninguém cantando. Toca em “Chamar próximo”.");
+    $("kTotal").textContent = fila.length ? "· " + fila.length : "";
+    lista($("kFila"), fila.map((x, i) => linhaK(x, (i + 1) + "º", [
+      botao("Chamar agora", "mini", () => chamar(x)),
+      botao("Remover", "mini perigo", () => x.ref.delete().catch(() => {}))
+    ], false)), A.karaoke && A.karaoke.ativo ? "Fila vazia. A galera entra pelo app." : "Liga o karaokê pra galera poder entrar na fila.");
+    $("kProximo").disabled = !fila.length; $("kTerminou").disabled = !ag;
+  }
+  // Tira quem está cantando e (se pedir) chama o primeiro da fila
+  async function chamarProximo(chamarFila) {
+    const ag = kAgora(), prox = kFila()[0], lote = db.batch();
+    if (ag) lote.update(ag.ref, { status: "feito" });
+    if (chamarFila && prox) lote.update(prox.ref, { status: "cantando" });
+    try { await lote.commit(); msg("kMsg", chamarFila && prox ? "Chamado: " + prox.nome + " (" + prox.musica + ")" : "Palco livre."); }
+    catch (e) { msg("kMsg", "Não deu. Tenta de novo.", true); }
+  }
+  async function chamar(x) {
+    const ag = kAgora(), lote = db.batch();
+    if (ag) lote.update(ag.ref, { status: "feito" });
+    lote.update(x.ref, { status: "cantando" });
+    try { await lote.commit(); msg("kMsg", "Chamado: " + x.nome + " (" + x.musica + ")"); } catch (e) { msg("kMsg", "Não deu. Tenta de novo.", true); }
   }
 
   // ---- Concurso ----

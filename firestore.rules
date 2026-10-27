@@ -276,6 +276,24 @@ service cloud.firestore {
       allow delete: if equipe() || (logado() && uid == eu());
     }
 
+    // ---------- Karaokê: fila da noite (todo mundo vê; a equipe chama) ----------
+    match /karaoke/{id} {
+      allow read: if logado();
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['autor', 'nome', 'musica', 'status', 'criado'])
+        && request.resource.data.autor == eu()
+        && request.resource.data.status == 'fila'
+        && nomeOk(request.resource.data.nome)
+        && textoOk(request.resource.data.musica, 2, 80) && !suspeito(request.resource.data.musica)
+        && agora(request.resource.data);
+      // Só a equipe muda o status (fila -> cantando -> feito)
+      allow update: if equipe()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['fila', 'cantando', 'feito'];
+      // Sair da fila (a pessoa) ou remover (equipe)
+      allow delete: if equipe() || (logado() && resource.data.autor == eu());
+    }
+
     // ---------- Pedidos de música ----------
     match /musicas/{id} {
       allow create: if ativo()

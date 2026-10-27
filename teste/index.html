@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610271850">
+<link rel="stylesheet" href="estilo.css?v=202610271907">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -112,6 +112,19 @@
   .ev-op span,.ev-op b{position:relative}
   .ev-op.meu{border-color:var(--lilas);box-shadow:0 0 0 1px var(--lilas) inset}
   .ev-relogio{text-align:center;font:400 64px/1 var(--f-display);font-variant-numeric:tabular-nums;color:#ffd166;padding:10px 0}
+
+  .kr-linha{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+  .ev-bloco h4 + .kr-linha{border-top:0}
+  .kr-linha.eu .kr-t b{color:var(--neon)}
+  .kr-pos{flex:none;min-width:58px;font:700 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .kr-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .kr-t b{font-size:15px}
+  .kr-t span{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .kr-agora{background:rgba(124,198,254,.12);border:1px solid #7cc6fe;border-radius:12px;padding:10px}
+  .kr-agora .kr-pos{color:#7cc6fe}
+  .kr-agora .kr-t b{font-size:18px}
+  .kr-prox .kr-pos{color:var(--neon)}
+  .kr-grande{font-size:17px}
   .ev-musica{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:8px;font-size:14px}
   .ev-musica span{color:var(--muted);font-size:12px;flex:none}
   .selo-acao{align-self:flex-start;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);border:1px solid var(--c);border-radius:999px;font:700 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 9px}
@@ -463,8 +476,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271850"></script>
-<script src="comum.js?v=202610271850"></script>
+<script src="config.js?v=202610271907"></script>
+<script src="comum.js?v=202610271907"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -485,7 +498,7 @@
     curti: new Set(),      // fotos que eu já curti
     jaConcorri: false,     // já tenho foto no concurso desta noite
     votos: [], meuVoto: null,   // enquete atual
-    minhasMusicas: [],     // meus pedidos de música desta noite
+    karaoke: [],           // fila do karaokê desta noite (todo mundo vê)
     bloqueados: new Set(),
     noBar: []              // perfis que abriram o app nas últimas 3 h
   };
@@ -901,8 +914,18 @@
     parar.push(() => { if (pararPostsAcao) pararPostsAcao(); if (pararVotos) pararVotos(); pararPostsAcao = pararVotos = null; votosDe = null; });
     parar.push(db.collection("curtidas").where("de", "==", uid).onSnapshot(q => { q.docs.forEach(x => S.curti.add(x.data().post)); redesenhar(); }, () => {}));
     parar.push(ouvirNoite(() => db.doc("concorrentes/" + chaveNoite() + "_" + uid).onSnapshot(x => { S.jaConcorri = x.exists; redesenhar(); }, () => {})));
-    parar.push(ouvirNoite(desde => db.collection("musicas").where("autor", "==", uid).onSnapshot(q => {
-      S.minhasMusicas = q.docs.map(x => x.data()).filter(m => ms(m.criado) >= desde.toMillis() || !m.criado).sort((a, b) => ms(b.criado) - ms(a.criado)); redesenhar();
+    // Fila do karaokê (todo mundo vê) + aviso quando chega a minha vez
+    let minhaVezAntes = null;
+    parar.push(ouvirNoite(desde => db.collection("karaoke").where("criado", ">=", desde).orderBy("criado").onSnapshot(q => {
+      S.karaoke = q.docs.map(x => ({ id: x.id, ...x.data() }));
+      const fila = karaokeFila(), agora = karaokeAgora();
+      const minha = agora && agora.autor === uid ? "cantando" : (fila[0] && fila[0].autor === uid ? "proximo" : null);
+      if (minha && minha !== minhaVezAntes && S.acoes.karaoke && S.acoes.karaoke.ativo) {
+        if (minha === "cantando") toastKaraoke("Tua vez! Sobe pro palco e solta a voz");
+        else toastKaraoke("Tu é o próximo no karaokê. Vai se preparando!");
+        if (navigator.vibrate) try { navigator.vibrate([200, 100, 200]); } catch (e) {}
+      }
+      minhaVezAntes = minha; redesenhar();
     }, () => {})));
 
     // Bloqueios que eu fiz
@@ -1186,12 +1209,12 @@
       titulo: c => c.pergunta || "Enquete", resumo: c => "Toca pra votar" },
     sorteio: { cor: "var(--ok)", rotulo: "Sorteio", ic: SVG('<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/>'),
       titulo: c => c.premio ? "Sorteio: " + c.premio : "Vai rolar sorteio!", resumo: c => "Toca pra ver como participar" },
-    musica: { cor: "#7cc6fe", rotulo: "Pedidos de música", ic: SVG('<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>'),
-      titulo: c => "Pede tua música", resumo: c => "A equipe recebe teu pedido na hora" },
+    karaoke: { cor: "#7cc6fe", rotulo: "Karaokê", ic: SVG('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>'),
+      titulo: c => karaokeAgora() ? "Cantando: " + karaokeAgora().nome : "Karaokê aberto", resumo: c => karaokeProximo() ? "Próximo: " + karaokeProximo().nome : "Entra na fila e escolhe tua música" },
     contagem: { cor: "#ffd166", rotulo: "Contagem", ic: SVG('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'),
       titulo: c => c.titulo || "Falta pouco", resumo: c => "" }
   };
-  const ORDEM_EV = ["concurso", "desafio", "enquete", "sorteio", "contagem", "musica"];
+  const ORDEM_EV = ["concurso", "desafio", "enquete", "sorteio", "contagem", "karaoke"];
   const chaveNoite = () => { const d = inicioDaNoite(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
   const chaveEvento = (k, c) => k + ":" + (ms(c.desde) || 0) + (k === "enquete" ? ":" + (c.id || "") : "");
   let eventosVistos = guardado.ler("trela-eventos-vistos", {});
@@ -1326,7 +1349,7 @@
         : (c.quem === "desafio" || c.quem === "concurso") && S.acoes[c.quem] && S.acoes[c.quem].ativo ? bt("Ir pro " + EVENTOS[c.quem].rotulo.toLowerCase(), "sim", () => abrirEvento(c.quem)) : null;
       if (ir2) out.push(ir2);
     }
-    if (k === "musica") out.push(blocoMusica());
+    if (k === "karaoke") out.push(blocoKaraoke());
     if (k === "contagem") {
       const d = ate(c);
       const r = el("div", "ev-relogio cont-relogio", d ? faltam(d) : "--:--");
@@ -1452,27 +1475,60 @@
     db.collection("enquetes").doc(c.id).collection("votos").doc(EU.uid).set({ opcao: i, criado: agoraServidor() }).catch(() => erroToast("Não deu pra votar agora."));
   }
 
-  // ---- Pedidos de música ----
-  let ultimoPedido = 0;
-  function blocoMusica() {
-    const b = pBloco("Qual música tu quer ouvir?");
-    const inp = el("input"); inp.dataset.k = "musica"; inp.maxLength = 80; inp.placeholder = "Ex.: Evidências - Chitãozinho & Xororó"; inp.setAttribute("aria-label", "Música");
-    const envia = bt("Pedir música", "sim", async () => {
-      const t = inp.value.trim();
-      if (t.length < 2) return erroToast("Escreve o nome da música.");
-      if (motivoSuspeito(t)) return erroToast("Esse pedido não passou no filtro.");
-      if (Date.now() - ultimoPedido < 60000) return erroToast("Calma! Espera um minutinho pra pedir outra.");
-      envia.disabled = true;
-      try { await db.collection("musicas").add({ autor: EU.uid, nome: EU.nome, texto: t, criado: agoraServidor() }); ultimoPedido = Date.now(); inp.value = ""; toast(EU.uid, "Pedido enviado pra equipe!"); }
-      catch (e) { erroToast("Não deu pra pedir agora."); }
-      envia.disabled = false;
-    });
-    b.append(inp, envia, el("p", "ev-mut", "A equipe vê a lista de pedidos. Não dá pra garantir que toca, mas ajuda!"));
-    const meus = S.minhasMusicas;
-    const lista = pBloco("Teus pedidos desta noite");
-    if (!meus.length) lista.append(el("div", "vazio-s", "Nenhum pedido ainda."));
-    meus.forEach(m => { const l = el("div", "ev-musica"); l.append(el("b", "", m.texto), el("span", "", horaDe(m.criado))); lista.append(l); });
-    const w = el("div"); w.append(b, lista); w.style.cssText = "display:flex;flex-direction:column;gap:12px"; return w;
+  // ---- Karaokê: a galera entra na fila, todo mundo vê quem canta e quem é o próximo ----
+  const karaokeFila = () => S.karaoke.filter(x => x.status === "fila");
+  const karaokeAgora = () => S.karaoke.filter(x => x.status === "cantando")[0] || null;
+  const karaokeProximo = () => karaokeFila()[0] || null;
+  function toastKaraoke(texto) {
+    const t = $("#toast"), ic = el("span", "av p"); ic.innerHTML = EVENTOS.karaoke.ic.replace('width="22" height="22"', 'width="16" height="16"'); ic.style.setProperty("--c", EVENTOS.karaoke.cor); ic.style.color = "#140c1b";
+    t.replaceChildren(ic, el("span", "", texto)); t.hidden = false;
+    t.onclick = () => { t.hidden = true; abrirEvento("karaoke"); };
+    clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 7000);
+  }
+  function linhaKaraoke(x, rotulo, cls) {
+    const l = el("div", "kr-linha" + (cls ? " " + cls : "") + (x.autor === EU.uid ? " eu" : ""));
+    const pos = el("span", "kr-pos", rotulo);
+    const t = el("div", "kr-t"); t.append(el("b", "", x.autor === EU.uid ? "Tu" : x.nome), el("span", "", x.musica));
+    l.append(pos, avatar(x.autor, "p"), t);
+    return l;
+  }
+  function blocoKaraoke() {
+    const w = el("div"); w.style.cssText = "display:flex;flex-direction:column;gap:12px";
+    const agora = karaokeAgora(), fila = karaokeFila(), prox = fila[0];
+    const minhaPos = fila.findIndex(x => x.autor === EU.uid), euCantando = agora && agora.autor === EU.uid;
+    // Palco: cantando agora + próximo
+    const palco = pBloco("No palco");
+    if (agora) palco.append(linhaKaraoke(agora, "Agora", "kr-agora"));
+    else palco.append(el("div", "vazio-s", "Ninguém cantando agora."));
+    if (prox) palco.append(linhaKaraoke(prox, "Próximo", "kr-prox"));
+    w.append(palco);
+    // Minha situação
+    const eu = pBloco("Tua vez");
+    if (euCantando) eu.append(el("p", "ev-ok kr-grande", "É tua vez! Sobe pro palco e solta a voz."));
+    else if (minhaPos >= 0) {
+      eu.append(el("p", "ev-txt", minhaPos === 0 ? "Tu é o próximo! Vai se preparando." : "Tu é o " + (minhaPos + 1) + "º da fila."),
+        el("p", "ev-mut", "Tua música: " + fila[minhaPos].musica));
+      const sair = bt("Sair da fila", "", async () => { sair.disabled = true; await db.doc("karaoke/" + fila[minhaPos].id).delete().catch(() => erroToast("Não deu pra sair agora.")); });
+      eu.append(sair);
+    } else {
+      const inp = el("input"); inp.dataset.k = "karaoke"; inp.maxLength = 80; inp.placeholder = "Música e artista. Ex.: Evidências - Chitãozinho & Xororó"; inp.setAttribute("aria-label", "Música que tu vai cantar");
+      const entra = bt("Entrar na fila", "sim", async () => {
+        const m = inp.value.trim();
+        if (m.length < 2) return erroToast("Escreve a música que tu vai cantar.");
+        if (motivoSuspeito(m)) return erroToast("Essa música não passou no filtro.");
+        entra.disabled = true;
+        try { await db.collection("karaoke").add({ autor: EU.uid, nome: EU.nome, musica: m, status: "fila", criado: agoraServidor() }); inp.value = ""; toast(EU.uid, "Tu tá na fila do karaokê!"); }
+        catch (e) { erroToast("Não deu pra entrar na fila agora."); entra.disabled = false; }
+      });
+      eu.append(el("p", "ev-mut", "Escolhe a música e entra na fila. O app te avisa quando tu for o próximo."), inp, entra);
+    }
+    w.append(eu);
+    // Fila completa
+    const lista = pBloco("Fila" + (fila.length ? " · " + fila.length + (fila.length === 1 ? " pessoa" : " pessoas") : ""));
+    if (!fila.length) lista.append(el("div", "vazio-s", "Fila vazia. Sai na frente!"));
+    fila.forEach((x, i) => lista.append(linhaKaraoke(x, (i + 1) + "º", i === 0 ? "kr-prox-l" : "")));
+    w.append(lista);
+    return w;
   }
 
   // ---- Sino (notificações) ----

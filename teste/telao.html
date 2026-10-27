@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610271850">
+<link rel="stylesheet" href="estilo.css?v=202610271907">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -254,10 +254,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271850"></script>
+<script src="config.js?v=202610271907"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610271850"></script>
-<script src="equipe.js?v=202610271850"></script>
+<script src="comum.js?v=202610271907"></script>
+<script src="equipe.js?v=202610271907"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -522,7 +522,8 @@
     musica: { cor: "#7cc6fe", rotulo: "Pedidos de música", ic: svgIc('<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>'), titulo: c => "Pede tua música pelo app" },
     contagem: { cor: "#ffd166", rotulo: "Contagem", ic: svgIc('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'), titulo: c => c.titulo || "Falta pouco" }
   };
-  const ORDEM_EV = ["concurso", "desafio", "enquete", "sorteio", "contagem", "musica"];
+  // O karaokê não aparece no telão (só no app)
+  const ORDEM_EV = ["concurso", "desafio", "enquete", "sorteio", "contagem"];
   let A = {}, postsAcao = [], curtidasPor = {}, votos = [];
   function eventosAtivos() { return ORDEM_EV.filter(k => A[k] && A[k].ativo).map(k => ({ k: k, c: A[k], m: EVENTOS[k] })); }
   function temRoda() {

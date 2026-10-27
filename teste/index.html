@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610271739">
+<link rel="stylesheet" href="estilo.css?v=202610271742">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -428,11 +428,6 @@
       <button class="ico" id="gvFechar" type="button" aria-label="Fechar menu">×</button>
     </div>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
-    <button type="button" class="gv-item" data-ir="avisos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span>Notificações</span><em class="gv-n" id="gvAvisos" hidden></em></button>
-    <button type="button" class="gv-item" data-ir="galera"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg><span>Conversas e amigos</span><em class="gv-n" id="gvGalera" hidden></em></button>
-    <button type="button" class="gv-item" data-ir="feed"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 10v10"/></svg><span>Rolou hoje</span></button>
-    <button type="button" class="gv-item" data-ir="telao"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="13" rx="2"/><path d="M8 21h8"/></svg><span>Mandar pro telão</span></button>
-    <button type="button" class="gv-item" data-ir="instalar" id="gvInstalar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span>Colocar na tela inicial</span></button>
     <p class="gv-rodape">Trela · versão de teste</p>
   </nav>
 
@@ -443,8 +438,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271739"></script>
-<script src="comum.js?v=202610271739"></script>
+<script src="config.js?v=202610271742"></script>
+<script src="comum.js?v=202610271742"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1602,8 +1597,6 @@
     $("#badgeSino").hidden = !ns; $("#badgeSino").textContent = ns > 9 ? "9+" : ns;
     const nev = eventosAtivos().length, novos = eventosAtivos().filter(eventoNovo).length;
     $("#gvEventos").hidden = !nev; $("#gvEventos").textContent = nev;
-    $("#gvAvisos").hidden = !ns; $("#gvAvisos").textContent = ns;
-    $("#gvGalera").hidden = !n; $("#gvGalera").textContent = n;
     $("#pontoMenu").hidden = !novos;
   }
 

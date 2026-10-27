@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610271738">
+<link rel="stylesheet" href="estilo.css?v=202610271739">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -47,12 +47,12 @@
   .acoes-esp{display:flex;flex-direction:column;gap:14px}
   .acoes-esp > header{display:block}
   .ac-cab{display:flex !important;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
-  .ac-todos{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .ac-todos span{font:400 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:4px}
-  .ac-todos #ligarTodos{border-color:var(--ok);color:var(--ok)}
-  .ac-todos #desligarTodos{border-color:var(--laranja);color:var(--laranja)}
-  .ac-todos button:disabled{opacity:.35;cursor:default}
-  @media (max-width:700px){.ac-todos{width:100%}.ac-todos button{flex:1}.ac-todos span{width:100%}}
+  .ac-todos{--c:var(--neon);display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .ac-todos.ligada{border-color:var(--neon);box-shadow:0 0 0 1px var(--neon) inset}
+  .ac-todos b{display:block;font:700 15px/1.2 var(--f-body)}
+  .ac-todos span#acLigadas{display:block;font:400 10px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+  .ac-todos.ligada span#acLigadas{color:var(--neon)}
+  @media (max-width:700px){.ac-todos{width:100%;justify-content:space-between}}
   .acoes-esp > header h2{font-family:var(--f-display);font-weight:400;font-size:28px;text-transform:uppercase;margin:0}
   .acoes-esp > header p{margin:4px 0 0;font-size:13px;color:var(--muted)}
   .acoes-grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
@@ -155,9 +155,8 @@
       <header class="ac-cab">
         <div><h2 id="tituloAcoes">Ações especiais</h2><p>Liga só o que vai rolar na noite. Participações, votos e pedidos zeram às 6h, junto com a noite.</p></div>
         <div class="ac-todos">
-          <span id="acLigadas">0 de 6 ligadas</span>
-          <button type="button" class="ghost" id="ligarTodos">Ligar todos</button>
-          <button type="button" class="ghost" id="desligarTodos">Desligar todos</button>
+          <div><b>Todas as ações</b><span id="acLigadas">0 de 6 ligadas</span></div>
+          <label class="chave" title="Ligar ou desligar todas"><input type="checkbox" id="lig-todas" aria-label="Ligar ou desligar todas as ações"><span></span></label>
         </div>
       </header>
       <div class="acoes-grade">
@@ -283,10 +282,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271738"></script>
+<script src="config.js?v=202610271739"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610271738"></script>
-<script src="equipe.js?v=202610271738"></script>
+<script src="comum.js?v=202610271739"></script>
+<script src="equipe.js?v=202610271739"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -429,7 +428,8 @@
       });
       const nOn = ACOES.filter(k => A[k] && A[k].ativo).length;
       $("acLigadas").textContent = nOn + " de " + ACOES.length + (nOn === 1 ? " ligada" : " ligadas");
-      $("ligarTodos").disabled = nOn === ACOES.length; $("desligarTodos").disabled = nOn === 0;
+      $("lig-todas").checked = nOn === ACOES.length;
+      document.querySelector(".ac-todos").classList.toggle("ligada", nOn === ACOES.length);
       const v = (a, c) => (A[a] && A[a][c]) || "";
       Object.keys(CAMPOS).forEach(id => { if (document.activeElement !== $(id)) $(id).value = v(CAMPOS[id][0], CAMPOS[id][1]); });
       const ops = (A.enquete && A.enquete.opcoes) || [];
@@ -467,19 +467,15 @@
       const c = A.concurso || {};
       anunciar((c.nome || "Concurso") + ": quem levou foi " + r.post.nome + ", com " + r.n + (r.n === 1 ? " curtida" : " curtidas") + "!" + (c.premio ? " Prêmio: " + c.premio : ""), "cMsg");
     };
-    // Ligar / desligar tudo de uma vez
-    $("ligarTodos").onclick = () => {
-      if (!confirm("Ligar todas as ações especiais? Todas aparecem pra galera no app.")) return;
+    // Chave geral: liga ou desliga todas de uma vez
+    $("lig-todas").onchange = e => {
       const tudo = {};
-      ACOES.forEach(k => { if (!(A[k] && A[k].ativo)) tudo[k] = { ativo: true, desde: agoraServidor() }; });
-      if (tudo.enquete && !(A.enquete && A.enquete.id)) tudo.enquete.id = novoId();
-      if (tudo.contagem) tudo.contagem.ate = horarioAlvo();
-      if (tudo.concurso) tudo.concurso.encerrado = false;
-      ref.set(tudo, { merge: true }).catch(() => {});
-    };
-    $("desligarTodos").onclick = () => {
-      if (!confirm("Desligar todas as ações especiais? Elas somem do app da galera (as participações da noite continuam guardadas).")) return;
-      const tudo = {}; ACOES.forEach(k => tudo[k] = { ativo: false });
+      if (e.target.checked) {
+        ACOES.forEach(k => { if (!(A[k] && A[k].ativo)) tudo[k] = { ativo: true, desde: agoraServidor() }; });
+        if (tudo.enquete && !(A.enquete && A.enquete.id)) tudo.enquete.id = novoId();
+        if (tudo.contagem) tudo.contagem.ate = horarioAlvo();
+        if (tudo.concurso) tudo.concurso.encerrado = false;
+      } else ACOES.forEach(k => tudo[k] = { ativo: false });
       ref.set(tudo, { merge: true }).catch(() => {});
     };
 

@@ -202,15 +202,15 @@ service cloud.firestore {
       allow read: if logado();
       allow create: if equipe()
         || (ativo()
-            && request.resource.data.keys().hasOnly(['tipo', 'autor', 'nome', 'texto', 'cor', 'criado', 'reacoes', 'fotoId', 'concorre', 'vaga'])
-            // Concurso: a foto só concorre junto com a "vaga" da pessoa na noite (uma por pessoa)
-            && (!('concorre' in request.resource.data)
-                || (request.resource.data.concorre == true && request.resource.data.tipo == 'foto'
+            && request.resource.data.keys().hasOnly(['tipo', 'autor', 'nome', 'texto', 'cor', 'criado', 'reacoes', 'fotoId', 'acao', 'vaga'])
+            // Ações especiais: foto marcada pro desafio ou pro concurso.
+            // No concurso, a foto só entra junto com a "vaga" da pessoa na noite (uma por pessoa).
+            && (!('acao' in request.resource.data)
+                || (request.resource.data.tipo == 'foto' && request.resource.data.acao == 'desafio')
+                || (request.resource.data.tipo == 'foto' && request.resource.data.acao == 'concurso'
                     && request.resource.data.vaga is string
                     && getAfter(/databases/$(database)/documents/concorrentes/$(request.resource.data.vaga)).data.post == id
                     && getAfter(/databases/$(database)/documents/concorrentes/$(request.resource.data.vaga)).data.de == eu()))
-            && request.resource.data.autor == eu()
-            && nomeOk(request.resource.data.nome)
             // Recado: texto obrigatório. Foto: vai direto, com legenda opcional e a foto já salva em /fotos
             && ((request.resource.data.tipo == 'recado' && textoOk(request.resource.data.texto, 2, 120) && !('fotoId' in request.resource.data))
                 || (request.resource.data.tipo == 'foto' && textoOk(request.resource.data.texto, 0, 80)
@@ -263,6 +263,28 @@ service cloud.firestore {
         && agora(request.resource.data);
       // Sem update: não dá pra trocar a foto que concorre. A equipe pode tirar.
       allow delete: if equipe();
+    }
+
+    // ---------- Enquete: um voto por pessoa (dá pra trocar o voto) ----------
+    match /enquetes/{enq}/votos/{uid} {
+      allow read: if logado();
+      allow create, update: if ativo() && uid == eu()
+        && request.resource.data.keys().hasOnly(['opcao', 'criado'])
+        && request.resource.data.opcao is int && request.resource.data.opcao >= 0 && request.resource.data.opcao <= 3
+        && request.resource.data.criado == request.time;
+      allow delete: if equipe() || (logado() && uid == eu());
+    }
+
+    // ---------- Pedidos de música ----------
+    match /musicas/{id} {
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['autor', 'nome', 'texto', 'criado'])
+        && request.resource.data.autor == eu()
+        && nomeOk(request.resource.data.nome)
+        && textoOk(request.resource.data.texto, 2, 80) && !suspeito(request.resource.data.texto)
+        && agora(request.resource.data);
+      allow read: if equipe() || (logado() && resource.data.autor == eu());
+      allow delete: if equipe() || (logado() && resource.data.autor == eu());
     }
 
     // ---------- Posição da fila e ajustes ----------

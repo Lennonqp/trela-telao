@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610172156">
+<link rel="stylesheet" href="estilo.css?v=202610271659">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -42,12 +42,74 @@
   .acoes .sim{background:var(--ok);border-color:var(--ok);color:#06210f}
   .acoes .perigo{border-color:var(--laranja);color:var(--laranja)}
   .vazio{color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:10px;padding:16px;text-align:center}
+
+  /* ---------- Ações especiais ---------- */
+  .acoes-esp{display:flex;flex-direction:column;gap:14px}
+  .acoes-esp > header{display:block}
+  .acoes-esp > header h2{font-family:var(--f-display);font-weight:400;font-size:28px;text-transform:uppercase;margin:0}
+  .acoes-esp > header p{margin:4px 0 0;font-size:13px;color:var(--muted)}
+  .acoes-grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .acao{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+  .acao.ligada{border-color:var(--c,var(--neon));box-shadow:0 0 0 1px var(--c,var(--neon)) inset}
+  .acao-topo{display:flex;align-items:flex-start;gap:12px}
+  .acao-topo .ic{flex:none;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.06);color:var(--c,var(--neon));font-size:22px}
+  .acao-topo h3{margin:0;font:700 16px/1.2 var(--f-body);letter-spacing:0;text-transform:none;color:var(--ink)}
+  .acao-topo p{margin:3px 0 0;font-size:12px;color:var(--muted)}
+  .acao-topo > div{flex:1;min-width:0}
+  .chave{position:relative;flex:none;width:52px;height:30px;margin:0;cursor:pointer}
+  .chave input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+  .chave span{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:999px;background:var(--line);transition:background .2s}
+  .chave span::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s}
+  .chave input:checked + span{background:var(--c,var(--neon))}
+  .chave input:checked + span::after{transform:translateX(22px)}
+  .chave input:focus-visible + span{outline:2px solid var(--lilas);outline-offset:2px}
+  .estado{font:400 10px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px;display:block}
+  .acao.ligada .estado{color:var(--c,var(--neon))}
+  .campos{display:flex;flex-direction:column;gap:10px}
+  .campos .dupla{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+  .campos label{margin-bottom:4px}
+  .campos input,.campos textarea,.campos select{padding:10px 12px;font-size:15px}
+  .campos textarea{min-height:64px;resize:vertical}
+  select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);font:15px/1.4 var(--f-body);border-radius:12px;padding:10px 12px}
+  .acao-bts{display:flex;flex-wrap:wrap;gap:8px}
+  .acao-bts button{flex:1 1 auto;border-radius:10px;padding:11px 12px;font:700 12px/1.1 var(--f-body);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink)}
+  .acao-bts .forte{background:var(--c,var(--neon));border-color:var(--c,var(--neon));color:#140c1b}
+  .acao-bts button:disabled{opacity:.4;cursor:default}
+  .sub-t{font:400 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:4px 0 0}
+  .ranking{display:flex;flex-direction:column;gap:8px}
+  .rk{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px 10px 8px 8px}
+  .rk.top{border-color:var(--c,var(--neon));background:rgba(255,63,164,.07)}
+  .rk .pos{flex:none;width:30px;text-align:center;font:400 24px/1 var(--f-display);color:var(--muted)}
+  .rk.top .pos{color:var(--c,var(--neon))}
+  .rk img{flex:none;width:52px;height:52px;object-fit:cover;border-radius:8px;background:var(--panel)}
+  .rk .quem{flex:1;min-width:0}
+  .rk .quem b{display:block;font-size:14px}
+  .rk .quem span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rk .n{flex:none;text-align:right;font:400 22px/1 var(--f-display)}
+  .rk .n small{display:block;font:400 9px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+  .rk .mini,.musica .mini{flex:none;border-radius:999px;padding:7px 10px;font:700 11px/1 var(--f-body);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink)}
+  .rk .mini.forte{background:var(--c,var(--neon));border-color:var(--c,var(--neon));color:#140c1b}
+  .barras{display:flex;flex-direction:column;gap:8px}
+  .barra-op{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;padding:10px 12px;display:flex;justify-content:space-between;gap:10px;font-size:14px}
+  .barra-op i{position:absolute;top:0;left:0;bottom:0;background:rgba(169,92,242,.25);z-index:0;transition:width .4s}
+  .barra-op.lider i{background:rgba(169,92,242,.45)}
+  .barra-op span,.barra-op b{position:relative;z-index:1}
+  .sorteado{text-align:center;padding:16px;border:1px dashed var(--c,var(--neon));border-radius:12px;font:400 34px/1.05 var(--f-display);text-transform:uppercase;min-height:72px;display:flex;align-items:center;justify-content:center;overflow-wrap:anywhere}
+  .sorteado.girando{color:var(--muted)}
+  .relogio{font:400 40px/1 var(--f-display);text-align:center;font-variant-numeric:tabular-nums}
+  .vazio-p{color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:10px;padding:12px;text-align:center}
+  .musica{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .musica div{flex:1;min-width:0}
+  .musica b{display:block;font-size:14px;overflow-wrap:anywhere}
+  .musica span{font-size:12px;color:var(--muted)}
+  .anunciado{font-size:12px;color:var(--ok);min-height:16px;margin:0}
+  @media (max-width:960px){.acoes-grade{grid-template-columns:minmax(0,1fr)}}
   @media (max-width:960px){.cols{grid-template-columns:minmax(0,1fr)}}
   @media (max-width:700px){
     /* No celular: o que pede ação primeiro, formulários depois */
     .painel{gap:22px}
     .topo,.cols{display:contents}
-    .o-fila{order:1}.o-den{order:2}.o-recado{order:3}.o-noite{order:4}.o-telao{order:5}
+    .o-fila{order:1}.o-den{order:2}.o-acoes{order:3}.o-recado{order:4}.o-noite{order:5}.o-telao{order:6}
     body{padding:16px 14px calc(32px + env(safe-area-inset-bottom))}
     .logo{font-size:40px}
     .acoes button{padding:13px 8px}
@@ -81,6 +143,118 @@
       </div>
     </div>
 
+
+    <section class="acoes-esp o-acoes" aria-labelledby="tituloAcoes">
+      <header><h2 id="tituloAcoes">Ações especiais</h2><p>Liga só o que vai rolar na noite. Participações, votos e pedidos zeram às 6h, junto com a noite.</p></header>
+      <div class="acoes-grade">
+
+        <!-- Concurso de fotos -->
+        <article class="acao" id="ac-concurso" style="--c:var(--neon)">
+          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6"/></svg></span><div><h3>Concurso de fotos</h3><p>Melhor foto, melhor fantasia… A galera marca a foto pra concorrer (1 por pessoa) e as curtidas decidem.</p><span class="estado" id="est-concurso">Desligado</span></div>
+          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-concurso" aria-label="Ligar Concurso de fotos"><span></span></label></div>
+          <div class="campos">
+            <div class="dupla">
+              <div><label for="cNome">Nome do concurso</label><input id="cNome" maxlength="40" placeholder="Melhor fantasia"></div>
+              <div><label for="cPremio">Prêmio (opcional)</label><input id="cPremio" maxlength="40" placeholder="Balde de cerveja"></div>
+            </div>
+          </div>
+          <p class="sub-t">Ranking ao vivo <span id="cTotal"></span></p>
+          <div class="ranking" id="cRanking"></div>
+          <div class="acao-bts">
+            <button type="button" class="forte" id="cAnunciar">Anunciar 1º lugar no telão</button>
+            <button type="button" id="cEncerrar">Encerrar votação</button>
+          </div>
+          <p class="anunciado" id="cMsg" role="status"></p>
+        </article>
+
+        <!-- Desafio -->
+        <article class="acao" id="ac-desafio" style="--c:var(--laranja)">
+          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/></svg></span><div><h3>Desafio da noite</h3><p>Um desafio pra galera cumprir e mandar a foto. A equipe escolhe quem ganhou.</p><span class="estado" id="est-desafio">Desligado</span></div>
+          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-desafio" aria-label="Ligar Desafio da noite"><span></span></label></div>
+          <div class="campos">
+            <div><label for="dTitulo">Desafio</label><input id="dTitulo" maxlength="60" placeholder="Foto brindando com alguém que tu não conhecia"></div>
+            <div><label for="dRegras">Como participar (opcional)</label><textarea id="dRegras" maxlength="200" placeholder="Manda a foto marcando “Desafio”. Vale até a meia-noite."></textarea></div>
+            <div><label for="dPremio">Prêmio (opcional)</label><input id="dPremio" maxlength="40" placeholder="Rodada de shots"></div>
+          </div>
+          <div class="acao-bts"><button type="button" id="dAvisar">Avisar o desafio no telão</button></div>
+          <p class="sub-t">Quem participou <span id="dTotal"></span></p>
+          <div class="ranking" id="dLista"></div>
+          <p class="anunciado" id="dMsg" role="status"></p>
+        </article>
+
+        <!-- Enquete -->
+        <article class="acao" id="ac-enquete" style="--c:var(--lilas)">
+          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span><div><h3>Enquete</h3><p>Uma pergunta rápida pra galera votar no app. Resultado ao vivo.</p><span class="estado" id="est-enquete">Desligado</span></div>
+          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-enquete" aria-label="Ligar Enquete"><span></span></label></div>
+          <div class="campos">
+            <div><label for="eQ">Pergunta</label><input id="eQ" maxlength="80" placeholder="Qual a próxima música?"></div>
+            <div class="dupla">
+              <div><label for="eO0">Opção 1</label><input id="eO0" maxlength="30" placeholder="Funk"></div>
+              <div><label for="eO1">Opção 2</label><input id="eO1" maxlength="30" placeholder="Sertanejo"></div>
+              <div><label for="eO2">Opção 3 (opcional)</label><input id="eO2" maxlength="30" placeholder="Pagode"></div>
+              <div><label for="eO3">Opção 4 (opcional)</label><input id="eO3" maxlength="30" placeholder="Rock"></div>
+            </div>
+          </div>
+          <p class="sub-t">Votos <span id="eTotal"></span></p>
+          <div class="barras" id="eRes"></div>
+          <div class="acao-bts">
+            <button type="button" class="forte" id="eAnunciar">Anunciar resultado no telão</button>
+            <button type="button" id="eNova">Nova enquete (zera votos)</button>
+          </div>
+          <p class="anunciado" id="eMsg" role="status"></p>
+        </article>
+
+        <!-- Sorteio -->
+        <article class="acao" id="ac-sorteio" style="--c:var(--ok)">
+          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/></svg></span><div><h3>Sorteio</h3><p>Sorteia um nome na hora. Liga pra galera ver no app que vai ter sorteio.</p><span class="estado" id="est-sorteio">Desligado</span></div>
+          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-sorteio" aria-label="Ligar Sorteio"><span></span></label></div>
+          <div class="campos">
+            <div class="dupla">
+              <div><label for="sPremio">Prêmio</label><input id="sPremio" maxlength="40" placeholder="Porção de fritas"></div>
+              <div><label for="sQuem">Sortear entre</label>
+                <select id="sQuem">
+                  <option value="agora">Quem está com o app aberto agora</option>
+                  <option value="postou">Quem postou nesta noite</option>
+                  <option value="desafio">Quem participou do desafio</option>
+                  <option value="concurso">Quem está no concurso</option>
+                </select></div>
+            </div>
+          </div>
+          <p class="sub-t" id="sCont">Participantes: —</p>
+          <div class="sorteado" id="sNome">?</div>
+          <div class="acao-bts">
+            <button type="button" class="forte" id="sSortear">Sortear</button>
+            <button type="button" id="sAnunciar" disabled>Anunciar no telão</button>
+          </div>
+          <p class="anunciado" id="sMsg" role="status"></p>
+        </article>
+
+        <!-- Pedidos de música -->
+        <article class="acao" id="ac-musica" style="--c:#7cc6fe">
+          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg></span><div><h3>Pedidos de música</h3><p>A galera pede música pelo app e a lista aparece aqui.</p><span class="estado" id="est-musica">Desligado</span></div>
+          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-musica" aria-label="Ligar Pedidos de música"><span></span></label></div>
+          <p class="sub-t">Pedidos da noite <span id="mTotal"></span></p>
+          <div class="ranking" id="mLista"></div>
+        </article>
+
+        <!-- Contagem regressiva -->
+        <article class="acao" id="ac-contagem" style="--c:#ffd166">
+          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></span><div><h3>Contagem regressiva</h3><p>Happy hour, rodada dobrada, show… mostra quanto tempo falta no app e no telão.</p><span class="estado" id="est-contagem">Desligado</span></div>
+          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-contagem" aria-label="Ligar Contagem regressiva"><span></span></label></div>
+          <div class="campos">
+            <div class="dupla">
+              <div><label for="tTitulo">O que acaba / começa</label><input id="tTitulo" maxlength="40" placeholder="Happy hour acaba em"></div>
+              <div><label for="tHora">Horário</label><input id="tHora" type="time" value="22:00"></div>
+            </div>
+          </div>
+          <div class="relogio" id="tRelogio">--:--</div>
+          <div class="acao-bts"><button type="button" id="tAvisar">Avisar no telão agora</button></div>
+          <p class="anunciado" id="tMsg" role="status"></p>
+        </article>
+
+      </div>
+    </section>
+
     <div class="cols">
       <div class="o-fila"><h3>Pra decidir <span id="nFila"></span></h3><div class="lista" id="fila"></div></div>
       <div class="o-den">
@@ -95,10 +269,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610172156"></script>
+<script src="config.js?v=202610271659"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610172156"></script>
-<script src="equipe.js?v=202610172156"></script>
+<script src="comum.js?v=202610271659"></script>
+<script src="equipe.js?v=202610271659"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -196,6 +370,251 @@
     if (!itens.length) alvo.replaceChildren(el("div", "vazio", vazio));
   }
 
+
+  // =================== AÇÕES ESPECIAIS ===================
+  // Tudo fica em config/acoes (a equipe liga/desliga e configura). O app e o telão leem de lá.
+  const ACOES = ["concurso", "desafio", "enquete", "sorteio", "musica", "contagem"];
+  let A = {};                // config/acoes atual
+  let postsNoite = [];       // posts da noite (pra concurso, desafio e sorteio)
+  let curtidasPor = {};      // curtidas por post nesta noite
+  function iniciarAcoes() {
+    const ref = db.doc("config/acoes");
+    parar.push(() => { if (pararVotos) pararVotos(); pararVotos = null; votosId = null; });
+    const salvar = (acao, dados) => ref.set({ [acao]: dados }, { merge: true }).catch(() => {});
+
+    // Liga/desliga
+    ACOES.forEach(k => {
+      $("lig-" + k).onchange = e => {
+        const d = { ativo: e.target.checked };
+        if (k === "enquete" && e.target.checked && !(A.enquete && A.enquete.id)) d.id = novoId();
+        if (k === "contagem" && e.target.checked) d.ate = horarioAlvo();
+        if (k === "concurso" && e.target.checked) d.encerrado = false;
+        salvar(k, d);
+      };
+    });
+    // Campos de texto (salvam sozinhos enquanto digita)
+    const CAMPOS = { cNome: ["concurso", "nome"], cPremio: ["concurso", "premio"], dTitulo: ["desafio", "titulo"], dRegras: ["desafio", "regras"],
+      dPremio: ["desafio", "premio"], eQ: ["enquete", "pergunta"], sPremio: ["sorteio", "premio"], tTitulo: ["contagem", "titulo"] };
+    Object.keys(CAMPOS).forEach(id => {
+      let t; $(id).oninput = () => { clearTimeout(t); t = setTimeout(() => salvar(CAMPOS[id][0], { [CAMPOS[id][1]]: $(id).value.trim() }), 500); };
+    });
+    [0, 1, 2, 3].forEach(i => {
+      let t; $("eO" + i).oninput = () => { clearTimeout(t); t = setTimeout(() => salvar("enquete", { opcoes: [0, 1, 2, 3].map(j => $("eO" + j).value.trim()) }), 500); };
+    });
+    $("sQuem").onchange = () => { salvar("sorteio", { quem: $("sQuem").value }); contarSorteio(true); };
+    $("tHora").onchange = () => salvar("contagem", { hora: $("tHora").value, ate: horarioAlvo() });
+
+    parar.push(ref.onSnapshot(d => {
+      A = d.exists ? d.data() : {};
+      ACOES.forEach(k => {
+        const on = !!(A[k] && A[k].ativo);
+        $("lig-" + k).checked = on;
+        $("ac-" + k).classList.toggle("ligada", on);
+        $("est-" + k).textContent = on ? "Ligado · aparece pra galera" : (k === "concurso" && A.concurso && A.concurso.encerrado ? "Votação encerrada" : "Desligado");
+      });
+      const v = (a, c) => (A[a] && A[a][c]) || "";
+      Object.keys(CAMPOS).forEach(id => { if (document.activeElement !== $(id)) $(id).value = v(CAMPOS[id][0], CAMPOS[id][1]); });
+      const ops = (A.enquete && A.enquete.opcoes) || [];
+      [0, 1, 2, 3].forEach(i => { if (document.activeElement !== $("eO" + i)) $("eO" + i).value = ops[i] || ""; });
+      if (A.sorteio && A.sorteio.quem && document.activeElement !== $("sQuem")) $("sQuem").value = A.sorteio.quem;
+      if (A.contagem && A.contagem.hora && document.activeElement !== $("tHora")) $("tHora").value = A.contagem.hora;
+      ouvirVotos(); desenharConcurso(); desenharDesafio(); contarSorteio();
+    }, () => {}));
+
+    // Posts e curtidas da noite
+    parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
+      postsNoite = q.docs.map(d => ({ id: d.id, ...d.data() }));
+      desenharConcurso(); desenharDesafio(); contarSorteio();
+    }, () => {})));
+    parar.push(ouvirNoite(desde => db.collection("curtidas").where("criado", ">=", desde).onSnapshot(q => {
+      curtidasPor = {}; q.docs.forEach(d => { const p = d.data().post; curtidasPor[p] = (curtidasPor[p] || 0) + 1; });
+      desenharConcurso();
+    }, () => {})));
+    // Pedidos de música
+    parar.push(ouvirNoite(desde => db.collection("musicas").where("criado", ">=", desde).orderBy("criado").onSnapshot(q => {
+      $("mTotal").textContent = q.size ? "· " + q.size : "";
+      const itens = q.docs.map(d => {
+        const m = d.data(), linha = el("div", "musica"), t = el("div");
+        t.append(el("b", "", m.texto), el("span", "", (m.nome || "") + " · " + horaDe(m.criado)));
+        linha.append(t, botao("Tocou", "mini", () => d.ref.delete().catch(() => {})));
+        return linha;
+      });
+      lista($("mLista"), itens, A.musica && A.musica.ativo ? "Nenhum pedido ainda." : "Liga pra galera poder pedir música pelo app.");
+    }, () => {})));
+
+    // Botões
+    $("cAnunciar").onclick = () => {
+      const r = rankingConcurso()[0];
+      if (!r || !r.n) return msg("cMsg", "Ainda não tem foto com curtida.", true);
+      const c = A.concurso || {};
+      anunciar((c.nome || "Concurso") + ": quem levou foi " + r.post.nome + ", com " + r.n + (r.n === 1 ? " curtida" : " curtidas") + "!" + (c.premio ? " Prêmio: " + c.premio : ""), "cMsg");
+    };
+    $("cEncerrar").onclick = () => salvar("concurso", { ativo: false, encerrado: true });
+    $("dAvisar").onclick = () => {
+      const d = A.desafio || {};
+      if (!d.titulo) return msg("dMsg", "Escreve o desafio primeiro.", true);
+      anunciar("Desafio da noite: " + d.titulo + (d.premio ? " · Prêmio: " + d.premio : ""), "dMsg");
+    };
+    $("eAnunciar").onclick = () => {
+      const res = resultadoEnquete();
+      if (!res.total) return msg("eMsg", "Ainda não tem voto.", true);
+      const lider = res.ops.slice().sort((a, b) => b.n - a.n)[0];
+      anunciar((A.enquete.pergunta || "Enquete") + " Ganhou: " + lider.txt + " (" + Math.round(lider.n * 100 / res.total) + "%)", "eMsg");
+    };
+    $("eNova").onclick = () => salvar("enquete", { id: novoId() });
+    $("sSortear").onclick = sortear;
+    $("sAnunciar").onclick = () => {
+      if (!sorteadoAgora) return;
+      const pr = (A.sorteio && A.sorteio.premio) || "";
+      anunciar("Sorteio: quem ganhou foi " + sorteadoAgora + "!" + (pr ? " Prêmio: " + pr : ""), "sMsg");
+    };
+    $("tAvisar").onclick = () => {
+      const c = A.contagem || {}, ate = horarioAlvo();
+      anunciar((c.titulo || "Falta pouco!") + " " + String(ate.getHours()).padStart(2, "0") + ":" + String(ate.getMinutes()).padStart(2, "0") + " (faltam " + faltam(ate, true) + ")", "tMsg");
+    };
+    const rel = setInterval(desenharRelogio, 1000); parar.push(() => clearInterval(rel)); desenharRelogio();
+  }
+
+  const novoId = () => Date.now().toString(36);
+  function msg(id, texto, erro) { $(id).textContent = texto; $(id).style.color = erro ? "var(--laranja)" : ""; }
+  async function anunciar(texto, msgId) {
+    try {
+      await db.collection("telao").add({ tipo: "bar", nome: "Trela", texto: texto.slice(0, 120), cor: "laranja", repetir: false, criado: agoraServidor(), reacoes: REACOES_ZERO });
+      msg(msgId, "Mandado pro telão às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + ". Entra na frente dos recados.");
+    } catch (e) { msg(msgId, "Não deu pra mandar. Tenta de novo.", true); }
+  }
+
+  // ---- Concurso ----
+  function rankingConcurso() {
+    return postsNoite.filter(p => p.acao === "concurso").map(p => ({ post: p, n: curtidasPor[p.id] || 0 })).sort((a, b) => b.n - a.n);
+  }
+  function linhaPost(r, pos, top, direita) {
+    const linha = el("div", "rk" + (top ? " top" : ""));
+    const img = el("img"); img.alt = "Foto de " + r.nome; if (r.fotoId) carregarFoto(r.fotoId).then(d => d && (img.src = d));
+    const quem = el("div", "quem"); quem.append(el("b", "", r.nome || ""), el("span", "", r.texto || horaDe(r.criado)));
+    linha.append(el("div", "pos", pos), img, quem);
+    direita.forEach(x => linha.append(x));
+    return linha;
+  }
+  function desenharConcurso() {
+    const rk = rankingConcurso();
+    $("cTotal").textContent = rk.length ? "· " + rk.length + (rk.length === 1 ? " foto concorrendo" : " fotos concorrendo") : "";
+    let pos = 0, ant = -1;
+    const itens = rk.slice(0, 10).map((x, i) => {
+      if (x.n !== ant) { pos = i + 1; ant = x.n; }
+      const n = el("div", "n", String(x.n)); n.append(el("small", "", x.n === 1 ? "curtida" : "curtidas"));
+      return linhaPost(x.post, pos + "º", pos === 1 && x.n > 0, [n, botao("Ver", "mini", () => verFoto(x.post))]);
+    });
+    lista($("cRanking"), itens, A.concurso && A.concurso.ativo ? "Nenhuma foto concorrendo ainda. A galera marca “Concorrer” ao mandar a foto." : "Liga o concurso pra galera poder marcar fotos pra concorrer.");
+  }
+
+  // ---- Desafio ----
+  function desenharDesafio() {
+    const ent = postsNoite.filter(p => p.acao === "desafio").sort((a, b) => ms(a.criado) - ms(b.criado));
+    $("dTotal").textContent = ent.length ? "· " + ent.length : "";
+    const venc = A.desafio && A.desafio.vencedor;
+    const itens = ent.map((p, i) => {
+      const ganhou = venc && venc.post === p.id;
+      const b = botao(ganhou ? "Vencedor" : "Escolher", "mini" + (ganhou ? " forte" : ""), () => {
+        db.doc("config/acoes").set({ desafio: { vencedor: { post: p.id, nome: p.nome } } }, { merge: true });
+        const d = A.desafio || {};
+        anunciar("Desafio da noite: quem levou foi " + p.nome + "!" + (d.premio ? " Prêmio: " + d.premio : ""), "dMsg");
+      });
+      return linhaPost(p, String(i + 1), ganhou, [botao("Ver", "mini", () => verFoto(p)), b]);
+    });
+    lista($("dLista"), itens, A.desafio && A.desafio.ativo ? "Ninguém mandou ainda. A galera marca “Desafio” ao mandar a foto." : "Liga o desafio pra ele aparecer no app.");
+  }
+
+  // ---- Enquete ----
+  let pararVotos = null, votosId = null, votos = [];
+  function ouvirVotos() {
+    const id = A.enquete && A.enquete.id;
+    if (id === votosId) return desenharEnquete();
+    votosId = id; if (pararVotos) pararVotos(); pararVotos = null; votos = [];
+    if (id) pararVotos = db.collection("enquetes").doc(id).collection("votos").onSnapshot(q => { votos = q.docs.map(d => d.data().opcao); desenharEnquete(); }, () => {});
+    desenharEnquete();
+  }
+  function resultadoEnquete() {
+    const ops = ((A.enquete && A.enquete.opcoes) || []).map((t, i) => ({ txt: t, i, n: 0 })).filter(o => o.txt);
+    votos.forEach(v => { const o = ops.find(x => x.i === v); if (o) o.n++; });
+    return { ops, total: ops.reduce((a, o) => a + o.n, 0) };
+  }
+  function desenharEnquete() {
+    const r = resultadoEnquete(), max = Math.max(0, ...r.ops.map(o => o.n));
+    $("eTotal").textContent = r.total ? "· " + r.total : "";
+    if (r.ops.length < 2) return lista($("eRes"), [], "Escreve a pergunta e pelo menos 2 opções.");
+    lista($("eRes"), r.ops.map(o => {
+      const pct = r.total ? Math.round(o.n * 100 / r.total) : 0;
+      const b = el("div", "barra-op" + (o.n && o.n === max ? " lider" : "")); const i = el("i"); i.style.width = pct + "%";
+      b.append(i, el("span", "", o.txt), el("b", "", o.n + " · " + pct + "%")); return b;
+    }), "");
+  }
+
+  // ---- Sorteio ----
+  let poolSorteio = [], sorteadoAgora = "", jaSorteados = new Set(), contando = 0, online = [], onlineEm = 0;
+  async function contarSorteio(forcar) {
+    const quem = $("sQuem").value, meu = ++contando;
+    let nomes = [];
+    if (quem === "agora") {
+      // Quem está com o app aberto: consulta no máximo 1x por minuto (ou na hora de sortear)
+      if (forcar || Date.now() - onlineEm > 60000) {
+        onlineEm = Date.now();
+        const q = await db.collection("usuarios").where("ultimoAcesso", ">", FS.Timestamp.fromMillis(Date.now() - ONLINE_MS)).get().catch(() => null);
+        online = q ? q.docs.map(d => ({ uid: d.id, nome: d.data().nome })) : online;
+      }
+      nomes = online;
+    } else {
+      const f = quem === "postou" ? (p => p.tipo !== "bar") : (p => p.acao === quem);
+      nomes = postsNoite.filter(p => p.autor && f(p)).map(p => ({ uid: p.autor, nome: p.nome }));
+    }
+    if (meu !== contando) return;
+    const vistos = {}; poolSorteio = nomes.filter(x => x.nome && !vistos[x.uid] && (vistos[x.uid] = 1));
+    const livres = poolSorteio.filter(x => !jaSorteados.has(x.uid)).length;
+    $("sCont").textContent = "Participantes: " + poolSorteio.length + (jaSorteados.size ? " · " + livres + " ainda não sorteados" : "");
+  }
+  async function sortear() {
+    await contarSorteio(true);
+    let pool = poolSorteio.filter(x => !jaSorteados.has(x.uid));
+    if (!pool.length && poolSorteio.length) { jaSorteados.clear(); pool = poolSorteio.slice(); }
+    if (!pool.length) return msg("sMsg", "Ninguém pra sortear nesse grupo agora.", true);
+    $("sSortear").disabled = true; $("sAnunciar").disabled = true; msg("sMsg", "");
+    const alvo = pool[Math.floor(Math.random() * pool.length)], caixa = $("sNome");
+    caixa.classList.add("girando");
+    let t = 0;
+    const giro = setInterval(() => { caixa.textContent = poolSorteio[t++ % poolSorteio.length].nome; }, 80);
+    setTimeout(() => {
+      clearInterval(giro); caixa.classList.remove("girando"); caixa.textContent = alvo.nome;
+      sorteadoAgora = alvo.nome; jaSorteados.add(alvo.uid);
+      $("sSortear").disabled = false; $("sSortear").textContent = "Sortear de novo"; $("sAnunciar").disabled = false;
+      contarSorteio();
+    }, 2200);
+  }
+
+  // ---- Contagem regressiva ----
+  function horarioAlvo() {
+    const [h, m] = ($("tHora").value || "22:00").split(":").map(Number), d = new Date();
+    d.setHours(h, m, 0, 0);
+    if (d < Date.now() - 60000) d.setDate(d.getDate() + 1);   // já passou hoje: é amanhã (madrugada)
+    return d;
+  }
+  function faltam(ate, curto) {
+    const s = Math.max(0, Math.round((ate - Date.now()) / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
+    if (curto) return h ? h + "h" + String(m).padStart(2, "0") : m + " min";
+    return (h ? h + ":" + String(m).padStart(2, "0") : String(m)) + ":" + String(ss).padStart(2, "0");
+  }
+  function desenharRelogio() {
+    const c = A.contagem || {};
+    const ate = c.ativo && c.ate && c.ate.toDate ? c.ate.toDate() : horarioAlvo();
+    $("tRelogio").textContent = ate - Date.now() > 0 ? faltam(ate) : "Acabou!";
+  }
+
+  function verFoto(r) {
+    const v = el("div"); v.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;z-index:50;background:rgba(5,3,8,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;cursor:pointer;text-align:center";
+    const img = el("img"); img.style.cssText = "max-width:100%;max-height:75vh;border-radius:10px"; if (r.fotoId) carregarFoto(r.fotoId).then(d => d && (img.src = d));
+    v.append(img, el("p", "", (r.nome || "") + (r.texto ? " · " + r.texto : "")), el("p", "", "Toca pra fechar"));
+    v.onclick = () => v.remove(); document.body.append(v);
+  }
+
   function iniciar() {
     const cfg = db.doc("config/geral");
     parar.push(cfg.onSnapshot(s => {
@@ -219,6 +638,10 @@
     parar.push(db.collection("suspensos").orderBy("criado", "desc").limit(30).onSnapshot(s => {
       lista($("suspensos"), s.docs.map(cartaoSuspenso), "Ninguém suspenso.");
     }, () => {}));
+
+    // =================== AÇÕES ESPECIAIS ===================
+    iniciarAcoes();
+
     // Só a noite atual (desde as 6h)
     parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(40).onSnapshot(s => {
       lista($("telao"), s.docs.map(d => cartao(d, true)), "Nada no telão nesta noite ainda.");

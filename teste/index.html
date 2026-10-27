@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610271742">
+<link rel="stylesheet" href="estilo.css?v=202610271743">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -78,7 +78,9 @@
   .gv-item svg{flex:none;color:var(--muted)}
   .gv-item span{flex:1}
   .gv-n{flex:none;font:700 11px/1 var(--f-mono);font-style:normal;background:var(--neon);color:#1d0612;border-radius:999px;padding:4px 7px;min-width:20px;text-align:center}
-  .gv-rodape{margin:auto 0 0;padding:16px 12px 0;font-size:11px;color:var(--muted)}
+  .gv-sair{margin-top:auto;border-top:1px solid var(--line);border-radius:0 0 12px 12px;color:var(--laranja)}
+  .gv-sair svg{color:var(--laranja)}
+  .gv-rodape{margin:0;padding:16px 12px 0;font-size:11px;color:var(--muted)}
   .ev-topo{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:18px 8px 4px}
   .ev-topo .ev-ic{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;background:var(--c);color:#140c1b;box-shadow:0 0 30px color-mix(in srgb,var(--c) 45%,transparent)}
   .ev-topo small{font:700 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--c);margin-top:6px}
@@ -428,6 +430,7 @@
       <button class="ico" id="gvFechar" type="button" aria-label="Fechar menu">×</button>
     </div>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
+    <button type="button" class="gv-item gv-sair" id="gvSair"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span>Sair da conta</span></button>
     <p class="gv-rodape">Trela · versão de teste</p>
   </nav>
 
@@ -438,8 +441,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271742"></script>
-<script src="comum.js?v=202610271742"></script>
+<script src="config.js?v=202610271743"></script>
+<script src="comum.js?v=202610271743"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1244,6 +1247,7 @@
   $("#gavetaFundo").onclick = fecharMenu;
   document.addEventListener("keydown", e => { if (e.key === "Escape" && menuAberto()) fecharMenu(); });
   $("#gvPerfil").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
+  $("#gvSair").onclick = () => { fecharMenu(); auth.signOut(); };
   document.querySelectorAll(".gv-item").forEach(b => b.onclick = () => {
     const d = b.dataset.ir; fecharMenu();
     if (d === "eventos") abrirEventos();

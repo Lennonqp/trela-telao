@@ -150,3 +150,41 @@ const guardado = {
   ler(k, padrao) { try { const v = localStorage.getItem(k); return v === null ? padrao : JSON.parse(v); } catch (e) { return padrao; } },
   salvar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 };
+
+// ---------- SÓ NA VERSÃO DE TESTE: 3 fotos de exemplo no concurso ----------
+// Não vão pro banco. Aparecem no telão, no ranking do balcão e na tela do concurso no app.
+const FOTOS_DEMO = [
+  { id: "demo1", nome: "Bruxa (exemplo)", texto: "Bruxa do Trela", cores: ["#2b0a3d", "#a95cf2"], titulo: "BRUXA", curtidas: 6 },
+  { id: "demo2", nome: "Vampiro (exemplo)", texto: "Conde Drácula", cores: ["#3a0410", "#ff3fa4"], titulo: "VAMPIRO", curtidas: 4 },
+  { id: "demo3", nome: "Zumbi (exemplo)", texto: "Zumbi de chopp", cores: ["#0b2a1c", "#3ddc97"], titulo: "ZUMBI", curtidas: 3 }
+];
+const imagensDemo = {};
+function imagemDemo(id) {
+  if (imagensDemo[id]) return imagensDemo[id];
+  const d = FOTOS_DEMO.filter(x => x.id === id)[0]; if (!d) return null;
+  const c = document.createElement("canvas"); c.width = 600; c.height = 600;
+  const g = c.getContext("2d"), gr = g.createLinearGradient(0, 0, 600, 600);
+  gr.addColorStop(0, d.cores[0]); gr.addColorStop(1, d.cores[1]); g.fillStyle = gr; g.fillRect(0, 0, 600, 600);
+  // silhueta simples de uma pessoa
+  g.fillStyle = "rgba(0,0,0,.35)";
+  g.beginPath(); g.arc(300, 230, 90, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.moveTo(150, 600); g.quadraticCurveTo(160, 360, 300, 350); g.quadraticCurveTo(440, 360, 450, 600); g.fill();
+  g.fillStyle = "#fff"; g.font = "bold 64px sans-serif"; g.textAlign = "center"; g.fillText(d.titulo, 300, 540);
+  g.font = "bold 26px monospace"; g.fillStyle = "rgba(255,255,255,.8)"; g.fillText("FOTO DE EXEMPLO", 300, 70);
+  return (imagensDemo[id] = c.toDataURL("image/jpeg", 0.85));
+}
+function fotosDemoConcurso() {
+  const t = inicioDaNoite().getTime() + 60000;
+  return FOTOS_DEMO.map((d, i) => ({
+    id: d.id, demo: true, tipo: "foto", acao: "concurso", autor: "demo-" + d.id, nome: d.nome, texto: d.texto, cor: "neon",
+    fotoId: "demo:" + d.id, reacoes: { fogo: 0, riso: 0, amor: d.curtidas },
+    criado: { toMillis: () => t + i * 1000, toDate: () => new Date(t + i * 1000) }
+  }));
+}
+const curtidasDemo = () => FOTOS_DEMO.reduce((o, d) => { o[d.id] = d.curtidas; return o; }, {});
+// carregarFoto entende as fotos de exemplo
+const carregarFotoReal = carregarFoto;
+carregarFoto = function (fotoId) {
+  if (String(fotoId).indexOf("demo:") === 0) return Promise.resolve(imagemDemo(String(fotoId).slice(5)));
+  return carregarFotoReal(fotoId);
+};

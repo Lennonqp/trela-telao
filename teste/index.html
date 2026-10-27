@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610271759">
+<link rel="stylesheet" href="estilo.css?v=202610271845">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -441,8 +441,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271759"></script>
-<script src="comum.js?v=202610271759"></script>
+<script src="config.js?v=202610271845"></script>
+<script src="comum.js?v=202610271845"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -862,7 +862,7 @@
       // fotos do concurso/desafio só quando um dos dois está ligado
       const precisa = !!((S.acoes.concurso && S.acoes.concurso.ativo) || (S.acoes.desafio && S.acoes.desafio.ativo));
       if (precisa && !pararPostsAcao) pararPostsAcao = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
-        S.postsAcao = q.docs.map(x => ({ id: x.id, ...x.data() })).filter(r => r.acao && r.fotoId); redesenhar();
+        S.postsAcao = q.docs.map(x => ({ id: x.id, ...x.data() })).filter(r => r.acao && r.fotoId).concat(fotosDemoConcurso()); redesenhar();   // + exemplos (só no teste)
       }, () => {}));
       if (!precisa && pararPostsAcao) { pararPostsAcao(); pararPostsAcao = null; S.postsAcao = []; }
       // votos da enquete atual
@@ -1393,7 +1393,7 @@
     const b = el("button", "curtir" + (ja ? " feito" : "")); b.type = "button"; b.innerHTML = CORACAO;
     b.append(el("span", "", minha ? String(n) : (ja ? "Curtiu" : "Curtir") + (n ? " · " + n : "")));
     b.setAttribute("aria-pressed", ja); b.setAttribute("aria-label", minha ? n + " curtidas na tua foto" : "Curtir a foto de " + r.nome);
-    if (minha || ja) b.disabled = true;
+    if (minha || ja || r.demo) b.disabled = true;
     else b.onclick = () => { b.disabled = true; b.classList.add("feito", "pulso"); b.lastChild.textContent = "Curtiu · " + (n + 1); curtirFoto(r); };
     return b;
   }

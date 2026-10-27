@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610271759">
+<link rel="stylesheet" href="estilo.css?v=202610271845">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -290,10 +290,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271759"></script>
+<script src="config.js?v=202610271845"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610271759"></script>
-<script src="equipe.js?v=202610271759"></script>
+<script src="comum.js?v=202610271845"></script>
+<script src="equipe.js?v=202610271845"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -449,11 +449,11 @@
 
     // Posts e curtidas da noite
     parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
-      postsNoite = q.docs.map(d => ({ id: d.id, ...d.data() }));
+      postsNoite = q.docs.map(d => ({ id: d.id, ...d.data() })).concat(fotosDemoConcurso());   // + fotos de exemplo (só no teste)
       desenharConcurso(); desenharDesafio(); contarSorteio();
     }, () => {})));
     parar.push(ouvirNoite(desde => db.collection("curtidas").where("criado", ">=", desde).onSnapshot(q => {
-      curtidasPor = {}; q.docs.forEach(d => { const p = d.data().post; curtidasPor[p] = (curtidasPor[p] || 0) + 1; });
+      curtidasPor = curtidasDemo(); q.docs.forEach(d => { const p = d.data().post; curtidasPor[p] = (curtidasPor[p] || 0) + 1; });
       desenharConcurso();
     }, () => {})));
     // Pedidos de música

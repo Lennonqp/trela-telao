@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610271759">
+<link rel="stylesheet" href="estilo.css?v=202610271845">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -204,10 +204,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271759"></script>
+<script src="config.js?v=202610271845"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610271759"></script>
-<script src="equipe.js?v=202610271759"></script>
+<script src="comum.js?v=202610271845"></script>
+<script src="equipe.js?v=202610271845"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -494,10 +494,10 @@
       const precisaFotos = !!((A.concurso && A.concurso.ativo) || (A.desafio && A.desafio.ativo));
       if (precisaFotos && !pararPosts) {
         pararPosts = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
-          postsAcao = q.docs.map(x => junta({ id: x.id }, x.data())).filter(r => r.acao && r.fotoId); atualizarEventoNaTela();
+          postsAcao = q.docs.map(x => junta({ id: x.id }, x.data())).filter(r => r.acao && r.fotoId).concat(fotosDemoConcurso()); atualizarEventoNaTela();
         }, () => {}));
         pararCurt = ouvirNoite(desde => db.collection("curtidas").where("criado", ">=", desde).onSnapshot(q => {
-          curtidasPor = {}; q.docs.forEach(x => { const p = x.data().post; curtidasPor[p] = (curtidasPor[p] || 0) + 1; }); atualizarEventoNaTela();
+          curtidasPor = curtidasDemo(); q.docs.forEach(x => { const p = x.data().post; curtidasPor[p] = (curtidasPor[p] || 0) + 1; }); atualizarEventoNaTela();
         }, () => {}));
       }
       if (!precisaFotos && pararPosts) { pararPosts(); pararPosts = null; if (pararCurt) pararCurt(); pararCurt = null; postsAcao = []; }

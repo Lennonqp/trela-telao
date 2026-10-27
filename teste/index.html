@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610271743">
+<link rel="stylesheet" href="estilo.css?v=202610271745">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -441,8 +441,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271743"></script>
-<script src="comum.js?v=202610271743"></script>
+<script src="config.js?v=202610271745"></script>
+<script src="comum.js?v=202610271745"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1336,8 +1336,10 @@
       const texto = leg.value.trim();
       if (motivoSuspeito(texto)) return erroToast("Tira palavrão, link ou telefone da legenda.");
       envia.disabled = true; envia.textContent = "Mandando…";
+      let etapa = "foto";
       try {
         const fotoId = (await db.collection("fotos").add({ data: fotoEvento.data, criado: agoraServidor() })).id;
+        etapa = "post";
         const ref = db.collection("telao").doc();
         const post = { tipo: "foto", autor: EU.uid, nome: EU.nome, texto, cor, criado: agoraServidor(), reacoes: REACOES_ZERO, fotoId, acao };
         const lote = db.batch();
@@ -1351,7 +1353,18 @@
         renderEvento();
       } catch (e) {
         envia.disabled = false; envia.textContent = rotulo;
-        erroToast(acao === "concurso" ? "Não deu. Tu já tem uma foto concorrendo nesta noite?" : "Não deu pra mandar. Tenta de novo.");
+        console.warn("[Trela] erro ao mandar foto do evento", etapa, e && e.code, e && e.message);
+        // Descobre o motivo de verdade antes de avisar
+        let motivo = "Não deu pra mandar. Confere a internet e tenta de novo.";
+        if (etapa === "foto") motivo = "Não deu pra enviar a foto. Tenta uma foto menor ou confere a internet.";
+        else if (e && e.code === "permission-denied") {
+          let jaTem = false;
+          if (acao === "concurso") jaTem = await db.doc("concorrentes/" + chaveNoite() + "_" + EU.uid).get().then(d => d.exists).catch(() => false);
+          motivo = jaTem ? "Tu já tem uma foto concorrendo nesta noite. Só vale uma por pessoa."
+            : "O sistema recusou o envio. Avisa a equipe: as regras novas do banco precisam ser publicadas.";
+          if (jaTem) { S.jaConcorri = true; renderEvento(); }
+        }
+        erroToast(motivo);
       }
     });
     b.append(prev, bts, leg, envia);

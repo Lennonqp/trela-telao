@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610271745">
+<link rel="stylesheet" href="estilo.css?v=202610271749">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -95,6 +95,14 @@
   .rk .n{flex:none;text-align:right;font:400 22px/1 var(--f-display)}
   .rk .n small{display:block;font:400 9px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px}
   .rk .mini,.musica .mini{flex:none;border-radius:999px;padding:7px 10px;font:700 11px/1 var(--f-body);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink)}
+  .rk-bts{display:flex;gap:6px;flex:none}
+  @media (max-width:700px){
+    .rk{flex-wrap:wrap}
+    .rk-bts{flex:1 1 100%;padding-left:40px}
+    .rk-bts .mini{flex:1;padding:9px 6px}
+  }
+  .rk .mini.perigo{border-color:var(--laranja);color:var(--laranja)}
+  .rk .mini:disabled{opacity:.5;cursor:default}
   .rk .mini.forte{background:var(--c,var(--neon));border-color:var(--c,var(--neon));color:#140c1b}
   .barras{display:flex;flex-direction:column;gap:8px}
   .barra-op{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;padding:10px 12px;display:flex;justify-content:space-between;gap:10px;font-size:14px}
@@ -282,10 +290,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271745"></script>
+<script src="config.js?v=202610271749"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610271745"></script>
-<script src="equipe.js?v=202610271745"></script>
+<script src="comum.js?v=202610271749"></script>
+<script src="equipe.js?v=202610271749"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -523,7 +531,9 @@
     const img = el("img"); img.alt = "Foto de " + r.nome; if (r.fotoId) carregarFoto(r.fotoId).then(d => d && (img.src = d));
     const quem = el("div", "quem"); quem.append(el("b", "", r.nome || ""), el("span", "", r.texto || horaDe(r.criado)));
     linha.append(el("div", "pos", pos), img, quem);
-    direita.forEach(x => linha.append(x));
+    const bts = el("div", "rk-bts");
+    direita.forEach(x => (x.classList.contains("mini") ? bts : linha).append(x));
+    linha.append(bts);
     return linha;
   }
   function desenharConcurso() {
@@ -533,9 +543,25 @@
     const itens = rk.slice(0, 10).map((x, i) => {
       if (x.n !== ant) { pos = i + 1; ant = x.n; }
       const n = el("div", "n", String(x.n)); n.append(el("small", "", x.n === 1 ? "curtida" : "curtidas"));
-      return linhaPost(x.post, pos + "º", pos === 1 && x.n > 0, [n, botao("Ver", "mini", () => verFoto(x.post))]);
+      return linhaPost(x.post, pos + "º", pos === 1 && x.n > 0, [n, botao("Ver", "mini", () => verFoto(x.post)), botaoApagar(x.post)]);
     });
     lista($("cRanking"), itens, A.concurso && A.concurso.ativo ? "Nenhuma foto concorrendo ainda. A galera marca “Concorrer” ao mandar a foto." : "Liga o concurso pra galera poder marcar fotos pra concorrer.");
+  }
+
+  // Apaga a foto de vez: sai do telão, do feed, do ranking e libera a vaga da pessoa no concurso
+  function botaoApagar(p) {
+    const b = botao("Apagar", "mini perigo", async () => {
+      b.disabled = true; b.textContent = "Apagando…";
+      try {
+        const lote = db.batch();
+        lote.delete(db.doc("telao/" + p.id));
+        if (p.fotoId) lote.delete(db.doc("fotos/" + p.fotoId));
+        if (p.vaga) lote.delete(db.doc("concorrentes/" + p.vaga));
+        await lote.commit();
+      } catch (e) { b.disabled = false; b.textContent = "Não deu"; }
+    });
+    b.title = "Apagar a foto de " + (p.nome || "");
+    return b;
   }
 
   // ---- Desafio ----
@@ -550,7 +576,7 @@
         const d = A.desafio || {};
         anunciar("Desafio da noite: quem levou foi " + p.nome + "!" + (d.premio ? " Prêmio: " + d.premio : ""), "dMsg");
       });
-      return linhaPost(p, String(i + 1), ganhou, [botao("Ver", "mini", () => verFoto(p)), b]);
+      return linhaPost(p, String(i + 1), ganhou, [botao("Ver", "mini", () => verFoto(p)), b, botaoApagar(p)]);
     });
     lista($("dLista"), itens, A.desafio && A.desafio.ativo ? "Ninguém mandou ainda. A galera marca “Desafio” ao mandar a foto." : "Liga o desafio pra ele aparecer no app.");
   }

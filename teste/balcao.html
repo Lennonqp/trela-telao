@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610271845">
+<link rel="stylesheet" href="estilo.css?v=202610271850">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -182,7 +182,7 @@
           <p class="sub-t">Ranking ao vivo <span id="cTotal"></span></p>
           <div class="ranking" id="cRanking"></div>
           <div class="acao-bts">
-            <button type="button" class="forte" id="cAnunciar">Anunciar 1º lugar no telão</button>
+            <button type="button" class="forte" id="cAnunciar">Anunciar vencedor (festa no telão)</button>
             <button type="button" id="cEncerrar">Encerrar votação</button>
           </div>
           <p class="anunciado" id="cMsg" role="status"></p>
@@ -219,7 +219,7 @@
           <p class="sub-t">Votos <span id="eTotal"></span></p>
           <div class="barras" id="eRes"></div>
           <div class="acao-bts">
-            <button type="button" class="forte" id="eAnunciar">Anunciar resultado no telão</button>
+            <button type="button" class="forte" id="eAnunciar">Anunciar resultado (festa no telão)</button>
             <button type="button" id="eNova">Nova enquete (zera votos)</button>
           </div>
           <p class="anunciado" id="eMsg" role="status"></p>
@@ -245,7 +245,7 @@
           <div class="sorteado" id="sNome">?</div>
           <div class="acao-bts">
             <button type="button" class="forte" id="sSortear">Sortear</button>
-            <button type="button" id="sAnunciar" disabled>Anunciar no telão</button>
+            <button type="button" id="sAnunciar" disabled>Anunciar (festa no telão)</button>
           </div>
           <p class="anunciado" id="sMsg" role="status"></p>
         </article>
@@ -290,10 +290,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271845"></script>
+<script src="config.js?v=202610271850"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610271845"></script>
-<script src="equipe.js?v=202610271845"></script>
+<script src="comum.js?v=202610271850"></script>
+<script src="equipe.js?v=202610271850"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -473,7 +473,8 @@
       const r = rankingConcurso()[0];
       if (!r || !r.n) return msg("cMsg", "Ainda não tem foto com curtida.", true);
       const c = A.concurso || {};
-      anunciar((c.nome || "Concurso") + ": quem levou foi " + r.post.nome + ", com " + r.n + (r.n === 1 ? " curtida" : " curtidas") + "!" + (c.premio ? " Prêmio: " + c.premio : ""), "cMsg");
+      celebrar({ tipo: "concurso", rotulo: c.nome || "Concurso de fotos", nome: limpaNome(r.post.nome), uid: r.post.autor || "", fotoId: r.post.fotoId || "",
+        premio: c.premio || "", detalhe: r.n + (r.n === 1 ? " curtida" : " curtidas") }, "cMsg");
     };
     // Chave geral: liga ou desliga todas de uma vez
     $("lig-todas").onchange = e => {
@@ -497,14 +498,15 @@
       const res = resultadoEnquete();
       if (!res.total) return msg("eMsg", "Ainda não tem voto.", true);
       const lider = res.ops.slice().sort((a, b) => b.n - a.n)[0];
-      anunciar((A.enquete.pergunta || "Enquete") + " Ganhou: " + lider.txt + " (" + Math.round(lider.n * 100 / res.total) + "%)", "eMsg");
+      celebrar({ tipo: "enquete", rotulo: A.enquete.pergunta || "Enquete", nome: lider.txt, uid: "", fotoId: "", premio: "",
+        detalhe: Math.round(lider.n * 100 / res.total) + "% dos votos (" + lider.n + " de " + res.total + ")" }, "eMsg");
     };
     $("eNova").onclick = () => salvar("enquete", { id: novoId(), desde: agoraServidor() });
     $("sSortear").onclick = sortear;
     $("sAnunciar").onclick = () => {
       if (!sorteadoAgora) return;
       const pr = (A.sorteio && A.sorteio.premio) || "";
-      anunciar("Sorteio: quem ganhou foi " + sorteadoAgora + "!" + (pr ? " Prêmio: " + pr : ""), "sMsg");
+      celebrar({ tipo: "sorteio", rotulo: "Sorteio" + (pr ? " · " + pr : ""), nome: sorteadoAgora, uid: sorteadoUid, fotoId: "", premio: pr, detalhe: "" }, "sMsg");
     };
     $("tAvisar").onclick = () => {
       const c = A.contagem || {}, ate = horarioAlvo();
@@ -515,6 +517,18 @@
 
   const novoId = () => Date.now().toString(36);
   function msg(id, texto, erro) { $(id).textContent = texto; $(id).style.color = erro ? "var(--laranja)" : ""; }
+  // Vencedor: vira uma celebração no telão e um cartão no app (não usa a mensagem do Trela)
+  const limpaNome = n => String(n || "").replace(/\s*\(exemplo\)$/, "");
+  async function celebrar(dados, msgId) {
+    const anuncio = Object.assign({}, dados, { id: novoId(), criado: agoraServidor() });
+    try {
+      await db.doc("config/acoes").update({ anuncio });
+      msg(msgId, "Celebração no telão e no app às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + ".");
+    } catch (e) {
+      try { await db.doc("config/acoes").set({ anuncio }, { merge: true }); msg(msgId, "Celebração no telão e no app."); }
+      catch (e2) { msg(msgId, "Não deu pra anunciar. Tenta de novo.", true); }
+    }
+  }
   async function anunciar(texto, msgId) {
     try {
       await db.collection("telao").add({ tipo: "bar", nome: "Trela", texto: texto.slice(0, 120), cor: "laranja", repetir: false, criado: agoraServidor(), reacoes: REACOES_ZERO });
@@ -574,7 +588,7 @@
       const b = botao(ganhou ? "Vencedor" : "Escolher", "mini" + (ganhou ? " forte" : ""), () => {
         db.doc("config/acoes").set({ desafio: { vencedor: { post: p.id, nome: p.nome } } }, { merge: true });
         const d = A.desafio || {};
-        anunciar("Desafio da noite: quem levou foi " + p.nome + "!" + (d.premio ? " Prêmio: " + d.premio : ""), "dMsg");
+        celebrar({ tipo: "desafio", rotulo: d.titulo || "Desafio da noite", nome: limpaNome(p.nome), uid: p.autor || "", fotoId: p.fotoId || "", premio: d.premio || "", detalhe: "" }, "dMsg");
       });
       return linhaPost(p, String(i + 1), ganhou, [botao("Ver", "mini", () => verFoto(p)), b, botaoApagar(p)]);
     });
@@ -607,7 +621,7 @@
   }
 
   // ---- Sorteio ----
-  let poolSorteio = [], sorteadoAgora = "", jaSorteados = new Set(), contando = 0, online = [], onlineEm = 0;
+  let poolSorteio = [], sorteadoAgora = "", sorteadoUid = "", jaSorteados = new Set(), contando = 0, online = [], onlineEm = 0;
   async function contarSorteio(forcar) {
     const quem = $("sQuem").value, meu = ++contando;
     let nomes = [];
@@ -640,7 +654,7 @@
     const giro = setInterval(() => { caixa.textContent = poolSorteio[t++ % poolSorteio.length].nome; }, 80);
     setTimeout(() => {
       clearInterval(giro); caixa.classList.remove("girando"); caixa.textContent = alvo.nome;
-      sorteadoAgora = alvo.nome; jaSorteados.add(alvo.uid);
+      sorteadoAgora = alvo.nome; sorteadoUid = alvo.uid; jaSorteados.add(alvo.uid);
       $("sSortear").disabled = false; $("sSortear").textContent = "Sortear de novo"; $("sAnunciar").disabled = false;
       contarSorteio();
     }, 2200);

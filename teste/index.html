@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610271845">
+<link rel="stylesheet" href="estilo.css?v=202610271850">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -122,6 +122,28 @@
   .aviso-l .av-ic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--c);color:#140c1b}
   .aviso-l .av-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
   .aviso-l small{font-size:12px;color:var(--muted)}
+
+
+  /* Cartão de vencedor */
+  .vence{position:fixed;top:0;left:0;right:0;bottom:0;z-index:45;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(70% 50% at 50% 40%,rgba(255,201,77,.28),transparent 70%),rgba(6,4,10,.95);overflow:hidden;animation:aparece .3s ease-out}
+  .vence .card-v{position:relative;width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+  .vence .coroa-v{width:84px;color:#ffc94d;filter:drop-shadow(0 0 12px rgba(255,201,77,.8));animation:coroaV .9s .2s cubic-bezier(.2,1.5,.4,1) both;margin-bottom:-14px;position:relative;z-index:1}
+  @keyframes coroaV{from{opacity:0;transform:translateY(-30px) rotate(-20deg)}to{opacity:1;transform:rotate(-6deg)}}
+  .vence .ft-v{width:200px;height:200px;border-radius:22px;overflow:hidden;border:5px solid #ffc94d;box-shadow:0 0 40px rgba(255,201,77,.6);background:var(--panel);animation:surgeV .7s cubic-bezier(.2,1.4,.4,1) both;display:grid;place-items:center;font:700 80px/1 var(--f-body);color:#2a1c00}
+  .vence .ft-v.redondo{border-radius:50%;background:#ffc94d}
+  .vence .ft-v img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0;margin:0;max-height:none}
+  .vence .ft-v .av{width:100%;height:100%;font-size:80px;border-radius:0}
+  @keyframes surgeV{from{opacity:0;transform:scale(.4) rotate(-10deg)}to{opacity:1;transform:rotate(-2deg)}}
+  .vence small{font:700 11px/1 var(--f-mono);letter-spacing:.18em;text-transform:uppercase;color:#ffc94d;margin-top:8px}
+  .vence .tit-v{font:400 22px/1 var(--f-display);text-transform:uppercase;color:var(--ink);letter-spacing:.04em}
+  .vence .nome-v{font:400 54px/.95 var(--f-display);text-transform:uppercase;color:#ffc94d;text-shadow:0 0 20px rgba(255,201,77,.45);overflow-wrap:anywhere}
+  .vence .nome-v.longo{font-size:38px}
+  .vence .det-v{font-weight:700;font-size:15px}
+  .vence .pr-v{background:#ffc94d;color:#2a1c00;border-radius:999px;padding:7px 16px;font-weight:700;font-size:14px}
+  .vence .eu-v{font:400 64px/1 var(--f-logo);color:var(--neon);text-shadow:0 0 18px rgba(255,63,164,.6)}
+  .vence .bt{width:100%;margin-top:10px}
+  .vence .conf{position:absolute;top:-20px;width:8px;height:14px;animation:caiV linear forwards;pointer-events:none}
+  @keyframes caiV{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--rot))}}
 
   /* Login */
   #tLogin{justify-content:center;padding:28px 24px;gap:14px;overflow-y:auto;background:radial-gradient(70% 45% at 50% 18%,rgba(255,63,164,.22),transparent 70%),radial-gradient(60% 40% at 50% 100%,rgba(169,92,242,.25),transparent 70%),var(--bg)}
@@ -441,8 +463,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271845"></script>
-<script src="comum.js?v=202610271845"></script>
+<script src="config.js?v=202610271850"></script>
+<script src="comum.js?v=202610271850"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -859,6 +881,7 @@
       if (!primeiraConfig) eventosAtivos().filter(e => !(antes[e.k] && antes[e.k].ativo) || chaveEvento(e.k, e.c) !== chaveEvento(e.k, antes[e.k] || {}))
         .forEach(e => toastEvento(e));
       primeiraConfig = false;
+      talvezMostrarVencedor();
       // fotos do concurso/desafio só quando um dos dois está ligado
       const precisa = !!((S.acoes.concurso && S.acoes.concurso.ativo) || (S.acoes.desafio && S.acoes.desafio.ativo));
       if (precisa && !pararPostsAcao) pararPostsAcao = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
@@ -1482,6 +1505,55 @@
       out.push(l);
     });
     $("#avisosScroll").replaceChildren(...out);
+  }
+
+
+  // ---- Cartão de vencedor (o balcão anuncia; aparece pra todo mundo com o app aberto) ----
+  const COROA_V = '<svg viewBox="0 0 64 40" fill="currentColor" aria-hidden="true"><path d="M4 34 0 8l16 12L32 0l16 20L64 8l-4 26z"/><rect x="4" y="35" width="56" height="5" rx="2"/></svg>';
+  let ultimoAnuncio = null, primeiroAnuncio = true;
+  function talvezMostrarVencedor() {
+    const an = S.acoes.anuncio;
+    if (!an || !an.id) { primeiroAnuncio = false; return; }
+    if (an.id === ultimoAnuncio) return;
+    const recente = an.criado && an.criado.toMillis ? Date.now() - an.criado.toMillis() < 120000 : true;
+    const visto = guardado.ler("trela-anuncio-visto", "") === an.id;
+    ultimoAnuncio = an.id;
+    if ((primeiroAnuncio && !recente) || visto) { primeiroAnuncio = false; return; }
+    primeiroAnuncio = false;
+    // espera o suspense do telão pra revelar junto
+    setTimeout(() => mostrarVencedor(an), 4200);
+  }
+  function mostrarVencedor(an) {
+    guardado.salvar("trela-anuncio-visto", an.id);
+    const velho = document.querySelector(".vence"); if (velho) velho.remove();
+    const v = el("div", "vence"); v.setAttribute("role", "dialog"); v.setAttribute("aria-label", "Vencedor");
+    const card = el("div", "card-v");
+    const eu = an.uid && EU && an.uid === EU.uid;
+    const coroa = el("span", "coroa-v"); coroa.innerHTML = COROA_V;
+    const ft = el("div", "ft-v" + (an.fotoId ? "" : " redondo"));
+    if (an.fotoId) ft.append(imgFoto(an.fotoId, "Foto de " + an.nome));
+    else if (an.uid && an.tipo !== "enquete") ft.append(avatar(an.uid));
+    else ft.textContent = (an.nome || "?").charAt(0).toUpperCase();
+    const ROT = { concurso: "Vencedor(a)", desafio: "Vencedor(a) do desafio", sorteio: "Sorteado(a)", enquete: "A galera escolheu" };
+    card.append(...(an.tipo === "enquete" ? [] : [coroa, ft]), el("small", "", an.rotulo || ""));
+    if (eu) card.append(el("div", "eu-v", "Tu ganhou!"));
+    else card.append(el("div", "tit-v", ROT[an.tipo] || "Vencedor(a)"));
+    card.append(el("div", "nome-v" + ((an.nome || "").length > 12 ? " longo" : ""), an.nome || ""));
+    if (an.detalhe) card.append(el("div", "det-v", an.detalhe));
+    if (an.premio) card.append(el("div", "pr-v", "Prêmio: " + an.premio));
+    if (eu) card.append(el("p", "ev-mut", "Chega no balcão pra pegar teu prêmio!"));
+    card.append(bt(eu ? "Bora!" : "Parabéns!", "sim", () => v.remove()));
+    v.append(card); document.body.append(v);
+    if (!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+      const cores = ["#ffc94d", "#ff3fa4", "#a95cf2", "#3ddc97", "#7cc6fe", "#f6efe6"];
+      for (let i = 0; i < 70; i++) {
+        const c = el("i", "conf"); c.style.left = Math.random() * 100 + "%"; c.style.background = cores[i % cores.length];
+        c.style.setProperty("--dx", (Math.random() * 120 - 60).toFixed(0) + "px"); c.style.setProperty("--rot", (Math.random() * 900 - 450).toFixed(0) + "deg");
+        c.style.animationDuration = (2.5 + Math.random() * 2.5).toFixed(2) + "s"; c.style.animationDelay = (Math.random() * .8).toFixed(2) + "s";
+        if (i % 3 === 0) { c.style.borderRadius = "50%"; c.style.height = "8px"; }
+        v.append(c);
+      }
+    }
   }
 
   const hs = $("#homeScroll");

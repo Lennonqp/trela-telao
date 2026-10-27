@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610271845">
+<link rel="stylesheet" href="estilo.css?v=202610271850">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -139,6 +139,56 @@
   .resto li::before{content:counter(pos) "º";font-family:var(--f-display);color:var(--muted);width:calc(var(--u) * 3)}
   .resto b{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .resto span{font-family:var(--f-mono);color:var(--ouro);margin-left:calc(var(--u) * 1)}
+
+  /* ---------- Celebração do vencedor ---------- */
+  .festa{position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;overflow:hidden;background:#050308;display:flex;align-items:center;justify-content:center}
+  .festa .feixe{position:absolute;top:calc(var(--u) * -10);width:calc(var(--u) * 22);height:calc(var(--u) * 90);background:linear-gradient(rgba(255,230,170,.35),rgba(255,230,170,0));transform-origin:50% 0;filter:blur(calc(var(--u) * .6))}
+  .festa .feixe.f1{left:calc(var(--u) * 18);animation:varre1 2.2s ease-in-out infinite alternate}
+  .festa .feixe.f2{right:calc(var(--u) * 18);animation:varre2 2.6s ease-in-out infinite alternate}
+  @keyframes varre1{from{transform:rotate(28deg)}to{transform:rotate(-22deg)}}
+  @keyframes varre2{from{transform:rotate(-28deg)}to{transform:rotate(22deg)}}
+  .festa .susp{position:relative;text-align:center}
+  .festa .susp small{display:block;font-family:var(--f-mono);font-size:calc(var(--u) * 1.6);letter-spacing:.24em;text-transform:uppercase;color:var(--ouro)}
+  .festa .susp h2{margin:calc(var(--u) * 1.4) 0 0;font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 7.5);line-height:1;color:var(--ink);animation:tambor .5s ease-in-out infinite alternate}
+  @keyframes tambor{from{transform:scale(1);opacity:.85}to{transform:scale(1.06);opacity:1}}
+  .festa .pontos{margin-top:calc(var(--u) * 2.4);display:flex;justify-content:center}
+  .festa .pontos i{width:calc(var(--u) * 1.4);height:calc(var(--u) * 1.4);border-radius:50%;background:var(--ouro);margin:0 calc(var(--u) * .7);animation:ponto 1s ease-in-out infinite}
+  .festa .pontos i:nth-child(2){animation-delay:.2s}.festa .pontos i:nth-child(3){animation-delay:.4s}
+  @keyframes ponto{0%,100%{opacity:.2;transform:translateY(0)}50%{opacity:1;transform:translateY(calc(var(--u) * -1))}}
+  .festa .clarao{position:absolute;top:0;left:0;right:0;bottom:0;background:#fff;opacity:0;pointer-events:none}
+  .festa .clarao.vai{animation:clarao .9s ease-out forwards}
+  @keyframes clarao{0%{opacity:.95}100%{opacity:0}}
+  .festa .raios{position:absolute;left:50%;top:50%;width:calc(var(--u) * 160);height:calc(var(--u) * 160);margin:calc(var(--u) * -80) 0 0 calc(var(--u) * -80);background:repeating-conic-gradient(from 0deg,rgba(255,201,77,.13) 0deg 10deg,transparent 10deg 20deg);animation:gira-r 30s linear infinite;border-radius:50%}
+  @keyframes gira-r{to{transform:rotate(360deg)}}
+  .festa .rev{position:relative;display:flex;align-items:center;padding:0 calc(var(--u) * 6)}
+  .festa .rev .ft{position:relative;flex:none;margin-right:calc(var(--u) * 5);animation:surge .9s cubic-bezier(.2,1.4,.4,1) both}
+  .festa .rev .ft .im{width:calc(var(--u) * 30);height:calc(var(--u) * 30);border-radius:calc(var(--u) * 2);overflow:hidden;border:calc(var(--u) * .7) solid var(--ouro);box-shadow:0 0 calc(var(--u) * 6) rgba(255,201,77,.75);transform:rotate(-3deg);background:var(--panel)}
+  .festa .rev .ft .im.redondo{border-radius:50%}
+  .festa .rev .ft img{width:100%;height:100%;object-fit:cover;display:block}
+  .festa .rev .ft .letra{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font:700 calc(var(--u) * 14)/1 var(--f-body);color:#2a1c00;background:var(--ouro)}
+  .festa .rev .coroa{position:absolute;left:50%;top:calc(var(--u) * -8.5);width:calc(var(--u) * 12);margin-left:calc(var(--u) * -6);color:var(--ouro);filter:drop-shadow(0 0 calc(var(--u) * 1.5) rgba(255,201,77,.9));animation:coroa 1.2s .5s cubic-bezier(.2,1.5,.4,1) both}
+  @keyframes coroa{from{opacity:0;transform:translateY(calc(var(--u) * -8)) rotate(-20deg)}to{opacity:1;transform:rotate(-8deg)}}
+  @keyframes surge{from{opacity:0;transform:scale(.4) rotate(-12deg)}to{opacity:1;transform:none}}
+  .festa .rev .tx{min-width:0;max-width:calc(var(--u) * 52)}
+  .festa .rev .tx > *{animation:sobeTx .7s ease-out both}
+  .festa .rev .tx > *:nth-child(2){animation-delay:.25s}.festa .rev .tx > *:nth-child(3){animation-delay:.5s}.festa .rev .tx > *:nth-child(4){animation-delay:.75s}.festa .rev .tx > *:nth-child(5){animation-delay:1s}
+  @keyframes sobeTx{from{opacity:0;transform:translateY(calc(var(--u) * 3))}to{opacity:1;transform:none}}
+  .festa .rev small{display:block;font-family:var(--f-mono);font-size:calc(var(--u) * 1.6);letter-spacing:.22em;text-transform:uppercase;color:var(--ouro)}
+  .festa .rev .ven{margin:calc(var(--u) * .8) 0 0;font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 3.4);line-height:1;color:var(--ink);letter-spacing:.04em}
+  .festa .rev .nome{margin:calc(var(--u) * .6) 0 0;font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 10);line-height:.92;color:var(--ouro);overflow-wrap:anywhere;text-shadow:0 0 calc(var(--u) * 2) rgba(255,201,77,.45)}
+  @supports ((-webkit-background-clip:text) or (background-clip:text)){
+    .festa .rev .nome{text-shadow:none;background:linear-gradient(100deg,#ffb52e 20%,#fff3c4 40%,#ffc94d 60%,#ff9f1c 80%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:sobeTx .7s .5s ease-out both,brilho 2.4s 1.2s linear infinite}
+  }
+  .festa .rev .nome.longo{font-size:calc(var(--u) * 6.6)}
+  @keyframes brilho{from{background-position:200% 0}to{background-position:0 0}}
+  .festa .rev .det{margin:calc(var(--u) * 1.4) 0 0;font:700 calc(var(--u) * 2.2)/1.2 var(--f-body);color:var(--ink)}
+  .festa .rev .pr{display:inline-block;margin-top:calc(var(--u) * 1.6);font:700 calc(var(--u) * 2)/1 var(--f-body);background:var(--ouro);color:#2a1c00;border-radius:99px;padding:calc(var(--u) * .9) calc(var(--u) * 2)}
+  .festa .rev .parab{display:block;margin-top:calc(var(--u) * 2);font-family:var(--f-logo);font-size:calc(var(--u) * 5);color:var(--neon);text-shadow:0 0 calc(var(--u) * 1.5) rgba(255,63,164,.6)}
+  .confete{position:absolute;top:calc(var(--u) * -3);width:calc(var(--u) * .9);height:calc(var(--u) * 1.6);pointer-events:none;animation-name:cai;animation-timing-function:linear;animation-fill-mode:forwards}
+  @keyframes cai{0%{transform:translate3d(0,0,0) rotate(0)}100%{transform:translate3d(var(--dx),calc(var(--u) * 66),0) rotate(var(--rot))}}
+  .festa.sai{animation:festaSai .8s ease-in forwards}
+  @keyframes festaSai{to{opacity:0}}
+  @media (prefers-reduced-motion:reduce){.festa *{animation-duration:.01s!important;animation-iteration-count:1!important}}
   .cortina{position:fixed;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;overflow:auto;background:rgba(9,6,13,.92);z-index:5;cursor:default;padding:16px}
   .cortina > div > * + *{margin-top:12px}
   .cortina > div{display:flex;flex-direction:column;align-items:stretch;width:100%;max-width:440px;text-align:center}
@@ -204,10 +254,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271845"></script>
+<script src="config.js?v=202610271850"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610271845"></script>
-<script src="equipe.js?v=202610271845"></script>
+<script src="comum.js?v=202610271850"></script>
+<script src="equipe.js?v=202610271850"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -326,6 +376,7 @@
   }
 
   function proximo() {
+    if (festaRodando) return;
     // Recado novo que já saiu dos 10 mais recentes (chegou muita coisa junta) não entra mais
     const recentes = ultimosDaGalera();
     novos = novos.filter(x => recentes.has(x));
@@ -507,6 +558,7 @@
         if (enq) pararVotos = db.collection("enquetes").doc(enq).collection("votos").onSnapshot(q => { votos = q.docs.map(x => x.data().opcao); atualizarEventoNaTela(); }, () => {});
       }
       if (!(A.concurso && A.concurso.ativo)) seqConc = [];
+      talvezCelebrar();
       desenharVivo(false);
       // evento desligado enquanto estava na tela: passa pro próximo
       if (atual && String(atual).indexOf("ev:") === 0 && !(A[atual.slice(3)] && A[atual.slice(3)].ativo)) proximo();
@@ -662,6 +714,76 @@
       escHtml(tit) + "</h2>" + premio + '</div></div><div class="ev-corpo">' + corpo + "</div>" + (cta ? '<p class="ev-cta">' + cta + "</p>" : "") + "</div>";
     const imgs = palco.querySelectorAll("img[data-foto]");
     for (let i = 0; i < imgs.length; i++) { const im = imgs[i]; carregarFoto(im.getAttribute("data-foto")).then(dd => { if (dd) im.src = dd; }); }
+  }
+
+
+  // =================== CELEBRAÇÃO DO VENCEDOR ===================
+  // O balcão grava config/acoes.anuncio; aqui vira um show: suspense, clarão, foto com coroa, nome dourado e confete.
+  const COROA = '<svg viewBox="0 0 64 40" fill="currentColor" aria-hidden="true"><path d="M4 34 0 8l16 12L32 0l16 20L64 8l-4 26z"/><rect x="4" y="35" width="56" height="5" rx="2"/></svg>';
+  const SUSPENSE = { concurso: "E quem levou foi...", desafio: "Quem mandou melhor foi...", sorteio: "E o sorteado é...", enquete: "E a galera escolheu..." };
+  const RESULTADO = { concurso: "Vencedor(a)", desafio: "Vencedor(a) do desafio", sorteio: "Sorteado(a)", enquete: "Mais votado" };
+  let festaRodando = false, ultimoAnuncio = null, primeiroAnuncio = true;
+  function talvezCelebrar() {
+    const an = A.anuncio;
+    if (!an || !an.id) { primeiroAnuncio = false; return; }
+    if (an.id === ultimoAnuncio) return;
+    const recente = an.criado && an.criado.toMillis ? Date.now() - an.criado.toMillis() < 90000 : true;
+    ultimoAnuncio = an.id;
+    if (primeiroAnuncio && !recente) { primeiroAnuncio = false; return; }   // TV ligou depois: não repete anúncio velho
+    primeiroAnuncio = false;
+    celebrar(an);
+  }
+  function celebrar(an) {
+    if (festaRodando) { const v = $("festa"); if (v && v.parentNode) v.parentNode.removeChild(v); }
+    festaRodando = true;
+    durAtual = 9999; inicio = Date.now();           // segura a roda enquanto a festa acontece
+    const tv = $("tv"), f = document.createElement("div");
+    f.className = "festa"; f.id = "festa";
+    f.innerHTML = '<div class="feixe f1"></div><div class="feixe f2"></div><div class="susp"><small>' + escHtml(an.rotulo || "") + "</small><h2>" +
+      escHtml(SUSPENSE[an.tipo] || "E quem levou foi...") + '</h2><div class="pontos"><i></i><i></i><i></i></div></div><div class="clarao"></div>';
+    tv.appendChild(f);
+    // carrega a foto durante o suspense
+    let foto = null;
+    const carrega = an.fotoId ? carregarFoto(an.fotoId) : (an.uid ? fotoDoAutor(an.uid) : Promise.resolve(null));
+    carrega.then(d => { foto = d; }).catch(() => {});
+    setTimeout(() => revelar(f, an, () => foto), 4200);
+  }
+  function revelar(f, an, pegaFoto) {
+    if (!f.parentNode) return;
+    const foto = pegaFoto();
+    const nome = an.nome || "";
+    const fotoHtml = an.tipo === "enquete" ? "" :
+      '<div class="ft"><span class="coroa">' + COROA + '</span><div class="im' + (an.fotoId ? "" : " redondo") + '">' +
+      (foto ? '<img src="' + foto + '" alt="">' : '<div class="letra">' + escHtml(nome.charAt(0).toUpperCase()) + "</div>") + "</div></div>";
+    f.innerHTML = '<div class="raios"></div><div class="rev">' + fotoHtml + '<div class="tx"><small>' + escHtml(an.rotulo || "") + '</small><div class="ven">' +
+      escHtml(RESULTADO[an.tipo] || "Vencedor(a)") + '</div><div class="nome' + (nome.length > 12 ? " longo" : "") + '">' + escHtml(nome) + "</div>" +
+      (an.detalhe ? '<div class="det">' + escHtml(an.detalhe) + "</div>" : "<div></div>") +
+      (an.premio ? '<div><span class="pr">Prêmio: ' + escHtml(an.premio) + "</span></div>" : "<div></div>") +
+      '<span class="parab">Parabéns!</span></div></div><div class="clarao vai"></div>';
+    confete(f, 110);
+    const mais = setInterval(() => { if (f.parentNode) confete(f, 30); }, 2500);
+    setTimeout(() => {
+      clearInterval(mais);
+      f.className += " sai";
+      setTimeout(() => { if (f.parentNode) f.parentNode.removeChild(f); festaRodando = false; proximo(); }, 800);
+    }, 16000);
+  }
+  function confete(box, n) {
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const cores = ["#ffc94d", "#ff3fa4", "#a95cf2", "#3ddc97", "#7cc6fe", "#f6efe6", "#ff5a1f"];
+    for (let i = 0; i < n; i++) {
+      const c = document.createElement("i");
+      c.className = "confete";
+      c.style.left = (Math.random() * 100) + "%";
+      c.style.background = cores[i % cores.length];
+      c.style.setProperty("--dx", "calc(var(--u) * " + (Math.random() * 16 - 8).toFixed(1) + ")");
+      c.style.setProperty("--rot", (Math.random() * 900 - 450).toFixed(0) + "deg");
+      c.style.animationDuration = (3 + Math.random() * 3).toFixed(2) + "s";
+      c.style.animationDelay = (Math.random() * 1.2).toFixed(2) + "s";
+      if (i % 3 === 0) { c.style.borderRadius = "50%"; c.style.height = c.style.width; }
+      box.appendChild(c);
+      setTimeout(() => { if (c.parentNode) c.parentNode.removeChild(c); }, 7600);
+    }
   }
 
   // Conta pros celulares onde cada recado está na fila

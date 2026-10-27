@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610271727">
+<link rel="stylesheet" href="estilo.css?v=202610271736">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -43,7 +43,7 @@
   /* Sino, faixas de evento e tela do evento */
   /* Faixa "Ao vivo" (uma linha só) */
   .aovivo{flex:none;display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid var(--line);background:linear-gradient(90deg,rgba(255,63,164,.16),rgba(169,92,242,.10) 60%,transparent);padding:10px 16px;color:var(--ink);cursor:pointer;text-align:left;font:14px/1.2 var(--f-body)}
-  .aovivo .av-pulso{flex:none;width:9px;height:9px;border-radius:50%;background:var(--c,var(--neon));box-shadow:0 0 0 0 var(--c,var(--neon));animation:pulsoVivo 1.6s infinite}
+  .aovivo .av-ic{flex:none;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--c,var(--neon));color:#140c1b;animation:pulsoVivo 1.8s infinite}
   @keyframes pulsoVivo{0%{box-shadow:0 0 0 0 rgba(255,63,164,.6)}70%{box-shadow:0 0 0 8px rgba(255,63,164,0)}100%{box-shadow:0 0 0 0 rgba(255,63,164,0)}}
   .aovivo .av-rot{flex:none;font:700 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--c,var(--neon))}
   .aovivo .av-txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
@@ -51,7 +51,7 @@
   @keyframes trocaTxt{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .aovivo .av-mais{flex:none;font:700 11px/1 var(--f-mono);background:rgba(255,255,255,.1);border-radius:999px;padding:4px 7px;color:var(--ink)}
   .aovivo .av-seta{flex:none;font-style:normal;font-size:24px;line-height:1;color:var(--muted)}
-  @media (prefers-reduced-motion:reduce){.aovivo .av-pulso,.aovivo .av-txt.troca{animation:none}}
+  @media (prefers-reduced-motion:reduce){.aovivo .av-ic,.aovivo .av-txt.troca{animation:none}}
   /* Lista de eventos */
   .ev-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;color:var(--ink);cursor:pointer}
   .ev-card .ec-ic{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--c);color:#140c1b}
@@ -306,7 +306,7 @@
       <button class="ico" id="btnMenu" type="button" aria-label="Menu" aria-expanded="false" aria-controls="gaveta"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="ponto" id="pontoMenu" hidden></span></button>
     </div>
     <button type="button" class="aovivo" id="aoVivo" hidden aria-label="Eventos da noite">
-      <span class="av-pulso" aria-hidden="true"></span>
+      <span class="av-ic" id="aoVivoIc" aria-hidden="true"></span>
       <span class="av-rot">Ao vivo</span>
       <span class="av-txt" id="aoVivoTxt"></span>
       <span class="av-mais" id="aoVivoMais" hidden></span>
@@ -443,8 +443,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271727"></script>
-<script src="comum.js?v=202610271727"></script>
+<script src="config.js?v=202610271736"></script>
+<script src="comum.js?v=202610271736"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1157,7 +1157,7 @@
   // O balcão liga/desliga em config/acoes. Aqui: faixa no topo da home, tela de cada evento e o sino.
   const SVG = (p, w) => '<svg viewBox="0 0 24 24" width="' + (w || 22) + '" height="' + (w || 22) + '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
   const EVENTOS = {
-    concurso: { cor: "var(--neon)", rotulo: "Concurso", ic: SVG('<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6"/>'),
+    concurso: { cor: "var(--neon)", rotulo: "Concurso", ic: SVG('<path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>'),
       titulo: c => c.nome || "Concurso de fotos", resumo: c => "Manda tua foto pra concorrer e curte as da galera" },
     desafio: { cor: "var(--laranja)", rotulo: "Desafio", ic: SVG('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/>'),
       titulo: c => c.titulo || "Desafio da noite", resumo: c => c.premio ? "Prêmio: " + c.premio : "Cumpre o desafio e manda a foto" },
@@ -1193,13 +1193,15 @@
   let aoVivoI = 0;
   function textoEvento(e) {
     if (e.k === "contagem") { const d = ate(e.c); return e.m.titulo(e.c) + (d ? " " + faltam(d) : ""); }
-    return e.m.rotulo + " · " + e.m.titulo(e.c);
+    const t = e.m.titulo(e.c);
+    return t.toLowerCase().startsWith(e.m.rotulo.toLowerCase()) ? t : e.m.rotulo + " · " + t;
   }
   function renderAoVivo(trocar) {
     const evs = eventosAtivos(), b = $("#aoVivo");
     b.hidden = !evs.length; if (!evs.length) return;
     const e = evs[aoVivoI % evs.length], t = $("#aoVivoTxt");
     b.style.setProperty("--c", e.m.cor);
+    $("#aoVivoIc").innerHTML = e.m.ic.replace('width="22" height="22"', 'width="16" height="16"');
     t.textContent = textoEvento(e);
     if (trocar) { t.classList.remove("troca"); void t.offsetWidth; t.classList.add("troca"); }
     const novos = evs.filter(eventoNovo).length;

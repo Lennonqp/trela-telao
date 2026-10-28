@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610281548">
+<link rel="stylesheet" href="estilo.css?v=202610281720">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -78,7 +78,7 @@
   .campos textarea{min-height:64px;resize:vertical}
   select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);font:15px/1.4 var(--f-body);border-radius:12px;padding:10px 12px}
   .acao-bts{display:flex;flex-wrap:wrap;gap:8px}
-  .acao-bts button{flex:1 1 auto;border-radius:10px;padding:11px 12px;font:700 12px/1.1 var(--f-body);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink)}
+  .acao-bts button,.acao-bts a{flex:1 1 auto;text-align:center;text-decoration:none;border-radius:10px;padding:11px 12px;font:700 12px/1.1 var(--f-body);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink)}
   .acao-bts .forte{background:var(--c,var(--neon));border-color:var(--c,var(--neon));color:#140c1b}
   .acao-bts button:disabled{opacity:.4;cursor:default}
   .sub-t{font:400 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:4px 0 0}
@@ -259,6 +259,13 @@
           <p class="anunciado" id="kMsg" role="status"></p>
         </article>
 
+        <!-- Encara ou Bebe -->
+        <article class="acao" id="ac-jogo" style="--c:#ff8fc2">
+          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/><path d="M15.5 8.2c-1-1.2-2.8-.3-2.3 1.1.4 1 2.3 2.4 2.3 2.4s1.9-1.4 2.3-2.4c.5-1.4-1.3-2.3-2.3-1.1z"/></svg></span><div><h3>Encara ou Bebe</h3><p>Jogo de roda pra mesa: a galera abre pelo app, coloca os nomes e passa o celular. Encara o desafio ou bebe a dose. Roda só no celular de quem joga, não aparece no telão. Só pra maiores de 18.</p><span class="estado" id="est-jogo">Desligado</span></div>
+          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-jogo" aria-label="Ligar Encara ou Bebe"><span></span></label></div>
+          <div class="acao-bts"><a class="bt-link" href="encara.html" target="_blank" rel="noopener">Abrir o jogo pra testar</a></div>
+        </article>
+
         <!-- Contagem regressiva -->
         <article class="acao" id="ac-contagem" style="--c:#ffd166">
           <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></span><div><h3>Contagem regressiva</h3><p>Happy hour, rodada dobrada, show… mostra quanto tempo falta no app e no telão.</p><span class="estado" id="est-contagem">Desligado</span></div>
@@ -292,10 +299,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610281548"></script>
+<script src="config.js?v=202610281720"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610281548"></script>
-<script src="equipe.js?v=202610281548"></script>
+<script src="marca.js?v=202610281720"></script>
+<script src="comum.js?v=202610281720"></script>
+<script src="equipe.js?v=202610281720"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -396,7 +404,7 @@
 
   // =================== AÇÕES ESPECIAIS ===================
   // Tudo fica em config/acoes (a equipe liga/desliga e configura). O app e o telão leem de lá.
-  const ACOES = ["concurso", "desafio", "enquete", "roleta", "karaoke", "contagem"];
+  const ACOES = ["concurso", "desafio", "enquete", "roleta", "karaoke", "jogo", "contagem"];
   let A = {};                // config/acoes atual
   let postsNoite = [];       // posts da noite (pra concurso e desafio)
   let curtidasPor = {};      // curtidas por post nesta noite

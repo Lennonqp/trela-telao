@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610281548">
+<link rel="stylesheet" href="estilo.css?v=202610281720">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -89,6 +89,7 @@
   .ev-bloco h4{margin:0;font:400 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .ev-txt{margin:0;font:600 16px/1.35 var(--f-body)}
   .ev-mut{margin:0;font-size:13px;color:var(--muted)}
+  .ev-jogo{display:block;text-align:center;text-decoration:none;margin-top:14px;background:#ff8fc2}
   .ev-ok{margin:0;color:var(--ok);font-weight:600}
   .ev-passos{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
   .ev-prev{min-height:120px;border:1px dashed var(--line);border-radius:12px;display:grid;place-items:center;color:var(--muted);font-size:13px;overflow:hidden}
@@ -492,8 +493,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610281548"></script>
-<script src="comum.js?v=202610281548"></script>
+<script src="config.js?v=202610281720"></script>
+<script src="marca.js?v=202610281720"></script>
+<script src="comum.js?v=202610281720"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1228,10 +1230,12 @@
       titulo: c => { const r = regraDaRoleta(c); return r ? r.texto : "Roleta de regras"; }, resumo: c => { const r = regraDaRoleta(c); return r ? "Nova regra em " + faltaTexto(r.fim) : ""; } },
     karaoke: { cor: "#7cc6fe", rotulo: "Karaokê", ic: SVG('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>'),
       titulo: c => karaokeAgora() ? "Cantando: " + karaokeAgora().nome : "Karaokê aberto", resumo: c => karaokeProximo() ? "Próximo: " + karaokeProximo().nome : "Entra na fila e escolhe tua música" },
+    jogo: { cor: "#ff8fc2", rotulo: "Encara ou Bebe", ic: SVG('<rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/><path d="M15.5 8.2c-1-1.2-2.8-.3-2.3 1.1.4 1 2.3 2.4 2.3 2.4s1.9-1.4 2.3-2.4c.5-1.4-1.3-2.3-2.3-1.1z"/>'),
+      titulo: c => "Encara ou Bebe", resumo: c => "Jogo de roda pra tua mesa. Encara o desafio ou bebe" },
     contagem: { cor: "#ffd166", rotulo: "Contagem", ic: SVG('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'),
       titulo: c => c.titulo || "Falta pouco", resumo: c => "" }
   };
-  const ORDEM_EV = ["concurso", "desafio", "enquete", "roleta", "contagem", "karaoke"];
+  const ORDEM_EV = ["concurso", "desafio", "enquete", "roleta", "contagem", "karaoke", "jogo"];
   const chaveNoite = () => { const d = inicioDaNoite(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
   const chaveEvento = (k, c) => k + ":" + (ms(c.desde) || 0) + (k === "enquete" ? ":" + (c.id || "") : "");
   let eventosVistos = guardado.ler("trela-eventos-vistos", {});
@@ -1405,6 +1409,15 @@
         "Ela passa por todas as regras antes de repetir. A próxima é surpresa!"])));
     }
     if (k === "karaoke") out.push(blocoKaraoke());
+    if (k === "jogo") {
+      const abrir = el("a", "btn ev-jogo", "Abrir o jogo"); abrir.href = "encara.html";
+      out.push(pBloco("", el("p", "ev-txt", "O jogo da roda: encara o desafio ou paga a dose."), abrir));
+      out.push(pBloco("Como funciona", passos([
+        "Abre o jogo e coloca o nome de quem está na mesa.",
+        "Passa o celular: cada um tira uma carta. Encarou ganha ponto, não quis bebe.",
+        "Tem desafio, verdade, eu nunca, duelo e regra nova. Escolhe o nível da mesa."])));
+      out.push(el("p", "ev-mut", "Só pra maiores de 18. Ninguém é obrigado a nada, e água também vale. Se for beber, não dirija."));
+    }
     if (k === "contagem") {
       const d = ate(c);
       const r = el("div", "ev-relogio cont-relogio", d ? faltam(d) : "--:--");

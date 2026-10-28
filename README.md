@@ -89,6 +89,7 @@ No balcão, a área **Ações especiais** liga e desliga cada evento (ou todos d
 - **Enquete**: até 4 opções, resultado ao vivo no balcão, no app e no telão.
 - **Roleta de regras**: a cada 20 min (ou o tempo escolhido) a roleta gira sozinha no telão e sorteia uma regra divertida pra noite, sem prêmio. Passa por todas antes de repetir; dá pra editar as regras e "Girar agora" no balcão.
 - **Karaokê**: a galera entra na fila pelo app; quem canta toca em "Terminei" e a vez passa pro próximo. Só aparece no app, não no telão.
+- **Encara ou Bebe**: jogo de roda pra mesa (`encara.html`). A galera abre pelo app, coloca os nomes e passa o celular: encara o desafio ou bebe. Roda só no celular de quem joga (guarda a partida no próprio aparelho), não usa o banco e não aparece no telão. Tem trava de 18+.
 - **Contagem regressiva**: happy hour, show… relógio no app e no telão.
 
 No app, eventos ligados aparecem na faixa "Ao vivo", no sino de notificações e no menu ≡ → Eventos da noite.

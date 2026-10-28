@@ -145,6 +145,55 @@ function visto(ts) {
 }
 const horaDe = ts => ms(ts) ? new Date(ms(ts)).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "agora";
 
+// ---------- Roleta de regras ----------
+// A regra da vez é calculada pelo relógio: todo mundo (app, balcão, telão) chega na mesma regra
+// sem ninguém precisar gravar nada a cada troca. "Girar agora" no balcão muda a base e a semente.
+var REGRAS_PADRAO = [
+  "Brinde coletivo: toda vez que tocar música dos anos 2000, a mesa levanta o copo",
+  "Proibido falar \u201ctipo\u201d. Quem falar conta uma piada pra mesa",
+  "Hora da selfie: manda uma foto da tua mesa pro telão",
+  "Pedido no balcão só vale com sotaque diferente",
+  "Quem for no banheiro volta com um elogio pra alguém da mesa ao lado",
+  "Dança obrigatória no refrão",
+  "Troca de lugar com alguém da tua mesa",
+  "Só vale falar cantando até a próxima regra",
+  "Manda um recado pro telão elogiando quem tá no balcão",
+  "Apresenta alguém da tua mesa pra mesa do lado"
+];
+function aleatorioFixo(n) {   // mesmo número em qualquer aparelho
+  var t = (n + 0x6D2B79F5) | 0;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+function regrasDaRoleta(c) {
+  var lista = (c && c.regras && c.regras.length ? c.regras : REGRAS_PADRAO);
+  return lista.map(function (r) { return String(r || "").trim(); }).filter(Boolean);
+}
+function regraDaRoleta(c, agoraMs) {
+  var regras = regrasDaRoleta(c), n = regras.length;
+  if (!n) return null;
+  var iv = Math.max(1, (c && c.intervalo) || 20) * 60000;
+  var base = (c && (ms(c.base) || ms(c.desde))) || 0;
+  var agora = agoraMs || Date.now();
+  var slot = Math.max(0, Math.floor((agora - base) / iv));
+  var semente = ((c && c.semente) || 7) * 1009;
+  // Embaralha a lista a cada volta: passa por todas antes de repetir e nunca repete em seguida
+  var ordem = function (volta) {
+    var o = regras.map(function (_, i) { return i; });
+    for (var i = n - 1; i > 0; i--) { var j = Math.floor(aleatorioFixo(semente + volta * 131 + i) * (i + 1)); var t = o[i]; o[i] = o[j]; o[j] = t; }
+    return o;
+  };
+  var volta = Math.floor(slot / n), pos = slot % n, o = ordem(volta);
+  if (n > 1 && volta > 0) { var ant = ordem(volta - 1); if (o[0] === ant[n - 1]) { var t2 = o[0]; o[0] = o[1]; o[1] = t2; } }
+  var idx = n === 2 ? (slot + (semente % 2)) % 2 : o[pos];   // com 2 regras, só alterna
+  return { idx: idx, texto: regras[idx], slot: slot, inicio: base + slot * iv, fim: base + (slot + 1) * iv, total: n, regras: regras };
+}
+function faltaTexto(fimMs) {
+  var s = Math.max(0, Math.round((fimMs - Date.now()) / 1000)), m = Math.floor(s / 60), ss = s % 60;
+  return m + ":" + (ss < 10 ? "0" : "") + ss;
+}
+
 // ---------- Marca "feito por lennon" (rodapé de todas as telas) ----------
 // O "o" de lennon é um botão de ligar. Escrito em JS antigo de propósito: roda até em TV.
 var LENNON_LIGA = '<svg class="liga" viewBox="0 0 74 80" aria-hidden="true"><path d="M20 22 A28 28 0 1 0 54 22" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round"/><path d="M37 8 V40" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round"/></svg>';

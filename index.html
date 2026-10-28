@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610280957">
+<link rel="stylesheet" href="estilo.css?v=202610281548">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -112,6 +112,10 @@
   .ev-op.meu{border-color:var(--lilas);box-shadow:0 0 0 1px var(--lilas) inset}
   .ev-relogio{text-align:center;font:400 64px/1 var(--f-display);font-variant-numeric:tabular-nums;color:#ffd166;padding:10px 0}
 
+  .roleta-card{background:radial-gradient(90% 120% at 50% 0%,rgba(61,220,151,.18),transparent 70%),var(--panel);border:1px solid var(--ok);border-radius:18px;padding:20px 18px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+  .roleta-card small{font:700 11px/1 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ok)}
+  .roleta-regra{margin:0;font:400 28px/1.1 var(--f-display);text-transform:uppercase;text-wrap:balance}
+  .roleta-falta{font:400 12px var(--f-mono);letter-spacing:.08em;color:var(--muted)}
   .kr-linha{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
   .ev-bloco h4 + .kr-linha{border-top:0}
   .kr-linha.eu .kr-t b{color:var(--neon)}
@@ -488,8 +492,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610280957"></script>
-<script src="comum.js?v=202610280957"></script>
+<script src="config.js?v=202610281548"></script>
+<script src="comum.js?v=202610281548"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1220,14 +1224,14 @@
       titulo: c => c.titulo || "Desafio da noite", resumo: c => c.premio ? "Prêmio: " + c.premio : "Cumpre o desafio e manda a foto" },
     enquete: { cor: "var(--lilas)", rotulo: "Enquete", ic: SVG('<path d="M5 20V10M12 20V4M19 20v-7"/>'),
       titulo: c => c.pergunta || "Enquete", resumo: c => "Toca pra votar" },
-    sorteio: { cor: "var(--ok)", rotulo: "Sorteio", ic: SVG('<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/>'),
-      titulo: c => c.premio ? "Sorteio: " + c.premio : "Vai rolar sorteio!", resumo: c => "Toca pra ver como participar" },
+    roleta: { cor: "var(--ok)", rotulo: "Roleta", ic: SVG('<circle cx="12" cy="13" r="8"/><path d="M12 5v16M4 13h16M6.3 7.3l11.4 11.4M17.7 7.3 6.3 18.7"/><path d="M10 2.5h4L12 5z" fill="currentColor"/>'),
+      titulo: c => { const r = regraDaRoleta(c); return r ? r.texto : "Roleta de regras"; }, resumo: c => { const r = regraDaRoleta(c); return r ? "Nova regra em " + faltaTexto(r.fim) : ""; } },
     karaoke: { cor: "#7cc6fe", rotulo: "Karaokê", ic: SVG('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>'),
       titulo: c => karaokeAgora() ? "Cantando: " + karaokeAgora().nome : "Karaokê aberto", resumo: c => karaokeProximo() ? "Próximo: " + karaokeProximo().nome : "Entra na fila e escolhe tua música" },
     contagem: { cor: "#ffd166", rotulo: "Contagem", ic: SVG('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'),
       titulo: c => c.titulo || "Falta pouco", resumo: c => "" }
   };
-  const ORDEM_EV = ["concurso", "desafio", "enquete", "sorteio", "contagem", "karaoke"];
+  const ORDEM_EV = ["concurso", "desafio", "enquete", "roleta", "contagem", "karaoke"];
   const chaveNoite = () => { const d = inicioDaNoite(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
   const chaveEvento = (k, c) => k + ":" + (ms(c.desde) || 0) + (k === "enquete" ? ":" + (c.id || "") : "");
   let eventosVistos = guardado.ler("trela-eventos-vistos", {});
@@ -1242,9 +1246,31 @@
   }
   // Atualiza todos os relógios da tela a cada segundo
   setInterval(() => {
+    document.querySelectorAll(".roleta-falta").forEach(x => x.textContent = "Nova regra em " + faltaTexto(+x.dataset.fim));
+    vigiarRoleta();
     const d = ate(S.acoes.contagem); if (!d) return;
     document.querySelectorAll(".cont-relogio").forEach(x => x.textContent = faltam(d));
   }, 1000);
+
+  // Avisa quando a roleta troca de regra (e atualiza a faixa e a tela)
+  let roletaChave = null;
+  function vigiarRoleta() {
+    const c = S.acoes && S.acoes.roleta;
+    if (!EU || !c || !c.ativo) { roletaChave = null; return; }
+    const r = regraDaRoleta(c); if (!r) return;
+    const chave = (ms(c.base) || 0) + ":" + (c.semente || 0) + ":" + r.slot;
+    if (roletaChave && chave !== roletaChave) {
+      // espera o telão terminar de girar (uns 5 s) pra revelar junto
+      setTimeout(() => {
+        const t = $("#toast"), ic = el("span", "av p"); ic.innerHTML = EVENTOS.roleta.ic.replace('width="22" height="22"', 'width="16" height="16"'); ic.style.setProperty("--c", EVENTOS.roleta.cor); ic.style.color = "#140c1b";
+        t.replaceChildren(ic, el("span", "", "Nova regra: " + r.texto)); t.hidden = false;
+        t.onclick = () => { t.hidden = true; abrirEvento("roleta"); };
+        clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 7000);
+        redesenhar();
+      }, 5000);
+    }
+    roletaChave = chave;
+  }
 
   // ---- Faixa "Ao vivo" (uma linha que alterna entre os eventos ligados) ----
   let aoVivoI = 0;
@@ -1337,6 +1363,7 @@
     const k0 = e && e.k;
     const assinatura = JSON.stringify([eventoAberto, e ? e.c : null, karaokeEditando, fotoEvento ? fotoEvento.acao + fotoEvento.data.length : null,
       S.jaConcorri, S.meuVoto, k0 === "enquete" ? S.votos : 0, k0 === "karaoke" ? [S.karaoke, S.karaokeErro] : 0,
+      k0 === "roleta" ? (regraDaRoleta(e.c) || {}).slot : 0,
       (k0 === "concurso" || k0 === "desafio") ? [S.postsAcao.map(p => [p.id, p.nome, p.texto, (p.reacoes || {}).amor]), Array.from(S.curti)] : 0]);
     if (assinatura === assinaturaEvento && sc.childElementCount) return;
     assinaturaEvento = assinatura;
@@ -1366,13 +1393,16 @@
       out.push(pBloco("Quem já mandou", gradeFotos("desafio", "Ninguém mandou ainda. Sai na frente!")));
     }
     if (k === "enquete") out.push(blocoEnquete(c));
-    if (k === "sorteio") {
-      const regra = { agora: "Pra participar é só estar com o app do Trela aberto na hora do sorteio.", postou: "Participa quem mandou um recado ou foto pro telão nesta noite.",
-        desafio: "Participa quem mandou foto pro desafio da noite.", concurso: "Participa quem está com foto no concurso." }[c.quem || "agora"];
-      out.push(pBloco("Como participar", el("p", "ev-txt", regra), el("p", "ev-mut", "A equipe sorteia na hora e o nome aparece no telão.")));
-      const ir2 = c.quem === "postou" ? bt("Mandar um recado pro telão", "sim", () => { voltar(); setTimeout(() => $("#texto").focus(), 300); })
-        : (c.quem === "desafio" || c.quem === "concurso") && S.acoes[c.quem] && S.acoes[c.quem].ativo ? bt("Ir pro " + EVENTOS[c.quem].rotulo.toLowerCase(), "sim", () => abrirEvento(c.quem)) : null;
-      if (ir2) out.push(ir2);
+    if (k === "roleta") {
+      const r = regraDaRoleta(c);
+      const card = el("div", "roleta-card");
+      card.append(el("small", "", "Regra da vez"), el("p", "roleta-regra", r ? r.texto : "Sem regras ainda"));
+      if (r) { const f = el("span", "roleta-falta"); f.dataset.fim = r.fim; f.textContent = "Nova regra em " + faltaTexto(r.fim); card.append(f); }
+      out.push(card);
+      out.push(pBloco("Como funciona", passos([
+        "A roleta gira sozinha no telão a cada " + ((c.intervalo || 20)) + " minutos e sorteia uma regra pra todo mundo.",
+        "Vale até a próxima girada. Não tem prêmio: é só pra zoeira.",
+        "Ela passa por todas as regras antes de repetir. A próxima é surpresa!"])));
     }
     if (k === "karaoke") out.push(blocoKaraoke());
     if (k === "contagem") {

@@ -87,7 +87,7 @@ No balcão, a área **Ações especiais** liga e desliga cada evento (ou todos d
 - **Concurso de fotos**: a galera manda uma foto pra concorrer (1 por pessoa por noite) e curte as fotos. O balcão vê o ranking ao vivo; no telão as fotos passam de 4 em 4, depois o ranking. "Anunciar vencedor" faz a festa no telão e mostra o vencedor no app.
 - **Desafio da noite**: desafio, regras e prêmio; a galera manda a foto e a equipe escolhe quem ganhou (festa no telão).
 - **Enquete**: até 4 opções, resultado ao vivo no balcão, no app e no telão.
-- **Sorteio**: entre quem está com o app aberto, quem postou na noite, quem fez o desafio ou quem está no concurso.
+- **Roleta de regras**: a cada 20 min (ou o tempo escolhido) a roleta gira sozinha no telão e sorteia uma regra divertida pra noite, sem prêmio. Passa por todas antes de repetir; dá pra editar as regras e "Girar agora" no balcão.
 - **Karaokê**: a galera entra na fila pelo app; quem canta toca em "Terminei" e a vez passa pro próximo. Só aparece no app, não no telão.
 - **Contagem regressiva**: happy hour, show… relógio no app e no telão.
 

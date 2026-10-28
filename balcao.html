@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610280957">
+<link rel="stylesheet" href="estilo.css?v=202610281548">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -118,6 +118,11 @@
   .musica div{flex:1;min-width:0}
   .musica b{display:block;font-size:14px;overflow-wrap:anywhere}
   .musica span{font-size:12px;color:var(--muted)}
+  .regra-agora{background:var(--bg);border:1px solid var(--c);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+  .regra-agora small{font:400 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--c)}
+  .regra-agora b{font-size:16px;line-height:1.3}
+  .regra-agora span{font:400 11px var(--f-mono);color:var(--muted);letter-spacing:.06em}
+  #rRegras{min-height:150px;font-size:14px;line-height:1.5}
   .anunciado{font-size:12px;color:var(--ok);min-height:16px;margin:0}
   @media (max-width:960px){.acoes-grade{grid-template-columns:minmax(0,1fr)}}
   @media (max-width:960px){.cols{grid-template-columns:minmax(0,1fr)}}
@@ -226,29 +231,21 @@
           <p class="anunciado" id="eMsg" role="status"></p>
         </article>
 
-        <!-- Sorteio -->
-        <article class="acao" id="ac-sorteio" style="--c:var(--ok)">
-          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/></svg></span><div><h3>Sorteio</h3><p>Sorteia um nome na hora. Liga pra galera ver no app que vai ter sorteio.</p><span class="estado" id="est-sorteio">Desligado</span></div>
-          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-sorteio" aria-label="Ligar Sorteio"><span></span></label></div>
+        <!-- Roleta de regras -->
+        <article class="acao" id="ac-roleta" style="--c:var(--ok)">
+          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 5v16M4 13h16M6.3 7.3l11.4 11.4M17.7 7.3 6.3 18.7"/><path d="M10 2.5h4L12 5z" fill="currentColor"/></svg></span><div><h3>Roleta de regras</h3><p>A roleta gira sozinha no telão e sorteia uma regra divertida pra noite. Sem prêmio, só zoeira. Passa por todas antes de repetir.</p><span class="estado" id="est-roleta">Desligado</span></div>
+          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-roleta" aria-label="Ligar Roleta de regras"><span></span></label></div>
+          <div class="regra-agora"><small>Regra da vez</small><b id="rAgora">—</b><span id="rFalta"></span></div>
           <div class="campos">
             <div class="dupla">
-              <div><label for="sPremio">Prêmio</label><input id="sPremio" maxlength="40" placeholder="Porção de fritas"></div>
-              <div><label for="sQuem">Sortear entre</label>
-                <select id="sQuem">
-                  <option value="agora">Quem está com o app aberto agora</option>
-                  <option value="postou">Quem postou nesta noite</option>
-                  <option value="desafio">Quem participou do desafio</option>
-                  <option value="concurso">Quem está no concurso</option>
-                </select></div>
+              <div><label for="rIntervalo">Troca a cada</label>
+                <select id="rIntervalo"><option value="10">10 minutos</option><option value="15">15 minutos</option><option value="20" selected>20 minutos</option><option value="30">30 minutos</option><option value="45">45 minutos</option><option value="60">1 hora</option></select></div>
+              <div style="display:flex;align-items:flex-end"><button type="button" class="ghost" id="rGirar" style="width:100%;padding:12px">Girar agora</button></div>
             </div>
+            <div><label for="rRegras">Regras (uma por linha)</label><textarea id="rRegras" rows="8" maxlength="2000"></textarea></div>
           </div>
-          <p class="sub-t" id="sCont">Participantes: —</p>
-          <div class="sorteado" id="sNome">?</div>
-          <div class="acao-bts">
-            <button type="button" class="forte" id="sSortear">Sortear</button>
-            <button type="button" id="sAnunciar" disabled>Anunciar (festa no telão)</button>
-          </div>
-          <p class="anunciado" id="sMsg" role="status"></p>
+          <div class="acao-bts"><button type="button" id="rPadrao">Voltar pras regras sugeridas</button></div>
+          <p class="anunciado" id="rMsg" role="status"></p>
         </article>
 
         <!-- Karaokê -->
@@ -295,10 +292,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610280957"></script>
+<script src="config.js?v=202610281548"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610280957"></script>
-<script src="equipe.js?v=202610280957"></script>
+<script src="comum.js?v=202610281548"></script>
+<script src="equipe.js?v=202610281548"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -399,9 +396,9 @@
 
   // =================== AÇÕES ESPECIAIS ===================
   // Tudo fica em config/acoes (a equipe liga/desliga e configura). O app e o telão leem de lá.
-  const ACOES = ["concurso", "desafio", "enquete", "sorteio", "karaoke", "contagem"];
+  const ACOES = ["concurso", "desafio", "enquete", "roleta", "karaoke", "contagem"];
   let A = {};                // config/acoes atual
-  let postsNoite = [];       // posts da noite (pra concurso, desafio e sorteio)
+  let postsNoite = [];       // posts da noite (pra concurso e desafio)
   let curtidasPor = {};      // curtidas por post nesta noite
   function iniciarAcoes() {
     const ref = db.doc("config/acoes");
@@ -416,12 +413,13 @@
         if (k === "enquete" && e.target.checked && !(A.enquete && A.enquete.id)) d.id = novoId();
         if (k === "contagem" && e.target.checked) d.ate = horarioAlvo();
         if (k === "concurso" && e.target.checked) d.encerrado = false;
+        if (k === "roleta" && e.target.checked) { d.base = agoraServidor(); d.semente = Math.floor(Math.random() * 1e6); }
         salvar(k, d);
       };
     });
     // Campos de texto (salvam sozinhos enquanto digita)
     const CAMPOS = { cNome: ["concurso", "nome"], cPremio: ["concurso", "premio"], dTitulo: ["desafio", "titulo"], dRegras: ["desafio", "regras"],
-      dPremio: ["desafio", "premio"], eQ: ["enquete", "pergunta"], sPremio: ["sorteio", "premio"], tTitulo: ["contagem", "titulo"] };
+      dPremio: ["desafio", "premio"], eQ: ["enquete", "pergunta"], tTitulo: ["contagem", "titulo"] };
     // Campos com alteração ainda não salva não são sobrescritos pelo que volta do banco
     const pendentes = new Set();
     const salvarDepois = (id, fn) => {
@@ -436,7 +434,12 @@
       $("eO" + i).oninput = () => salvarDepois("eO" + i, () => salvar("enquete", { opcoes: [0, 1, 2, 3].map(j => $("eO" + j).value.trim()) }));
     });
     const livre = id => document.activeElement !== $(id) && !pendentes.has(id);
-    $("sQuem").onchange = () => { salvar("sorteio", { quem: $("sQuem").value }); contarSorteio(true); };
+    // Roleta
+    $("rIntervalo").onchange = () => salvar("roleta", { intervalo: +$("rIntervalo").value });
+    $("rRegras").oninput = () => salvarDepois("rRegras", () => salvar("roleta", { regras: $("rRegras").value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 40) }));
+    $("rGirar").onclick = () => { salvar("roleta", { base: agoraServidor(), semente: Math.floor(Math.random() * 1e6) }); msg("rMsg", "Girou! O telão mostra a roleta girando."); };
+    $("rPadrao").onclick = () => { salvar("roleta", { regras: REGRAS_PADRAO.slice() }); $("rRegras").value = REGRAS_PADRAO.join("\n"); };
+    const relRoleta = setInterval(desenharRoleta, 1000); parar.push(() => clearInterval(relRoleta));
     $("tHora").onchange = () => salvar("contagem", { hora: $("tHora").value, ate: horarioAlvo() });
 
     parar.push(ref.onSnapshot(d => {
@@ -455,15 +458,16 @@
       Object.keys(CAMPOS).forEach(id => { if (livre(id)) $(id).value = v(CAMPOS[id][0], CAMPOS[id][1]); });
       const ops = (A.enquete && A.enquete.opcoes) || [];
       [0, 1, 2, 3].forEach(i => { if (livre("eO" + i)) $("eO" + i).value = ops[i] || ""; });
-      if (A.sorteio && A.sorteio.quem && document.activeElement !== $("sQuem")) $("sQuem").value = A.sorteio.quem;
+      if (document.activeElement !== $("rIntervalo")) $("rIntervalo").value = String((A.roleta && A.roleta.intervalo) || 20);
+      if (livre("rRegras")) $("rRegras").value = regrasDaRoleta(A.roleta || {}).join("\n");
       if (A.contagem && A.contagem.hora && document.activeElement !== $("tHora")) $("tHora").value = A.contagem.hora;
-      ouvirVotos(); desenharConcurso(); desenharDesafio(); contarSorteio(); desenharKaraoke();
+      ouvirVotos(); desenharConcurso(); desenharDesafio(); desenharKaraoke(); desenharRoleta();
     }, () => {}));
 
     // Posts e curtidas da noite
     parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
       postsNoite = q.docs.map(d => ({ id: d.id, ...d.data() }));
-      desenharConcurso(); desenharDesafio(); contarSorteio();
+      desenharConcurso(); desenharDesafio();
     }, () => {})));
     parar.push(ouvirNoite(desde => db.collection("curtidas").where("criado", ">=", desde).onSnapshot(q => {
       curtidasPor = {}; q.docs.forEach(d => { const p = d.data().post; curtidasPor[p] = (curtidasPor[p] || 0) + 1; });
@@ -490,6 +494,7 @@
         if (tudo.enquete && !(A.enquete && A.enquete.id)) tudo.enquete.id = novoId();
         if (tudo.contagem) tudo.contagem.ate = horarioAlvo();
         if (tudo.concurso) tudo.concurso.encerrado = false;
+        if (tudo.roleta) { tudo.roleta.base = agoraServidor(); tudo.roleta.semente = Math.floor(Math.random() * 1e6); }
       } else ACOES.forEach(k => tudo[k] = { ativo: false });
       ref.set(tudo, { merge: true }).catch(() => {});
     };
@@ -508,12 +513,6 @@
         detalhe: Math.round(lider.n * 100 / res.total) + "% dos votos (" + lider.n + " de " + res.total + ")" }, "eMsg");
     };
     $("eNova").onclick = () => salvar("enquete", { id: novoId(), desde: agoraServidor() });
-    $("sSortear").onclick = sortear;
-    $("sAnunciar").onclick = () => {
-      if (!sorteadoAgora) return;
-      const pr = (A.sorteio && A.sorteio.premio) || "";
-      celebrar({ tipo: "sorteio", rotulo: "Sorteio" + (pr ? " · " + pr : ""), nome: sorteadoAgora, uid: sorteadoUid, fotoId: "", premio: pr, detalhe: "" }, "sMsg");
-    };
     $("tAvisar").onclick = () => {
       const c = A.contagem || {}, ate = horarioAlvo();
       anunciar((c.titulo || "Falta pouco!") + " " + String(ate.getHours()).padStart(2, "0") + ":" + String(ate.getMinutes()).padStart(2, "0") + " (faltam " + faltam(ate, true) + ")", "tMsg");
@@ -661,44 +660,12 @@
     }), "");
   }
 
-  // ---- Sorteio ----
-  let poolSorteio = [], sorteadoAgora = "", sorteadoUid = "", jaSorteados = new Set(), contando = 0, online = [], onlineEm = 0;
-  async function contarSorteio(forcar) {
-    const quem = $("sQuem").value, meu = ++contando;
-    let nomes = [];
-    if (quem === "agora") {
-      // Quem está com o app aberto: consulta no máximo 1x por minuto (ou na hora de sortear)
-      if (forcar || Date.now() - onlineEm > 60000) {
-        onlineEm = Date.now();
-        const q = await db.collection("usuarios").where("ultimoAcesso", ">", FS.Timestamp.fromMillis(Date.now() - ONLINE_MS)).get().catch(() => null);
-        online = q ? q.docs.map(d => ({ uid: d.id, nome: d.data().nome })) : online;
-      }
-      nomes = online;
-    } else {
-      const f = quem === "postou" ? (p => p.tipo !== "bar") : (p => p.acao === quem);
-      nomes = postsNoite.filter(p => p.autor && f(p)).map(p => ({ uid: p.autor, nome: p.nome }));
-    }
-    if (meu !== contando) return;
-    const vistos = {}; poolSorteio = nomes.filter(x => x.nome && !vistos[x.uid] && (vistos[x.uid] = 1));
-    const livres = poolSorteio.filter(x => !jaSorteados.has(x.uid)).length;
-    $("sCont").textContent = "Participantes: " + poolSorteio.length + (jaSorteados.size ? " · " + livres + " ainda não sorteados" : "");
-  }
-  async function sortear() {
-    await contarSorteio(true);
-    let pool = poolSorteio.filter(x => !jaSorteados.has(x.uid));
-    if (!pool.length && poolSorteio.length) { jaSorteados.clear(); pool = poolSorteio.slice(); }
-    if (!pool.length) return msg("sMsg", "Ninguém pra sortear nesse grupo agora.", true);
-    $("sSortear").disabled = true; $("sAnunciar").disabled = true; msg("sMsg", "");
-    const alvo = pool[Math.floor(Math.random() * pool.length)], caixa = $("sNome");
-    caixa.classList.add("girando");
-    let t = 0;
-    const giro = setInterval(() => { caixa.textContent = poolSorteio[t++ % poolSorteio.length].nome; }, 80);
-    setTimeout(() => {
-      clearInterval(giro); caixa.classList.remove("girando"); caixa.textContent = alvo.nome;
-      sorteadoAgora = alvo.nome; sorteadoUid = alvo.uid; jaSorteados.add(alvo.uid);
-      $("sSortear").disabled = false; $("sSortear").textContent = "Sortear de novo"; $("sAnunciar").disabled = false;
-      contarSorteio();
-    }, 2200);
+  // ---- Roleta de regras ----
+  function desenharRoleta() {
+    const c = A.roleta || {}, r = regraDaRoleta(c, Date.now());
+    if (!r) { $("rAgora").textContent = "Coloca pelo menos uma regra"; $("rFalta").textContent = ""; return; }
+    $("rAgora").textContent = r.texto;
+    $("rFalta").textContent = c.ativo ? "Troca em " + faltaTexto(r.fim) : "Ligue pra começar a girar";
   }
 
   // ---- Contagem regressiva ----

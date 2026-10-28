@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610271933">
+<link rel="stylesheet" href="estilo.css?v=202610280939">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -333,6 +333,7 @@
       </div>
     </form>
     <p class="letra">Teus amigos e conversas ficam salvos na tua conta.</p>
+    <footer class="lennon-pe" data-marca-lennon></footer>
   </div>
 
   <!-- Home -->
@@ -388,6 +389,7 @@
       </div>
       <h3 class="feed-title" id="feedTitle">Rolou hoje <small id="feedCount"></small></h3>
       <div class="feed" id="feed"><div class="vazio">Carregando…</div></div>
+      <footer class="lennon-pe" data-marca-lennon></footer>
       <div style="height:30px"></div>
     </div>
     <div class="fade" id="fade"></div>
@@ -477,8 +479,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610271933"></script>
-<script src="comum.js?v=202610271933"></script>
+<script src="config.js?v=202610280939"></script>
+<script src="comum.js?v=202610280939"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };

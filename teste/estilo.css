@@ -31,5 +31,14 @@ textarea{resize:none;min-height:110px}
 .ghost{background:none;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:8px 14px;font:700 12px/1 var(--f-body);text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
+/* ---------- Marca "feito por lennon" ---------- */
+.lennon{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:8px;row-gap:6px;padding:18px 8px 8px;color:var(--muted);font:500 12px/1.2 var(--f-body);text-decoration:none;opacity:.85;text-align:center}
+a.lennon:hover,a.lennon:focus-visible{opacity:1}
+.lennon .ln-nome{display:inline-flex;align-items:center;font:800 17px/1 var(--f-body);letter-spacing:-.03em;color:var(--ink)}
+.lennon .liga{width:.78em;height:.84em;margin:0 .04em 0 .06em;color:var(--neon);filter:drop-shadow(0 0 4px rgba(255,63,164,.75));position:relative;top:.06em}
+.lennon .ln-contato{border:1px solid var(--lilas);color:var(--ink);border-radius:999px;padding:4px 10px;font-weight:700}
+.lennon .ln-contato.vazio{border-style:dashed;color:var(--muted);font-weight:500}
+.lennon-pe{width:100%}
+
 /* Versão de teste: selo pra ninguém confundir com o site oficial */
 body::after{content:"VERSÃO DE TESTE";position:fixed;left:50%;top:calc(4px + env(safe-area-inset-top));-webkit-transform:translateX(-50%);transform:translateX(-50%);z-index:9999;pointer-events:none;background:#ffd166;color:#1a1300;font:800 10px/1 var(--f-mono,monospace);letter-spacing:.14em;padding:5px 10px;border-radius:999px;opacity:.92}

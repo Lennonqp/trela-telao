@@ -145,6 +145,28 @@ function visto(ts) {
 }
 const horaDe = ts => ms(ts) ? new Date(ms(ts)).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "agora";
 
+// ---------- Marca "feito por lennon" (rodapé de todas as telas) ----------
+// O "o" de lennon é um botão de ligar. Escrito em JS antigo de propósito: roda até em TV.
+var LENNON_LIGA = '<svg class="liga" viewBox="0 0 74 80" aria-hidden="true"><path d="M20 22 A28 28 0 1 0 54 22" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round"/><path d="M37 8 V40" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round"/></svg>';
+function marcaLennon(tipo) {
+  var c = window.CONTATO_LENNON || {};
+  var esc = function (t) { return String(t || "").replace(/[&<>"]/g, function (x) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[x]; }); };
+  var link = /^https?:\/\//.test(c.link || "") ? c.link : "";
+  var contato = c.texto ? esc(c.texto) : "contato em breve";
+  var html = '<span class="ln-por">feito por</span><span class="ln-nome" aria-label="lennon">lenn' + LENNON_LIGA + 'n</span>' +
+    (tipo === "tv" ? '<span class="ln-sep">·</span><span class="ln-txt">telão interativo pro teu negócio</span>' : '<span class="ln-txt">quer um app ou telão pro teu negócio?</span>') +
+    '<span class="ln-contato' + (c.texto ? "" : " vazio") + '">' + contato + "</span>";
+  var el = document.createElement(link && tipo !== "tv" ? "a" : "div");
+  el.className = "lennon" + (tipo === "tv" ? " ln-tv" : "");
+  if (link && tipo !== "tv") { el.href = link; el.target = "_blank"; el.rel = "noopener"; }
+  el.innerHTML = html;
+  return el;
+}
+(function () {
+  var alvos = document.querySelectorAll("[data-marca-lennon]");
+  for (var i = 0; i < alvos.length; i++) alvos[i].appendChild(marcaLennon(alvos[i].getAttribute("data-marca-lennon")));
+})();
+
 // localStorage que não quebra se o navegador bloquear
 const guardado = {
   ler(k, padrao) { try { const v = localStorage.getItem(k); return v === null ? padrao : JSON.parse(v); } catch (e) { return padrao; } },

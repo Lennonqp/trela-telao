@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610280949">
+<link rel="stylesheet" href="estilo.css?v=202610280957">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -129,7 +129,12 @@
   .kr-acoes .bt{flex:1 1 140px}
   .kr-bt{display:inline-flex;align-items:center;justify-content:center;gap:8px}
   .kr-bt.perigo{border-color:var(--laranja);color:var(--laranja)}
-  .kr-mini{flex:none;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--ink);display:grid;place-items:center;cursor:pointer}
+  .kr-mini{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);display:grid;place-items:center;cursor:pointer;position:relative;z-index:1;touch-action:manipulation}
+  .kr-mini.perigo{border-color:var(--laranja);color:var(--laranja)}
+  .kr-mini.ok{border-color:var(--ok);color:var(--ok)}
+  .kr-mini:disabled{opacity:.4}
+  .kr-linha.editando{background:rgba(255,63,164,.06);border-radius:12px;padding:8px}
+  .kr-inp{padding:8px 10px;font-size:15px;margin-top:4px}
   .ev-erro{margin:0;color:var(--laranja);font-size:13px;font-weight:600}
   .ev-musica{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:8px;font-size:14px}
   .ev-musica span{color:var(--muted);font-size:12px;flex:none}
@@ -484,8 +489,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610280949"></script>
-<script src="comum.js?v=202610280949"></script>
+<script src="config.js?v=202610280957"></script>
+<script src="comum.js?v=202610280957"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1271,8 +1276,12 @@
 
   // ---- Lista de eventos ----
   function abrirEventos() { ir("tEventos"); renderEventos(); }
+  let assinaturaEventos = "";
   function renderEventos() {
     const evs = eventosAtivos(), out = [];
+    const ass = JSON.stringify(evs.map(e => [e.k, e.c, eventoNovo(e)]));
+    if (ass === assinaturaEventos && $("#eventosScroll").childElementCount) return;
+    assinaturaEventos = ass;
     if (!evs.length) out.push(el("div", "vazio", "Nenhum evento rolando agora. Quando a equipe começar algum, aparece aqui e no sino."));
     evs.forEach(e => {
       const c = el("button", "ev-card"); c.type = "button"; c.style.setProperty("--c", e.m.cor);
@@ -1317,13 +1326,21 @@
   let eventoAberto = null, fotoEvento = null;
   function abrirEvento(k) {
     const e = eventosAtivos().find(x => x.k === k); if (!e) return;
-    marcarEventoVisto(e); eventoAberto = k; fotoEvento = null;
+    marcarEventoVisto(e); eventoAberto = k; fotoEvento = null; assinaturaEvento = "";
     ir("tEvento"); renderEvento(); renderFaixas(); renderBadge();
   }
   const pBloco = (titulo, ...filhos) => { const b = el("section", "ev-bloco"); if (titulo) b.append(el("h4", "", titulo)); b.append(...filhos); return b; };
+  // Só redesenha quando o que a tela mostra mudou (redesenhar à toa engole o toque nos botões)
+  let assinaturaEvento = "";
   function renderEvento() {
     const e = eventosAtivos().find(x => x.k === eventoAberto);
     const sc = $("#eventoScroll");
+    const k0 = e && e.k;
+    const assinatura = JSON.stringify([eventoAberto, e ? e.c : null, karaokeEditando, fotoEvento ? fotoEvento.acao + fotoEvento.data.length : null,
+      S.jaConcorri, S.meuVoto, k0 === "enquete" ? S.votos : 0, k0 === "karaoke" ? [S.karaoke, S.karaokeErro] : 0,
+      (k0 === "concurso" || k0 === "desafio") ? [S.postsAcao.map(p => [p.id, p.nome, p.texto, (p.reacoes || {}).amor]), Array.from(S.curti)] : 0]);
+    if (assinatura === assinaturaEvento && sc.childElementCount) return;
+    assinaturaEvento = assinatura;
     if (!e) { $("#eventoTit").textContent = "Evento"; return sc.replaceChildren(el("div", "vazio", "Esse evento foi encerrado pela equipe. Fica de olho no sino pros próximos!")); }
     const { k, c, m } = e;
     $("#eventoTit").textContent = m.rotulo;
@@ -1501,11 +1518,41 @@
     const t = el("div", "kr-t"); t.append(el("b", "", x.autor === EU.uid ? "Tu" : x.nome), el("span", "", x.musica));
     l.append(pos, avatar(x.autor, "p"), t);
     if (x.autor === EU.uid && x.status === "fila") {
-      const ed = el("button", "kr-mini"); ed.type = "button"; ed.setAttribute("aria-label", "Trocar ou tirar minha música"); ed.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
-      ed.onclick = () => { karaokeEditando = x.id; renderEvento(); $("#eventoScroll").scrollTo({ top: 0, behavior: "smooth" }); };
-      l.append(ed);
+      if (karaokeEditando === x.id) {
+        // edita ali mesmo, na própria linha
+        t.replaceChildren(el("b", "", "Trocar tua música"));
+        const inp = el("input", "kr-inp"); inp.dataset.k = "karaoke-troca"; inp.maxLength = 80; inp.value = x.musica; inp.setAttribute("aria-label", "Nova música");
+        inp.onkeydown = e => { if (e.key === "Enter") salvarMusica(x, inp.value, ok); if (e.key === "Escape") { karaokeEditando = null; renderEvento(); } };
+        t.append(inp);
+        const ok = el("button", "kr-mini ok"); ok.type = "button"; ok.setAttribute("aria-label", "Salvar música"); ok.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
+        ok.onclick = () => salvarMusica(x, inp.value, ok);
+        const nao = el("button", "kr-mini"); nao.type = "button"; nao.setAttribute("aria-label", "Cancelar"); nao.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+        nao.onclick = () => { karaokeEditando = null; renderEvento(); };
+        l.append(ok, nao); l.classList.add("editando");
+        setTimeout(() => { if (inp.isConnected && document.activeElement !== inp) inp.focus(); }, 30);
+      } else {
+        const ed = el("button", "kr-mini"); ed.type = "button"; ed.setAttribute("aria-label", "Trocar minha música"); ed.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
+        ed.onclick = () => { karaokeEditando = x.id; renderEvento(); };
+        const rm = el("button", "kr-mini perigo"); rm.type = "button"; rm.setAttribute("aria-label", "Sair da fila"); rm.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+        rm.onclick = () => sairDaFila(x, rm);
+        l.append(ed, rm);
+      }
     }
     return l;
+  }
+  async function salvarMusica(x, valor, botao) {
+    const m = String(valor || "").trim();
+    if (m.length < 2) return erroToast("Escreve a música que tu vai cantar.");
+    if (motivoSuspeito(m)) return erroToast("Essa música não passou no filtro.");
+    if (m === x.musica) { karaokeEditando = null; return renderEvento(); }
+    if (botao) botao.disabled = true;
+    try { await db.doc("karaoke/" + x.id).update({ musica: m }); karaokeEditando = null; toast(EU.uid, "Música trocada!"); renderEvento(); }
+    catch (e) { if (botao) botao.disabled = false; erroToast(e && e.code === "permission-denied" ? "O banco recusou. As regras novas precisam ser publicadas." : "Não deu pra trocar agora."); }
+  }
+  async function sairDaFila(x, botao) {
+    if (botao) botao.disabled = true;
+    try { await db.doc("karaoke/" + x.id).delete(); karaokeEditando = null; toast(EU.uid, "Tu saiu da fila."); }
+    catch (e) { if (botao) botao.disabled = false; erroToast("Não deu pra sair agora."); }
   }
   // A própria galera controla a fila
   async function passarVez(b) {
@@ -1553,34 +1600,13 @@
     } else if (minhaPos >= 0) {
       const minha = fila[minhaPos];
       eu.append(el("p", "ev-txt", minhaPos === 0 ? "Tu é o próximo! Vai se preparando." : "Tu é o " + (minhaPos + 1) + "º da fila."));
-      if (karaokeEditando === minha.id) {
-        // Trocar a música sem perder o lugar na fila
-        const inp = el("input"); inp.dataset.k = "karaoke-troca"; inp.maxLength = 80; inp.value = minha.musica; inp.setAttribute("aria-label", "Nova música");
-        const salvar = bt("Salvar música", "sim", async () => {
-          const m = inp.value.trim();
-          if (m.length < 2) return erroToast("Escreve a música que tu vai cantar.");
-          if (motivoSuspeito(m)) return erroToast("Essa música não passou no filtro.");
-          if (m === minha.musica) { karaokeEditando = null; return renderEvento(); }
-          salvar.disabled = true;
-          try { await db.doc("karaoke/" + minha.id).update({ musica: m }); karaokeEditando = null; toast(EU.uid, "Música trocada!"); renderEvento(); }
-          catch (e) { salvar.disabled = false; erroToast(e && e.code === "permission-denied" ? "O banco recusou. As regras novas precisam ser publicadas." : "Não deu pra trocar agora."); }
-        });
-        const cancelar = bt("Cancelar", "", () => { karaokeEditando = null; renderEvento(); });
-        eu.append(inp, el("div", "kr-acoes", ""));
-        eu.lastChild.append(salvar, cancelar);
-        setTimeout(() => { if (document.activeElement !== inp) { inp.focus(); inp.select(); } }, 50);
-      } else {
-        eu.append(el("p", "ev-mut", "Tua música: " + minha.musica));
-        const acoes = el("div", "kr-acoes");
-        const trocar = el("button", "bt kr-bt"); trocar.type = "button"; trocar.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>'; trocar.append("Trocar música");
-        trocar.onclick = () => { karaokeEditando = minha.id; renderEvento(); };
-        const sair = el("button", "bt kr-bt perigo"); sair.type = "button"; sair.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>'; sair.append("Tirar da fila");
-        sair.onclick = async () => {
-          sair.disabled = true;
-          await db.doc("karaoke/" + minha.id).delete().then(() => toast(EU.uid, "Tu saiu da fila.")).catch(() => { sair.disabled = false; erroToast("Não deu pra sair agora."); });
-        };
-        acoes.append(trocar, sair); eu.append(acoes);
-      }
+      eu.append(el("p", "ev-mut", "Tua música: " + minha.musica));
+      const acoes = el("div", "kr-acoes");
+      const trocar = el("button", "bt kr-bt"); trocar.type = "button"; trocar.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>'; trocar.append("Trocar música");
+      trocar.onclick = () => { karaokeEditando = minha.id; renderEvento(); const i2 = document.querySelector('#eventoScroll input[data-k="karaoke-troca"]'); if (i2) i2.scrollIntoView({ block: "center" }); };
+      const sair = el("button", "bt kr-bt perigo"); sair.type = "button"; sair.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'; sair.append("Sair da fila");
+      sair.onclick = () => sairDaFila(minha, sair);
+      acoes.append(trocar, sair); eu.append(acoes);
       if (minhaPos === 0 && agora) {
         const assumir = bt(agora.nome + " já terminou? Começar minha vez", "", () => assumirPalco(assumir));
         eu.append(assumir);

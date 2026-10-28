@@ -288,6 +288,10 @@ service cloud.firestore {
         && agora(request.resource.data);
       // A própria galera controla: quem canta termina (cantando -> feito) e o próximo sobe (fila -> cantando).
       // Também dá pra desistir da própria vez (fila -> feito). A equipe pode tudo.
+      // Quem entrou na fila pode trocar a própria música enquanto espera a vez
+      allow update: if ativo() && resource.data.autor == eu() && resource.data.status == 'fila'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['musica'])
+        && textoOk(request.resource.data.musica, 2, 80) && !suspeito(request.resource.data.musica);
       allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
         && (equipe()
             || (ativo() && (

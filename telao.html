@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610280939">
+<link rel="stylesheet" href="estilo.css?v=202610280941">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -191,7 +191,8 @@
   .lennon-tv{position:absolute;right:calc(var(--u) * 4);bottom:calc(var(--u) * 1.05);width:calc(var(--u) * 30);display:flex;justify-content:flex-end;opacity:.75}
   .lennon.ln-tv{padding:0;justify-content:flex-end;font-size:calc(var(--u) * .95);column-gap:calc(var(--u) * .6);flex-wrap:nowrap;white-space:nowrap}
   .lennon.ln-tv .ln-nome{font-size:calc(var(--u) * 1.35)}
-  .lennon.ln-tv .ln-contato{padding:calc(var(--u) * .2) calc(var(--u) * .7)}
+  .lennon.ln-tv .ln-contatos{width:auto;display:inline-flex}
+  .lennon.ln-tv .ln-contato{padding:calc(var(--u) * .2) calc(var(--u) * .7);border-color:rgba(169,92,242,.6)}
   .lennon.ln-tv .ln-contato.vazio{display:none}
   .cortina{position:fixed;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;overflow:auto;background:rgba(9,6,13,.92);z-index:5;cursor:default;padding:16px}
   .cortina > div > * + *{margin-top:12px}
@@ -259,10 +260,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610280939"></script>
+<script src="config.js?v=202610280941"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="comum.js?v=202610280939"></script>
-<script src="equipe.js?v=202610280939"></script>
+<script src="comum.js?v=202610280941"></script>
+<script src="equipe.js?v=202610280941"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);

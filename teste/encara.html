@@ -238,6 +238,29 @@ canvas.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:non
 .lennon a.ln-contato:hover,.lennon a.ln-contato:focus-visible{background:rgba(169,92,242,.18)}
 .lennon .ln-contato.vazio{border-style:dashed;color:var(--nevoa);font-weight:500}
 .lennon-pe{width:100%}
+/* mesa online */
+.mesa{border-color:#ff3fa4;background:linear-gradient(180deg,rgba(255,63,164,.12),transparent 70%),var(--garrafa-2)}
+.mesa .hint{font-size:14px}
+.btn-conv{flex:none;border:0;border-radius:12px;background:var(--cerveja);color:var(--tinta);font-weight:800;font-size:14px;padding:10px 14px}
+.btn-conv.grande{padding:14px;font-size:16px;font-family:var(--f-display);font-weight:400;letter-spacing:.2px}
+.mesa-bts{display:flex;gap:8px}.mesa-bts>*{flex:1}
+.convite{display:flex;align-items:center;gap:8px;background:var(--garrafa);border:1px solid var(--cerveja);border-radius:14px;padding:10px 10px 10px 14px}
+.convite div{flex:1;min-width:0}.convite b{display:block}.convite span{font-size:13px;color:var(--nevoa)}
+.player .nm small{display:block;font-size:12px;font-weight:600;color:var(--nevoa);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player .nm small.on,.player .nm small.st-ok,.st-ok{color:var(--limao)}
+.player .nm small.st-nao{color:#ff8f7d}
+.st-esp{color:var(--nevoa);font-size:13px;font-weight:700;flex:none}
+span.st-ok{font-size:13px;font-weight:700;flex:none}
+.player .ghost{padding:8px 10px;font-size:13px;flex:none}
+.mode:disabled{opacity:.6;cursor:default}
+.espera{grid-column:1/-1;margin:0;text-align:center;background:var(--garrafa-2);border:1px dashed var(--linha);border-radius:16px;padding:16px;color:var(--nevoa);font-weight:700}
+.roda-sheet{align-items:center;text-align:center;max-width:360px}
+.roda-box{position:relative;width:min(78vw,280px);aspect-ratio:1;margin:0 auto}
+.roda-gira{position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 6px #241a31,0 0 40px rgba(255,63,164,.35)}
+.roda-eixo{position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:#0d0a12;border:4px solid var(--cerveja)}
+.roda-seta{position:absolute;left:50%;top:-14px;margin-left:-14px;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:26px solid var(--texto);filter:drop-shadow(0 2px 3px rgba(0,0,0,.6));z-index:2}
+.roda-txt{font-family:var(--f-display);font-size:24px;line-height:1.1;margin:0;color:var(--texto)}
+.fnota{text-align:center;color:var(--nevoa);font-size:14px;margin:0}
 .err{background:#4a1a14;border:1px solid var(--tomate);border-radius:12px;padding:12px 14px;font-size:14px}
 @media (prefers-reduced-motion:reduce){
   .bg i{animation:none;display:none}
@@ -268,9 +291,11 @@ canvas.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:non
       <button type="button" class="no" id="btnDiscard">Descartar</button>
     </div>
 
+    <div class="block mesa" id="mesaBox" hidden></div>
+
     <div class="block">
-      <h2>Quem está na roda <small id="pCount"></small></h2>
-      <div class="addrow">
+      <h2 id="rodaTitulo">Quem está na roda <small id="pCount"></small></h2>
+      <div class="addrow" id="addRow">
         <input class="field" type="text" id="inpName" placeholder="Nome de quem vai jogar" maxlength="18" autocomplete="off" enterkeyhint="done">
         <button class="btn-add" type="button" id="btnAdd" aria-label="Adicionar jogador">+</button>
       </div>
@@ -306,7 +331,7 @@ canvas.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:non
           <button type="button" data-val="2">Pesada</button>
         </div>
       </div>
-      <div class="opt">
+      <div class="opt" id="ordemOpt">
         <label>Ordem dos jogadores</label>
         <div class="seg" data-cfg="order">
           <button type="button" data-val="roda">Em roda</button>
@@ -397,6 +422,7 @@ canvas.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:non
     <div class="startbar">
       <button class="cta" type="button" id="btnRematch">Revanche</button>
       <button class="ghost" type="button" id="btnToSetup">Mudar jogadores ou nível</button>
+      <p class="fnota" id="finalNota" hidden></p>
     </div>
   </section>
 </div>
@@ -413,12 +439,13 @@ canvas.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:non
       <h4>Regras valendo</h4>
       <ul class="rules" id="rulesList"></ul>
     </div>
-    <div>
+    <div id="chegouBox">
       <h4>Chegou alguém?</h4>
-      <div class="addrow">
+      <div class="addrow" id="addRow2">
         <input class="field" type="text" id="inpName2" placeholder="Nome" maxlength="18" autocomplete="off" enterkeyhint="done">
         <button class="btn-add" type="button" id="btnAdd2" aria-label="Adicionar jogador">+</button>
       </div>
+      <button type="button" class="ghost" id="btnConvidar2" hidden style="width:100%;margin-top:8px">Convidar amigos do app</button>
     </div>
     <div class="row">
       <button class="link" type="button" id="btnHowGame">Como jogar</button>
@@ -444,6 +471,24 @@ canvas.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:non
     </ol>
     <p>Beba com moderação, beba água entre as rodadas e nunca dirija depois de beber.</p>
     <button class="cta" type="button" data-close>Entendi</button>
+  </div>
+</div>
+
+<!-- amigos do app -->
+<div class="overlay" id="ovAmigos" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="amigosTitulo">
+    <div class="row"><h3 id="amigosTitulo">Convidar amigos</h3><button class="iconbtn" type="button" data-close aria-label="Fechar">✕</button></div>
+    <p>O convite aparece na tela de quem estiver com o app aberto. Quem aceitar entra na mesa e joga pelo próprio celular.</p>
+    <div class="players" id="amigosLista"></div>
+    <button class="ghost" type="button" data-close>Pronto</button>
+  </div>
+</div>
+
+<!-- roleta de quem é o próximo -->
+<div class="overlay center" id="ovRoleta" hidden>
+  <div class="sheet roda-sheet" role="dialog" aria-modal="true" aria-live="polite">
+    <div class="roda-box"><span class="roda-seta"></span><div class="roda-gira" id="rodaGira"></div><span class="roda-eixo"></span></div>
+    <p class="roda-txt" id="rodaTxt"></p>
   </div>
 </div>
 
@@ -701,7 +746,7 @@ function defaults(){
 }
 var S = defaults();
 function load(){ try{ var s = JSON.parse(localStorage.getItem(KEY)); if(s && s.cfg && s.players) return s; }catch(e){} return null; }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function save(){ try{ var o=S; if(ON&&LOCAL){ o={}; for(var k in S) o[k]=S[k]; o.players=LOCAL.players; o.game=LOCAL.game; o.cfg=LOCAL.cfg; o.mesa=MID; } else S.mesa=null; localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
 
 /* ===================== utilidades ===================== */
 var $ = function(id){ return document.getElementById(id); };
@@ -769,6 +814,7 @@ function show(id){
 function addPlayer(inputId){
   var inp=$(inputId), v=inp.value.replace(/\s+/g," ").trim();
   if(!v){ inp.focus(); return; }
+  if(ON){ if(souDono()){ addSemApp(v.slice(0,18)); inp.value=""; } return; }
   if(S.players.some(function(p){ return p.name.toLowerCase()===v.toLowerCase(); })){ toast(v+" já está na roda."); inp.select(); return; }
   if(S.players.length>=16){ toast("Máximo de 16 jogadores."); return; }
   var n=S.players.length;
@@ -778,6 +824,8 @@ function addPlayer(inputId){
   if(S.game){ renderGame(false); renderMenu(); toast(v+" entrou na roda."); }
 }
 function renderSetup(){
+  if(ON&&M) return renderLobby();
+  desfazerLobby();
   var ps=S.players;
   $("pCount").textContent = ps.length ? ps.length+(ps.length===1?" jogador":" jogadores") : "";
   $("players").innerHTML = ps.length ? ps.map(function(p,i){
@@ -826,10 +874,13 @@ function buildDeck(){
 }
 
 /* ===================== partida ===================== */
-function startGame(){
-  audio();
+function novoJogo(){
   S.players.forEach(function(p){ p.did=0; p.drank=0; p.skips=0; p.targeted=0; });
-  S.game={deck:buildDeck(), turn:-1, round:1, played:0, rules:[], cur:null, hist:[], bag:[], since:0, started:Date.now(), turns:0};
+  S.game={deck:buildDeck(), turn:-1, round:1, played:0, rules:[], cur:null, hist:[], bag:[], since:0, started:Date.now(), turns:0, spinN:0, passo:0};
+}
+function startGame(){
+  if(ON){ if(M&&M.estado!=="sala"&&stDe(M)&&stDe(M).game) return; return iniciarOnline(); }
+  audio(); novoJogo();
   save(); show("scrGame"); wake(); draw(true);
 }
 function nextPlayer(){
@@ -866,7 +917,8 @@ function fill(t,p,tg,plain){
   var s = plain ? t : esc(t);
   return s.replace(/\{vez\}/g, plain?p.name:nameTag(p)).replace(/\{jogador\}/g, tg?(plain?tg.name:nameTag(tg)):"alguém");
 }
-function draw(advance){
+// sorteia a próxima carta (só o estado; quem desenha é o draw ou a mesa online)
+function proxima(advance){
   var g=S.game, p, card;
   if(advance) p=nextPlayer(); else p=byId(g.cur.pid)||nextPlayer();
   if(advance && +S.cfg.agua && g.since>=12){
@@ -879,21 +931,16 @@ function draw(advance){
   var tg = (/\{jogador\}/.test(card.t) || card.k==="duelo") && S.players.length>1 ? pickTarget(p.id) : null;
   if(card.k==="regra") g.rules.push({id:uid(), t:fill(card.t,p,tg,true)});
   g.cur={card:card, pid:p.id, tid:tg?tg.id:null, dose:doseFor(card.m, T[card.k].group), html:fill(card.t,p,tg)};
-  save();
-  if(advance && S.cfg.order==="sorteio" && !reduced && S.players.length>2) spinThen(p, function(){ renderGame(true); });
+  g.passo=(g.passo||0)+1;
+  if(advance) g.spinN=(g.spinN||0)+1;
+}
+function draw(advance){
+  proxima(advance); save();
+  var p=byId(S.game.cur.pid);
+  if(advance && S.cfg.order==="sorteio" && !reduced && S.players.length>2) roleta(p, function(){ renderGame(true); });
   else renderGame(true);
 }
 var spinning=false;
-function spinThen(p, done){
-  spinning=true; var box=$("turn"), n=0, total=9;
-  box.classList.add("spin");
-  (function step(){
-    var q = n<total ? S.players[Math.floor(Math.random()*S.players.length)] : p;
-    box.innerHTML = av(q)+'<div><small>Sorteando…</small><strong>'+esc(q.name)+'</strong></div>';
-    sfx("spin");
-    if(n++<total) setTimeout(step, 45+n*12); else { box.classList.remove("spin"); spinning=false; done(); }
-  })();
-}
 
 /* ---------- render do jogo ---------- */
 var timerI=null, timerEnd=0;
@@ -902,7 +949,7 @@ function renderGame(anim){
   var g=S.game; if(!g||!g.cur) return;
   stopTimer();
   var cur=g.cur, c=cur.card, m=T[c.k], p=byId(cur.pid), tg=cur.tid?byId(cur.tid):null;
-  if(!p){ draw(true); return; }
+  if(!p){ if(!ON) draw(true); return; }
   $("roundPill").textContent="Rodada "+g.round+" · carta "+g.played;
   $("rulesPill").hidden=!g.rules.length;
   $("rulesPill").textContent=g.rules.length+(g.rules.length===1?" regra valendo":" regras valendo");
@@ -944,6 +991,8 @@ function renderGame(anim){
   if(m.score) acts='<button type="button" class="act drank" data-act="drank">Bebi<small>sem ponto</small></button><button type="button" class="act did" data-act="did">'+m.yes+'<small>+1 ponto</small></button>';
   else if(m.duel && tg) acts='<button type="button" class="act duel" data-act="duel" data-w="'+p.id+'"><span>'+esc(p.name)+'</span><small>ganhou</small></button><button type="button" class="act duel" data-act="duel" data-w="'+tg.id+'"><span>'+esc(tg.name)+'</span><small>ganhou</small></button>';
   else acts='<button type="button" class="act next" data-act="next">Próxima carta</button>';
+  var eu=podeAgir();
+  if(!eu) acts='<p class="espera">'+esc(esperaTexto())+'</p>';
   $("acts").innerHTML=acts;
   $("swipehint").textContent = m.score ? "Arraste a carta: direita "+(c.k==="verdade"?"respondeu":"encarou")+", esquerda bebeu." : m.duel ? "Toque em quem ganhou o duelo." : "Arraste para qualquer lado para a próxima.";
 
@@ -952,6 +1001,8 @@ function renderGame(anim){
   sk.disabled = left<=0 || m.group&&c.k==="agua";
   sk.textContent = +S.cfg.skips>=99 ? "Pular carta" : (left>0 ? "Pular ("+left+")" : "Sem pulos");
   $("btnUndo").disabled=!g.hist.length;
+  $("btnUndo").hidden=ON; sk.hidden=!eu;
+  if(!eu) $("swipehint").textContent = "Cada um acompanha no próprio celular.";
 
   // placar
   var curIdx = m.group ? null : p.id;
@@ -969,6 +1020,7 @@ function renderGame(anim){
 var busy=false;
 function snapshot(){ var g=S.game, h=g.hist; g.hist=null; var s=JSON.stringify({p:S.players,g:g}); g.hist=h; h.push(s); if(h.length>40) h.shift(); }
 function act(kind, winner, dir){
+  if(ON) return actOnline(kind, winner, dir);
   if(busy||spinning) return; var g=S.game, cur=g.cur, p=byId(cur.pid);
   snapshot();
   if(kind==="did"){ p.did++; sfx("did"); dir=dir||1; }
@@ -990,6 +1042,7 @@ function flyOut(dir, done){
   setTimeout(function(){ busy=false; done(); },240);
 }
 function skip(){
+  if(ON) return skipOnline();
   if(busy||spinning) return; var g=S.game, cur=g.cur, p=byId(cur.pid);
   snapshot();
   p.skips++;
@@ -1000,7 +1053,7 @@ function skip(){
   flyOut(0.0001, function(){ draw(false); });
 }
 function undo(){
-  var g=S.game; if(!g||!g.hist.length||busy) return;
+  var g=S.game; if(ON||!g||!g.hist.length||busy) return;
   var h=g.hist, s=JSON.parse(h.pop());
   S.players=s.p; S.game=s.g; S.game.hist=h; save();
   renderGame(true); toast("Jogada desfeita.");
@@ -1010,7 +1063,7 @@ function undo(){
 (function(){
   var card=$("card"), sx=0, sy=0, dx=0, drag=false, id=null;
   card.addEventListener("pointerdown",function(e){
-    if(busy||spinning||!S.game||e.target.closest("button")) return;
+    if(busy||spinning||!S.game||e.target.closest("button")||!podeAgir()) return;
     var m=T[S.game.cur.card.k]; if(m.duel) return;
     drag=true; sx=e.clientX; sy=e.clientY; dx=0; id=e.pointerId; card.setPointerCapture(id); card.style.transition="none";
   });
@@ -1069,7 +1122,7 @@ function finish(winnerP){
   var brave=ps.filter(function(p){return p.did+p.drank>0;}).sort(function(a,b){ return b.did/(b.did+b.drank)-a.did/(a.did+a.drank); })[0];
   if(brave) aw.push(["Sangue frio",brave.name,Math.round(100*brave.did/(brave.did+brave.drank))+"% dos desafios encarados"]);
   $("awards").innerHTML = aw.map(function(a){ return '<div class="award"><small>'+a[0]+'</small><b>'+esc(a[1])+'</b><span>'+a[2]+'</span></div>'; }).join("");
-  S.game=null; save(); closeAll(); show("scrFinal"); sfx("win"); confetti(); unwake();
+  S.game=null; save(); closeAll(); ajustarFinal(); show("scrFinal"); sfx("win"); confetti(); unwake();
 }
 function confetti(){
   if(reduced) return;
@@ -1093,7 +1146,7 @@ document.addEventListener("visibilitychange",function(){ if(document.visibilityS
 
 /* ---------- menu ---------- */
 function openOv(id){ $(id).hidden=false; var f=$(id).querySelector("button,input"); if(f) setTimeout(function(){ f.focus(); },30); }
-function closeAll(){ ["ovMenu","ovHow"].forEach(function(id){ $(id).hidden=true; }); resetEnd(); }
+function closeAll(){ ["ovMenu","ovHow","ovAmigos"].forEach(function(id){ $(id).hidden=true; }); resetEnd(); }
 function renderMenu(){
   var g=S.game; if(!g) return;
   $("scoreTable").innerHTML='<tr><th>Jogador</th><th>Pontos</th><th>Doses</th><th>Pulos</th></tr>'+
@@ -1103,24 +1156,40 @@ function renderMenu(){
   $("rulesWrap").hidden=!g.rules.length;
   $("rulesList").innerHTML=g.rules.map(function(r,i){ return '<li><span>'+esc(r.t)+'</span><button type="button" class="x" data-rule="'+i+'" aria-label="Encerrar regra">✕</button></li>'; }).join("");
   $("menuTitle").textContent="Pausa · rodada "+g.round;
+  $("addRow2").hidden=ON&&!souDono(); $("btnConvidar2").hidden=!ON;
+  $("inpName2").placeholder=ON?"Alguém sem o app? Nome":"Nome";
+  if(ON&&!souDono()) Array.prototype.forEach.call(document.querySelectorAll("#rulesList [data-rule]"),function(b){ b.hidden=true; });
+  resetEnd();
 }
-function resetEnd(){ $("endArea").innerHTML='<button class="danger" type="button" id="btnEnd" style="width:100%">Encerrar partida</button>'; }
+function resetEnd(){ $("endArea").innerHTML = ON&&!souDono() ? '<button class="danger" type="button" id="btnSairMesa2" style="width:100%">Sair da mesa</button>' : '<button class="danger" type="button" id="btnEnd" style="width:100%">Encerrar partida</button>'; }
 
 /* ===================== eventos ===================== */
 document.addEventListener("click",function(e){
   var t=e.target, b;
   if(t.closest("[data-close]")){ closeAll(); return; }
   if(t.classList.contains("overlay") && t.id!=="ovGate"){ closeAll(); return; }
+  if((b=t.closest("[data-mrm]"))){ if(souDono()) tirarDaMesa(b.getAttribute("data-mrm"), null); return; }
+  if((b=t.closest("[data-msem]"))){ if(souDono()) tirarDaMesa(null, b.getAttribute("data-msem")); return; }
+  if((b=t.closest("[data-conv]"))){ convidar(b.getAttribute("data-conv")); return; }
+  if((b=t.closest("[data-entrar]"))){ entrarNaMesa(b.getAttribute("data-entrar")); return; }
+  if((b=t.closest("[data-recusar]"))){ recusar(b.getAttribute("data-recusar")); return; }
+  if(t.closest("#btnConvidar")||t.closest("#btnConvidar2")){ $("ovMenu").hidden=true; abrirAmigos(); return; }
+  if(t.closest("#btnSairMesa")||t.closest("#btnSairMesa2")){ closeAll(); sairDaMesa(); return; }
+  if(ON && (t.closest("[data-rm]")||t.closest("[data-cor]"))) return;
   if((b=t.closest("[data-rm]"))){ var i=+b.getAttribute("data-rm"); S.players.splice(i,1); save(); renderSetup(); return; }
   if((b=t.closest("[data-cor]"))){ var p=S.players[+b.getAttribute("data-cor")]; p.color=COLORS[(COLORS.indexOf(p.color)+1)%COLORS.length]; save(); renderSetup(); return; }
-  if((b=t.closest(".mode"))){ var m=b.getAttribute("data-mode"); S.cfg.modes[m]=!S.cfg.modes[m]; save(); renderSetup(); return; }
-  if((b=t.closest(".seg button"))){ var k=b.parentNode.getAttribute("data-cfg"), v=b.getAttribute("data-val"); S.cfg[k]=isNaN(+v)?v:+v; save(); renderSetup(); if(k==="som"&&+v) { audio(); sfx("did"); } return; }
+  if((b=t.closest(".mode"))){ if(ON&&!souDono()) return; var m=b.getAttribute("data-mode"); S.cfg.modes[m]=!S.cfg.modes[m]; if(ON){ salvarCfgMesa(); } else save(); renderSetup(); return; }
+  if((b=t.closest(".seg button"))){ var k=b.parentNode.getAttribute("data-cfg"), v=b.getAttribute("data-val");
+    if(ON&&k!=="som"&&!souDono()) return;
+    S.cfg[k]=isNaN(+v)?v:+v; if(ON&&LOCAL&&k==="som") LOCAL.cfg.som=S.cfg.som;
+    if(ON&&k!=="som") salvarCfgMesa(); else save();
+    renderSetup(); if(k==="som"&&+v) { audio(); sfx("did"); } return; }
   if((b=t.closest("[data-act]"))){ act(b.getAttribute("data-act"), b.getAttribute("data-w")); return; }
-  if((b=t.closest("[data-rule]"))){ S.game.rules.splice(+b.getAttribute("data-rule"),1); save(); renderMenu(); renderGame(false); return; }
+  if((b=t.closest("[data-rule]"))){ if(ON){ tirarRegraOnline(+b.getAttribute("data-rule")); return; } S.game.rules.splice(+b.getAttribute("data-rule"),1); save(); renderMenu(); renderGame(false); return; }
   if(t.closest("#btnTimer")){ startTimer($("btnTimer")); return; }
   if(t.closest("#btnEnd")){ $("endArea").innerHTML='<p style="margin-bottom:8px">Encerrar agora e ver o resultado?</p><div class="confirm"><button class="ghost" type="button" id="btnEndNo">Continuar jogando</button><button class="danger" type="button" id="btnEndYes">Ver resultado</button></div>'; return; }
   if(t.closest("#btnEndNo")){ resetEnd(); return; }
-  if(t.closest("#btnEndYes")){ finish(null); return; }
+  if(t.closest("#btnEndYes")){ if(ON){ closeAll(); encerrarOnline(); } else finish(null); return; }
 });
 $("btnAdd").addEventListener("click",function(){ addPlayer("inpName"); });
 $("btnAdd2").addEventListener("click",function(){ addPlayer("inpName2"); });
@@ -1133,12 +1202,12 @@ $("btnSkip").addEventListener("click",skip);
 $("btnUndo").addEventListener("click",undo);
 $("btnMenu").addEventListener("click",function(){ renderMenu(); openOv("ovMenu"); });
 $("rulesPill").addEventListener("click",function(){ renderMenu(); openOv("ovMenu"); });
-$("btnSound").addEventListener("click",function(){ S.cfg.som=+S.cfg.som?0:1; save(); if(+S.cfg.som){ audio(); sfx("did"); } somIcone(); });
+$("btnSound").addEventListener("click",function(){ S.cfg.som=+S.cfg.som?0:1; if(ON&&LOCAL) LOCAL.cfg.som=S.cfg.som; save(); if(+S.cfg.som){ audio(); sfx("did"); } somIcone(); });
 $("btnHowSetup").addEventListener("click",function(){ openOv("ovHow"); });
 $("btnHowGame").addEventListener("click",function(){ $("ovMenu").hidden=true; openOv("ovHow"); });
-$("btnRematch").addEventListener("click",startGame);
-$("btnToSetup").addEventListener("click",function(){ show("scrSetup"); renderSetup(); });
-$("btnAdult").addEventListener("click",function(){ S.adult=true; save(); $("ovGate").hidden=true; audio(); $("inpName").focus(); });
+$("btnRematch").addEventListener("click",function(){ if(ON) iniciarOnline(); else startGame(); });
+$("btnToSetup").addEventListener("click",function(){ if(ON){ if(souDono()) voltarPraSala(); else sairDaMesa(); return; } show("scrSetup"); renderSetup(); });
+$("btnAdult").addEventListener("click",function(){ S.adult=true; save(); $("ovGate").hidden=true; audio(); if(aguardandoEntrada){ var id=aguardandoEntrada; aguardandoEntrada=null; entrarNaMesa(id); } else $("inpName").focus(); });
 $("btnMinor").addEventListener("click",function(){ $("gateTitle").textContent="Fica pra próxima!"; $("gateText").textContent="Este jogo é só para maiores de 18 anos."; $("btnAdult").hidden=true; $("btnMinor").hidden=true; });
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"){ closeAll(); return; }
@@ -1149,6 +1218,424 @@ document.addEventListener("keydown",function(e){
   else if((e.key==="ArrowRight"||e.key==="ArrowLeft"||e.key===" ")&&!m.score&&!m.duel){ e.preventDefault(); act("next"); }
   else if(e.key==="z"&&(e.ctrlKey||e.metaKey)){ undo(); }
 });
+
+/* ===================== mesa online: amigos do app, cada um no seu celular ===================== */
+// O estado do jogo inteiro fica no documento mesas/{id} (campo st, em texto).
+// Quem age roda a mesma lógica do jogo local numa transação e grava; todo mundo redesenha pelo onSnapshot.
+var ON=false, MID=null, M=null, EU=null, LOCAL=null, pararMesa=null, AMIGOS=[], CONVITES=[], perfisCache={};
+var vistoSpin=-1, jogoVisto=null, primeiraVez=true, ultimoPasso=null, fimVisto=null, aguardandoEntrada=null;
+var JANELA_CONVITE=4*3600*1000, ONLINE_MS_J=5*60*1000;
+function fb(){ try{ return typeof appTrela!=="undefined" && typeof db!=="undefined"; }catch(e){ return false; } }
+function FV(){ return firebase.firestore.FieldValue; }
+function souDono(){ return !!(ON && M && EU && M.dono===EU.uid); }
+function nomeEm(m,u){ var x=m&&m.nomes&&m.nomes[u]; return (x&&x.n)||"Alguém"; }
+function corEm(m,u){ var x=m&&m.nomes&&m.nomes[u]; return (x&&x.c)||corDe(u); }
+function stDe(m){ try{ return JSON.parse(m.st||"null"); }catch(e){ return null; } }
+function cfgDe(m){ var c={}, base=(LOCAL&&LOCAL.cfg)||S.cfg, k; for(k in base) c[k]=base[k]; var mc=(m&&m.cfg)||{}; for(k in mc) c[k]=mc[k]; c.order="sorteio"; return c; }
+function cfgMesa(){ return {modes:{leve:!!S.cfg.modes.leve,festa:!!S.cfg.modes.festa,ousado:!!S.cfg.modes.ousado}, end:+S.cfg.end, dose:+S.cfg.dose, skips:+S.cfg.skips, agua:+S.cfg.agua}; }
+function stTxt(){ var g=S.game, h; if(g){ h=g.hist; g.hist=[]; } var t=JSON.stringify({players:S.players, game:g}); if(g) g.hist=h; return t; }
+// roda a lógica do jogo em cima do estado que veio do banco, sem mexer no que está na tela
+function comEstado(m, st, f){
+  var bp=S.players, bg=S.game, bc=S.cfg;
+  S.players=(st&&st.players)||[]; S.game=(st&&st.game)||null; if(S.game) S.game.hist=[]; S.cfg=cfgDe(m);
+  try{ f(); return stTxt(); } finally { S.players=bp; S.game=bg; S.cfg=bc; }
+}
+function marcaDe(st){ return st&&st.game ? String(st.game.passo||0) : ""; }
+function gravar(fn){
+  var ref=db.doc("mesas/"+MID);
+  return db.runTransaction(function(t){
+    return t.get(ref).then(function(d){
+      if(!d.exists) throw {code:"sumiu"};
+      var m=d.data(), r=fn(m, stDe(m));
+      if(!r) return false;
+      r.v=(m.v||0)+1; r.atualizado=agoraServidor();
+      t.update(ref, r); return true;
+    });
+  }).catch(function(e){ erroMesa(e); return false; });
+}
+function erroMesa(e){
+  var c=e&&e.code;
+  toast(c==="permission-denied" ? "A mesa online ainda não foi liberada no banco do Trela." : c==="sumiu" ? "Essa mesa foi desfeita." : "Sem conexão. Tenta de novo.");
+}
+
+/* ---------- entrar e sair do modo online ---------- */
+function entrarModoOnline(id){
+  if(ON && MID===id) return;
+  if(!ON) LOCAL={players:S.players, game:S.game, cfg:S.cfg};
+  ON=true; MID=id; M=null; vistoSpin=-1; jogoVisto=null; primeiraVez=true; ultimoPasso=null; fimVisto=null;
+  try{ history.replaceState(null,"",location.pathname); }catch(e){}
+  save();
+  if(pararMesa) pararMesa();
+  pararMesa=db.doc("mesas/"+id).onSnapshot(function(d){
+    if(!d.exists){ sairModoOnline("A mesa foi desfeita."); return; }
+    M=d.data();
+    if(EU && (M.jogadores||[]).indexOf(EU.uid)<0){ sairModoOnline("Tu saiu da mesa."); return; }
+    aplicarMesa();
+  }, function(e){ sairModoOnline(e&&e.code==="permission-denied" ? "Tu não está mais nessa mesa." : "Não deu pra abrir a mesa."); });
+}
+function sairModoOnline(msg){
+  if(pararMesa){ pararMesa(); pararMesa=null; }
+  if(LOCAL){ S.players=LOCAL.players; S.game=LOCAL.game; S.cfg=LOCAL.cfg; }
+  ON=false; MID=null; M=null; LOCAL=null; spinning=false;
+  $("ovRoleta").hidden=true; closeAll(); stopTimer(); unwake();
+  ajustarFinal(); show("scrSetup"); renderSetup(); renderMesaBox(); save();
+  if(msg) toast(msg);
+}
+
+/* ---------- desenha a mesa que veio do banco ---------- */
+function aplicarMesa(){
+  if(!M) return;
+  S.cfg=cfgDe(M);
+  var st=stDe(M), primeira=primeiraVez; primeiraVez=false;
+  renderMesaBox();
+  if(!$("ovAmigos").hidden) renderAmigos();
+  if(M.estado==="sala" || !st || !st.game){
+    if(spinning) return;
+    if($("scrSetup").hidden){ closeAll(); show("scrSetup"); unwake(); }
+    renderSetup(); return;
+  }
+  S.players=st.players; S.game=st.game; S.game.hist=[];
+  if(M.estado==="fim"){
+    var chave=st.game.started+":"+st.game.played;
+    if(fimVisto!==chave){ fimVisto=chave; var w=M.vencedor?byId(M.vencedor):null; if(spinning){ $("ovRoleta").hidden=true; spinning=false; } finish(w); }
+    else ajustarFinal();
+    return;
+  }
+  fimVisto=null;
+  var g=S.game;
+  if(g.started!==jogoVisto){ jogoVisto=g.started; vistoSpin = primeira ? (g.spinN||0) : 0; }   // partida nova: a roleta gira (quem chega no meio não vê giro velho)
+  if($("scrGame").hidden){ closeAll(); show("scrGame"); wake(); }
+  if((g.spinN||0)>vistoSpin && g.cur){
+    vistoSpin=g.spinN; ultimoPasso=g.passo;
+    roleta(byId(g.cur.pid), function(){ renderGame(true); });
+    return;
+  }
+  vistoSpin=g.spinN||0;
+  if(spinning) return;            // a roleta desenha o estado mais novo quando parar
+  var anim=g.passo!==ultimoPasso; ultimoPasso=g.passo;
+  renderGame(anim);
+  if(!$("ovMenu").hidden) renderMenu();
+}
+
+/* ---------- quem pode tocar nos botões ---------- */
+function podeAgir(){
+  if(!ON) return true;
+  var g=S.game; if(!g||!g.cur||!EU||!M) return false;
+  var c=g.cur;
+  return M.dono===EU.uid || c.pid===EU.uid || (T[c.card.k].duel && c.tid===EU.uid);
+}
+function esperaTexto(){
+  var g=S.game, c=g.cur, p=byId(c.pid), tg=c.tid?byId(c.tid):null, m=T[c.card.k];
+  if(!p) return "Esperando a próxima carta.";
+  if(p.app===false) return "Esperando "+nomeEm(M,M.dono)+" marcar por "+p.name+".";
+  if(m.duel && tg) return "Quem ganhar, "+p.name+" ou "+tg.name+", marca no celular.";
+  if(m.group) return p.name+" lê em voz alta e passa pra próxima.";
+  return "Esperando "+p.name+" responder.";
+}
+
+/* ---------- jogadas ---------- */
+function actOnline(kind, winner, dir){
+  if(busy||spinning||!podeAgir()) return;
+  var esp=String(S.game.passo||0), cur=S.game.cur;
+  if(kind==="did"){ sfx("did"); dir=dir||1; }
+  else if(kind==="drank"){ sfx("drank"); dir=dir||-1; }
+  else if(kind==="duel"){ sfx("did"); dir=dir||(winner===cur.pid?-1:1); }
+  else dir=dir||1;
+  flyOut(dir, function(){
+    gravar(function(m, st){
+      if(marcaDe(st)!==esp) return null;           // alguém já respondeu essa carta
+      var fim=null;
+      var txt=comEstado(m, st, function(){
+        var g=S.game, c=g.cur, p=byId(c.pid);
+        if(kind==="did"&&p) p.did++;
+        else if(kind==="drank"&&p) p.drank++;
+        else if(kind==="duel"){ var w=byId(winner), l=(w&&w.id===c.pid)?byId(c.tid):p; if(w) w.did++; if(l) l.drank++; }
+        fim=+S.cfg.end>0 ? S.players.filter(function(q){ return q.did>=+S.cfg.end; })[0] : null;
+        if(!fim) proxima(true);
+      });
+      return fim ? {st:txt, estado:"fim", vencedor:fim.id} : {st:txt};
+    }).then(function(ok){ if(!ok) renderGame(false); });
+  });
+}
+function skipOnline(){
+  if(busy||spinning||!podeAgir()) return;
+  var esp=String(S.game.passo||0);
+  flyOut(0.0001, function(){
+    gravar(function(m, st){
+      if(marcaDe(st)!==esp) return null;
+      return {st:comEstado(m, st, function(){
+        var g=S.game, cur=g.cur, p=byId(cur.pid);
+        if(p) p.skips++;
+        if(cur.card.k==="regra") g.rules.pop();
+        if(cur.tid){ var t=byId(cur.tid); if(t) t.targeted=Math.max(0,t.targeted-1); }
+        g.deck.unshift(cur.card); g.played--; if(cur.card.k!=="agua") g.since--;
+        proxima(false);
+      })};
+    }).then(function(ok){ if(!ok) renderGame(false); });
+  });
+}
+function novoJogoNaMesa(m, st){
+  var ps=[], vistos={};
+  (m.jogadores||[]).forEach(function(u){ ps.push({id:u, name:nomeEm(m,u), color:corEm(m,u), app:true}); vistos[u]=1; });
+  (m.semApp||[]).forEach(function(n,i){ ps.push({id:"s_"+i+"_"+n.toLowerCase().replace(/\W+/g,""), name:n, color:COLORS[(ps.length+3)%COLORS.length], app:false}); });
+  if(ps.length<2) return null;
+  return comEstado(m, {players:ps, game:null}, function(){ novoJogo(); proxima(true); });
+}
+function iniciarOnline(){
+  if(!souDono()) return;
+  audio();
+  gravar(function(m, st){
+    var txt=novoJogoNaMesa(m, st);
+    if(!txt){ toast("Precisa de pelo menos 2 na mesa."); return null; }
+    return {st:txt, estado:"jogo", vencedor:null};
+  });
+}
+function encerrarOnline(){
+  if(!souDono()) return;
+  gravar(function(m, st){ return st&&st.game ? {estado:"fim", vencedor:null} : null; });
+}
+function voltarPraSala(){ if(souDono()) gravar(function(){ return {estado:"sala"}; }); }
+function tirarRegraOnline(i){
+  if(!souDono()) return;
+  gravar(function(m, st){ if(!st||!st.game) return null; return {st:comEstado(m, st, function(){ S.game.rules.splice(i,1); })}; });
+}
+function addSemApp(nome){
+  if(!souDono()) return;
+  gravar(function(m, st){
+    var lista=(m.semApp||[]).slice();
+    if(lista.concat((m.jogadores||[]).map(function(u){ return nomeEm(m,u); })).some(function(n){ return n.toLowerCase()===nome.toLowerCase(); })){ toast(nome+" já está na mesa."); return null; }
+    if(lista.length+(m.jogadores||[]).length>=16){ toast("Máximo de 16 jogadores."); return null; }
+    lista.push(nome);
+    var r={semApp:lista};
+    if(m.estado!=="sala" && st && st.game) r.st=comEstado(m, st, function(){ S.players.push({id:"s_"+(lista.length-1)+"_"+nome.toLowerCase().replace(/\W+/g,""), name:nome, color:COLORS[(S.players.length+3)%COLORS.length], app:false, did:0, drank:0, skips:0, targeted:0}); });
+    return r;
+  }).then(function(ok){ if(ok) toast(nome+" entrou na mesa."); });
+}
+// tira alguém (dono tira os outros; cada um pode sair)
+function tirarDaMesa(alvo, semAppNome){
+  gravar(function(m, st){
+    var r={};
+    if(semAppNome!=null){ r.semApp=(m.semApp||[]).filter(function(n){ return n!==semAppNome; }); }
+    else {
+      r.jogadores=(m.jogadores||[]).filter(function(u){ return u!==alvo; });
+      if(alvo!==EU.uid){ r.convidados=(m.convidados||[]).filter(function(u){ return u!==alvo; }); r.recusados=(m.recusados||[]).filter(function(u){ return u!==alvo; }); }
+    }
+    if(m.estado!=="sala" && st && st.game){
+      r.st=comEstado(m, st, function(){
+        var g=S.game, era=null;
+        S.players=S.players.filter(function(p){ var sai=semAppNome!=null ? (p.app===false && p.name===semAppNome) : p.id===alvo; if(sai && g.cur && (g.cur.pid===p.id||g.cur.tid===p.id)) era=p.id; return !sai; });
+        if(era && S.players.length>1) proxima(true);
+      });
+    }
+    return r;
+  });
+}
+function sairDaMesa(){
+  if(!ON||!EU) return;
+  if(souDono()){ db.doc("mesas/"+MID).delete().catch(erroMesa); return; }
+  tirarDaMesa(EU.uid, null);
+}
+
+/* ---------- convites ---------- */
+function amigo(u){ for(var i=0;i<AMIGOS.length;i++) if(AMIGOS[i].id===u) return AMIGOS[i]; return null; }
+function criarMesa(primeiro){
+  var nomes={}; nomes[EU.uid]={n:EU.nome, c:EU.cor};
+  if(primeiro) nomes[primeiro.id]={n:primeiro.n, c:primeiro.c};
+  return db.collection("mesas").add({
+    dono:EU.uid, donoNome:EU.nome, criado:agoraServidor(), convidados:primeiro?[primeiro.id]:[], nomes:nomes,
+    jogadores:[EU.uid], recusados:[], semApp:[], estado:"sala", cfg:cfgMesa(), st:"", v:0, atualizado:agoraServidor()
+  }).then(function(ref){ entrarModoOnline(ref.id); return ref.id; }).catch(function(e){ erroMesa(e); return null; });
+}
+function convidar(u){
+  var a=amigo(u); if(!a||!EU) return;
+  if(!ON){ criarMesa(a).then(function(id){ if(id){ toast("Convite enviado pra "+a.n+"."); renderAmigos(); } }); return; }
+  var up={convidados:FV().arrayUnion(u), recusados:FV().arrayRemove(u)}; up["nomes."+u]={n:a.n, c:a.c};
+  db.doc("mesas/"+MID).update(up).then(function(){ toast("Convite enviado pra "+a.n+"."); }).catch(erroMesa);
+}
+function entrarNaMesa(id){
+  if(!EU){ toast("Entra no app do Trela pra jogar com os amigos."); return; }
+  if(!S.adult){ aguardandoEntrada=id; $("ovGate").hidden=false; return; }
+  if(ON && MID===id) return;
+  if(ON) sairModoOnline();
+  var ref=db.doc("mesas/"+id);
+  db.runTransaction(function(t){
+    return t.get(ref).then(function(d){
+      if(!d.exists) throw {code:"sumiu"};
+      var m=d.data();
+      if((m.jogadores||[]).indexOf(EU.uid)>=0) return true;
+      if((m.convidados||[]).indexOf(EU.uid)<0) throw {code:"naoconvidado"};
+      if((m.jogadores||[]).length+(m.semApp||[]).length>=16) throw {code:"cheia"};
+      var r={jogadores:(m.jogadores||[]).concat([EU.uid]), recusados:(m.recusados||[]).filter(function(u){ return u!==EU.uid; }), v:(m.v||0)+1, atualizado:agoraServidor()};
+      var st=stDe(m);
+      if(m.estado!=="sala" && st && st.game) r.st=comEstado(m, st, function(){ S.players.push({id:EU.uid, name:nomeEm(m,EU.uid)!=="Alguém"?nomeEm(m,EU.uid):EU.nome, color:corEm(m,EU.uid), app:true, did:0, drank:0, skips:0, targeted:0}); });
+      t.update(ref, r); return true;
+    });
+  }).then(function(){ entrarModoOnline(id); }).catch(function(e){
+    try{ history.replaceState(null,"",location.pathname); }catch(x){}
+    var c=e&&e.code;
+    toast(c==="naoconvidado" ? "Esse convite não é pra ti." : c==="cheia" ? "A mesa já está cheia." : c==="sumiu" ? "Essa mesa foi desfeita." : c==="permission-denied" ? "A mesa online ainda não foi liberada no banco do Trela." : "Não deu pra entrar. Tenta de novo.");
+  });
+}
+function recusar(id){
+  db.doc("mesas/"+id).update({recusados:FV().arrayUnion(EU.uid)}).catch(function(){});
+  CONVITES=CONVITES.filter(function(m){ return m.id!==id; }); renderMesaBox();
+}
+
+/* ---------- amigos do app ---------- */
+function perfilDe(u){
+  if(perfisCache[u]) return Promise.resolve(perfisCache[u]);
+  return db.doc("usuarios/"+u).get().then(function(s){ var d=s.exists?s.data():{}; perfisCache[u]={id:u, n:d.nome||"Alguém", c:d.cor||corDe(u), ult:d.ultimoAcesso||null}; return perfisCache[u]; }).catch(function(){ return {id:u, n:"Alguém", c:corDe(u), ult:null}; });
+}
+function ouvirAmigos(){
+  db.collection("amizades").where("membros","array-contains",EU.uid).onSnapshot(function(q){
+    var ids=[]; q.docs.forEach(function(d){ var a=d.data(); if(a.status==="aceita"){ var o=(a.membros||[]).filter(function(u){ return u!==EU.uid; })[0]; if(o) ids.push(o); } });
+    Promise.all(ids.map(perfilDe)).then(function(ps){ AMIGOS=ps; renderAmigos(); });
+  }, function(){});
+}
+function ouvirConvites(){
+  db.collection("mesas").where("convidados","array-contains",EU.uid).onSnapshot(function(q){
+    CONVITES=q.docs.map(function(d){ var m=d.data(); m.id=d.id; return m; }).filter(function(m){
+      return (m.jogadores||[]).indexOf(EU.uid)<0 && (m.recusados||[]).indexOf(EU.uid)<0 && Date.now()-ms(m.criado)<JANELA_CONVITE;
+    });
+    renderMesaBox();
+  }, function(){});
+}
+function onlineAgora(a){ return a.ult && Date.now()-ms(a.ult)<ONLINE_MS_J; }
+function abrirAmigos(){
+  if(!EU){ toast("Entra no app do Trela pra convidar teus amigos."); return; }
+  // atualiza quem está online
+  AMIGOS.forEach(function(a){ delete perfisCache[a.id]; });
+  Promise.all(AMIGOS.map(function(a){ return perfilDe(a.id); })).then(function(ps){ AMIGOS=ps; renderAmigos(); });
+  renderAmigos(); openOv("ovAmigos");
+}
+function renderAmigos(){
+  var box=$("amigosLista"); if(!box) return;
+  if(!AMIGOS.length){ box.innerHTML='<p class="empty">Tu ainda não tem amigos no app. Adiciona a galera pela tela de conversas do Trela e volta aqui.</p>'; return; }
+  var lista=AMIGOS.slice().sort(function(a,b){ return (onlineAgora(b)?1:0)-(onlineAgora(a)?1:0) || a.n.localeCompare(b.n); });
+  box.innerHTML=lista.map(function(a){
+    var naMesa=ON&&M&&(M.jogadores||[]).indexOf(a.id)>=0, conv=ON&&M&&(M.convidados||[]).indexOf(a.id)>=0, rec=conv&&(M.recusados||[]).indexOf(a.id)>=0;
+    var bt = naMesa ? '<span class="st-ok">Na mesa</span>' : rec ? '<button type="button" class="ghost" data-conv="'+esc(a.id)+'">Chamar de novo</button>' : conv ? '<span class="st-esp">Convidado</span>' : '<button type="button" class="btn-conv" data-conv="'+esc(a.id)+'">Convidar</button>';
+    return '<div class="player">'+av({name:a.n, color:a.c})+'<span class="nm">'+esc(a.n)+'<small class="'+(onlineAgora(a)?"on":"")+'">'+(onlineAgora(a)?"Online agora":"Fora do app agora")+'</small></span>'+bt+'</div>';
+  }).join("");
+}
+
+/* ---------- bloco da mesa na tela inicial ---------- */
+function renderMesaBox(){
+  var box=$("mesaBox"); if(!box) return;
+  if(!fb()){ box.hidden=true; return; }
+  box.hidden=false;
+  if(!EU){
+    box.innerHTML='<h2>Jogar com os amigos do app</h2><p class="hint">Entra no app do Trela pra convidar teus amigos. Cada um acompanha no próprio celular.</p><a class="ghost" href="./" style="text-align:center;text-decoration:none">Entrar no app</a>';
+    return;
+  }
+  if(ON && M){
+    var dono=souDono(), n=(M.jogadores||[]).length+(M.semApp||[]).length;
+    box.innerHTML='<h2>'+(dono?"Tua mesa":"Mesa de "+esc(nomeEm(M,M.dono)))+' <small>'+n+(n===1?" na mesa":" na mesa")+'</small></h2>'+
+      '<p class="hint">Cada um acompanha no próprio celular. Uma roleta sorteia quem é o próximo.</p>'+
+      '<div class="mesa-bts"><button type="button" class="btn-conv" id="btnConvidar">Convidar amigos</button><button type="button" class="ghost" id="btnSairMesa">'+(dono?"Desfazer mesa":"Sair da mesa")+'</button></div>';
+    return;
+  }
+  var h='<h2>Jogar com os amigos do app</h2>';
+  CONVITES.forEach(function(m){
+    h+='<div class="convite"><div><b>'+esc(m.donoNome||"Um amigo")+' te chamou</b><span>Cada um no seu celular, com roleta</span></div><button type="button" class="btn-conv" data-entrar="'+esc(m.id)+'">Entrar</button><button type="button" class="link" data-recusar="'+esc(m.id)+'">Agora não</button></div>';
+  });
+  h+='<p class="hint">Convida teus amigos do Trela. O convite aparece na tela deles, cada um acompanha no próprio celular e uma roleta sorteia quem é o próximo.</p><button type="button" class="btn-conv grande" id="btnConvidar">Convidar amigos</button>';
+  box.innerHTML=h;
+}
+
+/* ---------- sala de espera (tela inicial com a mesa aberta) ---------- */
+function renderLobby(){
+  var dono=souDono(), linhas=[];
+  (M.jogadores||[]).forEach(function(u){ linhas.push({id:u, n:nomeEm(M,u), c:corEm(M,u), st:u===M.dono?"Dono da mesa":"Na mesa", cls:"st-ok", tira:dono&&u!==M.dono}); });
+  (M.convidados||[]).filter(function(u){ return (M.jogadores||[]).indexOf(u)<0; }).forEach(function(u){
+    var rec=(M.recusados||[]).indexOf(u)>=0;
+    linhas.push({id:u, n:nomeEm(M,u), c:corEm(M,u), st:rec?"Recusou":"Convidado, esperando", cls:rec?"st-nao":"st-esp", tira:dono});
+  });
+  (M.semApp||[]).forEach(function(n){ linhas.push({sem:n, n:n, c:"#a597b5", st:"Sem app, joga pelo celular da mesa", cls:"st-esp", tira:dono}); });
+  var naMesa=(M.jogadores||[]).length+(M.semApp||[]).length;
+  $("pCount").textContent = naMesa+(naMesa===1?" na mesa":" na mesa");
+  $("players").innerHTML = linhas.map(function(l){
+    var x = l.tira ? '<button type="button" class="x" '+(l.sem!=null?'data-msem="'+esc(l.sem)+'"':'data-mrm="'+esc(l.id)+'"')+' aria-label="Tirar '+esc(l.n)+' da mesa">✕</button>' : '';
+    return '<div class="player">'+av({name:l.n, color:l.c})+'<span class="nm">'+esc(l.n)+'<small class="'+l.cls+'">'+l.st+'</small></span>'+x+'</div>';
+  }).join("");
+  $("addRow").hidden=!dono;
+  $("inpName").placeholder="Alguém sem o app? Nome";
+  Array.prototype.forEach.call($("modes").children,function(b){ b.setAttribute("aria-pressed", S.cfg.modes[b.getAttribute("data-mode")]?"true":"false"); b.disabled=!dono; });
+  $("optsBox").hidden=!dono; $("customBox").hidden=true; $("ordemOpt").hidden=true;
+  Array.prototype.forEach.call(document.querySelectorAll(".seg"),function(seg){
+    var k=seg.getAttribute("data-cfg");
+    Array.prototype.forEach.call(seg.children,function(b){ b.setAttribute("aria-pressed", String(S.cfg[k])===b.getAttribute("data-val")?"true":"false"); });
+  });
+  $("resume").hidden=true;
+  $("rodaTitulo").firstChild.nodeValue="Quem está na mesa ";
+  var any=S.cfg.modes.leve||S.cfg.modes.festa||S.cfg.modes.ousado, b=$("btnStart");
+  if(dono){ b.disabled=naMesa<2||!any; b.textContent=!any?"Escolha um nível":naMesa<2?"Esperando a galera entrar":(M.estado==="sala"?"Começar com "+naMesa:"Voltar pro jogo"); }
+  else { b.disabled=true; b.textContent="Esperando "+nomeEm(M,M.dono)+" começar"; }
+}
+function desfazerLobby(){
+  $("addRow").hidden=false; $("inpName").placeholder="Nome de quem vai jogar";
+  Array.prototype.forEach.call($("modes").children,function(b){ b.disabled=false; });
+  $("optsBox").hidden=false; $("customBox").hidden=false; $("ordemOpt").hidden=false;
+  $("rodaTitulo").firstChild.nodeValue="Quem está na roda ";
+}
+function salvarCfgMesa(){ if(souDono()) db.doc("mesas/"+MID).update({cfg:cfgMesa()}).catch(erroMesa); }
+
+/* ---------- final ---------- */
+function ajustarFinal(){
+  var dono=!ON||souDono();
+  $("btnRematch").hidden=!dono;
+  $("btnToSetup").textContent = !ON ? "Mudar jogadores ou nível" : dono ? "Mudar jogadores ou nível" : "Sair da mesa";
+  $("finalNota").hidden=!ON||dono;
+  if(ON&&M) $("finalNota").textContent="Esperando "+nomeEm(M,M.dono)+" decidir a revanche.";
+}
+
+/* ---------- roleta: gira em todos os celulares e para em quem é o próximo ---------- */
+function roleta(p, done){
+  var ps=S.players.slice(), n=ps.length, i=ps.indexOf(p);
+  if(reduced||n<2||i<0){ done(); return; }
+  spinning=true;
+  var seg=360/n, r=112, cx=120, cy=120, h="";
+  ps.forEach(function(q,k){
+    var a0=(k*seg-90)*Math.PI/180, a1=((k+1)*seg-90)*Math.PI/180;
+    h+='<path d="M'+cx+' '+cy+' L'+(cx+r*Math.cos(a0)).toFixed(2)+' '+(cy+r*Math.sin(a0)).toFixed(2)+' A'+r+' '+r+' 0 0 1 '+(cx+r*Math.cos(a1)).toFixed(2)+' '+(cy+r*Math.sin(a1)).toFixed(2)+' Z" fill="'+q.color+'" stroke="#0d0a12" stroke-width="2.5"/>';
+    var am=(k+.5)*seg, ar=(am-90)*Math.PI/180, tx=cx+r*.6*Math.cos(ar), ty=cy+r*.6*Math.sin(ar);
+    var nm=q.name.length>9 ? q.name.slice(0,8)+"…" : q.name;
+    h+='<text x="'+tx.toFixed(1)+'" y="'+ty.toFixed(1)+'" transform="rotate('+(am>180?am+90:am-90).toFixed(1)+' '+tx.toFixed(1)+' '+ty.toFixed(1)+')" text-anchor="middle" dominant-baseline="middle" font-size="'+(n>8?10:n>5?12:14)+'" font-weight="800" fill="#140c1b">'+esc(nm)+'</text>';
+  });
+  var gira=$("rodaGira");
+  gira.innerHTML='<svg viewBox="0 0 240 240" width="100%" height="100%" aria-hidden="true">'+h+'</svg>';
+  $("rodaTxt").innerHTML="Sorteando quem é o próximo…";
+  $("ovRoleta").hidden=false;
+  gira.style.transition="none"; gira.style.transform="rotate(0deg)"; void gira.offsetWidth;
+  var R=360*5-(i+.5)*seg+(Math.random()-.5)*seg*.6;
+  gira.style.transition="transform 3.2s cubic-bezier(.15,.72,.12,1)"; gira.style.transform="rotate("+R.toFixed(1)+"deg)";
+  var t0=Date.now();
+  (function tic(){ var e=Date.now()-t0; if(e>3100) return; sfx("spin"); setTimeout(tic, 45+Math.pow(e/3100,2)*320); })();
+  setTimeout(function(){
+    $("rodaTxt").innerHTML='Vez de <b style="color:'+p.color+'">'+esc(p.name)+'</b>!';
+    sfx("did");
+    setTimeout(function(){ $("ovRoleta").hidden=true; spinning=false; done(); }, 1200);
+  }, 3300);
+}
+
+/* ---------- liga o Firebase (só se o app do Trela carregou) ---------- */
+function iniciarFirebase(){
+  if(!fb()){ renderMesaBox(); return; }
+  var auth; try{ auth=appTrela.auth(); }catch(e){ renderMesaBox(); return; }
+  auth.onAuthStateChanged(function(u){
+    if(!u || u.isAnonymous){ EU=null; if(ON) sairModoOnline(); renderMesaBox(); return; }
+    db.doc("usuarios/"+u.uid).get().then(function(s){
+      var d=s.exists?s.data():{};
+      EU={uid:u.uid, nome:d.nome||String(u.displayName||"Eu").split(" ")[0], cor:d.cor||corDe(u.uid)};
+      ouvirAmigos(); ouvirConvites();
+      var q=null; try{ q=new URLSearchParams(location.search).get("mesa"); }catch(e){}
+      if(q) entrarNaMesa(q); else if(S.mesa) entrarModoOnline(S.mesa);
+      renderMesaBox();
+    }).catch(function(){ renderMesaBox(); });
+  });
+}
+window.__encara = function(){ return {S:S, ON:ON, M:M}; };   // usado pelos testes automáticos
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", iniciarFirebase); else setTimeout(iniciarFirebase, 0);
 
 /* ===================== início ===================== */
 function boot(data){
@@ -1167,7 +1654,11 @@ if(hot && hot.ready) hot.ready(boot); else boot(hot && hot.data || {});
 })();
 </script>
 
-<script src="config.js?v=202610291723"></script>
-<script src="marca.js?v=202610291723"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="config.js?v=202610291748"></script>
+<script src="marca.js?v=202610291748"></script>
+<script src="comum.js?v=202610291748"></script>
 </body>
 </html>

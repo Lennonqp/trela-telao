@@ -302,6 +302,31 @@ service cloud.firestore {
       allow delete: if equipe() || (logado() && resource.data.autor == eu());
     }
 
+    // ---------- Encara ou Bebe online: mesa de amigos, cada um no seu celular ----------
+    // Quem cria é o dono. Quem está na mesa mexe no jogo (o estado vai inteiro no campo st).
+    // Convidado só pode entrar (se colocar em jogadores) ou recusar.
+    match /mesas/{id} {
+      allow read: if logado() && (resource.data.dono == eu() || eu() in resource.data.convidados || eu() in resource.data.jogadores);
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['dono', 'donoNome', 'criado', 'convidados', 'nomes', 'jogadores', 'recusados', 'semApp', 'estado', 'cfg', 'st', 'v', 'atualizado'])
+        && request.resource.data.dono == eu()
+        && request.resource.data.jogadores == [eu()]
+        && request.resource.data.convidados is list && request.resource.data.convidados.size() <= 40
+        && request.resource.data.estado == 'sala'
+        && agora(request.resource.data);
+      allow update: if ativo()
+        && request.resource.data.dono == resource.data.dono
+        && request.resource.data.criado == resource.data.criado
+        && request.resource.data.convidados.size() <= 40
+        && request.resource.data.jogadores.size() <= 16
+        && request.resource.data.get('st', '').size() < 200000
+        && (eu() in resource.data.jogadores
+            || (eu() in resource.data.convidados
+                && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['jogadores', 'recusados', 'st', 'v', 'atualizado'])
+                && request.resource.data.jogadores.removeAll([eu()]) == resource.data.jogadores.removeAll([eu()])));
+      allow delete: if logado() && resource.data.dono == eu();
+    }
+
     // ---------- Posição da fila e ajustes ----------
     match /estado/{doc} {
       allow read: if logado();

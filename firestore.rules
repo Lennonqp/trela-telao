@@ -327,6 +327,16 @@ service cloud.firestore {
       allow delete: if logado() && resource.data.dono == eu();
     }
 
+    // ---------- Cardápio: a equipe cadastra, todo mundo pode ver ----------
+    match /cardapio/{id} {
+      allow read: if true;
+      allow create, update: if equipe()
+        && request.resource.data.nome is string && request.resource.data.nome.size() >= 1 && request.resource.data.nome.size() <= 60
+        && request.resource.data.get('descricao', '').size() <= 200
+        && request.resource.data.get('foto', '').size() < 700000;
+      allow delete: if equipe();
+    }
+
     // ---------- Posição da fila e ajustes ----------
     match /estado/{doc} {
       allow read: if logado();

@@ -23,6 +23,11 @@ Três páginas:
 - **Lista de conversas**: em Amigos, as conversas abertas ficam em cima e os outros amigos embaixo. O **⋯** de cada pessoa tem Apagar conversa (some da lista) e Desfazer amizade.
 - **Excluir minha conta**: no teu perfil (bolinha lá em cima). Pede a senha ou o Google pra confirmar e apaga perfil, foto, amizades e posts.
 - **Virada da noite às 6h**: o "Rolou hoje", o telão e o balcão mostram só o que foi postado desde as 6h da manhã. Às 6h zeram sozinhos e começa a noite nova (os posts antigos ficam guardados no banco). Pra mudar o horário: `HORA_VIRADA` no `comum.js`.
+- **Aberto pra conhecer gente**: chave no menu ≡. Liga um anel dourado na foto da pessoa (até as 6h) e ela aparece no filtro "Abertos pra conhecer gente" em No Trela agora.
+- **Crush secreto**: no perfil de alguém, "Tenho interesse (em segredo)". Ninguém fica sabendo; se os dois marcarem, aparece "Deu match!" pros dois, eles viram amigos e a conversa abre. O banco só deixa ler o interesse do outro quando é mútuo.
+- **Te pago um drink**: no perfil, escolhe um item do cardápio e manda o convite. Quem recebe aceita ou recusa (recusa é discreta e bloqueia insistir na mesma noite; no máximo 3 convites esperando por pessoa). Aceito, aparece no balcão em "Te pago um drink": quem convidou paga e leva até a pessoa.
+- **Cardápio**: no menu ≡, só pra ver, separado pelos grupos que a equipe criou, com copo de 500/700 ml e preço universitário.
+- **Encara ou Bebe**: no menu ≡ (`/encara`). Dá pra jogar num celular só ou montar uma mesa com os amigos do app: o convite aparece na tela deles, cada um acompanha no próprio celular e uma roleta sorteia a vez. Trava de 18+.
 - **Conversas privadas só entre amigos**. As conversas não zeram às 6h; no menu ⋯ do chat tem **Apagar conversa** (só pra mim, ou pra nós dois). Dá pra desfazer amizade, bloquear e denunciar. Mensagem com palavrão chega borrada.
 
 ## 1. Criar o Firebase (gratuito)
@@ -62,6 +67,8 @@ Esse mesmo usuário e senha abrem o **telão**. Pra mais alguém da equipe, cria
 - Galera: `https://trela-telao.vercel.app/`
 - TV: `https://trela-telao.vercel.app/telao` → entra com a conta da equipe → **Ligar o telão**
 - Balcão: `https://trela-telao.vercel.app/balcao`
+- Cardápio (equipe): `https://trela-telao.vercel.app/cardapio` → também pelo cartão Cardápio no menu da equipe
+- Jogo: `https://trela-telao.vercel.app/encara`
 
 ## Telão em qualquer TV
 

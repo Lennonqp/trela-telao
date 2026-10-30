@@ -12,10 +12,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610281725">
+<link rel="stylesheet" href="estilo.css?v=202610301132">
 <style>
   html,body{height:100%;overflow:hidden}
-  :root{--panel2:#201929}
+  :root{--panel2:#201929;--ouro:#ffc94d}
   .app{position:fixed;inset:0;max-width:520px;margin:0 auto;background:var(--bg);overflow:hidden;padding-top:env(safe-area-inset-top)}
   .tela{position:absolute;inset:env(safe-area-inset-top) 0 0 0;display:flex;flex-direction:column;background:var(--bg)}
   .tela.sub{animation:entraLado .22s ease-out}
@@ -34,6 +34,44 @@
   .troca-foto .av.g{width:88px;height:88px;font-size:34px}
   .troca-foto .lapis{position:absolute;right:-2px;bottom:-2px;width:30px;height:30px;border-radius:50%;background:var(--neon);display:grid;place-items:center;font-size:16px;color:#fff;box-shadow:0 0 0 3px var(--panel2)}
   .troca-foto:focus-within{outline:2px solid var(--lilas);outline-offset:3px}
+  .av.aberto{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ouro),0 0 14px rgba(255,201,77,.55)}
+  .aberto-t{color:var(--ouro)!important}
+  .tag-aberto{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ouro);color:var(--ouro);border-radius:999px;padding:4px 10px;font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
+  .tag-aberto::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ouro);box-shadow:0 0 6px var(--ouro)}
+  .gv-aberto{font:400 14px/1.3 var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);display:flex;align-items:center;gap:12px;margin:2px 0 6px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.02);cursor:pointer}
+  .gv-aberto.on{border-color:var(--ouro);background:rgba(255,201,77,.07)}
+  .gv-aberto span{flex:1;min-width:0}
+  .gv-aberto b{display:block;font-size:14px}
+  .gv-aberto small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+  .sw{position:relative;flex:none;width:44px;height:26px;appearance:none;-webkit-appearance:none;border-radius:999px;background:var(--line);margin:0;cursor:pointer;transition:background .2s}
+  .sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+  .sw:checked{background:var(--ouro)}.sw:checked::after{transform:translateX(18px)}
+  .filtro-g{display:flex;gap:8px;margin-bottom:2px}
+  .filtro-g button{border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:7px 12px;font:700 12px/1 var(--f-body);cursor:pointer}
+  .filtro-g button.on{background:var(--ouro);border-color:var(--ouro);color:#2a1c00}
+  .social-p{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:4px}
+  .bt-crush{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:999px;padding:12px;border:1.5px dashed var(--neon);background:none;color:var(--neon);font:700 14px/1.1 var(--f-body);cursor:pointer}
+  .bt-crush.on{border-style:solid;background:rgba(255,63,164,.12)}
+  .bt-crush svg{width:18px;height:18px;flex:none}
+  .bt-drink{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:999px;padding:12px;border:0;background:linear-gradient(135deg,#ff7a2e,var(--neon));color:#1d0612;font:700 14px/1.1 var(--f-body);cursor:pointer}
+  .bt-drink svg{width:18px;height:18px;flex:none}
+  .bt-drink.espera{background:none;border:1px solid var(--line);color:var(--muted)}
+  .nota-s{margin:0;color:var(--muted);font-size:12px;text-align:center}
+  .drink-l{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow-y:auto;margin:4px -4px 0;padding:0 4px}
+  .drink-g{font:400 18px/1 var(--f-display);text-transform:uppercase;color:var(--neon);margin:8px 0 0}
+  .drink-i{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-align:left}
+  .drink-i b{font-size:14px}
+  .drink-op{display:flex;flex-wrap:wrap;gap:6px}
+  .drink-op button{border:1px solid var(--neon);background:none;color:var(--ink);border-radius:999px;padding:7px 11px;font:700 13px/1 var(--f-body);cursor:pointer;font-variant-numeric:tabular-nums}
+  .drink-op button small{color:var(--muted);font-weight:600;margin-right:4px}
+  .drink-resumo{border:1px solid var(--neon);border-radius:14px;padding:14px;text-align:center;display:flex;flex-direction:column;gap:4px}
+  .drink-resumo b{font:400 24px/1.05 var(--f-display);text-transform:uppercase}
+  .drink-resumo span{color:var(--muted);font-size:13px}
+  .match-c{display:flex;justify-content:center;align-items:center;margin:4px 0 2px}
+  .match-c .av{width:72px;height:72px;font-size:28px;box-shadow:0 0 0 3px var(--panel2)}
+  .match-c .av + .av{margin-left:-14px}
+  .match-c svg{width:30px;height:30px;color:var(--neon);margin:0 -6px;position:relative;z-index:2;filter:drop-shadow(0 0 8px rgba(255,63,164,.8))}
+  .folha h4.grande{font:400 30px/1 var(--f-display);text-transform:uppercase;text-align:center;color:var(--neon);text-shadow:0 0 12px rgba(255,63,164,.5)}
   .av.on::after{content:"";position:absolute;right:-1px;bottom:-1px;width:28%;height:28%;min-width:9px;min-height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 2px var(--bg)}
   .eu{background:none;border:0;padding:0;cursor:pointer;border-radius:50%}
   .rolagem{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
@@ -76,6 +114,41 @@
   .gv-item:hover,.gv-item:focus-visible{background:rgba(255,255,255,.06)}
   .gv-item svg{flex:none;color:var(--muted)}
   .gv-item span{flex:1}
+  /* cardápio (só leitura) */
+  #tCardapio{background:
+      radial-gradient(100% 42% at 0% 0%,rgba(169,92,242,.45),transparent 70%),
+      radial-gradient(85% 36% at 100% 40%,rgba(255,63,164,.28),transparent 70%),
+      radial-gradient(95% 42% at 15% 100%,rgba(255,90,31,.2),transparent 70%),
+      radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.4px) 0 0/18px 18px,
+      var(--bg)}
+  #tCardapio .appbar{background:transparent;border-bottom-color:rgba(255,255,255,.06)}
+  #tCardapio .cd-abas{background:rgba(13,10,18,.2);border-bottom-color:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #tCardapio .cd-prod{background:rgba(23,18,31,.78);border-color:rgba(255,255,255,.08);box-shadow:0 10px 24px -14px rgba(0,0,0,.8);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  #tCardapio .cd-grupo{text-shadow:0 0 8px rgba(255,63,164,.55),0 0 22px rgba(255,63,164,.3)}
+  #tCardapio .cd-aba:not(.on){background:rgba(23,18,31,.7)}
+  .cd-abas{flex:none;display:flex;gap:8px;overflow-x:auto;padding:10px 16px;border-bottom:1px solid var(--line);scrollbar-width:none}
+  .cd-abas::-webkit-scrollbar{display:none}
+  .cd-aba{flex:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:8px 14px;font:700 13px/1 var(--f-body);cursor:pointer;white-space:nowrap}
+  .cd-aba.on{background:var(--neon);border-color:var(--neon);color:#1d0612}
+  .cd-grupo{margin:10px 2px 0;font:400 26px/1 var(--f-display);text-transform:uppercase;color:var(--neon);scroll-margin-top:12px}
+  .cd-grupo:first-child{margin-top:0}
+  .cd-prod{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px}
+  .cd-foto{flex:none;width:84px;height:84px;border-radius:12px;background:var(--bg) center/cover no-repeat;border:1px solid var(--line);cursor:zoom-in;padding:0}
+  .cd-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .cd-info h4{margin:0;font:700 16px/1.25 var(--f-body)}
+  .cd-info p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
+  .cd-precos{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+  .cd-preco{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;font-variant-numeric:tabular-nums}
+  .cd-preco small{color:var(--muted);font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;min-width:48px}
+  .cd-preco b{font:700 16px/1 var(--f-body)}
+  .cd-preco .cd-uni{color:#ff7a2e;font-weight:700;font-size:14px;text-shadow:0 0 6px rgba(255,90,31,.75),0 0 16px rgba(255,90,31,.4)}
+  .cd-preco .cd-uni em{font-style:normal;font:700 10px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;border:1px solid #ff7a2e;border-radius:6px;padding:2px 5px;margin-right:5px;position:relative;top:-1px;box-shadow:0 0 8px rgba(255,90,31,.45),inset 0 0 6px rgba(255,90,31,.25)}
+  .cd-vazio{color:var(--muted);text-align:center;padding:40px 16px;margin:0}
+  .cd-zoom{position:fixed;inset:0;z-index:40;background:rgba(5,3,8,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px}
+  .cd-zoom img{max-width:100%;max-height:70vh;border-radius:16px}
+  .cd-zoom b{font-size:18px}
+  a.gv-item{text-decoration:none}
+  .gv-tag{font:700 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:#ff8fc2;border:1px solid #ff8fc2;border-radius:999px;padding:4px 7px;font-style:normal}
   .gv-n{flex:none;font:700 11px/1 var(--f-mono);font-style:normal;background:var(--neon);color:#1d0612;border-radius:999px;padding:4px 7px;min-width:20px;text-align:center}
   .gv-sair{margin-top:auto;border-top:1px solid var(--line);border-radius:0 0 12px 12px;color:var(--laranja)}
   .gv-sair svg{color:var(--laranja)}
@@ -105,6 +178,39 @@
   .curtir:disabled{cursor:default}
   .curtir:not(.feito):disabled{border-color:var(--line);color:var(--muted)}
   .curtir.pulso svg{animation:pulso .45s ease-out}
+  .curtir.minha{border-color:var(--line);color:var(--muted);cursor:default}
+  .ev-abrir{display:block;padding:0;border:0;background:none;cursor:zoom-in;position:relative}
+  .ev-abrir::after{content:"";position:absolute;right:8px;top:8px;width:26px;height:26px;border-radius:50%;background:rgba(13,10,18,.7) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7'/%3E%3C/svg%3E") center/14px no-repeat}
+  /* ---- tela de ver e curtir as fotos (concurso / desafio) ---- */
+  .vf{position:fixed;inset:0;z-index:38;background:#07050a;display:flex;flex-direction:column;animation:aparece .18s ease-out}
+  .vf-topo{flex:none;display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 12px 8px}
+  .vf-topo b{flex:1;font:400 22px/1 var(--f-display);text-transform:uppercase;color:var(--neon);text-shadow:0 0 10px rgba(255,63,164,.5)}
+  .vf-topo span{font:400 12px var(--f-mono);color:var(--muted)}
+  .vf-x{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font-size:18px;cursor:pointer}
+  .vf-palco{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+  .vf-palco img{max-width:100%;max-height:100%;object-fit:contain;transition:transform .22s ease,opacity .22s ease;-webkit-user-drag:none}
+  .vf-palco img.sai-esq{transform:translateX(-30%);opacity:0}.vf-palco img.sai-dir{transform:translateX(30%);opacity:0}
+  .vf-boom{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;color:#fff;opacity:0;pointer-events:none;filter:drop-shadow(0 0 3px var(--neon)) drop-shadow(0 0 16px var(--neon)) drop-shadow(0 4px 18px rgba(0,0,0,.6))}
+  .ver-fotos{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:16px;padding:16px 18px;background:linear-gradient(135deg,var(--neon),var(--lilas));color:#1d0612;cursor:pointer;text-align:left;box-shadow:0 12px 28px -12px rgba(255,63,164,.8)}
+  .ver-fotos span{flex:1;font:400 22px/1 var(--f-display);text-transform:uppercase;letter-spacing:.03em}
+  .ver-fotos small{font:700 12px/1 var(--f-mono);background:rgba(29,6,18,.18);border-radius:999px;padding:6px 10px}
+  .vf-boom.vai{animation:boom .8s ease-out}
+  @keyframes boom{0%{opacity:0;transform:scale(.3)}15%{opacity:1;transform:scale(1.15)}30%{transform:scale(.95)}45%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1.1)}}
+  .vf-seta{position:absolute;top:50%;margin-top:-24px;width:48px;height:48px;border-radius:50%;border:0;background:rgba(13,10,18,.55);color:#fff;font-size:28px;line-height:1;cursor:pointer}
+  .vf-seta.esq{left:8px}.vf-seta.dir{right:8px}
+  .vf-seta:disabled{opacity:0;pointer-events:none}
+  .vf-base{flex:none;padding:14px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(23,18,31,.6),rgba(23,18,31,.95));border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:12px}
+  .vf-quem{display:flex;align-items:center;gap:12px;min-width:0}
+  .vf-quem div{flex:1;min-width:0}
+  .vf-quem b{display:block;font-size:16px}
+  .vf-quem div span{display:block;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .vf-n{flex:none;display:flex;align-items:center;gap:6px;font:700 18px/1 var(--f-body);color:var(--neon);font-variant-numeric:tabular-nums}
+  .vf-curtir{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:999px;padding:15px;background:var(--neon);color:#1d0612;font:400 21px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;box-shadow:0 10px 28px -10px rgba(255,63,164,.8)}
+  .vf-curtir svg{width:22px;height:22px}
+  .vf-curtir.feito{background:none;color:var(--neon);border:1.5px solid var(--neon);box-shadow:none}
+  .vf-curtir.minha{background:none;color:var(--muted);border:1px solid var(--line);box-shadow:none;cursor:default;font:700 14px/1.2 var(--f-body);text-transform:none;letter-spacing:0}
+  .vf-curtir.pulso svg{animation:pulso .45s ease-out}
+  .vf-dica{margin:0;text-align:center;color:var(--muted);font-size:12px}
   @keyframes pulso{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
   .ev-op{position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--ink);font:600 15px/1.2 var(--f-body);cursor:pointer}
   .ev-op i{position:absolute;top:0;left:0;bottom:0;background:rgba(169,92,242,.28);transition:width .4s}
@@ -433,6 +539,29 @@
     <div class="rolagem" id="eventosScroll"></div>
   </div>
 
+  <!-- Ver e curtir as fotos do concurso / desafio -->
+  <div class="vf" id="vf" role="dialog" aria-modal="true" aria-labelledby="vfTit" hidden>
+    <div class="vf-topo"><b id="vfTit">Concurso</b><span id="vfConta"></span><button class="vf-x" type="button" id="vfFechar" aria-label="Fechar">✕</button></div>
+    <div class="vf-palco" id="vfPalco">
+      <img id="vfImg" alt="">
+      <svg class="vf-boom" id="vfBoom" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>
+      <button class="vf-seta esq" type="button" id="vfAnt" aria-label="Foto anterior">‹</button>
+      <button class="vf-seta dir" type="button" id="vfProx" aria-label="Próxima foto">›</button>
+    </div>
+    <div class="vf-base">
+      <div class="vf-quem"><span id="vfAv"></span><div><b id="vfNome"></b><span id="vfTexto"></span></div><span class="vf-n" id="vfN"></span></div>
+      <button class="vf-curtir" type="button" id="vfCurtir"></button>
+      <p class="vf-dica">Toca duas vezes na foto pra curtir · arrasta pro lado pra ver a próxima</p>
+    </div>
+  </div>
+
+  <!-- Cardápio (só pra ver) -->
+  <div class="tela sub" id="tCardapio" hidden>
+    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Cardápio</h3></div>
+    <nav class="cd-abas" id="cdAbas" aria-label="Grupos do cardápio" hidden></nav>
+    <div class="rolagem" id="cardapioScroll"></div>
+  </div>
+
   <!-- Evento (ação especial) -->
   <div class="tela sub" id="tEvento" hidden>
     <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3 id="eventoTit">Evento</h3></div>
@@ -480,7 +609,10 @@
       <div><b id="gvNome"></b><button type="button" class="gv-link" id="gvPerfil">Ver e editar perfil</button></div>
       <button class="ico" id="gvFechar" type="button" aria-label="Fechar menu">×</button>
     </div>
+    <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>Um anel dourado aparece na tua foto até as 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
+    <button type="button" class="gv-item" data-ir="cardapio"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/></svg><span>Cardápio</span></button>
+    <a class="gv-item gv-jogo" id="gvJogo" href="encara.html"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/><path d="M15.5 8.2c-1-1.2-2.8-.3-2.3 1.1.4 1 2.3 2.4 2.3 2.4s1.9-1.4 2.3-2.4c.5-1.4-1.3-2.3-2.3-1.1z"/></svg><span>Encara ou Bebe</span><em class="gv-n" id="gvJogoN" hidden></em><em class="gv-tag">jogo</em></a>
     <button type="button" class="gv-item gv-sair" id="gvSair"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span>Sair da conta</span></button>
     <p class="gv-rodape">Trela</p>
   </nav>
@@ -492,8 +624,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610281725"></script>
-<script src="comum.js?v=202610281725"></script>
+<script src="config.js?v=202610301132"></script>
+<script src="marca.js?v=202610301132"></script>
+<script src="comum.js?v=202610301132"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -515,12 +648,20 @@
     jaConcorri: false,     // já tenho foto no concurso desta noite
     votos: [], meuVoto: null,   // enquete atual
     karaoke: [],           // fila do karaokê desta noite (todo mundo vê)
+    convitesJogo: [],      // mesas do Encara ou Bebe que me convidaram e eu ainda não respondi
+    interesses: new Set(), // crush secreto: em quem EU marquei interesse nesta noite (ninguém mais vê)
+    matches: new Set(),    // com quem deu match nesta noite
+    drinksRecebidos: [], drinksMandados: [],
     bloqueados: new Set(),
     noBar: []              // perfis que abriram o app nas últimas 3 h
   };
 
   // ---------- Perfis (cache) ----------
   const perfis = new Map();
+  // Vibra só se a pessoa já tocou na tela (antes disso o navegador bloqueia e reclama)
+  function vibrar(padrao) { try { if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) navigator.vibrate(padrao); } catch (e) {} }
+  // "Aberto pra conhecer gente": vale só na noite em que foi ligado (zera às 6h)
+  const abertoAgora = p => !!p && ms(p.aberto) >= inicioDaNoite().getTime();
   function perfil(uid) {
     if (EU && uid === EU.uid) return { id: uid, ...EU, ultimoAcesso: FS.Timestamp.now() };
     if (!perfis.has(uid)) {
@@ -545,7 +686,7 @@
   }
   function avatar(uid, cls) {
     const p = perfil(uid);
-    const a = el("span", "av" + (cls ? " " + cls : "") + (uid !== EU?.uid && online(p) ? " on" : ""), (p.nome || "?")[0].toUpperCase());
+    const a = el("span", "av" + (cls ? " " + cls : "") + (uid !== EU?.uid && online(p) ? " on" : "") + (abertoAgora(p) ? " aberto" : ""), (p.nome || "?")[0].toUpperCase());
     a.style.setProperty("--c", p.cor || corDe(uid)); a.setAttribute("aria-hidden", "true");
     const f = fotoPerfil(uid, p.fotoV);
     if (f) { a.textContent = ""; a.style.backgroundImage = "url(" + f + ")"; a.classList.add("com-foto"); }
@@ -661,6 +802,7 @@
     else voltarTela();
   }
   window.addEventListener("popstate", e => {
+    if (!$("#vf").hidden) { fecharFotos(true); return; }   // voltar do celular fecha a foto grande
     if (menuAberto()) { fecharMenu(); try { history.pushState({ trela: 1, n: pilha.length }, ""); } catch (err) {} return; }
     // Com uma janelinha aberta (perfil, menu, confirmação), o voltar só fecha ela
     if (!$("#veu").hidden && !folhaObrigatoria) {
@@ -706,6 +848,7 @@
       const t = telaAtual();
       if (t === "tHome") { renderFaixas(); renderFeed(); checarMais(); }
       if (t === "tEvento") renderEvento();
+      renderFotos();
       if (t === "tEventos") renderEventos();
       if (t === "tAvisos") renderAvisos();
       if (t === "tGalera") renderGalera();
@@ -815,12 +958,24 @@
         if (!nome || motivoSuspeito(nome)) nome = await pedirNome(nome);
         await ref.set({ nome, cor, criado: agoraServidor(), ultimoAcesso: agoraServidor() });
       } else { nome = s.data().nome; cor = s.data().cor || cor; }
-      EU = { uid: u.uid, nome, cor, fotoV: s.exists ? s.data().fotoV || null : null };
+      EU = { uid: u.uid, nome, cor, fotoV: s.exists ? s.data().fotoV || null : null, aberto: s.exists ? s.data().aberto || null : null };
       iniciarApp();
     } catch (e) {
       folha([el("h4", "", "Não deu pra carregar"), el("p", "", "Confere a internet e tenta de novo."), bt("Tentar de novo", "sim", () => location.reload())], true);
     }
   });
+
+  // ================= CONVITE DO ENCARA OU BEBE =================
+  function mostrarConviteJogo(m) {
+    const quem = m.donoNome || "Um amigo";
+    if (!$("#veu").hidden) { toast(m.dono, quem + " te chamou pro Encara ou Bebe. Toca pra ver.", () => mostrarConviteJogo(m)); return; }
+    folha([
+      el("h4", "", quem + " te chamou pro Encara ou Bebe"),
+      el("p", "", "Cada um joga no próprio celular e uma roleta sorteia quem é o próximo. Só pra maiores de 18."),
+      bt("Entrar na mesa", "sim", () => { fecharFolha(); location.href = "encara.html?mesa=" + encodeURIComponent(m.id); }),
+      bt("Agora não", "", () => { fecharFolha(); db.doc("mesas/" + m.id).update({ recusados: FS.FieldValue.arrayUnion(EU.uid) }).catch(() => {}); })
+    ]);
+  }
 
   // ================= APP =================
   let batida = null;
@@ -869,7 +1024,7 @@
       snap.docChanges().forEach(c => {
         const d = c.doc.data(), outro = d.membros.find(m => m !== uid);
         if (c.type === "removed") S.amizades.delete(outro); else S.amizades.set(outro, d);
-        if (!primeiraAmizade && c.type === "added" && d.para === uid) toast(outro, perfil(outro).nome + " quer ser teu amigo", abrirGalera);
+        if (!primeiraAmizade && c.type === "added" && d.para === uid && d.status === "pendente") toast(outro, perfil(outro).nome + " quer ser teu amigo", abrirGalera);   // amizade do match já nasce aceita
         if (!primeiraAmizade && c.type === "modified" && d.status === "aceita" && d.de === uid) toast(outro, perfil(outro).nome + " aceitou tua amizade", () => abrirChat(outro));
       });
       primeiraAmizade = false; redesenhar();
@@ -914,7 +1069,7 @@
       // fotos do concurso/desafio só quando um dos dois está ligado
       const precisa = !!((S.acoes.concurso && S.acoes.concurso.ativo) || (S.acoes.desafio && S.acoes.desafio.ativo));
       if (precisa && !pararPostsAcao) pararPostsAcao = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
-        S.postsAcao = q.docs.map(x => ({ id: x.id, ...x.data() })).filter(r => r.acao && r.fotoId); redesenhar();
+        S.postsAcao = q.docs.map(x => ({ id: x.id, ...x.data() })).filter(r => r.acao && r.fotoId); redesenhar();   // + exemplos (só no teste)
       }, () => {}));
       if (!precisa && pararPostsAcao) { pararPostsAcao(); pararPostsAcao = null; S.postsAcao = []; }
       // votos da enquete atual
@@ -940,7 +1095,7 @@
         if (minha === "cantando") toastKaraoke("Tua vez! Sobe pro palco e solta a voz");
         else if (!agora) toastKaraoke("O palco tá livre e tu é o primeiro! Toca aqui pra começar");
         else toastKaraoke("Tu é o próximo no karaokê. Vai se preparando!");
-        if (navigator.vibrate) try { navigator.vibrate([200, 100, 200]); } catch (e) {}
+        vibrar([200, 100, 200])
       }
       minhaVezAntes = minha; S.karaokeErro = ""; redesenhar();
     }, e => { console.warn("[Trela] fila do karaokê", e && e.code); S.karaokeErro = e && e.code === "permission-denied" ? "regras" : "rede"; redesenhar(); })));
@@ -948,6 +1103,57 @@
     // Bloqueios que eu fiz
     parar.push(db.collection("bloqueios").where("de", "==", uid).onSnapshot(snap => {
       S.bloqueados = new Set(snap.docs.map(d => d.data().alvo)); redesenhar();
+    }, () => {}));
+
+    // Crush secreto: os meus interesses (só eu vejo) e os matches
+    parar.push(db.collection("interesses").where("de", "==", uid).onSnapshot(q => {
+      const noite = inicioDaNoite().getTime(); S.interesses = new Set();
+      q.docs.forEach(d => { const x = d.data(); if (ms(x.criado) >= noite || !x.criado) S.interesses.add(x.para); else d.ref.delete().catch(() => {}); });   // de noites passadas: some
+      redesenhar();
+    }, () => {}));
+    const matchesVistos = new Set(guardado.ler("trela-matches-vistos", []));
+    parar.push(db.collection("matches").where("membros", "array-contains", uid).onSnapshot(q => {
+      const noite = inicioDaNoite().getTime();
+      S.matches = new Set(q.docs.filter(d => ms(d.data().criado) >= noite || !d.data().criado).map(d => d.data().membros.find(x => x !== uid)));
+      q.docs.forEach(d => {
+        const m = d.data(), chave = d.id + ":" + ms(m.criado);
+        if (!m.criado || ms(m.criado) < noite || matchesVistos.has(chave)) return;
+        matchesVistos.add(chave); guardado.salvar("trela-matches-vistos", [...matchesVistos].slice(-60));
+        mostrarMatch(m.membros.find(x => x !== uid));
+      });
+      redesenhar();
+    }, () => {}));
+    // Te pago um drink: o que recebi e o que mandei
+    const drinksVistos = new Set();
+    parar.push(db.collection("drinks").where("para", "==", uid).onSnapshot(q => {
+      const noite = inicioDaNoite().getTime();
+      S.drinksRecebidos = q.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => !x.criado || ms(x.criado) >= noite);
+      S.drinksRecebidos.filter(x => x.status === "enviado" && !drinksVistos.has(x.id)).forEach(x => { drinksVistos.add(x.id); mostrarConviteDrink(x); });
+      redesenhar();
+    }, () => {}));
+    const statusVisto = new Map();
+    parar.push(db.collection("drinks").where("de", "==", uid).onSnapshot(q => {
+      const noite = inicioDaNoite().getTime();
+      S.drinksMandados = q.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => !x.criado || ms(x.criado) >= noite);
+      S.drinksMandados.forEach(x => {
+        const antes = statusVisto.get(x.id); statusVisto.set(x.id, x.status);
+        if (antes === undefined || antes === x.status) return;
+        if (x.status === "aceito") avisoDrinkAceito(x);
+        else if (x.status === "recusado") toast(x.para, "Teu convite de drink não rolou dessa vez. Fica pra próxima!");
+        else if (x.status === "entregue") toast(x.para, "Saúde! O " + x.itemNome + " foi entregue.");
+      });
+      redesenhar();
+    }, () => {}));
+
+    // Convites pro Encara ou Bebe: aparece na tela na hora, e fica contado no menu
+    const convitesVistos = new Set();
+    parar.push(db.collection("mesas").where("convidados", "array-contains", uid).onSnapshot(q => {
+      S.convitesJogo = q.docs.map(d => ({ id: d.id, ...d.data() }))
+        .filter(m => !(m.jogadores || []).includes(uid) && !(m.recusados || []).includes(uid) && Date.now() - ms(m.criado) < 4 * 3600 * 1000);
+      const novo = S.convitesJogo.find(m => !convitesVistos.has(m.id));
+      S.convitesJogo.forEach(m => convitesVistos.add(m.id));
+      if (novo) mostrarConviteJogo(novo);
+      renderBadge();
     }, () => {}));
 
     // Quem está no Trela agora (refaz a consulta a cada 15 min)
@@ -968,7 +1174,7 @@
     parar.push(pararRastreio);
   }
 
-  function desenharEu() { if (!EU) return; const b = $("#btnEu"); b.replaceChildren(avatar(EU.uid)); b.title = EU.nome; }
+  function desenharEu() { if (!EU) return; const b = $("#btnEu"); b.replaceChildren(avatar(EU.uid)); b.title = EU.nome; desenharAberto(); }
   $("#btnEu").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
   function abrirMeuPerfil() {
     const inp = el("input"); inp.maxLength = 20; inp.value = EU.nome; inp.setAttribute("aria-label", "Teu nome");
@@ -1301,6 +1507,75 @@
 
   // ---- Lista de eventos ----
   function abrirEventos() { ir("tEventos"); renderEventos(); }
+
+  // ================= CARDÁPIO (a equipe cadastra em /cardapio; aqui só mostra) =================
+  let cardapio = null, cardapioGrupos = [], ouvindoCardapio = false;
+  function ouvirCardapio() {
+    if (ouvindoCardapio) return; ouvindoCardapio = true;   // só carrega quando alguém abre (as fotos pesam)
+    parar.push(() => { ouvindoCardapio = false; cardapio = null; });
+    parar.push(db.doc("config/cardapio").onSnapshot(s => {
+      cardapioGrupos = (s.exists && Array.isArray(s.data().grupos)) ? s.data().grupos.filter(g => g && g.id && g.nome) : [];
+      if (telaAtual() === "tCardapio") renderCardapio();
+    }, () => {}));
+    parar.push(db.collection("cardapio").onSnapshot(q => {
+      cardapio = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+      if (telaAtual() === "tCardapio") renderCardapio();
+    }, () => { cardapio = cardapio || []; if (telaAtual() === "tCardapio") renderCardapio(); }));
+  }
+  function abrirCardapio() { ir("tCardapio"); ouvirCardapio(); renderCardapio(); $("#cardapioScroll").scrollTop = 0; }
+  const reais = c => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const ROTULO_COPO = { "500": "500 ml", "700": "700 ml" };
+  function precoProduto(p) {
+    const box = el("div", "cd-precos"), ks = (p.tamanhos && p.tamanhos.length) ? p.tamanhos : ["unico"];
+    ks.forEach(k => {
+      if (!(p.precos || {})[k]) return;
+      const l = el("div", "cd-preco");
+      if (k !== "unico") l.append(el("small", "", ROTULO_COPO[k] || k));
+      l.append(el("b", "", reais(p.precos[k])));
+      if (p.uni && p.precosUni && p.precosUni[k]) { const u = el("span", "cd-uni"); u.append(el("em", "", "Univ."), reais(p.precosUni[k])); l.append(u); }
+      box.append(l);
+    });
+    return box;
+  }
+  function zoomFoto(p) {
+    const z = el("div", "cd-zoom"), img = el("img"); img.src = p.foto; img.alt = p.nome;
+    z.append(img, el("b", "", p.nome)); z.onclick = () => z.remove(); document.body.append(z);
+  }
+  function renderCardapio() {
+    const box = $("#cardapioScroll"), abas = $("#cdAbas");
+    if (cardapio === null) { box.replaceChildren(el("p", "cd-vazio", "Carregando o cardápio…")); abas.hidden = true; return; }
+    if (!cardapio.length) { box.replaceChildren(el("p", "cd-vazio", "O cardápio ainda está sendo montado. Volta daqui a pouco!")); abas.hidden = true; return; }
+    const ids = new Set(cardapioGrupos.map(g => g.id));
+    const blocos = cardapioGrupos.map(g => ({ id: g.id, nome: g.nome, ps: cardapio.filter(p => p.grupo === g.id) })).filter(b => b.ps.length);
+    const soltos = cardapio.filter(p => !ids.has(p.grupo));
+    if (soltos.length) blocos.push({ id: "_outros", nome: blocos.length ? "Outros" : "", ps: soltos });
+    const out = [];
+    blocos.forEach(b => {
+      if (b.nome) { const h = el("h3", "cd-grupo", b.nome); h.id = "cdg-" + b.id; out.push(h); }
+      b.ps.forEach(p => {
+        const c = el("article", "cd-prod");
+        if (p.foto) { const f = el("button", "cd-foto"); f.type = "button"; f.style.backgroundImage = "url(" + p.foto + ")"; f.setAttribute("aria-label", "Ver foto de " + p.nome); f.onclick = () => zoomFoto(p); c.append(f); }
+        const info = el("div", "cd-info"); info.append(el("h4", "", p.nome));
+        if (p.descricao) info.append(el("p", "", p.descricao));
+        info.append(precoProduto(p)); c.append(info); out.push(c);
+      });
+    });
+    box.replaceChildren(...out);
+    // atalhos pros grupos (só quando tem mais de um)
+    const comNome = blocos.filter(b => b.nome);
+    abas.hidden = comNome.length < 2;
+    abas.replaceChildren(...comNome.map((b, i) => {
+      const a = el("button", "cd-aba" + (i === 0 ? " on" : ""), b.nome); a.type = "button";
+      a.onclick = () => { const h = $("#cdg-" + b.id); if (h) box.scrollTo({ top: h.offsetTop - box.offsetTop - 8, behavior: "smooth" }); };
+      a.dataset.alvo = b.id; return a;
+    }));
+  }
+  // marca o grupo que está na tela
+  $("#cardapioScroll").addEventListener("scroll", () => {
+    const box = $("#cardapioScroll"), hs = [...box.querySelectorAll(".cd-grupo")]; if (!hs.length) return;
+    let atual = hs[0].id; hs.forEach(h => { if (h.offsetTop - box.offsetTop - 40 <= box.scrollTop) atual = h.id; });
+    document.querySelectorAll("#cdAbas .cd-aba").forEach(a => { const on = "cdg-" + a.dataset.alvo === atual; if (on !== a.classList.contains("on")) { a.classList.toggle("on", on); if (on) a.scrollIntoView({ inline: "nearest", block: "nearest" }); } });
+  }, { passive: true });
   let assinaturaEventos = "";
   function renderEventos() {
     const evs = eventosAtivos(), out = [];
@@ -1336,10 +1611,18 @@
   $("#gavetaFundo").onclick = fecharMenu;
   document.addEventListener("keydown", e => { if (e.key === "Escape" && menuAberto()) fecharMenu(); });
   $("#gvPerfil").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
+  $("#gvAberto").onchange = async e => {
+    const on = e.target.checked;
+    EU.aberto = on ? FS.Timestamp.now() : null; desenharAberto(); redesenhar();
+    try { await db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor(), aberto: on ? agoraServidor() : null }, { merge: true }); toast(EU.uid, on ? "Pronto! Teu anel dourado avisa que tu tá aberto pra conhecer gente." : "Anel dourado desligado."); }
+    catch (err) { EU.aberto = on ? null : FS.Timestamp.now(); desenharAberto(); redesenhar(); erroToast(err && err.code === "permission-denied" ? "Não deu pra salvar: as regras do banco precisam ser publicadas." : "Não deu pra salvar agora. Tenta de novo."); }
+  };
+  function desenharAberto() { const on = abertoAgora(EU); $("#gvAberto").checked = on; $("#gvAbertoBox").classList.toggle("on", on); }
   $("#gvSair").onclick = () => { fecharMenu(); auth.signOut(); };
   document.querySelectorAll(".gv-item[data-ir]").forEach(b => b.onclick = () => {
     const d = b.dataset.ir; fecharMenu();
     if (d === "eventos") abrirEventos();
+    else if (d === "cardapio") abrirCardapio();
     else if (d === "avisos") $("#btnSino").click();
     else if (d === "galera") abrirGalera();
     else if (d === "feed") { while (pilha.length > 1) voltarTela(); setTimeout(() => $("#homeScroll").scrollTo({ top: $("#feedTitle").offsetTop - 10, behavior: "smooth" }), 50); }
@@ -1378,6 +1661,13 @@
 
     if (k === "concurso") {
       if (premio) topo.append(premio);
+      const ids = fotosDoEvento("concurso").map(x => x.id);
+      if (ids.length) {
+        const ver = el("button", "ver-fotos"); ver.type = "button";
+        ver.innerHTML = CORACAO.replace('width="15" height="15"', 'width="20" height="20"');
+        ver.append(el("span", "", "Ver as fotos e curtir"), el("small", "", ids.length + (ids.length === 1 ? " foto" : " fotos")));
+        ver.onclick = () => abrirFotos("concurso", ids, ids[0]); out.push(ver);
+      }
       out.push(pBloco("Como funciona", passos([
         "Manda uma foto tua marcando pra concorrer. Só vale uma foto por pessoa nesta noite.",
         "A galera curte as fotos aqui ou no Rolou hoje. Cada pessoa curte cada foto uma vez.",
@@ -1471,14 +1761,17 @@
     b.append(prev, bts, leg, envia);
     return b;
   }
+  const fotosDoEvento = acao => S.postsAcao.filter(p => p.acao === acao && !(p.autor && S.bloqueados.has(p.autor)))
+    .sort((a, b) => ((b.reacoes || {}).amor || 0) - ((a.reacoes || {}).amor || 0) || ms(b.criado) - ms(a.criado));
   function gradeFotos(acao, vazio) {
-    const fotos = S.postsAcao.filter(p => p.acao === acao && !(p.autor && S.bloqueados.has(p.autor)))
-      .sort((a, b) => ((b.reacoes || {}).amor || 0) - ((a.reacoes || {}).amor || 0) || ms(b.criado) - ms(a.criado));
+    const fotos = fotosDoEvento(acao);
     if (!fotos.length) return el("div", "vazio-s", vazio);
     const g = el("div", "ev-grade");
     fotos.forEach(r => {
       const card = el("div", "ev-foto");
-      const img = imgFoto(r.fotoId, "Foto de " + r.nome); card.append(img);
+      const img = imgFoto(r.fotoId, "Foto de " + r.nome);
+      const abrir = el("button", "ev-abrir"); abrir.type = "button"; abrir.setAttribute("aria-label", "Ver a foto de " + r.nome + " em tela cheia");
+      abrir.append(img); abrir.onclick = () => abrirFotos(acao, fotos.map(x => x.id), r.id); card.append(abrir);
       const info = el("div", "ev-info"); info.append(el("b", "", r.autor === EU.uid ? "Tu" : r.nome));
       if (r.texto) info.append(el("span", "", r.texto));
       card.append(info, botaoCurtir(r));
@@ -1489,25 +1782,111 @@
 
   // ---- Curtir (conta no concurso e avisa quem postou) ----
   const CORACAO = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
+  const curtiu = r => S.curti.has(r.id);
+  const nCurtidas = r => ((r.reacoes || {}).amor || 0) + (r.demo && S.curti.has(r.id) ? 1 : 0);   // foto de exemplo: conta só aqui
   function botaoCurtir(r) {
-    const n = (r.reacoes || {}).amor || 0, minha = r.autor === EU.uid, ja = S.curti.has(r.id) || !!(reagi[r.id] && reagi[r.id].amor);
+    const n = nCurtidas(r), minha = r.autor === EU.uid, ja = curtiu(r);
+    if (minha) {   // na própria foto não tem o que tocar: mostra só quantas curtidas tem
+      const t = el("span", "curtir minha"); t.innerHTML = CORACAO;
+      t.append(el("span", "", "Tua foto · " + n)); t.setAttribute("aria-label", n + " curtidas na tua foto"); return t;
+    }
     const b = el("button", "curtir" + (ja ? " feito" : "")); b.type = "button"; b.innerHTML = CORACAO;
-    b.append(el("span", "", minha ? String(n) : (ja ? "Curtiu" : "Curtir") + (n ? " · " + n : "")));
-    b.setAttribute("aria-pressed", ja); b.setAttribute("aria-label", minha ? n + " curtidas na tua foto" : "Curtir a foto de " + r.nome);
-    if (minha || ja) b.disabled = true;
+    b.append(el("span", "", (ja ? "Curtiu" : "Curtir") + (n ? " · " + n : "")));
+    b.setAttribute("aria-pressed", ja); b.setAttribute("aria-label", (ja ? "Tu curtiu a foto de " : "Curtir a foto de ") + r.nome);
+    if (ja) b.disabled = true;
     else b.onclick = () => { b.disabled = true; b.classList.add("feito", "pulso"); b.lastChild.textContent = "Curtiu · " + (n + 1); curtirFoto(r); };
     return b;
   }
+  // Grava a curtida (é ela que conta no ranking do concurso). Se o banco recusar, desfaz e avisa o motivo.
   async function curtirFoto(r) {
-    if (!r.autor || r.autor === EU.uid || S.curti.has(r.id)) return;
-    S.curti.add(r.id);
+    if (!r.autor || r.autor === EU.uid || S.curti.has(r.id)) return false;
+    S.curti.add(r.id); redesenhar();
+    if (r.demo) { toast(EU.uid, "Curtiu! (foto de exemplo do teste, não vale de verdade)"); return true; }
+    try { await db.doc("curtidas/" + r.id + "_" + EU.uid).set({ post: r.id, de: EU.uid, para: r.autor, criado: agoraServidor() }); }
+    catch (e) {
+      console.warn("[Trela] curtida recusada", e && e.code, e && e.message);
+      S.curti.delete(r.id); assinaturaEvento = ""; redesenhar(); if (!$("#vf").hidden) renderFotos();   // força redesenhar o botão que já tinha virado "Curtiu"
+      erroToast(e && e.code === "permission-denied" ? "Não deu pra curtir: o sistema recusou. Avisa a equipe que as regras do banco precisam ser publicadas." : "Não deu pra curtir agora. Confere a internet e tenta de novo.");
+      return false;
+    }
     if (!(reagi[r.id] && reagi[r.id].amor)) {
       reagi[r.id] = { ...(reagi[r.id] || {}), amor: true }; guardado.salvar("trela-reagi", reagi);
       db.doc("telao/" + r.id).update({ "reacoes.amor": FS.FieldValue.increment(1) }).catch(() => {});
     }
-    try { await db.doc("curtidas/" + r.id + "_" + EU.uid).set({ post: r.id, de: EU.uid, para: r.autor, criado: agoraServidor() }); } catch (e) { return; }
     db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "curtida", de: EU.uid, deNome: EU.nome, postId: r.id, texto: (r.texto || "").slice(0, 60), criado: agoraServidor(), lida: false }).catch(() => {});
+    return true;
   }
+
+  // ---- Tela de ver e curtir as fotos: foto grande, dois toques curte, arrasta pro lado troca ----
+  const VF = { ids: [], i: 0, acao: "", fotoMostrada: null };
+  const postPorId = id => S.postsAcao.find(p => p.id === id);
+  function abrirFotos(acao, ids, id) {
+    VF.ids = ids.slice(); VF.i = Math.max(0, ids.indexOf(id)); VF.acao = acao; VF.fotoMostrada = null;
+    $("#vfTit").textContent = (EVENTOS[acao] && EVENTOS[acao].rotulo) || "Fotos";
+    $("#vf").hidden = false;
+    try { history.pushState({ trela: 1, n: pilha.length, vf: 1 }, ""); } catch (e) {}
+    renderFotos();
+  }
+  function fecharFotos(doHistorico) {
+    if ($("#vf").hidden) return;
+    if (!doHistorico && history.state && history.state.vf) { history.back(); return; }   // o popstate fecha
+    $("#vf").hidden = true;
+  }
+  function renderFotos(dir) {
+    if ($("#vf").hidden) return;
+    VF.ids = VF.ids.filter(postPorId);
+    if (!VF.ids.length) { fecharFotos(); return; }
+    VF.i = Math.min(VF.i, VF.ids.length - 1);
+    const r = postPorId(VF.ids[VF.i]), img = $("#vfImg");
+    if (VF.fotoMostrada !== r.id) {
+      VF.fotoMostrada = r.id; img.alt = "Foto de " + r.nome;
+      const por = d => { img.src = d; img.classList.remove("sai-esq", "sai-dir"); };
+      if (dir) img.classList.add(dir > 0 ? "sai-esq" : "sai-dir");
+      if (fotosProntas.has(r.fotoId)) setTimeout(() => por(fotosProntas.get(r.fotoId)), dir ? 120 : 0);
+      else { img.removeAttribute("src"); carregarFoto(r.fotoId).then(d => { if (d) { fotosProntas.set(r.fotoId, d); if (VF.fotoMostrada === r.id) por(d); } }); }
+    }
+    $("#vfConta").textContent = (VF.i + 1) + " de " + VF.ids.length;
+    $("#vfAnt").disabled = VF.i === 0; $("#vfProx").disabled = VF.i === VF.ids.length - 1;
+    $("#vfAv").replaceChildren(r.demo ? el("span", "av", (r.nome || "?")[0]) : avatar(r.autor));
+    $("#vfNome").textContent = r.autor === EU.uid ? "Tu" : r.nome;
+    $("#vfTexto").textContent = r.texto || "";
+    const n = nCurtidas(r); $("#vfN").innerHTML = CORACAO.replace('width="15" height="15"', 'width="18" height="18"'); $("#vfN").append(String(n));
+    $("#vfN").setAttribute("aria-label", n + (n === 1 ? " curtida" : " curtidas"));
+    const b = $("#vfCurtir"), minha = r.autor === EU.uid, ja = curtiu(r);
+    b.className = "vf-curtir" + (minha ? " minha" : ja ? " feito" : "");
+    b.innerHTML = minha ? "" : CORACAO.replace(' width="15" height="15"', "");
+    b.append(minha ? "É a tua foto. Chama a galera pra curtir!" : ja ? "Curtiu" : "Curtir");
+    b.disabled = minha || ja;
+  }
+  function curtirNaTela(boom) {
+    const r = postPorId(VF.ids[VF.i]); if (!r || r.autor === EU.uid) return;
+    if (boom) { const h = $("#vfBoom"); h.classList.remove("vai"); void h.offsetWidth; h.classList.add("vai"); }
+    if (curtiu(r)) return;
+    curtirFoto(r).then(() => renderFotos());
+    renderFotos(); $("#vfCurtir").classList.add("pulso");
+  }
+  function trocarFoto(d) { const j = VF.i + d; if (j < 0 || j >= VF.ids.length) return; VF.i = j; renderFotos(d); }
+  $("#vfFechar").onclick = () => fecharFotos();
+  $("#vfAnt").onclick = () => trocarFoto(-1);
+  $("#vfProx").onclick = () => trocarFoto(1);
+  $("#vfCurtir").onclick = () => curtirNaTela(true);
+  (function () {
+    const palco = $("#vfPalco"); let x0 = null, y0 = 0, toque = 0;
+    palco.addEventListener("pointerdown", e => { if (e.target.closest("button")) return; x0 = e.clientX; y0 = e.clientY; });
+    palco.addEventListener("pointerup", e => {
+      if (x0 === null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { trocarFoto(dx < 0 ? 1 : -1); toque = 0; return; }
+      if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
+        const agora = Date.now();
+        if (agora - toque < 350) { toque = 0; curtirNaTela(true); } else toque = agora;
+      }
+    });
+    palco.addEventListener("pointercancel", () => { x0 = null; });
+    document.addEventListener("keydown", e => {
+      if ($("#vf").hidden) return;
+      if (e.key === "Escape") fecharFotos(); else if (e.key === "ArrowRight") trocarFoto(1); else if (e.key === "ArrowLeft") trocarFoto(-1);
+    });
+  })();
 
   // ---- Enquete ----
   function blocoEnquete(c) {
@@ -1668,7 +2047,8 @@
   // ---- Sino (notificações) ----
   $("#btnSino").onclick = () => { ir("tAvisos"); renderAvisos(); setTimeout(lerAvisos, 1500); };
   function lerAvisos() { S.avisos.forEach(a => a.ref.update({ lida: true }).catch(() => {})); eventosAtivos().forEach(marcarEventoVisto); renderBadge(); renderFaixas(); }
-  function contaSino() { return S.avisos.length + eventosAtivos().filter(eventoNovo).length; }
+  const drinksPendentes = () => S.drinksRecebidos.filter(x => x.status === "enviado");
+  function contaSino() { return S.avisos.length + eventosAtivos().filter(eventoNovo).length + drinksPendentes().length; }
   function textoAviso(a) {
     if (a.tipo === "curtida") return "curtiu tua foto" + (a.texto ? ": “" + a.texto + "”" : "");
     return "te marcou num comentário: “" + a.texto + "”";
@@ -1682,6 +2062,14 @@
         const ic = el("span", "av-ic"); ic.innerHTML = e.m.ic;
         const t = el("span", "av-t"); t.append(el("b", "", e.m.rotulo + ": " + e.m.titulo(e.c)), el("small", "", "Toca pra ver e participar"));
         l.append(ic, t, el("i", "fx-seta", "›")); l.onclick = () => abrirEvento(e.k); out.push(l);
+      });
+    }
+    if (drinksPendentes().length) {
+      out.push(el("div", "secao", "Convites de drink"));
+      drinksPendentes().forEach(x => {
+        const l = el("button", "aviso-l nova"); l.type = "button";
+        const t = el("span", "av-t"); const linha = el("span", ""); linha.append(el("b", "", x.deNome + " "), "quer te pagar " + x.itemNome);
+        t.append(linha, el("small", "", "Toca pra responder")); l.append(avatar(x.de, "p"), t); l.onclick = () => mostrarConviteDrink(x); out.push(l);
       });
     }
     out.push(el("div", "secao", "Notificações"));
@@ -1877,7 +2265,8 @@
     $("#badgeSino").hidden = !ns; $("#badgeSino").textContent = ns > 9 ? "9+" : ns;
     const nev = eventosAtivos().length, novos = eventosAtivos().filter(eventoNovo).length;
     $("#gvEventos").hidden = !nev; $("#gvEventos").textContent = nev;
-    $("#pontoMenu").hidden = !novos;
+    $("#gvJogoN").hidden = !S.convitesJogo.length; $("#gvJogoN").textContent = S.convitesJogo.length;
+    $("#pontoMenu").hidden = !novos && !S.convitesJogo.length;
   }
 
   function botaoRelacao(uid, compacto) {
@@ -1910,6 +2299,7 @@
     row.append(ab); if (ponto) row.append(el("span", "pt")); if (extra) row.append(...[].concat(extra));
     return row;
   }
+  let filtroAbertos = false;
   function renderGalera() {
     const amigos = [...S.amizades.entries()].filter(([, a]) => a.status === "aceita").map(([u]) => perfil(u));
     const pedidos = [...S.amizades.entries()].filter(([, a]) => a.status === "pendente" && a.para === EU.uid).map(([u]) => u);
@@ -1950,7 +2340,16 @@
     } else {
       out.push(el("div", "secao", "Tão no Trela agora"));
       if (!agora.length) out.push(el("div", "vazio-s", "Ainda não chegou ninguém. Chama a galera!"));
-      agora.forEach(p => out.push(linhaPessoa(p.id, ehAmigo(p.id) ? "Teu amigo · " + (online(p) ? "online agora" : visto(p.ultimoAcesso).toLowerCase()) : online(p) ? "Online agora" : visto(p.ultimoAcesso), online(p) ? "on" : "", botaoRelacao(p.id, true), false, () => abrirPerfil(p.id))));
+      const nAbertos = agora.filter(abertoAgora).length;
+      if (agora.length) {
+        const f = el("div", "filtro-g");
+        const b1 = el("button", filtroAbertos ? "" : "on", "Todos · " + agora.length); b1.type = "button"; b1.onclick = () => { filtroAbertos = false; renderGalera(); };
+        const b2 = el("button", filtroAbertos ? "on" : "", "Abertos pra conhecer gente · " + nAbertos); b2.type = "button"; b2.onclick = () => { filtroAbertos = true; renderGalera(); };
+        f.append(b1, b2); out.push(f);
+      }
+      const lista = agora.filter(p => !filtroAbertos || abertoAgora(p)).sort((a, b) => abertoAgora(b) - abertoAgora(a));
+      if (filtroAbertos && !lista.length) out.push(el("div", "vazio-s", "Ninguém ligou o anel dourado ainda. Liga o teu no menu ≡!"));
+      lista.forEach(p => out.push(linhaPessoa(p.id, (abertoAgora(p) ? "Aberto pra conhecer gente · " : "") + (ehAmigo(p.id) ? "Teu amigo · " + (online(p) ? "online agora" : visto(p.ultimoAcesso).toLowerCase()) : online(p) ? "Online agora" : visto(p.ultimoAcesso)), abertoAgora(p) ? "aberto-t" : online(p) ? "on" : "", botaoRelacao(p.id, true), false, () => abrirPerfil(p.id))));
       out.push(el("p", "nota", "Aparece aqui só quem está com o app do Trela aberto agora."));
     }
     $("#galeraScroll").replaceChildren(...out);
@@ -2014,6 +2413,8 @@
     else if (rel === "amigo") acoes.append(bt("Conversar", "sim", () => abrirChat(p.id)), bt("Desfazer amizade", "", () => confirmarDesfazer(p.id)));
     else { const b = botaoRelacao(p.id); b.className = b.className.replace("mini", "bt"); acoes.append(b); }
     topo.append(acoes);
+    if (abertoAgora(p)) topo.insertBefore(el("span", "tag-aberto", "Aberto pra conhecer gente"), acoes);
+    if (relacao(p.id) !== "bloqueado") topo.append(blocoSocial(p));
     const out = [topo];
     if (postsPerfil === null) out.push(el("div", "vazio-s", "Carregando posts…"));
     else if (!postsPerfil.length) out.push(el("div", "secao", "Ainda não postou nada"));
@@ -2027,6 +2428,145 @@
       });
     }
     $("#perfilScroll").replaceChildren(...out);
+  }
+
+  // ================= CRUSH SECRETO + TE PAGO UM DRINK =================
+  const SV = (p, extra) => '<svg viewBox="0 0 24 24" fill="' + (extra || "none") + '" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+  function blocoSocial(p) {
+    const box = el("div", "social-p"), marcado = S.interesses.has(p.id), deuMatch = S.matches.has(p.id);
+    // Crush secreto
+    const c = el("button", "bt-crush" + (marcado ? " on" : "")); c.type = "button";
+    c.innerHTML = SV('<path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/>', marcado ? "currentColor" : "none");
+    c.append(deuMatch ? "Deu match com " + p.nome + "!" : marcado ? "Tu marcou interesse (só tu sabe)" : "Tenho interesse (em segredo)");
+    c.onclick = () => deuMatch ? abrirChat(p.id) : marcado ? desmarcarInteresse(p) : marcarInteresse(p);
+    box.append(c);
+    box.append(el("p", "nota-s", deuMatch ? "Vocês dois marcaram. Bora puxar assunto!" : marcado ? "Se " + p.nome + " também marcar, os dois recebem o aviso de match. Toca de novo pra desmarcar." : "Ninguém fica sabendo. Só avisa os dois se " + p.nome + " também marcar."));
+    // Te pago um drink
+    const meu = S.drinksMandados.filter(x => x.para === p.id).sort((a, b) => ms(b.criado) - ms(a.criado))[0];
+    const d = el("button", "bt-drink"); d.type = "button"; d.innerHTML = SV('<path d="M6 4h12l-1.5 15a2 2 0 0 1-2 1.8h-5a2 2 0 0 1-2-1.8z"/><path d="M6.5 9h11"/>');
+    if (meu && meu.status === "enviado") { d.className = "bt-drink espera"; d.append("Convite enviado: " + meu.itemNome + " · cancelar"); d.onclick = () => cancelarDrink(meu); }
+    else if (meu && meu.status === "aceito") { d.append(p.nome + " aceitou! Pega o " + meu.itemNome + " no balcão"); d.onclick = () => avisoDrinkAceito(meu); }
+    else if (meu && meu.status === "recusado") { d.className = "bt-drink espera"; d.append("Não rolou hoje. Fica pra próxima"); d.disabled = true; }
+    else { d.append("Te pago um drink"); d.onclick = () => escolherDrink(p); }
+    box.append(d);
+    return box;
+  }
+  async function marcarInteresse(p) {
+    if (S.interesses.has(p.id)) return;
+    S.interesses.add(p.id); redesenhar();
+    try { await db.doc("interesses/" + EU.uid + "_" + p.id).set({ de: EU.uid, para: p.id, criado: agoraServidor() }); }
+    catch (e) { S.interesses.delete(p.id); redesenhar(); erroToast(e && e.code === "permission-denied" ? "Não deu: as regras do banco precisam ser publicadas." : "Não deu pra marcar agora. Tenta de novo."); return; }
+    toast(p.id, "Marcado em segredo. Se " + p.nome + " também marcar, vocês dois ficam sabendo.");
+    // O banco só deixa ler o interesse do outro se os dois tiverem marcado
+    const volta = await db.doc("interesses/" + p.id + "_" + EU.uid).get().catch(() => null);
+    if (!volta || !volta.exists || ms(volta.data().criado) < inicioDaNoite().getTime()) return;
+    await criarMatch(p.id);
+  }
+  async function criarMatch(outro) {
+    const par = parDe(EU.uid, outro), membros = [EU.uid, outro].sort();
+    try { await db.doc("matches/" + par).set({ membros, criado: agoraServidor() }); }
+    catch (e) { console.warn("[Trela] match", e && e.code); return; }
+    // vira amizade pra poder conversar
+    const a = S.amizades.get(outro);
+    try {
+      if (a && a.status === "aceita") return;
+      if (a && a.status === "pendente" && a.para === EU.uid) { await db.doc("amizades/" + par).update({ status: "aceita" }); return; }
+      if (a) await db.doc("amizades/" + par).delete();
+      await db.doc("amizades/" + par).set({ membros, de: EU.uid, para: outro, status: "aceita", criado: agoraServidor() });
+    } catch (e) { console.warn("[Trela] amizade do match", e && e.code); }
+  }
+  async function desmarcarInteresse(p) {
+    S.interesses.delete(p.id); redesenhar();
+    await db.doc("interesses/" + EU.uid + "_" + p.id).delete().catch(() => {});
+    toast(p.id, "Desmarcado.");
+  }
+  function mostrarMatch(outro) {
+    const p = perfil(outro);
+    const cs = el("div", "match-c"), h = el("span"); h.innerHTML = SV('<path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/>', "currentColor");
+    cs.append(avatar(EU.uid), h.firstChild, avatar(outro));
+    const itens = [cs, el("h4", "grande", "Deu match!"), el("p", "", "Tu e " + p.nome + " marcaram interesse um no outro. Agora vocês podem conversar."),
+      bt("Mandar mensagem", "sim", () => { fecharFolha(); abrirChat(outro); }),
+      bt("Te pago um drink", "", () => { fecharFolha(); escolherDrink(p); }),
+      bt("Depois", "", fecharFolha)];
+    if (!$("#veu").hidden) { toast(outro, "Deu match com " + p.nome + "! Toca pra ver.", () => folha(itens)); return; }
+    folha(itens);
+    vibrar([80, 60, 80])
+  }
+  // ---- Te pago um drink ----
+  function escolherDrink(p) {
+    const jaRecusou = S.drinksMandados.some(x => x.para === p.id && x.status === "recusado");
+    if (jaRecusou) { erroToast(p.nome + " não aceitou hoje. Fica pra outra noite."); return; }
+    if (S.drinksMandados.filter(x => x.status === "enviado").length >= 3) { erroToast("Tu já tem 3 convites esperando resposta. Espera alguém responder."); return; }
+    ouvirCardapio();
+    const lista = el("div", "drink-l");
+    const desenhar = () => {
+      if (cardapio === null) { lista.replaceChildren(el("p", "nota-s", "Carregando o cardápio…")); return; }
+      if (!cardapio.length) { lista.replaceChildren(el("p", "nota-s", "O cardápio ainda não foi cadastrado.")); return; }
+      const ids = new Set(cardapioGrupos.map(g => g.id)), out = [];
+      const blocos = cardapioGrupos.map(g => ({ nome: g.nome, ps: cardapio.filter(x => x.grupo === g.id) })).filter(b => b.ps.length);
+      const soltos = cardapio.filter(x => !ids.has(x.grupo)); if (soltos.length) blocos.push({ nome: blocos.length ? "Outros" : "", ps: soltos });
+      blocos.forEach(b => {
+        if (b.nome) out.push(el("div", "drink-g", b.nome));
+        b.ps.forEach(x => {
+          const i = el("div", "drink-i"); i.append(el("b", "", x.nome));
+          const ops = el("div", "drink-op");
+          ((x.tamanhos && x.tamanhos.length) ? x.tamanhos : ["unico"]).forEach(k => {
+            const preco = (x.precos || {})[k]; if (!preco) return;
+            const o = el("button"); o.type = "button";
+            if (k !== "unico") o.append(el("small", "", ROTULO_COPO[k] || k));
+            o.append(reais(preco)); o.onclick = () => confirmarDrink(p, x, k, preco); ops.append(o);
+          });
+          i.append(ops); out.push(i);
+        });
+      });
+      lista.replaceChildren(...out);
+    };
+    desenhar();
+    folha([el("h4", "", "Te pago um drink"), el("p", "", "Escolhe o que oferecer pra " + p.nome + ". Tu só paga no balcão se aceitar."), lista, bt("Cancelar", "", fecharFolha)]);
+    if (cardapio === null) { const t = setInterval(() => { if (cardapio !== null || $("#veu").hidden) { clearInterval(t); if (!$("#veu").hidden) desenhar(); } }, 300); }
+  }
+  function confirmarDrink(p, x, k, preco) {
+    const nomeItem = x.nome + (k !== "unico" ? " " + (ROTULO_COPO[k] || k) : "");
+    const r = el("div", "drink-resumo"); r.append(el("span", "", "Pra " + p.nome), el("b", "", nomeItem), el("span", "", reais(preco)));
+    folha([el("h4", "", "Mandar o convite?"), r,
+      el("p", "", p.nome + " recebe o convite na tela. Se aceitar, tu paga no balcão e leva até " + p.nome + ". Se não aceitar, ninguém fica sabendo."),
+      bt("Mandar convite", "sim", async e => {
+        e.target.disabled = true;
+        try {
+          await db.collection("drinks").add({ de: EU.uid, deNome: EU.nome, para: p.id, paraNome: p.nome, item: x.id, itemNome: nomeItem, tamanho: k, preco, status: "enviado", criado: agoraServidor(), respondido: null });
+          fecharFolha(); toast(p.id, "Convite enviado pra " + p.nome + ". Agora é esperar!");
+        } catch (err) { e.target.disabled = false; erroToast(err && err.code === "permission-denied" ? "Não deu: as regras do banco precisam ser publicadas." : "Não deu pra mandar agora. Tenta de novo."); }
+      }),
+      bt("Escolher outro", "", () => escolherDrink(p))]);
+  }
+  function mostrarConviteDrink(x) {
+    const r = el("div", "drink-resumo"); r.append(el("span", "", x.deNome + " quer te pagar"), el("b", "", x.itemNome), el("span", "", reais(x.preco)));
+    const itens = [avatar(x.de, "g"), el("h4", "", x.deNome + " quer te pagar um drink"), r,
+      el("p", "", "Se aceitar, " + x.deNome + " paga no balcão e leva até ti. Se não quiser, " + x.deNome + " só fica sabendo que não rolou."),
+      bt("Aceitar", "sim", () => responderDrink(x, "aceito")),
+      bt("Agora não", "", () => responderDrink(x, "recusado")),
+      bt("Ver perfil de " + x.deNome, "", () => { fecharFolha(); abrirPerfil(x.de); })];
+    if (!$("#veu").hidden) { toast(x.de, x.deNome + " quer te pagar um drink! Toca pra ver.", () => folha(itens)); return; }
+    folha(itens);
+    vibrar([60, 40, 60])
+  }
+  async function responderDrink(x, status) {
+    fecharFolha();
+    try { await db.doc("drinks/" + x.id).update({ status, respondido: agoraServidor() }); }
+    catch (e) { erroToast(e && e.code === "permission-denied" ? "Esse convite já foi cancelado." : "Não deu pra responder agora. Tenta de novo."); return; }
+    if (status === "aceito") toast(x.de, "Combinado! " + x.deNome + " vai buscar no balcão e levar até ti. Saúde!");
+  }
+  function cancelarDrink(x) {
+    db.doc("drinks/" + x.id).update({ status: "cancelado", respondido: agoraServidor() }).then(() => toast(x.para, "Convite cancelado.")).catch(() => erroToast("Não deu pra cancelar (talvez já tenha resposta)."));
+  }
+  function avisoDrinkAceito(x) {
+    const r = el("div", "drink-resumo"); r.append(el("span", "", "Pega no balcão e paga"), el("b", "", x.itemNome), el("span", "", reais(x.preco)));
+    const itens = [avatar(x.para, "g"), el("h4", "grande", x.paraNome + " aceitou!"), r,
+      el("p", "", "Passa no balcão: a equipe já tá vendo teu pedido. Depois é só levar até " + x.paraNome + " e puxar assunto."),
+      bt("Bora!", "sim", fecharFolha)];
+    if (!$("#veu").hidden) { toast(x.para, x.paraNome + " aceitou teu drink! Toca pra ver.", () => folha(itens)); return; }
+    folha(itens);
+    vibrar([80, 60, 120])
   }
 
   // ================= CHAT (só entre amigos) =================

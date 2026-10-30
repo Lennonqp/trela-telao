@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0d0a12">
+<title>Cardápio · Trela</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="estilo.css?v=202610301132">
+<style>
+  body{min-height:100dvh;padding:28px 16px calc(32px + env(safe-area-inset-bottom));background:radial-gradient(70% 40% at 15% 0%,rgba(169,92,242,.22),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(255,63,164,.18),transparent 70%),var(--bg)}
+  .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+  .logo{font-size:48px}
+  .logo small{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-shadow:none;margin-top:8px}
+  .voltar{color:var(--lilas);font-weight:700;text-decoration:none;font-size:14px}
+  #porta{display:flex;justify-content:center}
+  h1{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(30px,6vw,44px);line-height:1;text-transform:uppercase}
+  h1 em{font-style:normal;color:var(--neon)}
+  .sub{margin:6px 0 0;color:var(--muted);font-size:14px}
+  .painel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .painel h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1;text-transform:uppercase;color:var(--lilas)}
+  .painel.editando{border-color:var(--neon)}
+  .painel.editando h2{color:var(--neon)}
+  .linha{display:grid;grid-template-columns:132px minmax(0,1fr);gap:16px;align-items:start}
+  .foto{position:relative;width:132px;aspect-ratio:1;border-radius:14px;border:1.5px dashed var(--line);background:var(--bg) center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);font:700 12px/1.2 var(--f-body);text-align:center;cursor:pointer;padding:8px}
+  .foto.tem{border-style:solid;border-color:var(--lilas)}
+  .foto.tem .foto-txt{display:none}
+  .foto input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+  .foto-tirar{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(13,10,18,.85);color:var(--ink);font-size:14px;cursor:pointer;z-index:2}
+  .campos{display:flex;flex-direction:column;gap:12px;min-width:0}
+  textarea{min-height:76px}
+  .contador{float:right;font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:none;letter-spacing:0}
+  .grupo{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px}
+  .grupo > label{margin:0}
+  .opcoes{display:flex;flex-wrap:wrap;gap:8px}
+  .marca{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 14px;cursor:pointer;font:600 14px/1.2 var(--f-body);color:var(--ink);text-transform:none;letter-spacing:0;margin:0}
+  .marca input{width:18px;height:18px;margin:0;accent-color:var(--neon);flex:none}
+  .marca:has(input:checked){border-color:var(--neon);background:rgba(255,63,164,.1)}
+  .dica{color:var(--muted);font-size:13px;margin:0}
+  .precos{display:flex;flex-direction:column;gap:8px}
+  .preco-l{display:grid;grid-template-columns:110px minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center}
+  .preco-l.sem-uni{grid-template-columns:110px minmax(0,1fr)}
+  .preco-l b{font:700 13px/1.2 var(--f-body)}
+  .preco-cab{color:var(--muted);font:400 11px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase}
+  .rs{position:relative}
+  .rs::before{content:"R$";position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}
+  .rs input{padding-left:38px;font-variant-numeric:tabular-nums}
+  .acoes{display:flex;gap:10px;flex-wrap:wrap}
+  .acoes .btn{flex:1 1 200px;width:auto}
+  .acoes .ghost{flex:0 0 auto}
+  .msg{min-height:20px;margin:0;font-size:14px;color:var(--muted)}
+  .msg.erro{color:var(--laranja)}.msg.ok{color:var(--ok)}
+  .lista{display:flex;flex-direction:column;gap:10px}
+  .prod{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:14px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px}
+  .prod.foco{border-color:var(--neon)}
+  .prod .mini{width:72px;height:72px;border-radius:12px;background:var(--bg) center/cover no-repeat;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--line)}
+  .prod h3{margin:0;font:700 16px/1.25 var(--f-body)}
+  .prod p{margin:2px 0 6px;color:var(--muted);font-size:13px}
+  .tabela{display:flex;flex-wrap:wrap;gap:6px}
+  .tag{display:inline-flex;align-items:baseline;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:5px 9px;font-size:13px;font-variant-numeric:tabular-nums}
+  .tag small{color:var(--muted);font:700 10px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
+  .tag .uni{color:#ff7a2e;font-weight:700;text-shadow:0 0 6px rgba(255,90,31,.7)}
+  .prod-bts{display:flex;flex-direction:column;gap:6px}
+  .vazio{color:var(--muted);text-align:center;padding:24px;border:1px dashed var(--line);border-radius:16px;margin:0}
+  .topo-lista{display:flex;justify-content:space-between;align-items:baseline}
+  .topo-lista h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:24px;text-transform:uppercase}
+  .topo-lista span{color:var(--muted);font-family:var(--f-mono);font-size:12px}
+  .aviso{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:14px;background:var(--ink);color:#1a1320;border-radius:14px;padding:10px 10px 10px 16px;font-weight:700;font-size:14px;box-shadow:0 10px 30px -10px rgba(0,0,0,.6);max-width:calc(100% - 32px)}
+  .aviso button{border:0;background:#1a1320;color:var(--ink);border-radius:10px;padding:8px 12px;font:700 13px/1 var(--f-body);cursor:pointer}
+  select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);font:16px/1.4 var(--f-body);border-radius:12px;padding:12px;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat}
+  .grupos{display:flex;flex-direction:column;gap:6px}
+  .gr{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:6px 6px 6px 14px}
+  .gr .gn{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .gr .gn small{color:var(--muted);font:400 12px var(--f-mono);margin-left:8px}
+  .gr input{flex:1;min-width:0;padding:8px 10px;font-size:15px}
+  .gb{flex:none;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer;font:700 14px/1 var(--f-body);display:grid;place-items:center}
+  .gb:hover{border-color:var(--lilas)}
+  .gb:disabled{opacity:.3;cursor:default}
+  .addg{display:flex;gap:8px}
+  .addg input{flex:1;min-width:0}
+  .addg .btn{width:auto;padding:0 20px;font-size:17px}
+  .sug{border:1px dashed var(--lilas);background:none;color:var(--ink);border-radius:999px;padding:7px 12px;font:700 13px/1 var(--f-body);cursor:pointer}
+  .sug::before{content:"+ ";color:var(--lilas)}
+  .cab-grupo{display:flex;align-items:baseline;justify-content:space-between;margin:14px 2px 2px;font-family:var(--f-display);font-size:20px;text-transform:uppercase;color:var(--neon)}
+  .cab-grupo:first-child{margin-top:0}
+  .cab-grupo span{font:400 12px var(--f-mono);color:var(--muted);text-transform:none}
+  .cab-grupo.sem{color:var(--muted)}
+  .vista{display:flex;flex-direction:column;gap:22px}
+  #vLista{padding-bottom:84px}
+  .volta-lista{align-self:flex-start;background:none;border:0;color:var(--lilas);font:700 14px/1 var(--f-body);padding:4px 0;cursor:pointer}
+  details.painel > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-size:20px;line-height:1.1;text-transform:uppercase;color:var(--lilas)}
+  details.painel > summary::-webkit-details-marker{display:none}
+  details.painel > summary span{font:400 12px var(--f-mono);color:var(--muted);text-transform:none;margin-left:auto;white-space:nowrap}
+  details.painel > summary::after{content:"+";font:400 26px/1 var(--f-body);color:var(--lilas)}
+  details.painel[open] > summary::after{content:"–"}
+  details.painel{display:block}
+  .grp-corpo{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+  /* botão flutuante: no topo mostra o texto, rolando vira um + redondo */
+  .fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));z-index:15;height:58px;min-width:58px;border:0;border-radius:999px;background:var(--neon);color:#1d0612;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 24px 0 18px;cursor:pointer;box-shadow:0 12px 30px -8px rgba(255,63,164,.75),0 0 0 1px rgba(255,255,255,.08) inset;transition:padding .28s ease,gap .28s ease,transform .15s}
+  .fab:active{transform:scale(.96)}
+  .fab:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+  .fab-mais{display:block;width:24px;height:24px;flex:none}
+  .fab-txt{font:400 19px/1 var(--f-display);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;max-width:240px;opacity:1;transition:max-width .28s ease,opacity .18s ease}
+  .fab.redondo{padding:0;gap:0}
+  .fab.redondo .fab-txt{max-width:0;opacity:0}
+  @media (prefers-reduced-motion:reduce){.fab,.fab-txt{transition:none}}
+  @media (max-width:520px){
+    .linha{grid-template-columns:minmax(0,1fr)}
+    .foto{width:100%;aspect-ratio:16/9}
+    .preco-l{grid-template-columns:76px minmax(0,1fr) minmax(0,1fr)}
+    .preco-l.sem-uni{grid-template-columns:76px minmax(0,1fr)}
+    .prod{grid-template-columns:56px minmax(0,1fr)}
+    .prod .mini{width:56px;height:56px}
+    .prod-bts{grid-column:1/-1;flex-direction:row}
+    .prod-bts .ghost{flex:1}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><img src="logo.svg?v=3" alt="trela"><small>Equipe · cardápio</small></div>
+    <a class="voltar" href="bar">&lsaquo; Voltar pro painel</a>
+  </header>
+
+  <div id="porta"></div>
+
+  <main id="tela" hidden>
+  <div class="vista" id="vLista">
+    <div>
+      <h1>Cardápio do <em>Trela</em></h1>
+      <p class="sub">Assim a galera vê o cardápio. Pra cadastrar, toca em Cadastrar produto.</p>
+    </div>
+
+    <details class="painel" id="gruposBox">
+      <summary>Organizar grupos <span id="gruposN"></span></summary>
+      <div class="grp-corpo">
+      <p class="dica">Vocês criam os grupos do jeito do bar: drinks, cervejas, doses… A ordem daqui é a ordem do cardápio.</p>
+      <div class="opcoes" id="sugestoes"></div>
+      <div class="grupos" id="grupos"></div>
+      <form class="addg" id="formGrupo" novalidate>
+        <input id="novoGrupo" maxlength="30" placeholder="Novo grupo, ex.: Drinks" autocomplete="off" aria-label="Nome do novo grupo">
+        <button class="btn" type="submit">Criar</button>
+      </form>
+      <p class="msg" id="msgGrupo" role="status"></p>
+      </div>
+    </details>
+
+    <section>
+      <div class="topo-lista"><h2>No cardápio</h2><span id="total"></span></div>
+      <div class="lista" id="lista" style="margin-top:12px"></div>
+    </section>
+  </div>
+
+  <div class="vista" id="vForm" hidden>
+    <button type="button" class="volta-lista" id="voltaLista">&lsaquo; Voltar pro cardápio</button>
+    <form class="painel" id="form" novalidate>
+      <h2 id="formTitulo">Novo produto</h2>
+      <div class="linha">
+        <label class="foto" id="foto" aria-label="Foto do produto">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="foto-txt"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+          <span class="foto-txt">Foto<br>(opcional)</span>
+          <input type="file" id="fotoArq" accept="image/*">
+        </label>
+        <div class="campos">
+          <div><label for="grupoSel">Grupo</label><select id="grupoSel"></select></div>
+          <div><label for="nome">Nome <span class="contador" id="cNome">0/60</span></label><input id="nome" maxlength="60" placeholder="Ex.: Chopp Pilsen" autocomplete="off"></div>
+          <div><label for="desc">Descrição <span class="contador" id="cDesc">0/200</span></label><textarea id="desc" maxlength="200" placeholder="Ex.: Leve e gelado, direto da torneira."></textarea></div>
+        </div>
+      </div>
+
+      <div class="grupo">
+        <label>Copo</label>
+        <div class="opcoes">
+          <label class="marca"><input type="checkbox" id="t500"> Copo 500 ml</label>
+          <label class="marca"><input type="checkbox" id="t700"> Copo 700 ml</label>
+        </div>
+        <p class="dica">Marca os copos que esse produto tem. Sem nenhum marcado, fica um preço só (petisco, garrafa, dose…).</p>
+      </div>
+
+      <div class="grupo">
+        <label class="marca" style="align-self:flex-start"><input type="checkbox" id="uni"> Tem preço universitário</label>
+        <p class="dica">Marcado, o cardápio mostra o preço normal e o preço universitário.</p>
+      </div>
+
+      <div class="grupo">
+        <label>Preço</label>
+        <div class="precos" id="precos"></div>
+      </div>
+
+      <p class="msg" id="msg" role="status"></p>
+      <div class="acoes">
+        <button class="btn" type="submit" id="salvar">Salvar produto</button>
+        <button class="ghost" type="submit" id="salvarOutro">Salvar e cadastrar outro</button>
+        <button class="ghost" type="button" id="cancelar">Cancelar</button>
+      </div>
+    </form>
+  </div>
+  </main>
+  <footer class="lennon-pe" data-marca-lennon></footer>
+</div>
+<div class="aviso" id="aviso" role="status" hidden></div>
+<button type="button" class="fab" id="fab" hidden aria-label="Cadastrar produto"><svg class="fab-mais" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="fab-txt">Cadastrar produto</span></button>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="config.js?v=202610301132"></script>
+<script>window.SESSAO_EQUIPE = true;</script>
+<script src="marca.js?v=202610301132"></script>
+<script src="comum.js?v=202610301132"></script>
+<script src="equipe.js?v=202610301132"></script>
+<script>
+  // Cardápio: a equipe cadastra os produtos em /cardapio/{id}.
+  // Preços em centavos: precos = { unico } ou { "500", "700" }; precosUni no mesmo formato quando tem universitário.
+  const $ = id => document.getElementById(id);
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  const reais = c => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  // "12", "12,5", "R$ 12,50", "1.234,50", "12.50" -> centavos (ou null)
+  function centavos(txt) {
+    let t = String(txt || "").replace(/[^\d,.]/g, "");
+    if (!t) return null;
+    if (t.includes(",")) t = t.replace(/\./g, "").replace(",", ".");
+    else if ((t.match(/\./g) || []).length > 1 || /\.\d{3}$/.test(t)) t = t.replace(/\./g, "");
+    const v = Math.round(parseFloat(t) * 100);
+    return isFinite(v) && v > 0 && v < 10000000 ? v : null;
+  }
+  const paraCampo = c => c ? (c / 100).toFixed(2).replace(".", ",") : "";
+
+  let produtos = [], grupos = [], editando = null, fotoAtual = "", parar = [];
+  const ROTULO = { unico: "Preço", "500": "500 ml", "700": "700 ml" };
+
+  // ---------- formulário ----------
+  function tamanhos() { const t = []; if ($("t500").checked) t.push("500"); if ($("t700").checked) t.push("700"); return t.length ? t : ["unico"]; }
+  function desenharPrecos(valores) {
+    // guarda o que já foi digitado antes de redesenhar
+    const v = valores || {};
+    if (!valores) document.querySelectorAll("#precos input").forEach(i => v[i.dataset.k] = i.value);
+    const uni = $("uni").checked, box = $("precos"); box.innerHTML = "";
+    const cab = el("div", "preco-l" + (uni ? "" : " sem-uni"));
+    cab.append(el("span"), el("span", "preco-cab", "Normal")); if (uni) cab.append(el("span", "preco-cab", "Universitário"));
+    box.append(cab);
+    tamanhos().forEach(t => {
+      const l = el("div", "preco-l" + (uni ? "" : " sem-uni"));
+      l.append(el("b", "", ROTULO[t]));
+      const campo = (k, aria) => { const w = el("div", "rs"), i = el("input"); i.inputMode = "decimal"; i.placeholder = "0,00"; i.dataset.k = k; i.value = v[k] || ""; i.setAttribute("aria-label", aria);
+        i.onblur = () => { const c = centavos(i.value); if (c) i.value = paraCampo(c); };   // "R$ 19,9" vira "19,90"
+        w.append(i); return w; };
+      l.append(campo("n" + t, "Preço normal " + ROTULO[t]));
+      if (uni) l.append(campo("u" + t, "Preço universitário " + ROTULO[t]));
+      box.append(l);
+    });
+  }
+  ["t500", "t700", "uni"].forEach(id => $(id).onchange = () => desenharPrecos());
+  const contar = (id, c, max) => { $(c).textContent = $(id).value.length + "/" + max; };
+  $("nome").oninput = () => contar("nome", "cNome", 60);
+  $("desc").oninput = () => contar("desc", "cDesc", 200);
+
+  function mostrarFoto(d) {
+    fotoAtual = d || "";
+    const f = $("foto"); f.classList.toggle("tem", !!fotoAtual); f.style.backgroundImage = fotoAtual ? "url(" + fotoAtual + ")" : "";
+    let x = f.querySelector(".foto-tirar");
+    if (fotoAtual && !x) { x = el("button", "foto-tirar", "✕"); x.type = "button"; x.setAttribute("aria-label", "Tirar a foto"); x.onclick = e => { e.preventDefault(); e.stopPropagation(); mostrarFoto(""); }; f.append(x); }
+    if (!fotoAtual && x) x.remove();
+  }
+  $("fotoArq").onchange = async e => {
+    const arq = e.target.files && e.target.files[0]; e.target.value = "";
+    if (!arq) return;
+    msg("Preparando a foto…");
+    try { mostrarFoto(await comprimirFoto(arq, 700)); msg(""); }
+    catch (err) { msg(err.message === "grande" ? "Essa foto ficou grande demais. Tenta outra." : "Não consegui abrir essa imagem. Tenta uma foto JPG ou PNG.", "erro"); }
+  };
+  $("form").addEventListener("input", () => { if ($("msg").classList.contains("erro")) msg(""); });
+  const msg = (t, cls) => { $("msg").textContent = t; $("msg").className = "msg " + (cls || ""); };
+
+  function limpar() {
+    const g = $("grupoSel").value;   // o próximo produto já vem no mesmo grupo (bom pra cadastrar vários)
+    editando = null; $("form").reset(); $("grupoSel").value = g; mostrarFoto(""); desenharPrecos({});
+    $("formTitulo").textContent = "Novo produto"; $("salvar").textContent = "Salvar produto"; $("salvarOutro").hidden = false;
+    $("form").classList.remove("editando"); contar("nome", "cNome", 60); contar("desc", "cDesc", 200);
+    document.querySelectorAll(".prod.foco").forEach(p => p.classList.remove("foco"));
+  }
+  // ---------- duas telas: o cardápio (primeira) e o cadastro (#produto) ----------
+  let empurrei = false, scrollLista = 0, destacar = null;
+  function abrirForm() {
+    scrollLista = window.scrollY;
+    if (location.hash !== "#produto") { empurrei = true; location.hash = "produto"; } else mostrarTela();
+  }
+  function voltarLista() {
+    if (location.hash === "#produto") { if (empurrei) { empurrei = false; history.back(); } else location.hash = ""; }
+    else mostrarTela();
+  }
+  function mostrarTela() {
+    const form = location.hash === "#produto";
+    $("vForm").hidden = !form; $("vLista").hidden = form; $("fab").hidden = form || $("tela").hidden;
+    if (form) { window.scrollTo(0, 0); setTimeout(() => { if (!editando) $("nome").focus({ preventScroll: true }); }, 60); }
+    else { if (editando) limpar(); msg(""); window.scrollTo(0, scrollLista); mostrarDestaque(); }
+    atualizarFab();
+  }
+  window.addEventListener("hashchange", () => { if (location.hash !== "#produto") empurrei = false; mostrarTela(); });
+  function mostrarDestaque() {
+    if (!destacar) return;
+    const c = document.querySelector('.prod[data-id="' + destacar + '"]'); if (!c) return;   // ainda não chegou: a lista tenta de novo
+    destacar = null; c.classList.add("foco"); c.scrollIntoView({ block: "center" });
+    setTimeout(() => c.classList.remove("foco"), 2200);
+  }
+  function atualizarFab() { $("fab").classList.toggle("redondo", window.scrollY > 40); }
+  window.addEventListener("scroll", atualizarFab, { passive: true });
+  $("fab").onclick = () => { limpar(); msg(""); abrirForm(); };
+  $("cancelar").onclick = $("voltaLista").onclick = () => { limpar(); voltarLista(); };
+
+  function editar(p) {
+    editando = p.id;
+    $("nome").value = p.nome || ""; $("desc").value = p.descricao || "";
+    $("t500").checked = (p.tamanhos || []).includes("500"); $("t700").checked = (p.tamanhos || []).includes("700");
+    $("uni").checked = !!p.uni; mostrarFoto(p.foto || "");
+    $("grupoSel").value = grupoDe(p) ? p.grupo : "";
+    const v = {}; Object.keys(p.precos || {}).forEach(k => v["n" + k] = paraCampo(p.precos[k])); Object.keys(p.precosUni || {}).forEach(k => v["u" + k] = paraCampo(p.precosUni[k]));
+    desenharPrecos(v);
+    $("formTitulo").textContent = "Editando: " + p.nome; $("salvar").textContent = "Salvar alterações"; $("salvarOutro").hidden = true;
+    $("form").classList.add("editando"); contar("nome", "cNome", 60); contar("desc", "cDesc", 200); msg("");
+    abrirForm();
+  }
+
+  $("form").onsubmit = async e => {
+    e.preventDefault();
+    const nome = $("nome").value.replace(/\s+/g, " ").trim(), descricao = $("desc").value.replace(/\s+/g, " ").trim();
+    if (!nome) { msg("Coloca o nome do produto.", "erro"); $("nome").focus(); return; }
+    const ts = tamanhos(), uni = $("uni").checked, precos = {}, precosUni = {};
+    for (const t of ts) {
+      const n = centavos(document.querySelector('#precos [data-k="n' + t + '"]').value);
+      if (!n) { msg("Falta o preço " + (t === "unico" ? "" : "do copo de " + ROTULO[t]) + ".", "erro"); document.querySelector('#precos [data-k="n' + t + '"]').focus(); return; }
+      precos[t] = n;
+      if (uni) {
+        const u = centavos(document.querySelector('#precos [data-k="u' + t + '"]').value);
+        if (!u) { msg("Falta o preço universitário " + (t === "unico" ? "" : "do copo de " + ROTULO[t]) + ".", "erro"); document.querySelector('#precos [data-k="u' + t + '"]').focus(); return; }
+        precosUni[t] = u;
+      }
+    }
+    const dados = { nome, descricao, grupo: $("grupoSel").value || "", foto: fotoAtual, tamanhos: ts[0] === "unico" ? [] : ts, precos, uni, precosUni: uni ? precosUni : {}, atualizado: agoraServidor() };
+    const outro = e.submitter && e.submitter.id === "salvarOutro";
+    $("salvar").disabled = $("salvarOutro").disabled = true; msg("Salvando…");
+    try {
+      let id = editando;
+      if (editando) await db.doc("cardapio/" + editando).update(dados);   // mantém ordem e criado
+      else id = (await db.collection("cardapio").add(Object.assign(dados, { ordem: Date.now(), criado: agoraServidor() }))).id;
+      const era = editando; limpar();
+      if (outro) { msg(nome + " entrou no cardápio. Pode cadastrar o próximo.", "ok"); window.scrollTo(0, 0); $("nome").focus({ preventScroll: true }); }
+      else { destacar = id; voltarLista(); avisar(era ? "Alterações salvas." : nome + " entrou no cardápio."); }
+    } catch (err) {
+      msg(err.code === "permission-denied" ? "As regras do Firestore estão desatualizadas. Publica o firestore.rules de novo." : "Não deu pra salvar agora. Tenta de novo.", "erro");
+    } finally { $("salvar").disabled = $("salvarOutro").disabled = false; }
+  };
+  // ---------- lista ----------
+  function tabela(p) {
+    const box = el("div", "tabela");
+    const ks = (p.tamanhos && p.tamanhos.length) ? p.tamanhos : ["unico"];
+    ks.forEach(k => {
+      const t = el("span", "tag");
+      if (k !== "unico") t.append(el("small", "", ROTULO[k]));
+      t.append(el("span", "", reais((p.precos || {})[k] || 0)));
+      if (p.uni && p.precosUni && p.precosUni[k]) { t.append(el("small", "", "Univ.")); t.append(el("span", "uni", reais(p.precosUni[k]))); }
+      box.append(t);
+    });
+    return box;
+  }
+  function desenharLista() {
+    const box = $("lista"); box.innerHTML = "";
+    $("total").textContent = produtos.length + (produtos.length === 1 ? " produto" : " produtos");
+    if (!produtos.length) { box.append(el("p", "vazio", "Nenhum produto ainda. Toca em Cadastrar produto pra começar.")); return; }
+    const blocos = grupos.map(g => ({ g, ps: produtos.filter(p => p.grupo === g.id) }));
+    const soltos = produtos.filter(p => !grupoDe(p));
+    if (grupos.length) {
+      blocos.forEach(b => { if (!b.ps.length) return; box.append(cabGrupo(b.g.nome, b.ps.length)); b.ps.forEach(p => box.append(cartao(p))); });
+      if (soltos.length) { box.append(cabGrupo("Sem grupo", soltos.length, true)); soltos.forEach(p => box.append(cartao(p))); }
+    } else produtos.forEach(p => box.append(cartao(p)));
+  }
+  function cabGrupo(nome, n, sem) { const h = el("h3", "cab-grupo" + (sem ? " sem" : ""), nome); h.append(el("span", "", n + (n === 1 ? " produto" : " produtos"))); return h; }
+  function cartao(p) {
+    {
+      const c = el("article", "prod" + (p.id === editando ? " foco" : "")); c.dataset.id = p.id;
+      const mini = el("div", "mini");
+      if (p.foto) mini.style.backgroundImage = "url(" + p.foto + ")";
+      else mini.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12l-1.5 15a2 2 0 0 1-2 1.8h-5a2 2 0 0 1-2-1.8z"/><path d="M6.5 9h11"/></svg>';
+      const meio = el("div"); meio.append(el("h3", "", p.nome));
+      if (p.descricao) meio.append(el("p", "", p.descricao));
+      meio.append(tabela(p));
+      const bts = el("div", "prod-bts");
+      const ed = el("button", "ghost", "Editar"); ed.type = "button"; ed.onclick = () => editar(p);
+      const ap = el("button", "ghost", "Apagar"); ap.type = "button"; ap.onclick = () => apagar(p);
+      bts.append(ed, ap);
+      c.append(mini, meio, bts); return c;
+    }
+  }
+  let avisoT;
+  function avisar(texto, desfazer) {
+    const a = $("aviso"); a.replaceChildren(el("span", "", texto));
+    if (desfazer) { const d = el("button", "", "Desfazer"); d.type = "button"; d.onclick = () => { a.hidden = true; desfazer(); }; a.append(d); }
+    a.hidden = false; clearTimeout(avisoT); avisoT = setTimeout(() => a.hidden = true, 7000);
+  }
+
+  // ---------- grupos (config/cardapio.grupos, na ordem do cardápio) ----------
+  const SUGESTOES = ["Cervejas", "Drinks", "Doses", "Sem álcool", "Petiscos"];
+  const grupoDe = p => p.grupo && grupos.some(g => g.id === p.grupo);
+  const msgG = (t, cls) => { $("msgGrupo").textContent = t; $("msgGrupo").className = "msg " + (cls || ""); };
+  let renomeando = null;
+  function salvarGrupos(lista) {
+    grupos = lista; desenharGrupos(); desenharLista();
+    return db.doc("config/cardapio").set({ grupos: lista }, { merge: true })
+      .catch(e => msgG(e && e.code === "permission-denied" ? "Sem permissão pra salvar os grupos." : "Não deu pra salvar agora. Tenta de novo.", "erro"));
+  }
+  function criarGrupo(nome) {
+    nome = String(nome || "").replace(/\s+/g, " ").trim().slice(0, 30);
+    if (!nome) { $("novoGrupo").focus(); return; }
+    if (grupos.some(g => g.nome.toLowerCase() === nome.toLowerCase())) { msgG(nome + " já existe.", "erro"); return; }
+    if (grupos.length >= 30) { msgG("Máximo de 30 grupos.", "erro"); return; }
+    const g = { id: "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), nome };
+    msgG("");
+    salvarGrupos(grupos.concat([g]));
+    if (!$("grupoSel").value && !editando) $("grupoSel").value = g.id;
+  }
+  $("formGrupo").onsubmit = e => { e.preventDefault(); criarGrupo($("novoGrupo").value); $("novoGrupo").value = ""; };
+  $("novoGrupo").oninput = () => msgG("");
+  function mover(i, d) { const l = grupos.slice(), j = i + d; if (j < 0 || j >= l.length) return; const t = l[i]; l[i] = l[j]; l[j] = t; salvarGrupos(l); }
+  function renomear(g, nome) {
+    renomeando = null;
+    nome = String(nome || "").replace(/\s+/g, " ").trim().slice(0, 30);
+    if (!nome || nome === g.nome) { desenharGrupos(); return; }
+    if (grupos.some(x => x.id !== g.id && x.nome.toLowerCase() === nome.toLowerCase())) { msgG(nome + " já existe.", "erro"); desenharGrupos(); return; }
+    salvarGrupos(grupos.map(x => x.id === g.id ? { id: x.id, nome } : x));
+  }
+  function apagarGrupo(g) {
+    const antes = grupos.slice(), n = produtos.filter(p => p.grupo === g.id).length;
+    salvarGrupos(grupos.filter(x => x.id !== g.id));
+    avisar("Grupo " + g.nome + " apagado." + (n ? " " + n + (n === 1 ? " produto foi" : " produtos foram") + " pra Sem grupo." : ""), () => salvarGrupos(antes));
+  }
+  const BT = (txt, aria, f, off) => { const b = el("button", "gb", txt); b.type = "button"; b.setAttribute("aria-label", aria); b.onclick = f; b.disabled = !!off; return b; };
+  function desenharGrupos() {
+    const box = $("grupos"); box.innerHTML = "";
+    grupos.forEach((g, i) => {
+      const r = el("div", "gr");
+      if (renomeando === g.id) {
+        const inp = el("input"); inp.value = g.nome; inp.maxLength = 30; inp.setAttribute("aria-label", "Novo nome do grupo");
+        let feito = false; const ok = () => { if (!feito) { feito = true; renomear(g, inp.value); } };
+        inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); ok(); } if (e.key === "Escape") { feito = true; renomeando = null; desenharGrupos(); } };
+        inp.onblur = ok;
+        r.append(inp, BT("✓", "Salvar nome", ok));
+        box.append(r); setTimeout(() => { inp.focus(); inp.select(); }, 0);
+        return;
+      }
+      const n = produtos.filter(p => p.grupo === g.id).length;
+      const nm = el("span", "gn", g.nome); nm.append(el("small", "", String(n)));
+      r.append(nm,
+        BT("↑", "Subir " + g.nome, () => mover(i, -1), i === 0),
+        BT("↓", "Descer " + g.nome, () => mover(i, 1), i === grupos.length - 1),
+        BT("✎", "Renomear " + g.nome, () => { renomeando = g.id; desenharGrupos(); }),
+        BT("✕", "Apagar " + g.nome, () => apagarGrupo(g)));
+      box.append(r);
+    });
+    // sugestões de um toque (somem quando o grupo já existe)
+    $("gruposN").textContent = grupos.length ? grupos.length + (grupos.length === 1 ? " grupo" : " grupos") : "nenhum ainda";
+    const sug = $("sugestoes"); sug.innerHTML = "";
+    SUGESTOES.filter(n => !grupos.some(g => g.nome.toLowerCase() === n.toLowerCase())).forEach(n => {
+      const b = el("button", "sug", n); b.type = "button"; b.onclick = () => criarGrupo(n); sug.append(b);
+    });
+    // seletor do produto
+    const sel = $("grupoSel"), atual = sel.value;
+    sel.innerHTML = ""; sel.append(new Option("Sem grupo", ""));
+    grupos.forEach(g => sel.append(new Option(g.nome, g.id)));
+    sel.value = grupos.some(g => g.id === atual) ? atual : "";
+  }
+
+  async function apagar(p) {
+    if (editando === p.id) limpar();
+    const copia = Object.assign({}, p); delete copia.id;
+    try { await db.doc("cardapio/" + p.id).delete(); } catch (e) { msg("Não deu pra apagar agora.", "erro"); return; }
+    avisar(p.nome + " saiu do cardápio.", () => db.doc("cardapio/" + p.id).set(copia).catch(() => msg("Não deu pra desfazer.", "erro")));
+  }
+
+  desenharPrecos({}); desenharGrupos();
+  portaEquipe($("porta"), () => {
+    $("tela").hidden = false; mostrarTela();
+    let primeiraVezGrupos = true;
+    parar.push(db.doc("config/cardapio").onSnapshot(s => {
+      grupos = (s.exists && Array.isArray(s.data().grupos)) ? s.data().grupos.filter(g => g && g.id && g.nome) : [];
+      if (renomeando && !grupos.some(g => g.id === renomeando)) renomeando = null;
+      if (!renomeando) desenharGrupos();
+      if (primeiraVezGrupos) { primeiraVezGrupos = false; if (!grupos.length) $("gruposBox").open = true; }
+      desenharLista();
+    }, () => {}));
+    parar.push(db.collection("cardapio").onSnapshot(s => {
+      produtos = s.docs.map(d => Object.assign({ id: d.id }, d.data())).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+      desenharLista(); if (!renomeando) desenharGrupos(); if (!$("vLista").hidden) mostrarDestaque();
+    }, e => { $("lista").replaceChildren(el("p", "vazio", e && e.code === "permission-denied" ? "As regras do Firestore estão desatualizadas. Publica o firestore.rules de novo." : "Não deu pra carregar o cardápio.")); }));
+  }, () => { parar.forEach(f => f()); parar = []; $("tela").hidden = true; $("fab").hidden = true; });
+</script>
+</body>
+</html>

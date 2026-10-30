@@ -9,7 +9,7 @@
 <title>Cardápio · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="estilo.css?v=202610291756">
+<link rel="stylesheet" href="estilo.css?v=202610300913">
 <style>
   body{min-height:100dvh;padding:28px 16px calc(32px + env(safe-area-inset-bottom));background:radial-gradient(70% 40% at 15% 0%,rgba(169,92,242,.22),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(255,63,164,.18),transparent 70%),var(--bg)}
   .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
@@ -71,6 +71,24 @@
   .topo-lista span{color:var(--muted);font-family:var(--f-mono);font-size:12px}
   .aviso{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:14px;background:var(--ink);color:#1a1320;border-radius:14px;padding:10px 10px 10px 16px;font-weight:700;font-size:14px;box-shadow:0 10px 30px -10px rgba(0,0,0,.6);max-width:calc(100% - 32px)}
   .aviso button{border:0;background:#1a1320;color:var(--ink);border-radius:10px;padding:8px 12px;font:700 13px/1 var(--f-body);cursor:pointer}
+  select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);font:16px/1.4 var(--f-body);border-radius:12px;padding:12px;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat}
+  .grupos{display:flex;flex-direction:column;gap:6px}
+  .gr{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:6px 6px 6px 14px}
+  .gr .gn{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .gr .gn small{color:var(--muted);font:400 12px var(--f-mono);margin-left:8px}
+  .gr input{flex:1;min-width:0;padding:8px 10px;font-size:15px}
+  .gb{flex:none;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer;font:700 14px/1 var(--f-body);display:grid;place-items:center}
+  .gb:hover{border-color:var(--lilas)}
+  .gb:disabled{opacity:.3;cursor:default}
+  .addg{display:flex;gap:8px}
+  .addg input{flex:1;min-width:0}
+  .addg .btn{width:auto;padding:0 20px;font-size:17px}
+  .sug{border:1px dashed var(--lilas);background:none;color:var(--ink);border-radius:999px;padding:7px 12px;font:700 13px/1 var(--f-body);cursor:pointer}
+  .sug::before{content:"+ ";color:var(--lilas)}
+  .cab-grupo{display:flex;align-items:baseline;justify-content:space-between;margin:14px 2px 2px;font-family:var(--f-display);font-size:20px;text-transform:uppercase;color:var(--neon)}
+  .cab-grupo:first-child{margin-top:0}
+  .cab-grupo span{font:400 12px var(--f-mono);color:var(--muted);text-transform:none}
+  .cab-grupo.sem{color:var(--muted)}
   @media (max-width:520px){
     .linha{grid-template-columns:minmax(0,1fr)}
     .foto{width:100%;aspect-ratio:16/9}
@@ -98,6 +116,18 @@
       <p class="sub">Cadastra os produtos com foto, descrição e preço. Bebida no copo pode ter preço de 500 ml e de 700 ml.</p>
     </div>
 
+    <section class="painel" id="gruposBox" aria-labelledby="gruposTitulo">
+      <h2 id="gruposTitulo">Grupos</h2>
+      <p class="dica">Vocês criam os grupos do jeito do bar: drinks, cervejas, doses… A ordem daqui é a ordem do cardápio.</p>
+      <div class="opcoes" id="sugestoes"></div>
+      <div class="grupos" id="grupos"></div>
+      <form class="addg" id="formGrupo" novalidate>
+        <input id="novoGrupo" maxlength="30" placeholder="Novo grupo, ex.: Drinks" autocomplete="off" aria-label="Nome do novo grupo">
+        <button class="btn" type="submit">Criar</button>
+      </form>
+      <p class="msg" id="msgGrupo" role="status"></p>
+    </section>
+
     <form class="painel" id="form" novalidate>
       <h2 id="formTitulo">Novo produto</h2>
       <div class="linha">
@@ -107,6 +137,7 @@
           <input type="file" id="fotoArq" accept="image/*">
         </label>
         <div class="campos">
+          <div><label for="grupoSel">Grupo</label><select id="grupoSel"></select></div>
           <div><label for="nome">Nome <span class="contador" id="cNome">0/60</span></label><input id="nome" maxlength="60" placeholder="Ex.: Chopp Pilsen" autocomplete="off"></div>
           <div><label for="desc">Descrição <span class="contador" id="cDesc">0/200</span></label><textarea id="desc" maxlength="200" placeholder="Ex.: Leve e gelado, direto da torneira."></textarea></div>
         </div>
@@ -150,11 +181,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610291756"></script>
+<script src="config.js?v=202610300913"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202610291756"></script>
-<script src="comum.js?v=202610291756"></script>
-<script src="equipe.js?v=202610291756"></script>
+<script src="marca.js?v=202610300913"></script>
+<script src="comum.js?v=202610300913"></script>
+<script src="equipe.js?v=202610300913"></script>
 <script>
   // Cardápio: a equipe cadastra os produtos em /cardapio/{id}.
   // Preços em centavos: precos = { unico } ou { "500", "700" }; precosUni no mesmo formato quando tem universitário.
@@ -172,7 +203,7 @@
   }
   const paraCampo = c => c ? (c / 100).toFixed(2).replace(".", ",") : "";
 
-  let produtos = [], editando = null, fotoAtual = "", parar = [];
+  let produtos = [], grupos = [], editando = null, fotoAtual = "", parar = [];
   const ROTULO = { unico: "Preço", "500": "500 ml", "700": "700 ml" };
 
   // ---------- formulário ----------
@@ -219,7 +250,8 @@
   const msg = (t, cls) => { $("msg").textContent = t; $("msg").className = "msg " + (cls || ""); };
 
   function limpar() {
-    editando = null; $("form").reset(); mostrarFoto(""); desenharPrecos({});
+    const g = $("grupoSel").value;   // o próximo produto já vem no mesmo grupo (bom pra cadastrar vários)
+    editando = null; $("form").reset(); $("grupoSel").value = g; mostrarFoto(""); desenharPrecos({});
     $("formTitulo").textContent = "Novo produto"; $("salvar").textContent = "Salvar produto"; $("cancelar").hidden = true;
     $("form").classList.remove("editando"); contar("nome", "cNome", 60); contar("desc", "cDesc", 200);
     document.querySelectorAll(".prod.foco").forEach(p => p.classList.remove("foco"));
@@ -231,6 +263,7 @@
     $("nome").value = p.nome || ""; $("desc").value = p.descricao || "";
     $("t500").checked = (p.tamanhos || []).includes("500"); $("t700").checked = (p.tamanhos || []).includes("700");
     $("uni").checked = !!p.uni; mostrarFoto(p.foto || "");
+    $("grupoSel").value = grupoDe(p) ? p.grupo : "";
     const v = {}; Object.keys(p.precos || {}).forEach(k => v["n" + k] = paraCampo(p.precos[k])); Object.keys(p.precosUni || {}).forEach(k => v["u" + k] = paraCampo(p.precosUni[k]));
     desenharPrecos(v);
     $("formTitulo").textContent = "Editando: " + p.nome; $("salvar").textContent = "Salvar alterações"; $("cancelar").hidden = false;
@@ -254,7 +287,7 @@
         precosUni[t] = u;
       }
     }
-    const dados = { nome, descricao, foto: fotoAtual, tamanhos: ts[0] === "unico" ? [] : ts, precos, uni, precosUni: uni ? precosUni : {}, atualizado: agoraServidor() };
+    const dados = { nome, descricao, grupo: $("grupoSel").value || "", foto: fotoAtual, tamanhos: ts[0] === "unico" ? [] : ts, precos, uni, precosUni: uni ? precosUni : {}, atualizado: agoraServidor() };
     $("salvar").disabled = true; msg("Salvando…");
     try {
       if (editando) await db.doc("cardapio/" + editando).update(dados);   // mantém ordem e criado
@@ -281,7 +314,16 @@
     const box = $("lista"); box.innerHTML = "";
     $("total").textContent = produtos.length + (produtos.length === 1 ? " produto" : " produtos");
     if (!produtos.length) { box.append(el("p", "vazio", "Nenhum produto ainda. Cadastra o primeiro aí em cima.")); return; }
-    produtos.forEach(p => {
+    const blocos = grupos.map(g => ({ g, ps: produtos.filter(p => p.grupo === g.id) }));
+    const soltos = produtos.filter(p => !grupoDe(p));
+    if (grupos.length) {
+      blocos.forEach(b => { if (!b.ps.length) return; box.append(cabGrupo(b.g.nome, b.ps.length)); b.ps.forEach(p => box.append(cartao(p))); });
+      if (soltos.length) { box.append(cabGrupo("Sem grupo", soltos.length, true)); soltos.forEach(p => box.append(cartao(p))); }
+    } else produtos.forEach(p => box.append(cartao(p)));
+  }
+  function cabGrupo(nome, n, sem) { const h = el("h3", "cab-grupo" + (sem ? " sem" : ""), nome); h.append(el("span", "", n + (n === 1 ? " produto" : " produtos"))); return h; }
+  function cartao(p) {
+    {
       const c = el("article", "prod" + (p.id === editando ? " foco" : "")); c.dataset.id = p.id;
       const mini = el("div", "mini");
       if (p.foto) mini.style.backgroundImage = "url(" + p.foto + ")";
@@ -293,26 +335,105 @@
       const ed = el("button", "ghost", "Editar"); ed.type = "button"; ed.onclick = () => editar(p);
       const ap = el("button", "ghost", "Apagar"); ap.type = "button"; ap.onclick = () => apagar(p);
       bts.append(ed, ap);
-      c.append(mini, meio, bts); box.append(c);
-    });
+      c.append(mini, meio, bts); return c;
+    }
   }
   let avisoT;
+  function avisar(texto, desfazer) {
+    const a = $("aviso"); a.replaceChildren(el("span", "", texto));
+    if (desfazer) { const d = el("button", "", "Desfazer"); d.type = "button"; d.onclick = () => { a.hidden = true; desfazer(); }; a.append(d); }
+    a.hidden = false; clearTimeout(avisoT); avisoT = setTimeout(() => a.hidden = true, 7000);
+  }
+
+  // ---------- grupos (config/cardapio.grupos, na ordem do cardápio) ----------
+  const SUGESTOES = ["Cervejas", "Drinks", "Doses", "Sem álcool", "Petiscos"];
+  const grupoDe = p => p.grupo && grupos.some(g => g.id === p.grupo);
+  const msgG = (t, cls) => { $("msgGrupo").textContent = t; $("msgGrupo").className = "msg " + (cls || ""); };
+  let renomeando = null;
+  function salvarGrupos(lista) {
+    grupos = lista; desenharGrupos(); desenharLista();
+    return db.doc("config/cardapio").set({ grupos: lista }, { merge: true })
+      .catch(e => msgG(e && e.code === "permission-denied" ? "Sem permissão pra salvar os grupos." : "Não deu pra salvar agora. Tenta de novo.", "erro"));
+  }
+  function criarGrupo(nome) {
+    nome = String(nome || "").replace(/\s+/g, " ").trim().slice(0, 30);
+    if (!nome) { $("novoGrupo").focus(); return; }
+    if (grupos.some(g => g.nome.toLowerCase() === nome.toLowerCase())) { msgG(nome + " já existe.", "erro"); return; }
+    if (grupos.length >= 30) { msgG("Máximo de 30 grupos.", "erro"); return; }
+    const g = { id: "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), nome };
+    msgG("");
+    salvarGrupos(grupos.concat([g]));
+    if (!$("grupoSel").value && !editando) $("grupoSel").value = g.id;
+  }
+  $("formGrupo").onsubmit = e => { e.preventDefault(); criarGrupo($("novoGrupo").value); $("novoGrupo").value = ""; };
+  $("novoGrupo").oninput = () => msgG("");
+  function mover(i, d) { const l = grupos.slice(), j = i + d; if (j < 0 || j >= l.length) return; const t = l[i]; l[i] = l[j]; l[j] = t; salvarGrupos(l); }
+  function renomear(g, nome) {
+    renomeando = null;
+    nome = String(nome || "").replace(/\s+/g, " ").trim().slice(0, 30);
+    if (!nome || nome === g.nome) { desenharGrupos(); return; }
+    if (grupos.some(x => x.id !== g.id && x.nome.toLowerCase() === nome.toLowerCase())) { msgG(nome + " já existe.", "erro"); desenharGrupos(); return; }
+    salvarGrupos(grupos.map(x => x.id === g.id ? { id: x.id, nome } : x));
+  }
+  function apagarGrupo(g) {
+    const antes = grupos.slice(), n = produtos.filter(p => p.grupo === g.id).length;
+    salvarGrupos(grupos.filter(x => x.id !== g.id));
+    avisar("Grupo " + g.nome + " apagado." + (n ? " " + n + (n === 1 ? " produto foi" : " produtos foram") + " pra Sem grupo." : ""), () => salvarGrupos(antes));
+  }
+  const BT = (txt, aria, f, off) => { const b = el("button", "gb", txt); b.type = "button"; b.setAttribute("aria-label", aria); b.onclick = f; b.disabled = !!off; return b; };
+  function desenharGrupos() {
+    const box = $("grupos"); box.innerHTML = "";
+    grupos.forEach((g, i) => {
+      const r = el("div", "gr");
+      if (renomeando === g.id) {
+        const inp = el("input"); inp.value = g.nome; inp.maxLength = 30; inp.setAttribute("aria-label", "Novo nome do grupo");
+        let feito = false; const ok = () => { if (!feito) { feito = true; renomear(g, inp.value); } };
+        inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); ok(); } if (e.key === "Escape") { feito = true; renomeando = null; desenharGrupos(); } };
+        inp.onblur = ok;
+        r.append(inp, BT("✓", "Salvar nome", ok));
+        box.append(r); setTimeout(() => { inp.focus(); inp.select(); }, 0);
+        return;
+      }
+      const n = produtos.filter(p => p.grupo === g.id).length;
+      const nm = el("span", "gn", g.nome); nm.append(el("small", "", String(n)));
+      r.append(nm,
+        BT("↑", "Subir " + g.nome, () => mover(i, -1), i === 0),
+        BT("↓", "Descer " + g.nome, () => mover(i, 1), i === grupos.length - 1),
+        BT("✎", "Renomear " + g.nome, () => { renomeando = g.id; desenharGrupos(); }),
+        BT("✕", "Apagar " + g.nome, () => apagarGrupo(g)));
+      box.append(r);
+    });
+    // sugestões de um toque (somem quando o grupo já existe)
+    const sug = $("sugestoes"); sug.innerHTML = "";
+    SUGESTOES.filter(n => !grupos.some(g => g.nome.toLowerCase() === n.toLowerCase())).forEach(n => {
+      const b = el("button", "sug", n); b.type = "button"; b.onclick = () => criarGrupo(n); sug.append(b);
+    });
+    // seletor do produto
+    const sel = $("grupoSel"), atual = sel.value;
+    sel.innerHTML = ""; sel.append(new Option("Sem grupo", ""));
+    grupos.forEach(g => sel.append(new Option(g.nome, g.id)));
+    sel.value = grupos.some(g => g.id === atual) ? atual : "";
+  }
+
   async function apagar(p) {
     if (editando === p.id) limpar();
     const copia = Object.assign({}, p); delete copia.id;
     try { await db.doc("cardapio/" + p.id).delete(); } catch (e) { msg("Não deu pra apagar agora.", "erro"); return; }
-    const a = $("aviso"); a.replaceChildren(el("span", "", p.nome + " saiu do cardápio."));
-    const desf = el("button", "", "Desfazer"); desf.type = "button";
-    desf.onclick = async () => { a.hidden = true; await db.doc("cardapio/" + p.id).set(copia).catch(() => msg("Não deu pra desfazer.", "erro")); };
-    a.append(desf); a.hidden = false; clearTimeout(avisoT); avisoT = setTimeout(() => a.hidden = true, 7000);
+    avisar(p.nome + " saiu do cardápio.", () => db.doc("cardapio/" + p.id).set(copia).catch(() => msg("Não deu pra desfazer.", "erro")));
   }
 
-  desenharPrecos({});
+  desenharPrecos({}); desenharGrupos();
   portaEquipe($("porta"), () => {
     $("tela").hidden = false;
+    parar.push(db.doc("config/cardapio").onSnapshot(s => {
+      grupos = (s.exists && Array.isArray(s.data().grupos)) ? s.data().grupos.filter(g => g && g.id && g.nome) : [];
+      if (renomeando && !grupos.some(g => g.id === renomeando)) renomeando = null;
+      if (!renomeando) desenharGrupos();
+      desenharLista();
+    }, () => {}));
     parar.push(db.collection("cardapio").onSnapshot(s => {
       produtos = s.docs.map(d => Object.assign({ id: d.id }, d.data())).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-      desenharLista();
+      desenharLista(); if (!renomeando) desenharGrupos();
     }, e => { $("lista").replaceChildren(el("p", "vazio", e && e.code === "permission-denied" ? "As regras do Firestore estão desatualizadas. Publica o firestore.rules de novo." : "Não deu pra carregar o cardápio.")); }));
   }, () => { parar.forEach(f => f()); parar = []; $("tela").hidden = true; });
 </script>

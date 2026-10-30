@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610300920">
+<link rel="stylesheet" href="estilo.css?v=202610300957">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -77,6 +77,28 @@
   .gv-item:hover,.gv-item:focus-visible{background:rgba(255,255,255,.06)}
   .gv-item svg{flex:none;color:var(--muted)}
   .gv-item span{flex:1}
+  /* cardápio (só leitura) */
+  .cd-abas{flex:none;display:flex;gap:8px;overflow-x:auto;padding:10px 16px;border-bottom:1px solid var(--line);scrollbar-width:none}
+  .cd-abas::-webkit-scrollbar{display:none}
+  .cd-aba{flex:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:8px 14px;font:700 13px/1 var(--f-body);cursor:pointer;white-space:nowrap}
+  .cd-aba.on{background:var(--neon);border-color:var(--neon);color:#1d0612}
+  .cd-grupo{margin:10px 2px 0;font:400 26px/1 var(--f-display);text-transform:uppercase;color:var(--neon);scroll-margin-top:12px}
+  .cd-grupo:first-child{margin-top:0}
+  .cd-prod{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px}
+  .cd-foto{flex:none;width:84px;height:84px;border-radius:12px;background:var(--bg) center/cover no-repeat;border:1px solid var(--line);cursor:zoom-in;padding:0}
+  .cd-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .cd-info h4{margin:0;font:700 16px/1.25 var(--f-body)}
+  .cd-info p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
+  .cd-precos{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+  .cd-preco{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;font-variant-numeric:tabular-nums}
+  .cd-preco small{color:var(--muted);font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;min-width:48px}
+  .cd-preco b{font:700 16px/1 var(--f-body)}
+  .cd-preco .cd-uni{color:var(--ok);font-weight:700;font-size:14px}
+  .cd-preco .cd-uni em{font-style:normal;font:700 10px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--ok);border-radius:6px;padding:2px 5px;margin-right:5px;position:relative;top:-1px}
+  .cd-vazio{color:var(--muted);text-align:center;padding:40px 16px;margin:0}
+  .cd-zoom{position:fixed;inset:0;z-index:40;background:rgba(5,3,8,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px}
+  .cd-zoom img{max-width:100%;max-height:70vh;border-radius:16px}
+  .cd-zoom b{font-size:18px}
   a.gv-item{text-decoration:none}
   .gv-tag{font:700 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:#ff8fc2;border:1px solid #ff8fc2;border-radius:999px;padding:4px 7px;font-style:normal}
   .gv-n{flex:none;font:700 11px/1 var(--f-mono);font-style:normal;background:var(--neon);color:#1d0612;border-radius:999px;padding:4px 7px;min-width:20px;text-align:center}
@@ -436,6 +458,13 @@
     <div class="rolagem" id="eventosScroll"></div>
   </div>
 
+  <!-- Cardápio (só pra ver) -->
+  <div class="tela sub" id="tCardapio" hidden>
+    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Cardápio</h3></div>
+    <nav class="cd-abas" id="cdAbas" aria-label="Grupos do cardápio" hidden></nav>
+    <div class="rolagem" id="cardapioScroll"></div>
+  </div>
+
   <!-- Evento (ação especial) -->
   <div class="tela sub" id="tEvento" hidden>
     <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3 id="eventoTit">Evento</h3></div>
@@ -484,6 +513,7 @@
       <button class="ico" id="gvFechar" type="button" aria-label="Fechar menu">×</button>
     </div>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
+    <button type="button" class="gv-item" data-ir="cardapio"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/></svg><span>Cardápio</span></button>
     <a class="gv-item gv-jogo" id="gvJogo" href="encara.html"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/><path d="M15.5 8.2c-1-1.2-2.8-.3-2.3 1.1.4 1 2.3 2.4 2.3 2.4s1.9-1.4 2.3-2.4c.5-1.4-1.3-2.3-2.3-1.1z"/></svg><span>Encara ou Bebe</span><em class="gv-n" id="gvJogoN" hidden></em><em class="gv-tag">jogo</em></a>
     <button type="button" class="gv-item gv-sair" id="gvSair"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span>Sair da conta</span></button>
     <p class="gv-rodape">Trela · versão de teste</p>
@@ -496,9 +526,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610300920"></script>
-<script src="marca.js?v=202610300920"></script>
-<script src="comum.js?v=202610300920"></script>
+<script src="config.js?v=202610300957"></script>
+<script src="marca.js?v=202610300957"></script>
+<script src="comum.js?v=202610300957"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1330,6 +1360,75 @@
 
   // ---- Lista de eventos ----
   function abrirEventos() { ir("tEventos"); renderEventos(); }
+
+  // ================= CARDÁPIO (a equipe cadastra em /cardapio; aqui só mostra) =================
+  let cardapio = null, cardapioGrupos = [], ouvindoCardapio = false;
+  function ouvirCardapio() {
+    if (ouvindoCardapio) return; ouvindoCardapio = true;   // só carrega quando alguém abre (as fotos pesam)
+    parar.push(() => { ouvindoCardapio = false; cardapio = null; });
+    parar.push(db.doc("config/cardapio").onSnapshot(s => {
+      cardapioGrupos = (s.exists && Array.isArray(s.data().grupos)) ? s.data().grupos.filter(g => g && g.id && g.nome) : [];
+      if (telaAtual() === "tCardapio") renderCardapio();
+    }, () => {}));
+    parar.push(db.collection("cardapio").onSnapshot(q => {
+      cardapio = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+      if (telaAtual() === "tCardapio") renderCardapio();
+    }, () => { cardapio = cardapio || []; if (telaAtual() === "tCardapio") renderCardapio(); }));
+  }
+  function abrirCardapio() { ir("tCardapio"); ouvirCardapio(); renderCardapio(); $("#cardapioScroll").scrollTop = 0; }
+  const reais = c => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const ROTULO_COPO = { "500": "500 ml", "700": "700 ml" };
+  function precoProduto(p) {
+    const box = el("div", "cd-precos"), ks = (p.tamanhos && p.tamanhos.length) ? p.tamanhos : ["unico"];
+    ks.forEach(k => {
+      if (!(p.precos || {})[k]) return;
+      const l = el("div", "cd-preco");
+      if (k !== "unico") l.append(el("small", "", ROTULO_COPO[k] || k));
+      l.append(el("b", "", reais(p.precos[k])));
+      if (p.uni && p.precosUni && p.precosUni[k]) { const u = el("span", "cd-uni"); u.append(el("em", "", "Univ."), reais(p.precosUni[k])); l.append(u); }
+      box.append(l);
+    });
+    return box;
+  }
+  function zoomFoto(p) {
+    const z = el("div", "cd-zoom"), img = el("img"); img.src = p.foto; img.alt = p.nome;
+    z.append(img, el("b", "", p.nome)); z.onclick = () => z.remove(); document.body.append(z);
+  }
+  function renderCardapio() {
+    const box = $("#cardapioScroll"), abas = $("#cdAbas");
+    if (cardapio === null) { box.replaceChildren(el("p", "cd-vazio", "Carregando o cardápio…")); abas.hidden = true; return; }
+    if (!cardapio.length) { box.replaceChildren(el("p", "cd-vazio", "O cardápio ainda está sendo montado. Volta daqui a pouco!")); abas.hidden = true; return; }
+    const ids = new Set(cardapioGrupos.map(g => g.id));
+    const blocos = cardapioGrupos.map(g => ({ id: g.id, nome: g.nome, ps: cardapio.filter(p => p.grupo === g.id) })).filter(b => b.ps.length);
+    const soltos = cardapio.filter(p => !ids.has(p.grupo));
+    if (soltos.length) blocos.push({ id: "_outros", nome: blocos.length ? "Outros" : "", ps: soltos });
+    const out = [];
+    blocos.forEach(b => {
+      if (b.nome) { const h = el("h3", "cd-grupo", b.nome); h.id = "cdg-" + b.id; out.push(h); }
+      b.ps.forEach(p => {
+        const c = el("article", "cd-prod");
+        if (p.foto) { const f = el("button", "cd-foto"); f.type = "button"; f.style.backgroundImage = "url(" + p.foto + ")"; f.setAttribute("aria-label", "Ver foto de " + p.nome); f.onclick = () => zoomFoto(p); c.append(f); }
+        const info = el("div", "cd-info"); info.append(el("h4", "", p.nome));
+        if (p.descricao) info.append(el("p", "", p.descricao));
+        info.append(precoProduto(p)); c.append(info); out.push(c);
+      });
+    });
+    box.replaceChildren(...out);
+    // atalhos pros grupos (só quando tem mais de um)
+    const comNome = blocos.filter(b => b.nome);
+    abas.hidden = comNome.length < 2;
+    abas.replaceChildren(...comNome.map((b, i) => {
+      const a = el("button", "cd-aba" + (i === 0 ? " on" : ""), b.nome); a.type = "button";
+      a.onclick = () => { const h = $("#cdg-" + b.id); if (h) box.scrollTo({ top: h.offsetTop - box.offsetTop - 8, behavior: "smooth" }); };
+      a.dataset.alvo = b.id; return a;
+    }));
+  }
+  // marca o grupo que está na tela
+  $("#cardapioScroll").addEventListener("scroll", () => {
+    const box = $("#cardapioScroll"), hs = [...box.querySelectorAll(".cd-grupo")]; if (!hs.length) return;
+    let atual = hs[0].id; hs.forEach(h => { if (h.offsetTop - box.offsetTop - 40 <= box.scrollTop) atual = h.id; });
+    document.querySelectorAll("#cdAbas .cd-aba").forEach(a => { const on = "cdg-" + a.dataset.alvo === atual; if (on !== a.classList.contains("on")) { a.classList.toggle("on", on); if (on) a.scrollIntoView({ inline: "nearest", block: "nearest" }); } });
+  }, { passive: true });
   let assinaturaEventos = "";
   function renderEventos() {
     const evs = eventosAtivos(), out = [];
@@ -1369,6 +1468,7 @@
   document.querySelectorAll(".gv-item[data-ir]").forEach(b => b.onclick = () => {
     const d = b.dataset.ir; fecharMenu();
     if (d === "eventos") abrirEventos();
+    else if (d === "cardapio") abrirCardapio();
     else if (d === "avisos") $("#btnSino").click();
     else if (d === "galera") abrirGalera();
     else if (d === "feed") { while (pilha.length > 1) voltarTela(); setTimeout(() => $("#homeScroll").scrollTo({ top: $("#feedTitle").offsetTop - 10, behavior: "smooth" }), 50); }

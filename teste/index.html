@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610301000">
+<link rel="stylesheet" href="estilo.css?v=202610301008">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -104,8 +104,8 @@
   .cd-preco{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;font-variant-numeric:tabular-nums}
   .cd-preco small{color:var(--muted);font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;min-width:48px}
   .cd-preco b{font:700 16px/1 var(--f-body)}
-  .cd-preco .cd-uni{color:var(--ok);font-weight:700;font-size:14px}
-  .cd-preco .cd-uni em{font-style:normal;font:700 10px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--ok);border-radius:6px;padding:2px 5px;margin-right:5px;position:relative;top:-1px}
+  .cd-preco .cd-uni{color:#ff7a2e;font-weight:700;font-size:14px;text-shadow:0 0 6px rgba(255,90,31,.75),0 0 16px rgba(255,90,31,.4)}
+  .cd-preco .cd-uni em{font-style:normal;font:700 10px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;border:1px solid #ff7a2e;border-radius:6px;padding:2px 5px;margin-right:5px;position:relative;top:-1px;box-shadow:0 0 8px rgba(255,90,31,.45),inset 0 0 6px rgba(255,90,31,.25)}
   .cd-vazio{color:var(--muted);text-align:center;padding:40px 16px;margin:0}
   .cd-zoom{position:fixed;inset:0;z-index:40;background:rgba(5,3,8,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px}
   .cd-zoom img{max-width:100%;max-height:70vh;border-radius:16px}
@@ -537,9 +537,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610301000"></script>
-<script src="marca.js?v=202610301000"></script>
-<script src="comum.js?v=202610301000"></script>
+<script src="config.js?v=202610301008"></script>
+<script src="marca.js?v=202610301008"></script>
+<script src="comum.js?v=202610301008"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };

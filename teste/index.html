@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610301723">
+<link rel="stylesheet" href="estilo.css?v=202610301734">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -41,6 +41,16 @@
   .tag-aberto{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ouro);color:var(--ouro);border-radius:999px;padding:4px 10px;font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
   .tag-aberto::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ouro);box-shadow:0 0 6px var(--ouro)}
   .gv-aberto{font:400 14px/1.3 var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);display:flex;align-items:center;gap:12px;margin:2px 0 6px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.02);cursor:pointer}
+  .gv-aberto.gv-push.on{border-color:var(--neon);background:rgba(255,63,164,.07)}
+  .gv-push .sw:checked{background:var(--neon)}
+  .push-card{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--neon);background:linear-gradient(135deg,rgba(255,63,164,.14),rgba(169,92,242,.08));border-radius:16px;padding:14px;margin:12px 0}
+  .push-card svg{flex:none;width:26px;height:26px;color:var(--neon);margin-top:2px}
+  .push-card div{flex:1;min-width:0}
+  .push-card b{display:block;font-size:15px}
+  .push-card p{margin:4px 0 10px;color:var(--muted);font-size:13px;line-height:1.4}
+  .push-card .bts{display:flex;gap:8px}
+  .push-card .bts button{border-radius:999px;padding:9px 14px;font:700 13px/1 var(--f-body);cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink)}
+  .push-card .bts .sim{background:var(--neon);border-color:var(--neon);color:#1d0612}
   .gv-aberto.on{border-color:var(--ouro);background:rgba(255,201,77,.07)}
   .gv-aberto span{flex:1;min-width:0}
   .gv-aberto b{display:block;font-size:14px}
@@ -611,6 +621,7 @@
       <div><b id="gvNome"></b><button type="button" class="gv-link" id="gvPerfil">Ver e editar perfil</button></div>
       <button class="ico" id="gvFechar" type="button" aria-label="Fechar menu">×</button>
     </div>
+    <label class="gv-aberto gv-push" id="gvPushBox" hidden><span><b>Notificações no celular</b><small id="gvPushTxt">Avisa mesmo com o Trela fechado</small></span><input type="checkbox" class="sw" id="gvPush" aria-label="Notificações no celular"></label>
     <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>Um anel dourado aparece na tua foto até as 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
     <button type="button" class="gv-item" data-ir="cardapio"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/></svg><span>Cardápio</span></button>
@@ -626,9 +637,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610301723"></script>
-<script src="marca.js?v=202610301723"></script>
-<script src="comum.js?v=202610301723"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<script src="config.js?v=202610301734"></script>
+<script src="marca.js?v=202610301734"></script>
+<script src="comum.js?v=202610301734"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -660,6 +672,77 @@
 
   // ---------- Perfis (cache) ----------
   const perfis = new Map();
+  // ================= NOTIFICAÇÕES NO CELULAR (Firebase Cloud Messaging) =================
+  // Depois de gravar algo que interessa a outra pessoa, o app pede pro servidor (/api/avisar) mandar a notificação.
+  // O servidor confere no banco quem fez o quê e escreve o texto; o app só diz "aconteceu tal coisa, olha lá".
+  const BASE_APP = new URL("./", document.baseURI).pathname;
+  const ehIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const instalado = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+  const pushConfigurado = () => !!(window.VAPID_KEY && firebase.messaging);
+  const pushPossivel = () => pushConfigurado() && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+  let pushToken = guardado.ler("trela-push-token", null);
+  const pushLigado = () => !!pushToken && "Notification" in window && Notification.permission === "granted";
+  function avisarCelular(dados) {
+    try {
+      if (!EU || !auth.currentUser) return;
+      auth.currentUser.getIdToken().then(t => fetch("/api/avisar", {
+        method: "POST", keepalive: true,
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + t },
+        body: JSON.stringify(Object.assign({ base: BASE_APP }, dados))
+      })).catch(() => {});
+    } catch (e) {}
+  }
+  const mensagemPush = () => appTrela.messaging ? appTrela.messaging() : firebase.messaging();
+  async function pegarToken() {
+    const reg = await navigator.serviceWorker.register("sw.js");
+    await navigator.serviceWorker.ready;
+    const tok = await mensagemPush().getToken({ vapidKey: window.VAPID_KEY, serviceWorkerRegistration: reg });
+    if (!tok) throw new Error("sem token");
+    if (tok !== pushToken && pushToken) db.doc("tokens/" + EU.uid + "/aparelhos/" + pushToken).delete().catch(() => {});
+    await db.doc("tokens/" + EU.uid + "/aparelhos/" + tok).set({ criado: agoraServidor(), aparelho: navigator.userAgent.slice(0, 150) });
+    pushToken = tok; guardado.salvar("trela-push-token", tok);
+  }
+  async function ativarPush() {
+    if (ehIOS && !instalado()) {
+      folha([el("h4", "", "No iPhone, primeiro coloca o Trela na tela de início"),
+        el("p", "", "O iPhone só manda notificação de app que está na tela de início. Toca no botão de compartilhar do Safari (o quadradinho com a seta), depois em \"Adicionar à Tela de Início\". Abre o Trela pelo ícone novo e ativa de novo aqui."),
+        bt("Entendi", "sim", fecharFolha)]);
+      return false;
+    }
+    if (!pushPossivel()) { erroToast("Esse navegador não aceita notificações. Tenta pelo Chrome."); return false; }
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") { erroToast(perm === "denied" ? "As notificações estão bloqueadas pro Trela. Libera nas configurações do navegador." : "Notificações não ativadas."); return false; }
+    try { await pegarToken(); toast(EU.uid, "Pronto! Tu vai ser avisado no celular mesmo com o Trela fechado."); return true; }
+    catch (e) { console.warn("[Trela] push", e); erroToast(e && e.code === "permission-denied" ? "Não deu pra salvar: as regras do banco precisam ser publicadas." : "Não deu pra ativar agora. Tenta de novo."); return false; }
+  }
+  async function desativarPush() {
+    const t = pushToken; pushToken = null; guardado.salvar("trela-push-token", null);
+    if (t) await db.doc("tokens/" + EU.uid + "/aparelhos/" + t).delete().catch(() => {});
+    try { await mensagemPush().deleteToken(); } catch (e) {}
+    toast(EU.uid, "Notificações no celular desligadas.");
+  }
+  function desenharPush() {
+    const box = $("#gvPushBox"); if (!box) return;
+    box.hidden = !pushConfigurado();
+    const on = pushLigado(); $("#gvPush").checked = on; box.classList.toggle("on", on);
+    $("#gvPushTxt").textContent = on ? "Ligadas neste celular" : ("Notification" in window && Notification.permission === "denied") ? "Bloqueadas no navegador" : "Avisa mesmo com o Trela fechado";
+  }
+  // Cartão na tela inicial convidando a ativar (uma vez por aparelho)
+  function cartaoPush() {
+    const ja = $("#pushCard"); if (ja) ja.remove();
+    if (!pushConfigurado() || pushLigado() || guardado.ler("trela-push-dispensado", false)) return;
+    if ("Notification" in window && Notification.permission === "denied") return;
+    const c = el("div", "push-card"); c.id = "pushCard";
+    c.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
+    const d = el("div");
+    d.append(el("b", "", "Quer ser avisado no celular?"), el("p", "", ehIOS && !instalado() ? "No iPhone, coloca o Trela na tela de início pra receber: tua vez no karaokê, drink que te ofereceram, match e mensagens." : "Tua vez no karaokê, drink que te ofereceram, match e mensagens, mesmo com o Trela fechado."));
+    const bts = el("div", "bts");
+    const sim = el("button", "sim", "Ativar"); sim.type = "button"; sim.onclick = async () => { if (await ativarPush()) c.remove(); desenharPush(); };
+    const nao = el("button", "", "Agora não"); nao.type = "button"; nao.onclick = () => { guardado.salvar("trela-push-dispensado", true); c.remove(); };
+    bts.append(sim, nao); d.append(bts); c.append(d);
+    const alvo = $("#feedTitle"); if (alvo && alvo.parentNode) alvo.parentNode.insertBefore(c, alvo);
+  }
+
   // Vibra só se a pessoa já tocou na tela (antes disso o navegador bloqueia e reclama)
   function vibrar(padrao) { try { if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) navigator.vibrate(padrao); } catch (e) {} }
   // "Aberto pra conhecer gente": vale só na noite em que foi ligado (zera às 6h)
@@ -1108,6 +1191,9 @@
       S.bloqueados = new Set(snap.docs.map(d => d.data().alvo)); redesenhar();
     }, () => {}));
 
+    // Notificações no celular: cartão de convite e token sempre em dia
+    setTimeout(() => { cartaoPush(); desenharPush(); if (pushLigado() && pushPossivel()) pegarToken().catch(() => {}); }, 1500);
+
     // Crush secreto: os meus interesses (só eu vejo) e os matches
     parar.push(db.collection("interesses").where("de", "==", uid).onSnapshot(q => {
       const noite = inicioDaNoite().getTime(); S.interesses = new Set();
@@ -1419,6 +1505,7 @@
       S.curti.add(r.id);
       db.doc("curtidas/" + r.id + "_" + EU.uid).set({ post: r.id, de: EU.uid, para: r.autor, criado: agoraServidor() })
         .then(() => db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "curtida", de: EU.uid, deNome: EU.nome, postId: r.id, texto: (r.texto || "").slice(0, 60), criado: agoraServidor(), lida: false }))
+        .then(ref => avisarCelular({ tipo: "aviso", dono: r.autor, id: ref.id }))
         .catch(() => {});
     }
   }
@@ -1614,13 +1701,18 @@
   $("#gavetaFundo").onclick = fecharMenu;
   document.addEventListener("keydown", e => { if (e.key === "Escape" && menuAberto()) fecharMenu(); });
   $("#gvPerfil").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
+  $("#gvPush").onchange = async e => {
+    const quer = e.target.checked;
+    if (quer) await ativarPush(); else await desativarPush();
+    desenharPush(); cartaoPush();
+  };
   $("#gvAberto").onchange = async e => {
     const on = e.target.checked;
     EU.aberto = on ? FS.Timestamp.now() : null; desenharAberto(); redesenhar();
     try { await db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor(), aberto: on ? agoraServidor() : null }, { merge: true }); toast(EU.uid, on ? "Pronto! Teu anel dourado avisa que tu tá aberto pra conhecer gente." : "Anel dourado desligado."); }
     catch (err) { EU.aberto = on ? null : FS.Timestamp.now(); desenharAberto(); redesenhar(); erroToast(err && err.code === "permission-denied" ? "Não deu pra salvar: as regras do banco precisam ser publicadas." : "Não deu pra salvar agora. Tenta de novo."); }
   };
-  function desenharAberto() { const on = abertoAgora(EU); $("#gvAberto").checked = on; $("#gvAbertoBox").classList.toggle("on", on); }
+  function desenharAberto() { const on = abertoAgora(EU); $("#gvAberto").checked = on; $("#gvAbertoBox").classList.toggle("on", on); desenharPush(); }
   $("#gvSair").onclick = () => { fecharMenu(); auth.signOut(); };
   document.querySelectorAll(".gv-item[data-ir]").forEach(b => b.onclick = () => {
     const d = b.dataset.ir; fecharMenu();
@@ -1816,7 +1908,8 @@
       reagi[r.id] = { ...(reagi[r.id] || {}), amor: true }; guardado.salvar("trela-reagi", reagi);
       db.doc("telao/" + r.id).update({ "reacoes.amor": FS.FieldValue.increment(1) }).catch(() => {});
     }
-    db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "curtida", de: EU.uid, deNome: EU.nome, postId: r.id, texto: (r.texto || "").slice(0, 60), criado: agoraServidor(), lida: false }).catch(() => {});
+    db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "curtida", de: EU.uid, deNome: EU.nome, postId: r.id, texto: (r.texto || "").slice(0, 60), criado: agoraServidor(), lida: false })
+      .then(ref => avisarCelular({ tipo: "aviso", dono: r.autor, id: ref.id })).catch(() => {});
     return true;
   }
 
@@ -1972,7 +2065,7 @@
     const lote = db.batch();
     lote.update(db.doc("karaoke/" + agora.id), { status: "feito" });
     if (prox) lote.update(db.doc("karaoke/" + prox.id), { status: "cantando" });
-    try { await lote.commit(); toast(EU.uid, prox ? "Mandou bem! Agora é a vez do " + prox.nome : "Mandou bem!"); }
+    try { await lote.commit(); avisarCelular({ tipo: "karaoke" }); toast(EU.uid, prox ? "Mandou bem! Agora é a vez do " + prox.nome : "Mandou bem!"); }
     catch (e) { b.disabled = false; erroToast(e && e.code === "permission-denied" ? "O banco recusou. As regras novas precisam ser publicadas." : "Não deu. Tenta de novo."); }
   }
   async function assumirPalco(b) {
@@ -1981,7 +2074,7 @@
     const lote = db.batch();
     if (agora) lote.update(db.doc("karaoke/" + agora.id), { status: "feito" });
     lote.update(db.doc("karaoke/" + eu.id), { status: "cantando" });
-    try { await lote.commit(); }
+    try { await lote.commit(); avisarCelular({ tipo: "karaoke" }); }
     catch (e) { b.disabled = false; erroToast(e && e.code === "permission-denied" ? "O banco recusou. As regras novas precisam ser publicadas." : "Não deu. Tenta de novo."); }
   }
   function blocoKaraoke() {
@@ -2242,7 +2335,8 @@
       try { await batch.commit(); $("#comsAviso").hidden = true; }
       catch (err) { await praFila("Barrado pelo servidor"); $("#comsAviso").textContent = "Teu comentário vai passar pela equipe antes de aparecer."; $("#comsAviso").hidden = false; return; }
       // Avisa quem foi marcado
-      mencoes.forEach(m => db.collection("avisos").doc(m.uid).collection("itens").add({ tipo: "mencao", de: EU.uid, deNome: EU.nome, postId: r.id, texto: alvoTexto, criado: agoraServidor(), lida: false }).catch(() => {}));
+      mencoes.forEach(m => db.collection("avisos").doc(m.uid).collection("itens").add({ tipo: "mencao", de: EU.uid, deNome: EU.nome, postId: r.id, texto: alvoTexto, criado: agoraServidor(), lida: false })
+        .then(ref => avisarCelular({ tipo: "aviso", dono: m.uid, id: ref.id })).catch(() => {}));
     } catch (err) { $("#comsAviso").textContent = "Não deu pra enviar. Tenta de novo."; $("#comsAviso").hidden = false; }
   });
 
@@ -2283,10 +2377,10 @@
   }
   async function pedirAmizade(uid) {
     const membros = [EU.uid, uid].sort();
-    try { await db.doc("amizades/" + parDe(EU.uid, uid)).set({ membros, de: EU.uid, para: uid, status: "pendente", criado: agoraServidor() }); }
+    try { await db.doc("amizades/" + parDe(EU.uid, uid)).set({ membros, de: EU.uid, para: uid, status: "pendente", criado: agoraServidor() }); avisarCelular({ tipo: "amizade", id: parDe(EU.uid, uid) }); }
     catch (e) { erroToast("Não deu pra mandar o pedido agora."); }
   }
-  const aceitarAmizade = uid => db.doc("amizades/" + parDe(EU.uid, uid)).update({ status: "aceita" }).catch(() => erroToast("Não deu pra aceitar agora."));
+  const aceitarAmizade = uid => db.doc("amizades/" + parDe(EU.uid, uid)).update({ status: "aceita" }).then(() => avisarCelular({ tipo: "amizade", id: parDe(EU.uid, uid) })).catch(() => erroToast("Não deu pra aceitar agora."));
   const desfazerAmizade = uid => db.doc("amizades/" + parDe(EU.uid, uid)).delete().catch(() => {});
   async function bloquear(uid) {
     await db.doc("bloqueios/" + EU.uid + "_" + uid).set({ de: EU.uid, alvo: uid, criado: agoraServidor() }).catch(() => {});
@@ -2494,7 +2588,7 @@
   }
   async function criarMatch(outro) {
     const par = parDe(EU.uid, outro), membros = [EU.uid, outro].sort();
-    try { await db.doc("matches/" + par).set({ membros, criado: agoraServidor() }); }
+    try { await db.doc("matches/" + par).set({ membros, criado: agoraServidor() }); avisarCelular({ tipo: "match", id: par }); }
     catch (e) { console.warn("[Trela] match", e && e.code); return; }
     // vira amizade pra poder conversar
     const a = S.amizades.get(outro);
@@ -2563,7 +2657,8 @@
       bt("Mandar convite", "sim", async e => {
         e.target.disabled = true;
         try {
-          await db.collection("drinks").add({ de: EU.uid, deNome: EU.nome, para: p.id, paraNome: p.nome, item: x.id, itemNome: nomeItem, tamanho: k, preco, status: "enviado", criado: agoraServidor(), respondido: null });
+          const novo = await db.collection("drinks").add({ de: EU.uid, deNome: EU.nome, para: p.id, paraNome: p.nome, item: x.id, itemNome: nomeItem, tamanho: k, preco, status: "enviado", criado: agoraServidor(), respondido: null });
+          avisarCelular({ tipo: "drink", id: novo.id });
           fecharFolha(); toast(p.id, "Convite enviado pra " + p.nome + ". Agora é esperar!");
         } catch (err) { e.target.disabled = false; erroToast(err && err.code === "permission-denied" ? "Não deu: as regras do banco precisam ser publicadas." : "Não deu pra mandar agora. Tenta de novo."); }
       }),
@@ -2582,7 +2677,7 @@
   }
   async function responderDrink(x, status) {
     fecharFolha();
-    try { await db.doc("drinks/" + x.id).update({ status, respondido: agoraServidor() }); }
+    try { await db.doc("drinks/" + x.id).update({ status, respondido: agoraServidor() }); avisarCelular({ tipo: "drink", id: x.id }); }
     catch (e) { erroToast(e && e.code === "permission-denied" ? "Esse convite já foi cancelado." : "Não deu pra responder agora. Tenta de novo."); return; }
     if (status === "aceito") toast(x.de, "Combinado! " + x.deNome + " vai buscar no balcão e levar até ti. Saúde!");
   }
@@ -2646,9 +2741,10 @@
     inp.value = "";
     const par = parDe(EU.uid, chatCom), c = S.conversas.get(chatCom) || {};
     const batch = db.batch();
-    batch.set(db.collection("conversas").doc(par).collection("mensagens").doc(), { de: EU.uid, texto, criado: agoraServidor() });
+    const msgRef = db.collection("conversas").doc(par).collection("mensagens").doc();
+    batch.set(msgRef, { de: EU.uid, texto, criado: agoraServidor() });
     batch.set(db.doc("conversas/" + par), { membros: [EU.uid, chatCom].sort(), ultima: { de: EU.uid, texto: texto.slice(0, 120), criado: agoraServidor() }, lidaPor: { [EU.uid]: agoraServidor() } }, { merge: true });
-    try { await batch.commit(); } catch (err) { inp.value = texto; erroToast("Não deu pra enviar. Tenta de novo."); }
+    try { await batch.commit(); avisarCelular({ tipo: "mensagem", par, id: msgRef.id }); } catch (err) { inp.value = texto; erroToast("Não deu pra enviar. Tenta de novo."); }
   });
   function apagarConversa(uid, nome) {
     const par = parDe(EU.uid, uid);

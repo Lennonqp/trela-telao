@@ -20,3 +20,7 @@ window.CONTATO_LENNON = [
 
 // Quanto tempo cada recado fica no telão (em segundos)
 window.TEMPO_POR_RECADO = 8;
+
+// Notificações no celular: chave pública do Firebase (Configurações do projeto → Cloud Messaging →
+// Certificados push da Web). Vazia = a opção de notificação não aparece no app.
+window.VAPID_KEY = "";

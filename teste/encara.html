@@ -1446,11 +1446,17 @@ function criarMesa(primeiro){
     jogadores:[EU.uid], recusados:[], semApp:[], estado:"sala", cfg:cfgMesa(), st:"", v:0, atualizado:agoraServidor()
   }).then(function(ref){ entrarModoOnline(ref.id); return ref.id; }).catch(function(e){ erroMesa(e); return null; });
 }
+// avisa no celular do convidado (o servidor confere a mesa antes de mandar)
+function avisarCelular(dados){
+  try{ var u=appTrela.auth().currentUser; if(!u) return;
+    u.getIdToken().then(function(t){ return fetch("/api/avisar",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},body:JSON.stringify(Object.assign({base:new URL("./",document.baseURI).pathname},dados))}); }).catch(function(){});
+  }catch(e){}
+}
 function convidar(u){
   var a=amigo(u); if(!a||!EU) return;
-  if(!ON){ criarMesa(a).then(function(id){ if(id){ toast("Convite enviado pra "+a.n+"."); renderAmigos(); } }); return; }
+  if(!ON){ criarMesa(a).then(function(id){ if(id){ avisarCelular({tipo:"mesa", id:id, para:u}); toast("Convite enviado pra "+a.n+"."); renderAmigos(); } }); return; }
   var up={convidados:FV().arrayUnion(u), recusados:FV().arrayRemove(u)}; up["nomes."+u]={n:a.n, c:a.c};
-  db.doc("mesas/"+MID).update(up).then(function(){ toast("Convite enviado pra "+a.n+"."); }).catch(erroMesa);
+  db.doc("mesas/"+MID).update(up).then(function(){ avisarCelular({tipo:"mesa", id:MID, para:u}); toast("Convite enviado pra "+a.n+"."); }).catch(erroMesa);
 }
 function entrarNaMesa(id){
   if(!EU){ toast("Entra no app do Trela pra jogar com os amigos."); return; }
@@ -1657,8 +1663,8 @@ if(hot && hot.ready) hot.ready(boot); else boot(hot && hot.data || {});
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610301723"></script>
-<script src="marca.js?v=202610301723"></script>
-<script src="comum.js?v=202610301723"></script>
+<script src="config.js?v=202610301734"></script>
+<script src="marca.js?v=202610301734"></script>
+<script src="comum.js?v=202610301734"></script>
 </body>
 </html>

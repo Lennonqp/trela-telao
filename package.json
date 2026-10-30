@@ -1,0 +1,9 @@
+{
+  "name": "trela-telao",
+  "private": true,
+  "description": "Telão, app da galera e balcão do Trela. Site estático + uma função (/api/avisar) pras notificações no celular.",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}

@@ -103,6 +103,19 @@ Participações, votos, curtidas e fila zeram às 6h. **Depois de atualizar o si
 
 A pasta `/teste` é uma cópia pra testar mudanças antes (selo amarelo "VERSÃO DE TESTE"), usando o mesmo banco.
 
+## Notificações no celular
+
+O app avisa no celular mesmo fechado: mensagem, pedido de amizade, convite e resposta de drink, match, curtida e menção, vez no karaokê e convite pro Encara ou Bebe. A pessoa liga em **≡ → Notificações no celular** (ou no cartão da tela inicial).
+
+Como funciona: depois de gravar algo, o app chama `POST /api/avisar` (função do Vercel em `api/avisar.js`). O servidor confere no banco quem fez o quê, escreve o texto e manda pelo Firebase Cloud Messaging. Cada aviso sai uma vez só (coleção `enviados`). O `sw.js` recebe e mostra a notificação.
+
+Pra ligar:
+1. Firebase → Configurações do projeto → **Cloud Messaging** → Certificados push da Web → **Gerar par de chaves**. Cola a chave em `window.VAPID_KEY` no `config.js` (é pública).
+2. Firebase → Configurações do projeto → **Contas de serviço** → **Gerar nova chave privada**. No Vercel: Settings → Environment Variables → `FIREBASE_SERVICE_ACCOUNT` = o conteúdo do .json (é secreta, não vai pro GitHub).
+3. Publicar o `firestore.rules`.
+
+No iPhone só funciona com o Trela na tela de início (iOS 16.4+). No Android funciona no Chrome.
+
 ## Filtro
 
 - Limpo vai direto. Cai na fila: palavrão ou ofensa (pega também `p.u.t.a`, `p0rr4`, `poooorra`), link, telefone, @ de perfil de fora do app e texto todo em maiúsculas. Marcar alguém do app com @ é liberado.

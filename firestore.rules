@@ -400,6 +400,14 @@ service cloud.firestore {
       allow delete: if equipe();
     }
 
+    // ---------- Notificações no celular: o endereço de cada aparelho (só o dono mexe; o servidor lê) ----------
+    match /tokens/{uid}/aparelhos/{tok} {
+      allow read, delete: if logado() && uid == eu();
+      allow create, update: if pessoa() && uid == eu()
+        && request.resource.data.keys().hasOnly(['criado', 'aparelho'])
+        && request.resource.data.aparelho is string && request.resource.data.aparelho.size() <= 200;
+    }
+
     // ---------- Cardápio: a equipe cadastra, todo mundo pode ver ----------
     match /cardapio/{id} {
       allow read: if true;

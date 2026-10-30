@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610301020">
+<link rel="stylesheet" href="estilo.css?v=202610301117">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -41,6 +41,18 @@
   .acoes button{flex:1;border-radius:8px;padding:10px;font:700 12px/1.1 var(--f-body);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink)}
   .acoes .sim{background:var(--ok);border-color:var(--ok);color:#06210f}
   .acoes .perigo{border-color:var(--laranja);color:var(--laranja)}
+  .drinks{border-color:#ff7a2e;background:linear-gradient(180deg,rgba(255,122,46,.08),transparent 60%),var(--panel)}
+  .drinks h2{color:#ff7a2e}
+  .drinks .h-linha{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .drinks .h-linha span{font:400 12px var(--f-mono);color:var(--muted)}
+  .dk{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--bg);border:1px solid var(--line);border-left:4px solid #ff7a2e;border-radius:10px;padding:12px 14px}
+  .dk b{display:block;font-size:16px}
+  .dk p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+  .dk p em{font-style:normal;color:var(--ink);font-weight:700}
+  .dk .bts{display:flex;gap:6px}
+  .dk .bts button{border-radius:10px;padding:10px 12px;font:700 12px/1.1 var(--f-body);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink)}
+  .dk .bts .ok{background:#ff7a2e;border-color:#ff7a2e;color:#1a0b05}
+  @media (max-width:560px){.dk{grid-template-columns:minmax(0,1fr)}.dk .bts button{flex:1}}
   .vazio{color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:10px;padding:16px;text-align:center}
 
   /* ---------- Ações especiais ---------- */
@@ -131,7 +143,7 @@
     /* No celular: o que pede ação primeiro, formulários depois */
     .painel{gap:22px}
     .topo,.cols{display:contents}
-    .o-fila{order:1}.o-den{order:2}.o-acoes{order:3}.o-recado{order:4}.o-noite{order:5}.o-telao{order:6}
+    .o-drinks{order:0}.o-fila{order:1}.o-den{order:2}.o-acoes{order:3}.o-recado{order:4}.o-noite{order:5}.o-telao{order:6}
     body{padding:16px 14px calc(32px + env(safe-area-inset-bottom))}
     .logo{font-size:40px}
     .acoes button{padding:13px 8px}
@@ -165,6 +177,13 @@
       </div>
     </div>
 
+
+    <section class="bloco drinks o-drinks" id="drinksBox" aria-labelledby="tituloDrinks" hidden>
+      <div class="h-linha"><h2 id="tituloDrinks">Te pago um drink</h2><span id="drinksN"></span></div>
+      <p>Alguém ofereceu um drink pelo app e a pessoa aceitou. Quem ofereceu vem pagar e levar.</p>
+      <div id="drinksLista" style="display:flex;flex-direction:column;gap:8px"></div>
+      <p class="anunciado" id="drinksMsg" role="status"></p>
+    </section>
 
     <section class="acoes-esp o-acoes" aria-labelledby="tituloAcoes">
       <header class="ac-cab">
@@ -293,11 +312,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610301020"></script>
+<script src="config.js?v=202610301117"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202610301020"></script>
-<script src="comum.js?v=202610301020"></script>
-<script src="equipe.js?v=202610301020"></script>
+<script src="marca.js?v=202610301117"></script>
+<script src="comum.js?v=202610301117"></script>
+<script src="equipe.js?v=202610301117"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -695,7 +714,32 @@
     v.onclick = () => v.remove(); document.body.append(v);
   }
 
+  // ---------- Te pago um drink: pedidos aceitos esperando no balcão ----------
+  function desenharDrinks(lista) {
+    const box = $("drinksLista"); box.innerHTML = "";
+    $("drinksBox").hidden = !lista.length && !$("drinksMsg").textContent;
+    $("drinksN").textContent = lista.length ? lista.length + (lista.length === 1 ? " esperando" : " esperando") : "";
+    lista.forEach(x => {
+      const c = el("div", "dk"), info = el("div");
+      info.append(el("b", "", x.itemNome + " · " + (x.preco / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })));
+      const p = el("p"); p.append(el("em", "", x.deNome), " paga e leva pra ", el("em", "", x.paraNome), " · aceito às " + horaDe(x.respondido || x.criado));
+      info.append(p);
+      const bts = el("div", "bts");
+      bts.append(botao("Pago e entregue", "ok", () => fecharDrink(x, "entregue")), botao("Cancelar", "", () => fecharDrink(x, "cancelado")));
+      c.append(info, bts); box.append(c);
+    });
+  }
+  function fecharDrink(x, status) {
+    db.doc("drinks/" + x.id).update({ status, respondido: agoraServidor() })
+      .then(() => { $("drinksMsg").textContent = status === "entregue" ? "Saúde! " + x.itemNome + " entregue." : "Pedido cancelado."; setTimeout(() => { $("drinksMsg").textContent = ""; }, 4000); })
+      .catch(() => { $("drinksMsg").textContent = "Não deu pra salvar. Tenta de novo."; });
+  }
+
   function iniciar() {
+    parar.push(db.collection("drinks").where("status", "==", "aceito").onSnapshot(q => {
+      const noite = inicioDaNoite().getTime();
+      desenharDrinks(q.docs.map(d => Object.assign({ id: d.id }, d.data())).filter(x => !x.criado || ms(x.criado) >= noite).sort((a, b) => ms(a.respondido) - ms(b.respondido)));
+    }, () => {}));
     const cfg = db.doc("config/geral");
     parar.push(cfg.onSnapshot(s => {
       const d = s.exists ? s.data() : {};

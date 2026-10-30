@@ -68,7 +68,8 @@ service cloud.firestore {
     match /usuarios/{uid} {
       allow read: if logado();
       allow create, update: if pessoa() && uid == eu()
-        && request.resource.data.keys().hasOnly(['nome', 'cor', 'criado', 'ultimoAcesso', 'fotoV'])
+        && request.resource.data.keys().hasOnly(['nome', 'cor', 'criado', 'ultimoAcesso', 'fotoV', 'aberto'])
+        && (request.resource.data.get('aberto', null) == null || request.resource.data.aberto == request.time || request.resource.data.aberto == resource.data.get('aberto', null))
         && nomeOk(request.resource.data.nome) && !suspeito(request.resource.data.nome)
         && request.resource.data.ultimoAcesso == request.time;
       // Excluir a própria conta
@@ -100,6 +101,20 @@ service cloud.firestore {
         && eu() in request.resource.data.membros
         && request.resource.data.para in request.resource.data.membros
         && request.resource.data.para != eu()
+        && !bloqueado(eu(), request.resource.data.para)
+        && agora(request.resource.data);
+      // Deu match (os dois marcaram interesse): a amizade já nasce aceita
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['membros', 'de', 'para', 'status', 'criado'])
+        && request.resource.data.de == eu()
+        && request.resource.data.status == 'aceita'
+        && request.resource.data.membros.size() == 2
+        && request.resource.data.membros[0] < request.resource.data.membros[1]
+        && par == request.resource.data.membros[0] + '_' + request.resource.data.membros[1]
+        && eu() in request.resource.data.membros
+        && request.resource.data.para in request.resource.data.membros
+        && request.resource.data.para != eu()
+        && exists(/databases/$(database)/documents/matches/$(par))
         && !bloqueado(eu(), request.resource.data.para)
         && agora(request.resource.data);
       // Só quem recebeu o pedido aceita
@@ -325,6 +340,64 @@ service cloud.firestore {
                 && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['jogadores', 'recusados', 'st', 'v', 'atualizado'])
                 && request.resource.data.jogadores.removeAll([eu()]) == resource.data.jogadores.removeAll([eu()])));
       allow delete: if logado() && resource.data.dono == eu();
+    }
+
+    // ---------- Crush secreto (id = quemMarcou_marcado) ----------
+    // Cada um só vê os próprios interesses. O do outro só dá pra ler se os dois marcaram (é assim que o match aparece).
+    match /interesses/{id} {
+      allow read: if logado() && (resource.data.de == eu()
+        || (resource.data.para == eu() && exists(/databases/$(database)/documents/interesses/$(eu() + '_' + resource.data.de))));
+      allow create, update: if ativo()
+        && request.resource.data.keys().hasOnly(['de', 'para', 'criado'])
+        && request.resource.data.de == eu()
+        && request.resource.data.para is string && request.resource.data.para != eu()
+        && id == eu() + '_' + request.resource.data.para
+        && !bloqueado(eu(), request.resource.data.para)
+        && agora(request.resource.data);
+      allow delete: if logado() && resource.data.de == eu();
+    }
+    // Match: só existe se os dois interesses existem
+    match /matches/{par} {
+      allow read: if logado() && eu() in resource.data.membros;
+      allow create, update: if ativo()
+        && request.resource.data.keys().hasOnly(['membros', 'criado'])
+        && request.resource.data.membros.size() == 2
+        && eu() in request.resource.data.membros
+        && request.resource.data.membros[0] < request.resource.data.membros[1]
+        && par == request.resource.data.membros[0] + '_' + request.resource.data.membros[1]
+        && exists(/databases/$(database)/documents/interesses/$(request.resource.data.membros[0] + '_' + request.resource.data.membros[1]))
+        && exists(/databases/$(database)/documents/interesses/$(request.resource.data.membros[1] + '_' + request.resource.data.membros[0]))
+        && agora(request.resource.data);
+      allow delete: if logado() && eu() in resource.data.membros;
+    }
+
+    // ---------- Te pago um drink ----------
+    // Quem oferece cria; quem recebe aceita ou recusa; quem ofereceu pode cancelar enquanto espera;
+    // a equipe vê os aceitos e marca entregue/cancelado.
+    match /drinks/{id} {
+      allow read: if equipe() || (logado() && (resource.data.de == eu() || resource.data.para == eu()));
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['de', 'deNome', 'para', 'paraNome', 'item', 'itemNome', 'tamanho', 'preco', 'status', 'criado', 'respondido'])
+        && request.resource.data.de == eu()
+        && request.resource.data.para is string && request.resource.data.para != eu()
+        && request.resource.data.status == 'enviado'
+        && nomeOk(request.resource.data.deNome) && request.resource.data.paraNome is string && request.resource.data.paraNome.size() <= 20
+        && request.resource.data.itemNome is string && request.resource.data.itemNome.size() >= 1 && request.resource.data.itemNome.size() <= 80
+        && request.resource.data.preco is int && request.resource.data.preco > 0 && request.resource.data.preco < 1000000
+        && request.resource.data.respondido == null
+        && !bloqueado(eu(), request.resource.data.para)
+        && agora(request.resource.data);
+      allow update: if ativo()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'respondido'])
+        && request.resource.data.respondido == request.time
+        && resource.data.status == 'enviado'
+        && ((resource.data.para == eu() && request.resource.data.status in ['aceito', 'recusado'])
+            || (resource.data.de == eu() && request.resource.data.status == 'cancelado'));
+      allow update: if equipe()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'respondido'])
+        && resource.data.status == 'aceito'
+        && request.resource.data.status in ['entregue', 'cancelado'];
+      allow delete: if equipe();
     }
 
     // ---------- Cardápio: a equipe cadastra, todo mundo pode ver ----------

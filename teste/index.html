@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610300957">
+<link rel="stylesheet" href="estilo.css?v=202610301000">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -78,6 +78,17 @@
   .gv-item svg{flex:none;color:var(--muted)}
   .gv-item span{flex:1}
   /* cardápio (só leitura) */
+  #tCardapio{background:
+      radial-gradient(100% 42% at 0% 0%,rgba(169,92,242,.45),transparent 70%),
+      radial-gradient(85% 36% at 100% 40%,rgba(255,63,164,.28),transparent 70%),
+      radial-gradient(95% 42% at 15% 100%,rgba(255,90,31,.2),transparent 70%),
+      radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.4px) 0 0/18px 18px,
+      var(--bg)}
+  #tCardapio .appbar{background:transparent;border-bottom-color:rgba(255,255,255,.06)}
+  #tCardapio .cd-abas{background:rgba(13,10,18,.2);border-bottom-color:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #tCardapio .cd-prod{background:rgba(23,18,31,.78);border-color:rgba(255,255,255,.08);box-shadow:0 10px 24px -14px rgba(0,0,0,.8);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  #tCardapio .cd-grupo{text-shadow:0 0 8px rgba(255,63,164,.55),0 0 22px rgba(255,63,164,.3)}
+  #tCardapio .cd-aba:not(.on){background:rgba(23,18,31,.7)}
   .cd-abas{flex:none;display:flex;gap:8px;overflow-x:auto;padding:10px 16px;border-bottom:1px solid var(--line);scrollbar-width:none}
   .cd-abas::-webkit-scrollbar{display:none}
   .cd-aba{flex:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:8px 14px;font:700 13px/1 var(--f-body);cursor:pointer;white-space:nowrap}
@@ -526,9 +537,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610300957"></script>
-<script src="marca.js?v=202610300957"></script>
-<script src="comum.js?v=202610300957"></script>
+<script src="config.js?v=202610301000"></script>
+<script src="marca.js?v=202610301000"></script>
+<script src="comum.js?v=202610301000"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };

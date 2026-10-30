@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610301132">
+<link rel="stylesheet" href="estilo.css?v=202610301146">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -34,6 +34,7 @@
   .troca-foto .av.g{width:88px;height:88px;font-size:34px}
   .troca-foto .lapis{position:absolute;right:-2px;bottom:-2px;width:30px;height:30px;border-radius:50%;background:var(--neon);display:grid;place-items:center;font-size:16px;color:#fff;box-shadow:0 0 0 3px var(--panel2)}
   .troca-foto:focus-within{outline:2px solid var(--lilas);outline-offset:3px}
+  .perfil-eu-foto{border:0;background:none;padding:0;cursor:pointer;border-radius:50%}
   .av.aberto{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ouro),0 0 14px rgba(255,201,77,.55)}
   .aberto-t{color:var(--ouro)!important}
   .tag-aberto{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ouro);color:var(--ouro);border-radius:999px;padding:4px 10px;font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
@@ -624,9 +625,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610301132"></script>
-<script src="marca.js?v=202610301132"></script>
-<script src="comum.js?v=202610301132"></script>
+<script src="config.js?v=202610301146"></script>
+<script src="marca.js?v=202610301146"></script>
+<script src="comum.js?v=202610301146"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1176,7 +1177,7 @@
 
   function desenharEu() { if (!EU) return; const b = $("#btnEu"); b.replaceChildren(avatar(EU.uid)); b.title = EU.nome; desenharAberto(); }
   $("#btnEu").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
-  function abrirMeuPerfil() {
+  function editarMeuPerfil() {
     const inp = el("input"); inp.maxLength = 20; inp.value = EU.nome; inp.setAttribute("aria-label", "Teu nome");
     const metodo = (auth.currentUser.providerData[0] || {}).providerId === "google.com" ? "Google" : "e-mail";
     const aviso = el("p", "", "Conectado com " + metodo + (auth.currentUser.email ? " · " + auth.currentUser.email : ""));
@@ -1202,14 +1203,14 @@
         await db.doc("avatares/" + EU.uid).set({ data: d, criado: agoraServidor() });
         await db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor(), fotoV: agoraServidor() }, { merge: true });
         EU.fotoV = FS.Timestamp.now(); fotosPerfil.set(EU.uid + ":" + ms(EU.fotoV), d);
-        redesenhar(); abrirMeuPerfil();
+        redesenhar(); renderPerfil(); editarMeuPerfil();
       } catch (e) { aviso.textContent = "Não deu pra usar essa foto. Tenta outra."; aviso.style.color = "var(--laranja)"; }
     };
     const extras = [];
     if (EU.fotoV) extras.push(bt("Remover foto", "", async () => {
       await db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor(), fotoV: FS.FieldValue.delete() }, { merge: true }).catch(() => {});
       db.doc("avatares/" + EU.uid).delete().catch(() => {});
-      EU.fotoV = null; redesenhar(); abrirMeuPerfil();
+      EU.fotoV = null; redesenhar(); renderPerfil(); editarMeuPerfil();
     }));
 
     folha([trocar, arq, arqCam, legenda, el("h4", "", EU.nome), aviso, inp,
@@ -2386,8 +2387,10 @@
 
   // ================= PERFIL =================
   let perfilDe = null, postsPerfil = null;
+  // O meu perfil abre igual ao dos outros (com os meus posts); editar fica no botão
+  function abrirMeuPerfil() { abrirPerfil(EU.uid); }
   async function abrirPerfil(uid) {
-    if (!uid || uid === EU.uid) return;
+    if (!uid) return;
     perfilDe = uid; postsPerfil = null; ir("tPerfil"); renderPerfil();
     const s = await db.collection("telao").where("autor", "==", uid).limit(60).get().catch(() => null);
     if (perfilDe !== uid) return;
@@ -2403,8 +2406,33 @@
     return new Date(t).toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" });
   }
   function renderPerfil() {
-    const p = perfil(perfilDe);
-    $("#perfilTitulo").textContent = p.nome;
+    if (telaAtual() !== "tPerfil" || !perfilDe) return;
+    const p = perfil(perfilDe), eu = perfilDe === EU.uid;
+    $("#perfilTitulo").textContent = eu ? "Teu perfil" : p.nome;
+    if (eu) {
+      const topo = el("div", "perfil-topo");
+      const foto = el("button", "perfil-eu-foto"); foto.type = "button"; foto.setAttribute("aria-label", "Editar perfil e foto");
+      foto.append(avatar(EU.uid, "g")); foto.onclick = editarMeuPerfil;
+      topo.append(foto, el("h4", "", EU.nome));
+      if (abertoAgora(EU)) topo.append(el("span", "tag-aberto", "Aberto pra conhecer gente"));
+      const n = postsPerfil ? postsPerfil.length : 0;
+      topo.append(el("p", "", "Assim a galera vê teu perfil"));
+      const acoes = el("div", "acoes-p"); acoes.append(bt("Editar perfil e foto", "sim", editarMeuPerfil)); topo.append(acoes);
+      const out = [topo];
+      if (postsPerfil === null) out.push(el("div", "vazio-s", "Carregando teus posts…"));
+      else if (!n) out.push(el("div", "vazio-s", "Tu ainda não postou nada. Manda um recado ou uma foto pro telão!"));
+      else {
+        out.push(el("div", "secao", "Teus últimos posts"));
+        let diaAnterior = "";
+        postsPerfil.forEach(r => {
+          const dia = nomeDoDia(r.criado);
+          if (dia !== diaAnterior) { out.push(el("div", "dia-p", dia)); diaAnterior = dia; }
+          out.push(postCard(S.postsMap.get(r.id) || r));
+        });
+      }
+      $("#perfilScroll").replaceChildren(...out);
+      return;
+    }
     const topo = el("div", "perfil-topo");
     topo.append(avatar(p.id, "g"), el("h4", "", p.nome), el("p", online(p) ? "on" : "", online(p) ? "Online agora" : noBar(p) ? "No Trela hoje · " + visto(p.ultimoAcesso).toLowerCase() : visto(p.ultimoAcesso)));
     const acoes = el("div", "acoes-p"), rel = relacao(p.id);

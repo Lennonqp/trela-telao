@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610301008">
+<link rel="stylesheet" href="estilo.css?v=202610301020">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929}
@@ -141,6 +141,39 @@
   .curtir:disabled{cursor:default}
   .curtir:not(.feito):disabled{border-color:var(--line);color:var(--muted)}
   .curtir.pulso svg{animation:pulso .45s ease-out}
+  .curtir.minha{border-color:var(--line);color:var(--muted);cursor:default}
+  .ev-abrir{display:block;padding:0;border:0;background:none;cursor:zoom-in;position:relative}
+  .ev-abrir::after{content:"";position:absolute;right:8px;top:8px;width:26px;height:26px;border-radius:50%;background:rgba(13,10,18,.7) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7'/%3E%3C/svg%3E") center/14px no-repeat}
+  /* ---- tela de ver e curtir as fotos (concurso / desafio) ---- */
+  .vf{position:fixed;inset:0;z-index:38;background:#07050a;display:flex;flex-direction:column;animation:aparece .18s ease-out}
+  .vf-topo{flex:none;display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 12px 8px}
+  .vf-topo b{flex:1;font:400 22px/1 var(--f-display);text-transform:uppercase;color:var(--neon);text-shadow:0 0 10px rgba(255,63,164,.5)}
+  .vf-topo span{font:400 12px var(--f-mono);color:var(--muted)}
+  .vf-x{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font-size:18px;cursor:pointer}
+  .vf-palco{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+  .vf-palco img{max-width:100%;max-height:100%;object-fit:contain;transition:transform .22s ease,opacity .22s ease;-webkit-user-drag:none}
+  .vf-palco img.sai-esq{transform:translateX(-30%);opacity:0}.vf-palco img.sai-dir{transform:translateX(30%);opacity:0}
+  .vf-boom{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;color:#fff;opacity:0;pointer-events:none;filter:drop-shadow(0 0 3px var(--neon)) drop-shadow(0 0 16px var(--neon)) drop-shadow(0 4px 18px rgba(0,0,0,.6))}
+  .ver-fotos{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:16px;padding:16px 18px;background:linear-gradient(135deg,var(--neon),var(--lilas));color:#1d0612;cursor:pointer;text-align:left;box-shadow:0 12px 28px -12px rgba(255,63,164,.8)}
+  .ver-fotos span{flex:1;font:400 22px/1 var(--f-display);text-transform:uppercase;letter-spacing:.03em}
+  .ver-fotos small{font:700 12px/1 var(--f-mono);background:rgba(29,6,18,.18);border-radius:999px;padding:6px 10px}
+  .vf-boom.vai{animation:boom .8s ease-out}
+  @keyframes boom{0%{opacity:0;transform:scale(.3)}15%{opacity:1;transform:scale(1.15)}30%{transform:scale(.95)}45%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1.1)}}
+  .vf-seta{position:absolute;top:50%;margin-top:-24px;width:48px;height:48px;border-radius:50%;border:0;background:rgba(13,10,18,.55);color:#fff;font-size:28px;line-height:1;cursor:pointer}
+  .vf-seta.esq{left:8px}.vf-seta.dir{right:8px}
+  .vf-seta:disabled{opacity:0;pointer-events:none}
+  .vf-base{flex:none;padding:14px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(23,18,31,.6),rgba(23,18,31,.95));border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:12px}
+  .vf-quem{display:flex;align-items:center;gap:12px;min-width:0}
+  .vf-quem div{flex:1;min-width:0}
+  .vf-quem b{display:block;font-size:16px}
+  .vf-quem div span{display:block;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .vf-n{flex:none;display:flex;align-items:center;gap:6px;font:700 18px/1 var(--f-body);color:var(--neon);font-variant-numeric:tabular-nums}
+  .vf-curtir{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:999px;padding:15px;background:var(--neon);color:#1d0612;font:400 21px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;box-shadow:0 10px 28px -10px rgba(255,63,164,.8)}
+  .vf-curtir svg{width:22px;height:22px}
+  .vf-curtir.feito{background:none;color:var(--neon);border:1.5px solid var(--neon);box-shadow:none}
+  .vf-curtir.minha{background:none;color:var(--muted);border:1px solid var(--line);box-shadow:none;cursor:default;font:700 14px/1.2 var(--f-body);text-transform:none;letter-spacing:0}
+  .vf-curtir.pulso svg{animation:pulso .45s ease-out}
+  .vf-dica{margin:0;text-align:center;color:var(--muted);font-size:12px}
   @keyframes pulso{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
   .ev-op{position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--ink);font:600 15px/1.2 var(--f-body);cursor:pointer}
   .ev-op i{position:absolute;top:0;left:0;bottom:0;background:rgba(169,92,242,.28);transition:width .4s}
@@ -469,6 +502,22 @@
     <div class="rolagem" id="eventosScroll"></div>
   </div>
 
+  <!-- Ver e curtir as fotos do concurso / desafio -->
+  <div class="vf" id="vf" role="dialog" aria-modal="true" aria-labelledby="vfTit" hidden>
+    <div class="vf-topo"><b id="vfTit">Concurso</b><span id="vfConta"></span><button class="vf-x" type="button" id="vfFechar" aria-label="Fechar">✕</button></div>
+    <div class="vf-palco" id="vfPalco">
+      <img id="vfImg" alt="">
+      <svg class="vf-boom" id="vfBoom" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>
+      <button class="vf-seta esq" type="button" id="vfAnt" aria-label="Foto anterior">‹</button>
+      <button class="vf-seta dir" type="button" id="vfProx" aria-label="Próxima foto">›</button>
+    </div>
+    <div class="vf-base">
+      <div class="vf-quem"><span id="vfAv"></span><div><b id="vfNome"></b><span id="vfTexto"></span></div><span class="vf-n" id="vfN"></span></div>
+      <button class="vf-curtir" type="button" id="vfCurtir"></button>
+      <p class="vf-dica">Toca duas vezes na foto pra curtir · arrasta pro lado pra ver a próxima</p>
+    </div>
+  </div>
+
   <!-- Cardápio (só pra ver) -->
   <div class="tela sub" id="tCardapio" hidden>
     <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Cardápio</h3></div>
@@ -537,9 +586,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610301008"></script>
-<script src="marca.js?v=202610301008"></script>
-<script src="comum.js?v=202610301008"></script>
+<script src="config.js?v=202610301020"></script>
+<script src="marca.js?v=202610301020"></script>
+<script src="comum.js?v=202610301020"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -708,6 +757,7 @@
     else voltarTela();
   }
   window.addEventListener("popstate", e => {
+    if (!$("#vf").hidden) { fecharFotos(true); return; }   // voltar do celular fecha a foto grande
     if (menuAberto()) { fecharMenu(); try { history.pushState({ trela: 1, n: pilha.length }, ""); } catch (err) {} return; }
     // Com uma janelinha aberta (perfil, menu, confirmação), o voltar só fecha ela
     if (!$("#veu").hidden && !folhaObrigatoria) {
@@ -753,6 +803,7 @@
       const t = telaAtual();
       if (t === "tHome") { renderFaixas(); renderFeed(); checarMais(); }
       if (t === "tEvento") renderEvento();
+      renderFotos();
       if (t === "tEventos") renderEventos();
       if (t === "tAvisos") renderAvisos();
       if (t === "tGalera") renderGalera();
@@ -1518,6 +1569,13 @@
 
     if (k === "concurso") {
       if (premio) topo.append(premio);
+      const ids = fotosDoEvento("concurso").map(x => x.id);
+      if (ids.length) {
+        const ver = el("button", "ver-fotos"); ver.type = "button";
+        ver.innerHTML = CORACAO.replace('width="15" height="15"', 'width="20" height="20"');
+        ver.append(el("span", "", "Ver as fotos e curtir"), el("small", "", ids.length + (ids.length === 1 ? " foto" : " fotos")));
+        ver.onclick = () => abrirFotos("concurso", ids, ids[0]); out.push(ver);
+      }
       out.push(pBloco("Como funciona", passos([
         "Manda uma foto tua marcando pra concorrer. Só vale uma foto por pessoa nesta noite.",
         "A galera curte as fotos aqui ou no Rolou hoje. Cada pessoa curte cada foto uma vez.",
@@ -1611,14 +1669,17 @@
     b.append(prev, bts, leg, envia);
     return b;
   }
+  const fotosDoEvento = acao => S.postsAcao.filter(p => p.acao === acao && !(p.autor && S.bloqueados.has(p.autor)))
+    .sort((a, b) => ((b.reacoes || {}).amor || 0) - ((a.reacoes || {}).amor || 0) || ms(b.criado) - ms(a.criado));
   function gradeFotos(acao, vazio) {
-    const fotos = S.postsAcao.filter(p => p.acao === acao && !(p.autor && S.bloqueados.has(p.autor)))
-      .sort((a, b) => ((b.reacoes || {}).amor || 0) - ((a.reacoes || {}).amor || 0) || ms(b.criado) - ms(a.criado));
+    const fotos = fotosDoEvento(acao);
     if (!fotos.length) return el("div", "vazio-s", vazio);
     const g = el("div", "ev-grade");
     fotos.forEach(r => {
       const card = el("div", "ev-foto");
-      const img = imgFoto(r.fotoId, "Foto de " + r.nome); card.append(img);
+      const img = imgFoto(r.fotoId, "Foto de " + r.nome);
+      const abrir = el("button", "ev-abrir"); abrir.type = "button"; abrir.setAttribute("aria-label", "Ver a foto de " + r.nome + " em tela cheia");
+      abrir.append(img); abrir.onclick = () => abrirFotos(acao, fotos.map(x => x.id), r.id); card.append(abrir);
       const info = el("div", "ev-info"); info.append(el("b", "", r.autor === EU.uid ? "Tu" : r.nome));
       if (r.texto) info.append(el("span", "", r.texto));
       card.append(info, botaoCurtir(r));
@@ -1629,25 +1690,111 @@
 
   // ---- Curtir (conta no concurso e avisa quem postou) ----
   const CORACAO = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
+  const curtiu = r => S.curti.has(r.id);
+  const nCurtidas = r => ((r.reacoes || {}).amor || 0) + (r.demo && S.curti.has(r.id) ? 1 : 0);   // foto de exemplo: conta só aqui
   function botaoCurtir(r) {
-    const n = (r.reacoes || {}).amor || 0, minha = r.autor === EU.uid, ja = S.curti.has(r.id) || !!(reagi[r.id] && reagi[r.id].amor);
+    const n = nCurtidas(r), minha = r.autor === EU.uid, ja = curtiu(r);
+    if (minha) {   // na própria foto não tem o que tocar: mostra só quantas curtidas tem
+      const t = el("span", "curtir minha"); t.innerHTML = CORACAO;
+      t.append(el("span", "", "Tua foto · " + n)); t.setAttribute("aria-label", n + " curtidas na tua foto"); return t;
+    }
     const b = el("button", "curtir" + (ja ? " feito" : "")); b.type = "button"; b.innerHTML = CORACAO;
-    b.append(el("span", "", minha ? String(n) : (ja ? "Curtiu" : "Curtir") + (n ? " · " + n : "")));
-    b.setAttribute("aria-pressed", ja); b.setAttribute("aria-label", minha ? n + " curtidas na tua foto" : "Curtir a foto de " + r.nome);
-    if (minha || ja || r.demo) b.disabled = true;
+    b.append(el("span", "", (ja ? "Curtiu" : "Curtir") + (n ? " · " + n : "")));
+    b.setAttribute("aria-pressed", ja); b.setAttribute("aria-label", (ja ? "Tu curtiu a foto de " : "Curtir a foto de ") + r.nome);
+    if (ja) b.disabled = true;
     else b.onclick = () => { b.disabled = true; b.classList.add("feito", "pulso"); b.lastChild.textContent = "Curtiu · " + (n + 1); curtirFoto(r); };
     return b;
   }
+  // Grava a curtida (é ela que conta no ranking do concurso). Se o banco recusar, desfaz e avisa o motivo.
   async function curtirFoto(r) {
-    if (!r.autor || r.autor === EU.uid || S.curti.has(r.id)) return;
-    S.curti.add(r.id);
+    if (!r.autor || r.autor === EU.uid || S.curti.has(r.id)) return false;
+    S.curti.add(r.id); redesenhar();
+    if (r.demo) { toast(EU.uid, "Curtiu! (foto de exemplo do teste, não vale de verdade)"); return true; }
+    try { await db.doc("curtidas/" + r.id + "_" + EU.uid).set({ post: r.id, de: EU.uid, para: r.autor, criado: agoraServidor() }); }
+    catch (e) {
+      console.warn("[Trela] curtida recusada", e && e.code, e && e.message);
+      S.curti.delete(r.id); assinaturaEvento = ""; redesenhar(); if (!$("#vf").hidden) renderFotos();   // força redesenhar o botão que já tinha virado "Curtiu"
+      erroToast(e && e.code === "permission-denied" ? "Não deu pra curtir: o sistema recusou. Avisa a equipe que as regras do banco precisam ser publicadas." : "Não deu pra curtir agora. Confere a internet e tenta de novo.");
+      return false;
+    }
     if (!(reagi[r.id] && reagi[r.id].amor)) {
       reagi[r.id] = { ...(reagi[r.id] || {}), amor: true }; guardado.salvar("trela-reagi", reagi);
       db.doc("telao/" + r.id).update({ "reacoes.amor": FS.FieldValue.increment(1) }).catch(() => {});
     }
-    try { await db.doc("curtidas/" + r.id + "_" + EU.uid).set({ post: r.id, de: EU.uid, para: r.autor, criado: agoraServidor() }); } catch (e) { return; }
     db.collection("avisos").doc(r.autor).collection("itens").add({ tipo: "curtida", de: EU.uid, deNome: EU.nome, postId: r.id, texto: (r.texto || "").slice(0, 60), criado: agoraServidor(), lida: false }).catch(() => {});
+    return true;
   }
+
+  // ---- Tela de ver e curtir as fotos: foto grande, dois toques curte, arrasta pro lado troca ----
+  const VF = { ids: [], i: 0, acao: "", fotoMostrada: null };
+  const postPorId = id => S.postsAcao.find(p => p.id === id);
+  function abrirFotos(acao, ids, id) {
+    VF.ids = ids.slice(); VF.i = Math.max(0, ids.indexOf(id)); VF.acao = acao; VF.fotoMostrada = null;
+    $("#vfTit").textContent = (EVENTOS[acao] && EVENTOS[acao].rotulo) || "Fotos";
+    $("#vf").hidden = false;
+    try { history.pushState({ trela: 1, n: pilha.length, vf: 1 }, ""); } catch (e) {}
+    renderFotos();
+  }
+  function fecharFotos(doHistorico) {
+    if ($("#vf").hidden) return;
+    if (!doHistorico && history.state && history.state.vf) { history.back(); return; }   // o popstate fecha
+    $("#vf").hidden = true;
+  }
+  function renderFotos(dir) {
+    if ($("#vf").hidden) return;
+    VF.ids = VF.ids.filter(postPorId);
+    if (!VF.ids.length) { fecharFotos(); return; }
+    VF.i = Math.min(VF.i, VF.ids.length - 1);
+    const r = postPorId(VF.ids[VF.i]), img = $("#vfImg");
+    if (VF.fotoMostrada !== r.id) {
+      VF.fotoMostrada = r.id; img.alt = "Foto de " + r.nome;
+      const por = d => { img.src = d; img.classList.remove("sai-esq", "sai-dir"); };
+      if (dir) img.classList.add(dir > 0 ? "sai-esq" : "sai-dir");
+      if (fotosProntas.has(r.fotoId)) setTimeout(() => por(fotosProntas.get(r.fotoId)), dir ? 120 : 0);
+      else { img.removeAttribute("src"); carregarFoto(r.fotoId).then(d => { if (d) { fotosProntas.set(r.fotoId, d); if (VF.fotoMostrada === r.id) por(d); } }); }
+    }
+    $("#vfConta").textContent = (VF.i + 1) + " de " + VF.ids.length;
+    $("#vfAnt").disabled = VF.i === 0; $("#vfProx").disabled = VF.i === VF.ids.length - 1;
+    $("#vfAv").replaceChildren(r.demo ? el("span", "av", (r.nome || "?")[0]) : avatar(r.autor));
+    $("#vfNome").textContent = r.autor === EU.uid ? "Tu" : r.nome;
+    $("#vfTexto").textContent = r.texto || "";
+    const n = nCurtidas(r); $("#vfN").innerHTML = CORACAO.replace('width="15" height="15"', 'width="18" height="18"'); $("#vfN").append(String(n));
+    $("#vfN").setAttribute("aria-label", n + (n === 1 ? " curtida" : " curtidas"));
+    const b = $("#vfCurtir"), minha = r.autor === EU.uid, ja = curtiu(r);
+    b.className = "vf-curtir" + (minha ? " minha" : ja ? " feito" : "");
+    b.innerHTML = minha ? "" : CORACAO.replace(' width="15" height="15"', "");
+    b.append(minha ? "É a tua foto. Chama a galera pra curtir!" : ja ? "Curtiu" : "Curtir");
+    b.disabled = minha || ja;
+  }
+  function curtirNaTela(boom) {
+    const r = postPorId(VF.ids[VF.i]); if (!r || r.autor === EU.uid) return;
+    if (boom) { const h = $("#vfBoom"); h.classList.remove("vai"); void h.offsetWidth; h.classList.add("vai"); }
+    if (curtiu(r)) return;
+    curtirFoto(r).then(() => renderFotos());
+    renderFotos(); $("#vfCurtir").classList.add("pulso");
+  }
+  function trocarFoto(d) { const j = VF.i + d; if (j < 0 || j >= VF.ids.length) return; VF.i = j; renderFotos(d); }
+  $("#vfFechar").onclick = () => fecharFotos();
+  $("#vfAnt").onclick = () => trocarFoto(-1);
+  $("#vfProx").onclick = () => trocarFoto(1);
+  $("#vfCurtir").onclick = () => curtirNaTela(true);
+  (function () {
+    const palco = $("#vfPalco"); let x0 = null, y0 = 0, toque = 0;
+    palco.addEventListener("pointerdown", e => { if (e.target.closest("button")) return; x0 = e.clientX; y0 = e.clientY; });
+    palco.addEventListener("pointerup", e => {
+      if (x0 === null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { trocarFoto(dx < 0 ? 1 : -1); toque = 0; return; }
+      if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
+        const agora = Date.now();
+        if (agora - toque < 350) { toque = 0; curtirNaTela(true); } else toque = agora;
+      }
+    });
+    palco.addEventListener("pointercancel", () => { x0 = null; });
+    document.addEventListener("keydown", e => {
+      if ($("#vf").hidden) return;
+      if (e.key === "Escape") fecharFotos(); else if (e.key === "ArrowRight") trocarFoto(1); else if (e.key === "ArrowLeft") trocarFoto(-1);
+    });
+  })();
 
   // ---- Enquete ----
   function blocoEnquete(c) {

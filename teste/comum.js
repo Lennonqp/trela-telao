@@ -104,6 +104,21 @@ function msAteVirada() {
   const p = new Date(inicioDaNoite()); p.setDate(p.getDate() + 1);
   return Math.max(1000, p - Date.now() + 2000);
 }
+// Ações especiais: o que foi ligado antes da virada (6h) conta como desligado.
+// Assim nada fica ligado de uma noite pra outra, mesmo sem ninguém desligar.
+var ACOES_DA_NOITE = ["concurso", "desafio", "enquete", "roleta", "karaoke", "contagem", "jogo"];
+function acoesDaNoite(d) {
+  var dados = d.exists ? d.data({ serverTimestamps: "estimate" }) : {};
+  var pendente = !!(d.metadata && d.metadata.hasPendingWrites), noite = inicioDaNoite().getTime(), velhas = [];
+  ACOES_DA_NOITE.forEach(function (k) {
+    var a = dados[k];
+    if (!a || !a.ativo) return;
+    if (!a.desde && pendente) return;                 // acabou de ligar e o horário ainda não voltou do servidor
+    if (ms(a.desde) >= noite) return;                 // ligado nesta noite
+    dados[k] = Object.assign({}, a, { ativo: false }); velhas.push(k);
+  });
+  return { dados: dados, velhas: velhas };
+}
 // Liga um "ouvinte" pra noite atual e troca sozinho de noite às 6h
 function ouvirNoite(montar) {
   let parar = null, t = null;

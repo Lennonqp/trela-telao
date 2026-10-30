@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610301140">
+<link rel="stylesheet" href="estilo.css?v=202610301723">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -626,9 +626,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610301140"></script>
-<script src="marca.js?v=202610301140"></script>
-<script src="comum.js?v=202610301140"></script>
+<script src="config.js?v=202610301723"></script>
+<script src="marca.js?v=202610301723"></script>
+<script src="comum.js?v=202610301723"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1061,8 +1061,9 @@
 
     // ---- Eventos ligados no balcão ----
     let primeiraConfig = true, pararPostsAcao = null, pararVotos = null, votosDe = null;
-    parar.push(db.doc("config/acoes").onSnapshot(d => {
-      const antes = S.acoes; S.acoes = d.exists ? d.data() : {};
+    // refaz às 6h: o que foi ligado na noite anterior conta como desligado
+    parar.push(ouvirNoite(() => db.doc("config/acoes").onSnapshot(d => {
+      const antes = S.acoes; S.acoes = acoesDaNoite(d).dados;
       // avisa na hora quando a equipe liga algo novo
       if (!primeiraConfig) eventosAtivos().filter(e => !(antes[e.k] && antes[e.k].ativo) || chaveEvento(e.k, e.c) !== chaveEvento(e.k, antes[e.k] || {}))
         .forEach(e => toastEvento(e));
@@ -1083,7 +1084,7 @@
         }, () => {});
       }
       redesenhar();
-    }, () => {}));
+    }, () => {})));
     parar.push(() => { if (pararPostsAcao) pararPostsAcao(); if (pararVotos) pararVotos(); pararPostsAcao = pararVotos = null; votosDe = null; });
     parar.push(db.collection("curtidas").where("de", "==", uid).onSnapshot(q => { q.docs.forEach(x => S.curti.add(x.data().post)); redesenhar(); }, () => {}));
     parar.push(ouvirNoite(() => db.doc("concorrentes/" + chaveNoite() + "_" + uid).onSnapshot(x => { S.jaConcorri = x.exists; redesenhar(); }, () => {})));

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610301146">
+<link rel="stylesheet" href="estilo.css?v=202610301723">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -277,11 +277,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610301146"></script>
+<script src="config.js?v=202610301723"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202610301146"></script>
-<script src="comum.js?v=202610301146"></script>
-<script src="equipe.js?v=202610301146"></script>
+<script src="marca.js?v=202610301723"></script>
+<script src="comum.js?v=202610301723"></script>
+<script src="equipe.js?v=202610301723"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -565,8 +565,9 @@
 
   function iniciarEventos() {
     let pararPosts = null, pararCurt = null, pararVotos = null, votosDe = null;
-    db.doc("config/acoes").onSnapshot(d => {
-      A = d.exists ? d.data() : {};
+    // refaz às 6h: o que foi ligado na noite anterior conta como desligado
+    ouvirNoite(() => db.doc("config/acoes").onSnapshot(d => {
+      A = acoesDaNoite(d).dados;
       const precisaFotos = !!((A.concurso && A.concurso.ativo) || (A.desafio && A.desafio.ativo));
       if (precisaFotos && !pararPosts) {
         pararPosts = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
@@ -588,7 +589,7 @@
       // evento desligado enquanto estava na tela: passa pro próximo
       if (atual && String(atual).indexOf("ev:") === 0 && !(A[atual.slice(3)] && A[atual.slice(3)].ativo)) proximo();
       else atualizarEventoNaTela();
-    }, () => {});
+    }, () => {}));
     // Faixa "Ao vivo" alterna a cada 5 s; relógios a cada 1 s
     let viIdx = 0;
     setInterval(() => { viIdx++; desenharVivo(true, viIdx); }, 5000);

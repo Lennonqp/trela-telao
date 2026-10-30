@@ -9,7 +9,7 @@
 <title>Cardápio · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="estilo.css?v=202610300913">
+<link rel="stylesheet" href="estilo.css?v=202610300920">
 <style>
   body{min-height:100dvh;padding:28px 16px calc(32px + env(safe-area-inset-bottom));background:radial-gradient(70% 40% at 15% 0%,rgba(169,92,242,.22),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(255,63,164,.18),transparent 70%),var(--bg)}
   .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
@@ -69,7 +69,7 @@
   .topo-lista{display:flex;justify-content:space-between;align-items:baseline}
   .topo-lista h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:24px;text-transform:uppercase}
   .topo-lista span{color:var(--muted);font-family:var(--f-mono);font-size:12px}
-  .aviso{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:14px;background:var(--ink);color:#1a1320;border-radius:14px;padding:10px 10px 10px 16px;font-weight:700;font-size:14px;box-shadow:0 10px 30px -10px rgba(0,0,0,.6);max-width:calc(100% - 32px)}
+  .aviso{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:14px;background:var(--ink);color:#1a1320;border-radius:14px;padding:10px 10px 10px 16px;font-weight:700;font-size:14px;box-shadow:0 10px 30px -10px rgba(0,0,0,.6);max-width:calc(100% - 32px)}
   .aviso button{border:0;background:#1a1320;color:var(--ink);border-radius:10px;padding:8px 12px;font:700 13px/1 var(--f-body);cursor:pointer}
   select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);font:16px/1.4 var(--f-body);border-radius:12px;padding:12px;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat}
   .grupos{display:flex;flex-direction:column;gap:6px}
@@ -89,6 +89,25 @@
   .cab-grupo:first-child{margin-top:0}
   .cab-grupo span{font:400 12px var(--f-mono);color:var(--muted);text-transform:none}
   .cab-grupo.sem{color:var(--muted)}
+  .vista{display:flex;flex-direction:column;gap:22px}
+  #vLista{padding-bottom:84px}
+  .volta-lista{align-self:flex-start;background:none;border:0;color:var(--lilas);font:700 14px/1 var(--f-body);padding:4px 0;cursor:pointer}
+  details.painel > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-size:20px;line-height:1.1;text-transform:uppercase;color:var(--lilas)}
+  details.painel > summary::-webkit-details-marker{display:none}
+  details.painel > summary span{font:400 12px var(--f-mono);color:var(--muted);text-transform:none;margin-left:auto;white-space:nowrap}
+  details.painel > summary::after{content:"+";font:400 26px/1 var(--f-body);color:var(--lilas)}
+  details.painel[open] > summary::after{content:"–"}
+  details.painel{display:block}
+  .grp-corpo{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+  /* botão flutuante: no topo mostra o texto, rolando vira um + redondo */
+  .fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));z-index:15;height:58px;min-width:58px;border:0;border-radius:999px;background:var(--neon);color:#1d0612;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 24px 0 18px;cursor:pointer;box-shadow:0 12px 30px -8px rgba(255,63,164,.75),0 0 0 1px rgba(255,255,255,.08) inset;transition:padding .28s ease,gap .28s ease,transform .15s}
+  .fab:active{transform:scale(.96)}
+  .fab:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+  .fab-mais{display:block;width:24px;height:24px;flex:none}
+  .fab-txt{font:400 19px/1 var(--f-display);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;max-width:240px;opacity:1;transition:max-width .28s ease,opacity .18s ease}
+  .fab.redondo{padding:0;gap:0}
+  .fab.redondo .fab-txt{max-width:0;opacity:0}
+  @media (prefers-reduced-motion:reduce){.fab,.fab-txt{transition:none}}
   @media (max-width:520px){
     .linha{grid-template-columns:minmax(0,1fr)}
     .foto{width:100%;aspect-ratio:16/9}
@@ -110,14 +129,16 @@
 
   <div id="porta"></div>
 
-  <main id="tela" hidden style="display:flex;flex-direction:column;gap:22px">
+  <main id="tela" hidden>
+  <div class="vista" id="vLista">
     <div>
       <h1>Cardápio do <em>Trela</em></h1>
-      <p class="sub">Cadastra os produtos com foto, descrição e preço. Bebida no copo pode ter preço de 500 ml e de 700 ml.</p>
+      <p class="sub">Assim a galera vê o cardápio. Pra cadastrar, toca em Cadastrar produto.</p>
     </div>
 
-    <section class="painel" id="gruposBox" aria-labelledby="gruposTitulo">
-      <h2 id="gruposTitulo">Grupos</h2>
+    <details class="painel" id="gruposBox">
+      <summary>Organizar grupos <span id="gruposN"></span></summary>
+      <div class="grp-corpo">
       <p class="dica">Vocês criam os grupos do jeito do bar: drinks, cervejas, doses… A ordem daqui é a ordem do cardápio.</p>
       <div class="opcoes" id="sugestoes"></div>
       <div class="grupos" id="grupos"></div>
@@ -126,8 +147,17 @@
         <button class="btn" type="submit">Criar</button>
       </form>
       <p class="msg" id="msgGrupo" role="status"></p>
-    </section>
+      </div>
+    </details>
 
+    <section>
+      <div class="topo-lista"><h2>No cardápio</h2><span id="total"></span></div>
+      <div class="lista" id="lista" style="margin-top:12px"></div>
+    </section>
+  </div>
+
+  <div class="vista" id="vForm" hidden>
+    <button type="button" class="volta-lista" id="voltaLista">&lsaquo; Voltar pro cardápio</button>
     <form class="painel" id="form" novalidate>
       <h2 id="formTitulo">Novo produto</h2>
       <div class="linha">
@@ -165,27 +195,25 @@
       <p class="msg" id="msg" role="status"></p>
       <div class="acoes">
         <button class="btn" type="submit" id="salvar">Salvar produto</button>
-        <button class="ghost" type="button" id="cancelar" hidden>Cancelar edição</button>
+        <button class="ghost" type="submit" id="salvarOutro">Salvar e cadastrar outro</button>
+        <button class="ghost" type="button" id="cancelar">Cancelar</button>
       </div>
     </form>
-
-    <section>
-      <div class="topo-lista"><h2>No cardápio</h2><span id="total"></span></div>
-      <div class="lista" id="lista" style="margin-top:12px"></div>
-    </section>
+  </div>
   </main>
   <footer class="lennon-pe" data-marca-lennon></footer>
 </div>
 <div class="aviso" id="aviso" role="status" hidden></div>
+<button type="button" class="fab" id="fab" hidden aria-label="Cadastrar produto"><svg class="fab-mais" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="fab-txt">Cadastrar produto</span></button>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610300913"></script>
+<script src="config.js?v=202610300920"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202610300913"></script>
-<script src="comum.js?v=202610300913"></script>
-<script src="equipe.js?v=202610300913"></script>
+<script src="marca.js?v=202610300920"></script>
+<script src="comum.js?v=202610300920"></script>
+<script src="equipe.js?v=202610300920"></script>
 <script>
   // Cardápio: a equipe cadastra os produtos em /cardapio/{id}.
   // Preços em centavos: precos = { unico } ou { "500", "700" }; precosUni no mesmo formato quando tem universitário.
@@ -252,11 +280,38 @@
   function limpar() {
     const g = $("grupoSel").value;   // o próximo produto já vem no mesmo grupo (bom pra cadastrar vários)
     editando = null; $("form").reset(); $("grupoSel").value = g; mostrarFoto(""); desenharPrecos({});
-    $("formTitulo").textContent = "Novo produto"; $("salvar").textContent = "Salvar produto"; $("cancelar").hidden = true;
+    $("formTitulo").textContent = "Novo produto"; $("salvar").textContent = "Salvar produto"; $("salvarOutro").hidden = false;
     $("form").classList.remove("editando"); contar("nome", "cNome", 60); contar("desc", "cDesc", 200);
     document.querySelectorAll(".prod.foco").forEach(p => p.classList.remove("foco"));
   }
-  $("cancelar").onclick = () => { limpar(); msg(""); };
+  // ---------- duas telas: o cardápio (primeira) e o cadastro (#produto) ----------
+  let empurrei = false, scrollLista = 0, destacar = null;
+  function abrirForm() {
+    scrollLista = window.scrollY;
+    if (location.hash !== "#produto") { empurrei = true; location.hash = "produto"; } else mostrarTela();
+  }
+  function voltarLista() {
+    if (location.hash === "#produto") { if (empurrei) { empurrei = false; history.back(); } else location.hash = ""; }
+    else mostrarTela();
+  }
+  function mostrarTela() {
+    const form = location.hash === "#produto";
+    $("vForm").hidden = !form; $("vLista").hidden = form; $("fab").hidden = form || $("tela").hidden;
+    if (form) { window.scrollTo(0, 0); setTimeout(() => { if (!editando) $("nome").focus({ preventScroll: true }); }, 60); }
+    else { if (editando) limpar(); msg(""); window.scrollTo(0, scrollLista); mostrarDestaque(); }
+    atualizarFab();
+  }
+  window.addEventListener("hashchange", () => { if (location.hash !== "#produto") empurrei = false; mostrarTela(); });
+  function mostrarDestaque() {
+    if (!destacar) return;
+    const c = document.querySelector('.prod[data-id="' + destacar + '"]'); if (!c) return;   // ainda não chegou: a lista tenta de novo
+    destacar = null; c.classList.add("foco"); c.scrollIntoView({ block: "center" });
+    setTimeout(() => c.classList.remove("foco"), 2200);
+  }
+  function atualizarFab() { $("fab").classList.toggle("redondo", window.scrollY > 40); }
+  window.addEventListener("scroll", atualizarFab, { passive: true });
+  $("fab").onclick = () => { limpar(); msg(""); abrirForm(); };
+  $("cancelar").onclick = $("voltaLista").onclick = () => { limpar(); voltarLista(); };
 
   function editar(p) {
     editando = p.id;
@@ -266,10 +321,9 @@
     $("grupoSel").value = grupoDe(p) ? p.grupo : "";
     const v = {}; Object.keys(p.precos || {}).forEach(k => v["n" + k] = paraCampo(p.precos[k])); Object.keys(p.precosUni || {}).forEach(k => v["u" + k] = paraCampo(p.precosUni[k]));
     desenharPrecos(v);
-    $("formTitulo").textContent = "Editando: " + p.nome; $("salvar").textContent = "Salvar alterações"; $("cancelar").hidden = false;
+    $("formTitulo").textContent = "Editando: " + p.nome; $("salvar").textContent = "Salvar alterações"; $("salvarOutro").hidden = true;
     $("form").classList.add("editando"); contar("nome", "cNome", 60); contar("desc", "cDesc", 200); msg("");
-    document.querySelectorAll(".prod").forEach(x => x.classList.toggle("foco", x.dataset.id === p.id));
-    $("form").scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => $("nome").focus({ preventScroll: true }), 300);
+    abrirForm();
   }
 
   $("form").onsubmit = async e => {
@@ -288,14 +342,18 @@
       }
     }
     const dados = { nome, descricao, grupo: $("grupoSel").value || "", foto: fotoAtual, tamanhos: ts[0] === "unico" ? [] : ts, precos, uni, precosUni: uni ? precosUni : {}, atualizado: agoraServidor() };
-    $("salvar").disabled = true; msg("Salvando…");
+    const outro = e.submitter && e.submitter.id === "salvarOutro";
+    $("salvar").disabled = $("salvarOutro").disabled = true; msg("Salvando…");
     try {
+      let id = editando;
       if (editando) await db.doc("cardapio/" + editando).update(dados);   // mantém ordem e criado
-      else await db.collection("cardapio").add(Object.assign(dados, { ordem: Date.now(), criado: agoraServidor() }));
-      const era = editando; limpar(); msg(era ? "Alterações salvas." : nome + " entrou no cardápio.", "ok");
+      else id = (await db.collection("cardapio").add(Object.assign(dados, { ordem: Date.now(), criado: agoraServidor() }))).id;
+      const era = editando; limpar();
+      if (outro) { msg(nome + " entrou no cardápio. Pode cadastrar o próximo.", "ok"); window.scrollTo(0, 0); $("nome").focus({ preventScroll: true }); }
+      else { destacar = id; voltarLista(); avisar(era ? "Alterações salvas." : nome + " entrou no cardápio."); }
     } catch (err) {
       msg(err.code === "permission-denied" ? "As regras do Firestore estão desatualizadas. Publica o firestore.rules de novo." : "Não deu pra salvar agora. Tenta de novo.", "erro");
-    } finally { $("salvar").disabled = false; }
+    } finally { $("salvar").disabled = $("salvarOutro").disabled = false; }
   };
   // ---------- lista ----------
   function tabela(p) {
@@ -313,7 +371,7 @@
   function desenharLista() {
     const box = $("lista"); box.innerHTML = "";
     $("total").textContent = produtos.length + (produtos.length === 1 ? " produto" : " produtos");
-    if (!produtos.length) { box.append(el("p", "vazio", "Nenhum produto ainda. Cadastra o primeiro aí em cima.")); return; }
+    if (!produtos.length) { box.append(el("p", "vazio", "Nenhum produto ainda. Toca em Cadastrar produto pra começar.")); return; }
     const blocos = grupos.map(g => ({ g, ps: produtos.filter(p => p.grupo === g.id) }));
     const soltos = produtos.filter(p => !grupoDe(p));
     if (grupos.length) {
@@ -404,6 +462,7 @@
       box.append(r);
     });
     // sugestões de um toque (somem quando o grupo já existe)
+    $("gruposN").textContent = grupos.length ? grupos.length + (grupos.length === 1 ? " grupo" : " grupos") : "nenhum ainda";
     const sug = $("sugestoes"); sug.innerHTML = "";
     SUGESTOES.filter(n => !grupos.some(g => g.nome.toLowerCase() === n.toLowerCase())).forEach(n => {
       const b = el("button", "sug", n); b.type = "button"; b.onclick = () => criarGrupo(n); sug.append(b);
@@ -424,18 +483,20 @@
 
   desenharPrecos({}); desenharGrupos();
   portaEquipe($("porta"), () => {
-    $("tela").hidden = false;
+    $("tela").hidden = false; mostrarTela();
+    let primeiraVezGrupos = true;
     parar.push(db.doc("config/cardapio").onSnapshot(s => {
       grupos = (s.exists && Array.isArray(s.data().grupos)) ? s.data().grupos.filter(g => g && g.id && g.nome) : [];
       if (renomeando && !grupos.some(g => g.id === renomeando)) renomeando = null;
       if (!renomeando) desenharGrupos();
+      if (primeiraVezGrupos) { primeiraVezGrupos = false; if (!grupos.length) $("gruposBox").open = true; }
       desenharLista();
     }, () => {}));
     parar.push(db.collection("cardapio").onSnapshot(s => {
       produtos = s.docs.map(d => Object.assign({ id: d.id }, d.data())).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-      desenharLista(); if (!renomeando) desenharGrupos();
+      desenharLista(); if (!renomeando) desenharGrupos(); if (!$("vLista").hidden) mostrarDestaque();
     }, e => { $("lista").replaceChildren(el("p", "vazio", e && e.code === "permission-denied" ? "As regras do Firestore estão desatualizadas. Publica o firestore.rules de novo." : "Não deu pra carregar o cardápio.")); }));
-  }, () => { parar.forEach(f => f()); parar = []; $("tela").hidden = true; });
+  }, () => { parar.forEach(f => f()); parar = []; $("tela").hidden = true; $("fab").hidden = true; });
 </script>
 </body>
 </html>

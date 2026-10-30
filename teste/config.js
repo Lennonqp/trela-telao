@@ -23,4 +23,4 @@ window.TEMPO_POR_RECADO = 8;
 
 // Notificações no celular: chave pública do Firebase (Configurações do projeto → Cloud Messaging →
 // Certificados push da Web). Vazia = a opção de notificação não aparece no app.
-window.VAPID_KEY = "";
+window.VAPID_KEY = "BIh3VPifqcbnrCarsqcnMbQNF740GnGt0n9v2nQFcFt6lNlCjnSeHptk03AYBxpunoAqWhvD8RIJPyfkgQeTq0U";

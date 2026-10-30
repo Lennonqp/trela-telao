@@ -114,6 +114,8 @@ async function enviar(adm, db, de, aviso, base) {
 }
 
 module.exports = async (req, res) => {
+  // Abrir no navegador mostra se está tudo pronto (não mostra nada secreto)
+  if (req.method === "GET") return res.status(200).json({ servidor: "ok", chavePrivadaNoVercel: !!process.env.FIREBASE_SERVICE_ACCOUNT });
   if (req.method !== "POST") return res.status(405).json({ erro: "use POST" });
   if (!process.env.FIREBASE_SERVICE_ACCOUNT) return res.status(503).json({ erro: "falta a chave FIREBASE_SERVICE_ACCOUNT no Vercel" });
   let adm, uid;

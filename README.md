@@ -27,6 +27,9 @@ Três páginas:
 - **Crush secreto**: no perfil de alguém, "Tenho interesse (em segredo)". Ninguém fica sabendo; se os dois marcarem, aparece "Deu match!" pros dois, eles viram amigos e a conversa abre. O banco só deixa ler o interesse do outro quando é mútuo.
 - **Te pago um drink**: no perfil, escolhe um item do cardápio e manda o convite. Quem recebe aceita ou recusa (recusa é discreta e bloqueia insistir na mesma noite; no máximo 3 convites esperando por pessoa). Aceito, aparece no balcão em "Te pago um drink": quem convidou paga e leva até a pessoa.
 - **Cardápio**: no menu ≡, só pra ver, separado pelos grupos que a equipe criou, com copo de 500/700 ml e preço universitário.
+- **Quem tá no Trela**: atalho na tela inicial e no menu ≡. Mostra todo mundo que abriu o app na noite (online e quem ligou o anel primeiro), uma pessoa por vez com foto grande, com o crush secreto e o "Te pago um drink" direto (o drink só aparece quando o cardápio tem produto).
+- **Foto de perfil**: quem entra sem foto vê a janela "Insere tua foto de perfil" (Inserir foto, Tirar selfie, Ignorar por enquanto). Ignorando, volta só na noite seguinte.
+- **Dicas no telão**: a cada 5 recados entra uma dica do app (crush, anel, Encara ou Bebe, notificações; drink e cardápio só quando tiver produto). A lista fica em `DICAS_APP` no `comum.js`.
 - **Encara ou Bebe**: no menu ≡ (`/encara`). Dá pra jogar num celular só ou montar uma mesa com os amigos do app: o convite aparece na tela deles, cada um acompanha no próprio celular e uma roleta sorteia a vez. Trava de 18+.
 - **Conversas privadas só entre amigos**. As conversas não zeram às 6h; no menu ⋯ do chat tem **Apagar conversa** (só pra mim, ou pra nós dois). Dá pra desfazer amizade, bloquear e denunciar. Mensagem com palavrão chega borrada.
 
@@ -108,6 +111,8 @@ A pasta `/teste` é uma cópia pra testar mudanças antes (selo amarelo "VERSÃO
 O app avisa no celular mesmo fechado: mensagem, pedido de amizade, convite e resposta de drink, match, curtida e menção, vez no karaokê e convite pro Encara ou Bebe. A pessoa liga em **≡ → Notificações no celular** (ou no cartão da tela inicial).
 
 Como funciona: depois de gravar algo, o app chama `POST /api/avisar` (função do Vercel em `api/avisar.js`). O servidor confere no banco quem fez o quê, escreve o texto e manda pelo Firebase Cloud Messaging. Cada aviso sai uma vez só (coleção `enviados`). O `sw.js` recebe e mostra a notificação.
+
+**Dicas por notificação**: uma dica do app a cada 1h30 (das 18h às 4h), sempre diferente, só pra quem abriu o app na noite e ativou as notificações. O telão e o app chamam `POST /api/dicas` a cada 10 min e o servidor decide se é hora (`config/dicasPush` guarda o que já foi). Abrir `/api/dicas` no navegador mostra as dicas que já saíram na noite.
 
 Pra ligar:
 1. Firebase → Configurações do projeto → **Cloud Messaging** → Certificados push da Web → **Gerar par de chaves**. Cola a chave em `window.VAPID_KEY` no `config.js` (é pública).

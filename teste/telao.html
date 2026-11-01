@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202610301736">
+<link rel="stylesheet" href="estilo.css?v=202611011034">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -69,6 +69,7 @@
   .selo-ev{background:var(--c2,var(--neon));color:#140c1b}
 
   .evento{align-items:stretch}
+  .palco.dica .dica-txt{font-size:calc(var(--u) * 3.4);line-height:1.25;max-width:90%}
   .ev-tv{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
   .ev-cab{display:flex;align-items:center}
   .ev-cab .ev-ic{flex:none;width:calc(var(--u) * 5.6);height:calc(var(--u) * 5.6);border-radius:calc(var(--u) * 1.3);display:flex;align-items:center;justify-content:center;background:var(--c);color:#140c1b;margin-right:calc(var(--u) * 2);box-shadow:0 0 calc(var(--u) * 3) var(--c)}
@@ -278,11 +279,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202610301736"></script>
+<script src="config.js?v=202611011034"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202610301736"></script>
-<script src="comum.js?v=202610301736"></script>
-<script src="equipe.js?v=202610301736"></script>
+<script src="marca.js?v=202611011034"></script>
+<script src="comum.js?v=202611011034"></script>
+<script src="equipe.js?v=202611011034"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -351,6 +352,8 @@
   let durAtual = DUR, desdeEv = 0, evIdx = 0;
   const EV_A_CADA = 3;          // uma tela de evento a cada 3 recados da galera
   const DUR_EV = DUR + 4;       // tela de evento fica um pouco mais
+  const DICA_A_CADA = 5;        // uma dica do app a cada 5 recados da galera
+  let desdeDica = 0, dicaIdx = 0, temCardapio = false;
 
   function ultimosDaGalera() {
     const lista = Array.from(itens.values()).filter(r => r.tipo !== "bar")
@@ -425,6 +428,16 @@
       publicarEstado();
       return;
     }
+    // Dica do app (crush, anel, jogo...): entra na roda de vez em quando
+    const dicas = dicasDoApp(temCardapio);
+    if (!eNovo && dicas.length && (desdeDica >= DICA_A_CADA || (!temRoda() && !evs.length && String(atual).indexOf("dica:") !== 0))) {
+      desdeDica = 0;
+      mostrarDica(dicas[dicaIdx++ % dicas.length]);
+      $("nFila").textContent = prioridade.length + novos.length;
+      $("fila").hidden = !(prioridade.length + novos.length);
+      publicarEstado();
+      return;
+    }
     if (!id) {
       const lista = Array.from(itens.values()).sort((a, b) => mil(b.criado) - mil(a.criado));
       const bares = lista.filter(r => r.tipo === "bar" && r.repetir);
@@ -433,7 +446,7 @@
       else if (galera.length) id = galera[rotIdx++ % galera.length].id;
     }
     const r = id && itens.get(id);
-    if (r) { desdeBar = r.tipo === "bar" ? 0 : desdeBar + 1; desdeEv++; }
+    if (r) { desdeBar = r.tipo === "bar" ? 0 : desdeBar + 1; desdeEv++; desdeDica++; }
     mostrar(r || null, eNovo);
     $("nFila").textContent = prioridade.length + novos.length;
     $("fila").hidden = !(prioridade.length + novos.length);
@@ -592,6 +605,12 @@
       else atualizarEventoNaTela();
     }, () => {}));
     // Faixa "Ao vivo" alterna a cada 5 s; relógios a cada 1 s
+    const verCardapio = () => db.collection("cardapio").limit(1).get().then(q => { temCardapio = !q.empty; }).catch(() => {});
+    verCardapio(); setInterval(verCardapio, 10 * 60 * 1000);
+    // Dicas por notificação: o telão fica ligado a noite toda, então ele "dá corda" no servidor
+    // a cada 10 min; o servidor decide se já passou 1h30 e manda (uma vez só pra todo mundo).
+    const chamarDicas = () => { const u = auth.currentUser; if (!u) return; u.getIdToken().then(t => fetch("/api/dicas", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + t }, body: JSON.stringify({ base: new URL("./", document.baseURI).pathname }) })).catch(() => {}); };
+    setTimeout(chamarDicas, 60 * 1000); setInterval(chamarDicas, 10 * 60 * 1000);
     let viIdx = 0;
     setInterval(() => { viIdx++; desenharVivo(true, viIdx); }, 5000);
     setInterval(() => {
@@ -630,6 +649,18 @@
     palco.className = "palco entra evento";
     palco.style.setProperty("--c", EVENTOS[k].cor);
     desenharEventoNoPalco(k);
+  }
+  function mostrarDica(d) {
+    const palco = $("palco");
+    palco.classList.remove("entra"); void palco.offsetWidth;
+    if (pararComs) { pararComs(); pararComs = null; }
+    inicio = Date.now(); durAtual = DUR_EV; atual = "dica:" + d.k; itemConc = null;
+    $("tv").classList.remove("modo-concurso");
+    palco.className = "palco entra evento dica";
+    palco.style.setProperty("--c", d.cor);
+    const ic = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d.ic + "</svg>";
+    palco.innerHTML = '<div class="ev-tv"><div class="ev-cab"><span class="ev-ic">' + ic + '</span><div><small>Dica do app do Trela</small><h2' + (d.titulo.length > 30 ? ' class="longo"' : "") + ">" + escHtml(d.titulo) + "</h2></div></div>" +
+      '<div class="ev-corpo"><p class="ev-grande dica-txt">' + escHtml(d.texto) + '</p></div><p class="ev-cta">Ainda não tem o app? Aponta a câmera pro <b>QR code</b> aqui do lado</p></div>';
   }
   function atualizarEventoNaTela() {
     if (atual && String(atual).indexOf("ev:") === 0) desenharEventoNoPalco(atual.slice(3));

@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202610301736">
+<link rel="stylesheet" href="estilo.css?v=202611011034">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -35,6 +35,35 @@
   .troca-foto .av.g{width:88px;height:88px;font-size:34px}
   .troca-foto .lapis{position:absolute;right:-2px;bottom:-2px;width:30px;height:30px;border-radius:50%;background:var(--neon);display:grid;place-items:center;font-size:16px;color:#fff;box-shadow:0 0 0 3px var(--panel2)}
   .troca-foto:focus-within{outline:2px solid var(--lilas);outline-offset:3px}
+  .pede-foto{position:relative;align-self:center;cursor:pointer;margin:4px auto 0}
+  .pede-foto .av.g{width:96px;height:96px;font-size:38px;box-shadow:0 0 0 3px var(--panel2),0 0 0 5px var(--neon)}
+  .pede-foto .lapis{position:absolute;right:-2px;bottom:-2px;width:34px;height:34px;border-radius:50%;background:var(--neon);display:grid;place-items:center;font-size:18px;color:#fff;box-shadow:0 0 0 3px var(--panel2)}
+  .quem-atalho{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:18px;padding:14px 16px;background:linear-gradient(135deg,rgba(255,63,164,.22),rgba(169,92,242,.22));box-shadow:inset 0 0 0 1px rgba(255,63,164,.45);color:var(--ink);cursor:pointer;text-align:left;margin-bottom:4px}
+  .quem-atalho .pilha{display:flex;flex:none}
+  .quem-atalho .pilha .av{width:34px;height:34px;font-size:14px;box-shadow:0 0 0 2px var(--bg)}
+  .quem-atalho .pilha .av + .av{margin-left:-10px}
+  .quem-atalho div{flex:1;min-width:0}
+  .quem-atalho b{display:block;font:400 20px/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+  .quem-atalho span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+  .quem-atalho i{font-style:normal;font-size:26px;color:var(--neon)}
+  #tQuem .rolagem{gap:14px}
+  .quem-topo{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .quem-topo p{margin:0;color:var(--muted);font-size:13px}
+  .quem-trilho{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:0 -16px;padding:0 16px 6px;scrollbar-width:none;overscroll-behavior-x:contain}
+  .quem-trilho::-webkit-scrollbar{display:none}
+  .quem-card{flex:0 0 calc(100% - 8px);scroll-snap-align:center;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:12px}
+  .quem-card.aberto{border-color:var(--ouro);box-shadow:0 0 22px -8px rgba(255,201,77,.6)}
+  .quem-foto{position:relative;border:0;padding:0;background:none;cursor:pointer;border-radius:16px;overflow:hidden}
+  .quem-foto .av{width:100%;height:auto;aspect-ratio:1;border-radius:16px;font-size:110px;box-shadow:none}
+  .quem-foto .av.on::after{width:22px;height:22px;right:12px;bottom:12px;min-width:0;min-height:0;box-shadow:0 0 0 3px var(--panel)}
+  .quem-nome{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .quem-nome b{font:400 28px/1 var(--f-display);text-transform:uppercase}
+  .quem-nome span{font-size:13px;color:var(--muted)}
+  .quem-nome span.on{color:var(--ok)}
+  .quem-nav{display:flex;align-items:center;justify-content:center;gap:16px}
+  .quem-nav button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:22px;cursor:pointer}
+  .quem-nav button:disabled{opacity:.3}
+  .quem-nav span{font:400 13px var(--f-mono);color:var(--muted);min-width:70px;text-align:center}
   .perfil-eu-foto{border:0;background:none;padding:0;cursor:pointer;border-radius:50%}
   .av.aberto{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ouro),0 0 14px rgba(255,201,77,.55)}
   .aberto-t{color:var(--ouro)!important}
@@ -483,6 +512,7 @@
       <i class="av-seta" aria-hidden="true">›</i>
     </button>
     <div class="rolagem" id="homeScroll">
+      <button type="button" class="quem-atalho" id="quemAtalho" hidden><span class="pilha" id="quemPilha"></span><div><b>Quem tá no Trela</b><span id="quemAtalhoTxt"></span></div><i aria-hidden="true">›</i></button>
       <form id="sendForm" novalidate style="display:flex;flex-direction:column;gap:12px">
         <h2>Manda pro <em>telão</em></h2>
         <div class="abas" role="tablist">
@@ -567,6 +597,12 @@
     </div>
   </div>
 
+  <!-- Quem tá no Trela: quem abriu o app nesta noite, um por vez, com crush e drink direto -->
+  <div class="tela sub" id="tQuem" hidden>
+    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Quem tá no Trela</h3></div>
+    <div class="rolagem" id="quemScroll"></div>
+  </div>
+
   <!-- Cardápio (só pra ver) -->
   <div class="tela sub" id="tCardapio" hidden>
     <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Cardápio</h3></div>
@@ -624,6 +660,7 @@
     <label class="gv-aberto gv-push" id="gvPushBox" hidden><span><b>Notificações no celular</b><small id="gvPushTxt">Avisa mesmo com o Trela fechado</small></span><input type="checkbox" class="sw" id="gvPush" aria-label="Notificações no celular"></label>
     <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>Um anel dourado aparece na tua foto até as 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
+    <button type="button" class="gv-item" data-ir="quem"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6.2 4.6 1.8 5.1 4.8"/></svg><span>Quem tá no Trela</span></button>
     <button type="button" class="gv-item" data-ir="cardapio"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/></svg><span>Cardápio</span></button>
     <a class="gv-item gv-jogo" id="gvJogo" href="encara.html"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/><path d="M15.5 8.2c-1-1.2-2.8-.3-2.3 1.1.4 1 2.3 2.4 2.3 2.4s1.9-1.4 2.3-2.4c.5-1.4-1.3-2.3-2.3-1.1z"/></svg><span>Encara ou Bebe</span><em class="gv-n" id="gvJogoN" hidden></em><em class="gv-tag">jogo</em></a>
     <button type="button" class="gv-item gv-sair" id="gvSair"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span>Sair da conta</span></button>
@@ -638,9 +675,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202610301736"></script>
-<script src="marca.js?v=202610301736"></script>
-<script src="comum.js?v=202610301736"></script>
+<script src="config.js?v=202611011034"></script>
+<script src="marca.js?v=202611011034"></script>
+<script src="comum.js?v=202611011034"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -667,7 +704,7 @@
     matches: new Set(),    // com quem deu match nesta noite
     drinksRecebidos: [], drinksMandados: [],
     bloqueados: new Set(),
-    noBar: []              // perfis que abriram o app nas últimas 3 h
+    noBar: []              // perfis que abriram o app nesta noite (pelo menos as últimas 3 h)
   };
 
   // ---------- Perfis (cache) ----------
@@ -931,7 +968,8 @@
       if (!EU) return;
       renderBadge(); desenharEu();
       const t = telaAtual();
-      if (t === "tHome") { renderFaixas(); renderFeed(); checarMais(); }
+      if (t === "tHome") { renderFaixas(); renderFeed(); checarMais(); atalhoQuem(); }
+      if (t === "tQuem") renderQuem();
       if (t === "tEvento") renderEvento();
       renderFotos();
       if (t === "tEventos") renderEventos();
@@ -1191,6 +1229,11 @@
       S.bloqueados = new Set(snap.docs.map(d => d.data().alvo)); redesenhar();
     }, () => {}));
 
+    // Sem foto de perfil: pede logo ao entrar
+    setTimeout(pedirFotoPerfil, 900);
+    // Dicas por notificação: o app aberto também "dá corda" no servidor (o telão é o principal)
+    const chamarDicas = () => auth.currentUser && auth.currentUser.getIdToken().then(t => fetch("/api/dicas", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json", Authorization: "Bearer " + t }, body: JSON.stringify({ base: BASE_APP }) })).catch(() => {});
+    const tDicas = setInterval(chamarDicas, 10 * 60 * 1000); setTimeout(chamarDicas, 90 * 1000); parar.push(() => clearInterval(tDicas));
     // Notificações no celular: cartão de convite e token sempre em dia
     setTimeout(() => { cartaoPush(); desenharPush(); if (pushLigado() && pushPossivel()) pegarToken().catch(() => {}); }, 1500);
 
@@ -1249,8 +1292,8 @@
     let pararNoBar = null;
     const ouvirNoBar = () => {
       if (pararNoBar) pararNoBar();
-      const desde = FS.Timestamp.fromMillis(Date.now() - NO_BAR_MS);
-      pararNoBar = db.collection("usuarios").where("ultimoAcesso", ">", desde).orderBy("ultimoAcesso", "desc").limit(80).onSnapshot(snap => {
+      const desde = FS.Timestamp.fromMillis(Math.min(Date.now() - NO_BAR_MS, inicioDaNoite().getTime()));   // toda a noite (pelo menos 3 h)
+      pararNoBar = db.collection("usuarios").where("ultimoAcesso", ">", desde).orderBy("ultimoAcesso", "desc").limit(150).onSnapshot(snap => {
         S.noBar = snap.docs.filter(d => d.id !== uid).map(d => { const p = { id: d.id, ...d.data() }; perfis.set(d.id, p); return p; });
         redesenhar();
       }, () => {});
@@ -1265,6 +1308,37 @@
 
   function desenharEu() { if (!EU) return; const b = $("#btnEu"); b.replaceChildren(avatar(EU.uid)); b.title = EU.nome; desenharAberto(); }
   $("#btnEu").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
+  // Salva a foto de perfil (quadrada e leve) e já mostra em todo o app
+  async function salvarFotoPerfil(f) {
+    const d = await fotoQuadrada(f);
+    await db.doc("avatares/" + EU.uid).set({ data: d, criado: agoraServidor() });
+    await db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor(), fotoV: agoraServidor() }, { merge: true });
+    EU.fotoV = FS.Timestamp.now(); fotosPerfil.set(EU.uid + ":" + ms(EU.fotoV), d);
+    redesenhar(); renderPerfil();
+  }
+  // Ao entrar sem foto: janela pedindo a foto ("Ignorar por enquanto" esconde até a noite seguinte)
+  function pedirFotoPerfil() {
+    if (!EU || EU.fotoV || !$("#veu").hidden) return;
+    if (guardado.ler("trela-foto-ignorada", "") === chaveNoite()) return;
+    const arq = el("input"); arq.type = "file"; arq.accept = "image/*"; arq.hidden = true;
+    const arqCam = el("input"); arqCam.type = "file"; arqCam.accept = "image/*"; arqCam.setAttribute("capture", "user"); arqCam.hidden = true;
+    const aviso = el("p", "", "Assim a galera te reconhece no Trela: no Quem tá no Trela, no crush e no convite de drink.");
+    const usar = async f => {
+      if (!f) return;
+      aviso.textContent = "Enviando a foto…"; aviso.style.color = "";
+      try { await salvarFotoPerfil(f); fecharFolha(); toast(EU.uid, "Foto colocada! Agora a galera te reconhece."); }
+      catch (e) { aviso.textContent = "Não deu pra usar essa foto. Tenta outra."; aviso.style.color = "var(--laranja)"; }
+    };
+    arq.onchange = () => { const f = arq.files[0]; arq.value = ""; usar(f); };
+    arqCam.onchange = () => { const f = arqCam.files[0]; arqCam.value = ""; usar(f); };
+    const foto = el("div", "pede-foto"); foto.append(avatar(EU.uid, "g"));
+    const cam = el("span", "lapis"); cam.innerHTML = '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+    foto.append(cam); foto.onclick = () => arq.click();
+    folha([foto, arq, arqCam, el("h4", "", "Insere tua foto de perfil"), aviso,
+      bt("Inserir foto", "sim", () => arq.click()),
+      bt("Tirar selfie", "", async () => { const f = await abrirCamera(true, arqCam); if (f) usar(f); }),
+      Object.assign(bt("Ignorar por enquanto", "", () => { guardado.salvar("trela-foto-ignorada", chaveNoite()); fecharFolha(); }), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" })], true);
+  }
   function editarMeuPerfil() {
     const inp = el("input"); inp.maxLength = 20; inp.value = EU.nome; inp.setAttribute("aria-label", "Teu nome");
     const metodo = (auth.currentUser.providerData[0] || {}).providerId === "google.com" ? "Google" : "e-mail";
@@ -1286,13 +1360,8 @@
     const usarFotoPerfil = async input => {
       const f = input.files[0]; input.value = ""; if (!f) return;
       aviso.textContent = "Enviando a foto…"; aviso.style.color = "";
-      try {
-        const d = await fotoQuadrada(f);
-        await db.doc("avatares/" + EU.uid).set({ data: d, criado: agoraServidor() });
-        await db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor(), fotoV: agoraServidor() }, { merge: true });
-        EU.fotoV = FS.Timestamp.now(); fotosPerfil.set(EU.uid + ":" + ms(EU.fotoV), d);
-        redesenhar(); renderPerfil(); editarMeuPerfil();
-      } catch (e) { aviso.textContent = "Não deu pra usar essa foto. Tenta outra."; aviso.style.color = "var(--laranja)"; }
+      try { await salvarFotoPerfil(f); editarMeuPerfil(); }
+      catch (e) { aviso.textContent = "Não deu pra usar essa foto. Tenta outra."; aviso.style.color = "var(--laranja)"; }
     };
     const extras = [];
     if (EU.fotoV) extras.push(bt("Remover foto", "", async () => {
@@ -1605,11 +1674,11 @@
     parar.push(() => { ouvindoCardapio = false; cardapio = null; });
     parar.push(db.doc("config/cardapio").onSnapshot(s => {
       cardapioGrupos = (s.exists && Array.isArray(s.data().grupos)) ? s.data().grupos.filter(g => g && g.id && g.nome) : [];
-      if (telaAtual() === "tCardapio") renderCardapio();
+      if (telaAtual() === "tCardapio") renderCardapio(); else redesenhar();
     }, () => {}));
     parar.push(db.collection("cardapio").onSnapshot(q => {
       cardapio = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-      if (telaAtual() === "tCardapio") renderCardapio();
+      if (telaAtual() === "tCardapio") renderCardapio(); else redesenhar();   // perfil e Quem tá no Trela mostram o drink quando tem produto
     }, () => { cardapio = cardapio || []; if (telaAtual() === "tCardapio") renderCardapio(); }));
   }
   function abrirCardapio() { ir("tCardapio"); ouvirCardapio(); renderCardapio(); $("#cardapioScroll").scrollTop = 0; }
@@ -1718,6 +1787,7 @@
     const d = b.dataset.ir; fecharMenu();
     if (d === "eventos") abrirEventos();
     else if (d === "cardapio") abrirCardapio();
+    else if (d === "quem") abrirQuem();
     else if (d === "avisos") $("#btnSino").click();
     else if (d === "galera") abrirGalera();
     else if (d === "feed") { while (pilha.length > 1) voltarTela(); setTimeout(() => $("#homeScroll").scrollTo({ top: $("#feedTitle").offsetTop - 10, behavior: "smooth" }), 50); }
@@ -2487,7 +2557,7 @@
   function abrirMeuPerfil() { abrirPerfil(EU.uid); }
   async function abrirPerfil(uid) {
     if (!uid) return;
-    perfilDe = uid; postsPerfil = null; ir("tPerfil"); renderPerfil();
+    perfilDe = uid; postsPerfil = null; ir("tPerfil"); if (uid !== EU.uid) ouvirCardapio(); renderPerfil();
     const s = await db.collection("telao").where("autor", "==", uid).limit(60).get().catch(() => null);
     if (perfilDe !== uid) return;
     postsPerfil = s ? s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ms(b.criado) - ms(a.criado)).slice(0, 15) : [];
@@ -2554,6 +2624,74 @@
     $("#perfilScroll").replaceChildren(...out);
   }
 
+  // ================= QUEM TÁ NO TRELA =================
+  // Todo mundo que abriu o app nesta noite (mesmo que tenha fechado). Online e quem ligou o anel vêm primeiro.
+  const hojeNoTrela = () => { const noite = inicioDaNoite().getTime(); return S.noBar.filter(p => p.id !== EU.uid && !S.bloqueados.has(p.id) && ms(p.ultimoAcesso) >= noite); };
+  function listaQuem() {
+    return hojeNoTrela().filter(p => !filtroQuem || abertoAgora(p))
+      .sort((a, b) => (online(b) - online(a)) || (abertoAgora(b) - abertoAgora(a)) || (ms(b.ultimoAcesso) - ms(a.ultimoAcesso)));
+  }
+  function atalhoQuem() {
+    const b = $("#quemAtalho"); if (!b) return;
+    const gente = hojeNoTrela(); b.hidden = !gente.length; if (!gente.length) return;
+    const on = gente.filter(online).length, ab = gente.filter(abertoAgora).length;
+    const chave = gente.map(p => p.id + (online(p) ? 1 : 0) + (abertoAgora(p) ? 1 : 0) + (p.fotoV ? ms(p.fotoV) : "")).join() + fotosPerfil.size;
+    if (b.dataset.k === chave) return; b.dataset.k = chave;
+    $("#quemPilha").replaceChildren(...gente.slice().sort((a, x) => (online(x) - online(a))).slice(0, 4).map(p => avatar(p.id)));
+    $("#quemAtalhoTxt").textContent = gente.length + (gente.length === 1 ? " pessoa abriu" : " pessoas abriram") + " o app hoje" + (on ? " · " + on + " online" : "") + (ab ? " · " + ab + " aberto" + (ab === 1 ? "" : "s") + " pra conhecer gente" : "") + ". Crush secreto e drink por aqui.";
+  }
+  $("#quemAtalho").onclick = () => abrirQuem();
+  let filtroQuem = false, quemIdx = 0, quemAss = "";
+  function abrirQuem() { ir("tQuem"); ouvirCardapio(); quemIdx = 0; quemAss = ""; renderQuem(); }
+  function renderQuem() {
+    if (telaAtual() !== "tQuem") return;
+    const lista = listaQuem();
+    // só redesenha se mudou algo (senão o toque some no meio e o carrossel volta pro começo)
+    const ass = JSON.stringify([filtroQuem, lista.map(p => [p.id, online(p), abertoAgora(p), p.fotoV ? ms(p.fotoV) : 0, S.interesses.has(p.id), S.matches.has(p.id)]), S.drinksMandados.map(x => x.id + x.status), cardapio ? cardapio.length : -1, fotosPerfil.size]);
+    if (ass === quemAss) return; quemAss = ass;
+    const box = $("#quemScroll"), out = [];
+    const todos = hojeNoTrela(), nAb = todos.filter(abertoAgora).length, nOn = todos.filter(online).length;
+    const topo = el("div", "quem-topo"); topo.append(el("p", "", todos.length + (todos.length === 1 ? " pessoa abriu" : " pessoas abriram") + " o app hoje" + (nOn ? " · " + nOn + " online" : "")));
+    out.push(topo);
+    const f = el("div", "filtro-g");
+    const b1 = el("button", filtroQuem ? "" : "on", "Todos · " + todos.length); b1.type = "button"; b1.onclick = () => { filtroQuem = false; quemIdx = 0; renderQuem(); };
+    const b2 = el("button", filtroQuem ? "on" : "", "Abertos pra conhecer gente · " + nAb); b2.type = "button"; b2.onclick = () => { filtroQuem = true; quemIdx = 0; renderQuem(); };
+    f.append(b1, b2); out.push(f);
+    if (!lista.length) {
+      out.push(el("div", "vazio-s", filtroQuem ? "Ninguém ligou o anel dourado ainda. Liga o teu no menu ≡!" : "Ainda não chegou ninguém hoje. Chama a galera!"));
+      box.replaceChildren(...out); return;
+    }
+    quemIdx = Math.min(quemIdx, lista.length - 1);
+    const trilho = el("div", "quem-trilho");
+    lista.forEach(p => {
+      const c = el("article", "quem-card" + (abertoAgora(p) ? " aberto" : "")); c.dataset.id = p.id;
+      const ft = el("button", "quem-foto"); ft.type = "button"; ft.setAttribute("aria-label", "Ver o perfil de " + p.nome); ft.append(avatar(p.id, "g")); ft.onclick = () => abrirPerfil(p.id);
+      const nm = el("div", "quem-nome"); nm.append(el("b", "", p.nome), el("span", online(p) ? "on" : "", online(p) ? "Online agora" : (visto(p.ultimoAcesso) || "Esteve aqui hoje")));
+      c.append(ft, nm);
+      if (abertoAgora(p)) c.append(el("span", "tag-aberto", "Aberto pra conhecer gente"));
+      c.append(blocoSocial(p));
+      trilho.append(c);
+    });
+    const nav = el("div", "quem-nav");
+    const ant = el("button", "", "‹"); ant.type = "button"; ant.setAttribute("aria-label", "Pessoa anterior");
+    const conta = el("span", "", (quemIdx + 1) + " de " + lista.length);
+    const prox = el("button", "", "›"); prox.type = "button"; prox.setAttribute("aria-label", "Próxima pessoa");
+    const irPara = i => { const card = trilho.children[i]; if (card) trilho.scrollTo({ left: card.offsetLeft - trilho.offsetLeft - 16, behavior: "smooth" }); };
+    ant.onclick = () => irPara(Math.max(0, quemIdx - 1)); prox.onclick = () => irPara(Math.min(lista.length - 1, quemIdx + 1));
+    const atualizarNav = () => { conta.textContent = (quemIdx + 1) + " de " + lista.length; ant.disabled = quemIdx === 0; prox.disabled = quemIdx === lista.length - 1; };
+    trilho.addEventListener("scroll", () => {
+      const w = trilho.children[0] ? trilho.children[0].offsetWidth + 12 : 1;
+      const i = Math.round(trilho.scrollLeft / w); if (i !== quemIdx) { quemIdx = Math.max(0, Math.min(lista.length - 1, i)); atualizarNav(); }
+    }, { passive: true });
+    nav.append(ant, conta, prox); atualizarNav();
+    out.push(trilho, nav, el("p", "nota", "Arrasta pro lado pra ver a próxima pessoa. O crush é segredo: só avisa os dois se os dois marcarem."));
+    box.replaceChildren(...out);
+    // volta pra pessoa que estava na tela
+    requestAnimationFrame(() => { const card = trilho.children[quemIdx]; if (card) trilho.scrollLeft = card.offsetLeft - trilho.offsetLeft - 16; });
+  }
+  // online/offline muda com o tempo: confere a cada 30 s
+  setInterval(() => { if (EU && telaAtual() === "tQuem") renderQuem(); if (EU && telaAtual() === "tHome") atalhoQuem(); }, 30 * 1000);
+
   // ================= CRUSH SECRETO + TE PAGO UM DRINK =================
   const SV = (p, extra) => '<svg viewBox="0 0 24 24" fill="' + (extra || "none") + '" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
   function blocoSocial(p) {
@@ -2565,7 +2703,8 @@
     c.onclick = () => deuMatch ? abrirChat(p.id) : marcado ? desmarcarInteresse(p) : marcarInteresse(p);
     box.append(c);
     box.append(el("p", "nota-s", deuMatch ? "Vocês dois marcaram. Bora puxar assunto!" : marcado ? "Se " + p.nome + " também marcar, os dois recebem o aviso de match. Toca de novo pra desmarcar." : "Ninguém fica sabendo. Só avisa os dois se " + p.nome + " também marcar."));
-    // Te pago um drink
+    // Te pago um drink (some enquanto o cardápio estiver vazio)
+    if (!cardapio || !cardapio.length) return box;
     const meu = S.drinksMandados.filter(x => x.para === p.id).sort((a, b) => ms(b.criado) - ms(a.criado))[0];
     const d = el("button", "bt-drink"); d.type = "button"; d.innerHTML = SV('<path d="M6 4h12l-1.5 15a2 2 0 0 1-2 1.8h-5a2 2 0 0 1-2-1.8z"/><path d="M6.5 9h11"/>');
     if (meu && meu.status === "enviado") { d.className = "bt-drink espera"; d.append("Convite enviado: " + meu.itemNome + " · cancelar"); d.onclick = () => cancelarDrink(meu); }

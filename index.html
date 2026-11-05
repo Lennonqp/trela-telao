@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202611011016">
+<link rel="stylesheet" href="estilo.css?v=202611051546">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -34,6 +34,35 @@
   .troca-foto .av.g{width:88px;height:88px;font-size:34px}
   .troca-foto .lapis{position:absolute;right:-2px;bottom:-2px;width:30px;height:30px;border-radius:50%;background:var(--neon);display:grid;place-items:center;font-size:16px;color:#fff;box-shadow:0 0 0 3px var(--panel2)}
   .troca-foto:focus-within{outline:2px solid var(--lilas);outline-offset:3px}
+  .pede-foto{position:relative;align-self:center;cursor:pointer;margin:4px auto 0}
+  .pede-foto .av.g{width:96px;height:96px;font-size:38px;box-shadow:0 0 0 3px var(--panel2),0 0 0 5px var(--neon)}
+  .pede-foto .lapis{position:absolute;right:-2px;bottom:-2px;width:34px;height:34px;border-radius:50%;background:var(--neon);display:grid;place-items:center;font-size:18px;color:#fff;box-shadow:0 0 0 3px var(--panel2)}
+  .quem-atalho{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:18px;padding:14px 16px;background:linear-gradient(135deg,rgba(255,63,164,.22),rgba(169,92,242,.22));box-shadow:inset 0 0 0 1px rgba(255,63,164,.45);color:var(--ink);cursor:pointer;text-align:left;margin-bottom:4px}
+  .quem-atalho .pilha{display:flex;flex:none}
+  .quem-atalho .pilha .av{width:34px;height:34px;font-size:14px;box-shadow:0 0 0 2px var(--bg)}
+  .quem-atalho .pilha .av + .av{margin-left:-10px}
+  .quem-atalho div{flex:1;min-width:0}
+  .quem-atalho b{display:block;font:400 20px/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+  .quem-atalho span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+  .quem-atalho i{font-style:normal;font-size:26px;color:var(--neon)}
+  #tQuem .rolagem{gap:14px}
+  .quem-topo{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .quem-topo p{margin:0;color:var(--muted);font-size:13px}
+  .quem-trilho{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:0 -16px;padding:0 16px 6px;scrollbar-width:none;overscroll-behavior-x:contain}
+  .quem-trilho::-webkit-scrollbar{display:none}
+  .quem-card{flex:0 0 calc(100% - 8px);scroll-snap-align:center;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:12px}
+  .quem-card.aberto{border-color:var(--ouro);box-shadow:0 0 22px -8px rgba(255,201,77,.6)}
+  .quem-foto{position:relative;border:0;padding:0;background:none;cursor:pointer;border-radius:16px;overflow:hidden}
+  .quem-foto .av{width:100%;height:auto;aspect-ratio:1;border-radius:16px;font-size:110px;box-shadow:none}
+  .quem-foto .av.on::after{width:22px;height:22px;right:12px;bottom:12px;min-width:0;min-height:0;box-shadow:0 0 0 3px var(--panel)}
+  .quem-nome{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .quem-nome b{font:400 28px/1 var(--f-display);text-transform:uppercase}
+  .quem-nome span{font-size:13px;color:var(--muted)}
+  .quem-nome span.on{color:var(--ok)}
+  .quem-nav{display:flex;align-items:center;justify-content:center;gap:16px}
+  .quem-nav button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:22px;cursor:pointer}
+  .quem-nav button:disabled{opacity:.3}
+  .quem-nav span{font:400 13px var(--f-mono);color:var(--muted);min-width:70px;text-align:center}
   .perfil-eu-foto{border:0;background:none;padding:0;cursor:pointer;border-radius:50%}
   .av.aberto{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ouro),0 0 14px rgba(255,201,77,.55)}
   .aberto-t{color:var(--ouro)!important}
@@ -42,6 +71,30 @@
   .gv-aberto{font:400 14px/1.3 var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);display:flex;align-items:center;gap:12px;margin:2px 0 6px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.02);cursor:pointer}
   .gv-aberto.gv-push.on{border-color:var(--neon);background:rgba(255,63,164,.07)}
   .gv-push .sw:checked{background:var(--neon)}
+  .push-faixa{flex:none;display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid rgba(255,63,164,.35);background:linear-gradient(90deg,rgba(255,63,164,.2),rgba(169,92,242,.14));color:var(--ink);padding:10px 16px;font:700 14px/1.2 var(--f-body);cursor:pointer;text-align:left}
+  .push-faixa svg{flex:none;color:var(--neon)}
+  .push-faixa span{flex:1;min-width:0}
+  .push-faixa i{font-style:normal;color:var(--neon);font-size:20px}
+  .push-ic{align-self:center;width:64px;height:64px;border-radius:18px;background:rgba(255,63,164,.14);display:grid;place-items:center;color:var(--neon);margin:2px auto 0;box-shadow:0 0 24px -6px rgba(255,63,164,.7)}
+  .push-ic svg{width:34px;height:34px}
+  .push-lista{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+  .push-lista{align-self:center;text-align:left}
+  .push-lista li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;text-align:left}
+  .push-lista li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--neon);box-shadow:0 0 6px var(--neon)}
+  .push-nota{font-size:12.5px!important}
+  .passos-ios{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;text-align:left;font-size:14px;line-height:1.4}
+  .passos-ios li::marker{color:var(--neon);font-weight:800}
+  .passos-ios svg{vertical-align:-3px;color:var(--neon)}
+  .seta-ios{position:fixed;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:4px;width:min(320px,90vw);pointer-events:auto}
+  .seta-ios.baixo{bottom:8px}
+  .seta-ios.cima{top:6px;flex-direction:column-reverse;left:auto;right:8px;transform:none;align-items:flex-end}
+  .seta-txt{background:var(--neon);color:#fff;border-radius:14px;padding:10px 14px;font-size:14px;line-height:1.35;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+  .seta-txt small{display:block;font-size:12px;opacity:.9;margin-top:4px}
+  .seta-flecha{font-size:42px;line-height:1;color:var(--neon);text-shadow:0 0 12px var(--neon);animation:setaPula .8s ease-in-out infinite alternate}
+  .seta-ios.cima .seta-flecha{margin-right:28px}
+  @keyframes setaPula{from{transform:translateY(0)}to{transform:translateY(10px)}}
+  .seta-ios.cima .seta-flecha{animation-direction:alternate-reverse}
+  .push-ios{border:1px dashed var(--ouro);border-radius:12px;padding:10px 12px;color:var(--ink)!important;font-size:13px!important}
   .push-card{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--neon);background:linear-gradient(135deg,rgba(255,63,164,.14),rgba(169,92,242,.08));border-radius:16px;padding:14px;margin:12px 0}
   .push-card svg{flex:none;width:26px;height:26px;color:var(--neon);margin-top:2px}
   .push-card div{flex:1;min-width:0}
@@ -474,6 +527,7 @@
       <button class="ico" id="btnGalera" type="button" aria-label="Amigos e conversas"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg><span class="badge" id="badge" hidden></span></button>
       <button class="ico" id="btnMenu" type="button" aria-label="Menu" aria-expanded="false" aria-controls="gaveta"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="ponto" id="pontoMenu" hidden></span></button>
     </div>
+    <button type="button" class="push-faixa" id="pushFaixa" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span id="pushFaixaTxt">Ativar notificações</span><i aria-hidden="true">›</i></button>
     <button type="button" class="aovivo" id="aoVivo" hidden aria-label="Eventos da noite">
       <span class="av-ic" id="aoVivoIc" aria-hidden="true"></span>
       <span class="av-rot">Ao vivo</span>
@@ -482,6 +536,7 @@
       <i class="av-seta" aria-hidden="true">›</i>
     </button>
     <div class="rolagem" id="homeScroll">
+      <button type="button" class="quem-atalho" id="quemAtalho" hidden><span class="pilha" id="quemPilha"></span><div><b>Quem tá no Trela</b><span id="quemAtalhoTxt"></span></div><i aria-hidden="true">›</i></button>
       <form id="sendForm" novalidate style="display:flex;flex-direction:column;gap:12px">
         <h2>Manda pro <em>telão</em></h2>
         <div class="abas" role="tablist">
@@ -566,6 +621,12 @@
     </div>
   </div>
 
+  <!-- Quem tá no Trela: quem abriu o app nesta noite, um por vez, com crush e drink direto -->
+  <div class="tela sub" id="tQuem" hidden>
+    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Quem tá no Trela</h3></div>
+    <div class="rolagem" id="quemScroll"></div>
+  </div>
+
   <!-- Cardápio (só pra ver) -->
   <div class="tela sub" id="tCardapio" hidden>
     <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Cardápio</h3></div>
@@ -620,13 +681,13 @@
       <div><b id="gvNome"></b><button type="button" class="gv-link" id="gvPerfil">Ver e editar perfil</button></div>
       <button class="ico" id="gvFechar" type="button" aria-label="Fechar menu">×</button>
     </div>
-    <label class="gv-aberto gv-push" id="gvPushBox" hidden><span><b>Notificações no celular</b><small id="gvPushTxt">Avisa mesmo com o Trela fechado</small></span><input type="checkbox" class="sw" id="gvPush" aria-label="Notificações no celular"></label>
     <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>Um anel dourado aparece na tua foto até as 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
+    <button type="button" class="gv-item" data-ir="quem"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6.2 4.6 1.8 5.1 4.8"/></svg><span>Quem tá no Trela</span></button>
     <button type="button" class="gv-item" data-ir="cardapio"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/></svg><span>Cardápio</span></button>
     <a class="gv-item gv-jogo" id="gvJogo" href="encara.html"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/><path d="M15.5 8.2c-1-1.2-2.8-.3-2.3 1.1.4 1 2.3 2.4 2.3 2.4s1.9-1.4 2.3-2.4c.5-1.4-1.3-2.3-2.3-1.1z"/></svg><span>Encara ou Bebe</span><em class="gv-n" id="gvJogoN" hidden></em><em class="gv-tag">jogo</em></a>
     <button type="button" class="gv-item gv-sair" id="gvSair"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span>Sair da conta</span></button>
-    <p class="gv-rodape">Trela</p>
+    <p class="gv-rodape">Trela · versão de teste</p>
   </nav>
 
   <div class="veu" id="veu" hidden><div class="folha" id="folha"></div></div>
@@ -637,9 +698,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611011016"></script>
-<script src="marca.js?v=202611011016"></script>
-<script src="comum.js?v=202611011016"></script>
+<script src="config.js?v=202611051546"></script>
+<script src="marca.js?v=202611051546"></script>
+<script src="comum.js?v=202611051546"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -666,7 +727,7 @@
     matches: new Set(),    // com quem deu match nesta noite
     drinksRecebidos: [], drinksMandados: [],
     bloqueados: new Set(),
-    noBar: []              // perfis que abriram o app nas últimas 3 h
+    noBar: []              // perfis que abriram o app nesta noite (pelo menos as últimas 3 h)
   };
 
   // ---------- Perfis (cache) ----------
@@ -692,27 +753,67 @@
     } catch (e) {}
   }
   const mensagemPush = () => appTrela.messaging ? appTrela.messaging() : firebase.messaging();
+  const ESCOPO_APP = BASE_APP === "/" ? "/" : BASE_APP.replace(/\/$/, "");
+  // espera o sw.js ficar ativo (no máximo 15 s, pra não ficar travado)
+  function esperarAtivo(reg) {
+    if (reg.active) return Promise.resolve();
+    return new Promise((ok, falha) => {
+      const sw = reg.installing || reg.waiting, t = setTimeout(() => falha(new Error("sw demorou")), 15000);
+      if (!sw) { clearTimeout(t); return falha(new Error("sw sumiu")); }
+      sw.addEventListener("statechange", () => { if (sw.state === "activated") { clearTimeout(t); ok(); } else if (sw.state === "redundant") { clearTimeout(t); falha(new Error("sw falhou")); } });
+    });
+  }
   async function pegarToken() {
-    const reg = await navigator.serviceWorker.register("sw.js");
-    await navigator.serviceWorker.ready;
+    // O teste fica em /teste (sem barra no fim): o escopo tem que cobrir esse endereço
+    const reg = await navigator.serviceWorker.register("sw.js", { scope: ESCOPO_APP });
+    await esperarAtivo(reg);
     const tok = await mensagemPush().getToken({ vapidKey: window.VAPID_KEY, serviceWorkerRegistration: reg });
     if (!tok) throw new Error("sem token");
     if (tok !== pushToken && pushToken) db.doc("tokens/" + EU.uid + "/aparelhos/" + pushToken).delete().catch(() => {});
     await db.doc("tokens/" + EU.uid + "/aparelhos/" + tok).set({ criado: agoraServidor(), aparelho: navigator.userAgent.slice(0, 150) });
     pushToken = tok; guardado.salvar("trela-push-token", tok);
   }
+  // iPhone: qual navegador (Safari, Chrome...) e qual iOS, pra mostrar o caminho certo
+  const navegadorIOS = () => /CriOS/.test(navigator.userAgent) ? "chrome" : /FxiOS|EdgiOS|OPiOS/.test(navigator.userAgent) ? "outro" : "safari";
+  const versaoIOS = () => { const m = /OS (\d+)_(\d+)/.exec(navigator.userAgent); return m ? [+m[1], +m[2]] : null; };
+  // iPhone: notificação só funciona com o Trela na tela de início
+  function passosIphone(depois) {
+    const icCompartilhar = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+    const passos = el("ol", "passos-ios");
+    const nav = navegadorIOS(), primeiro =
+      nav === "chrome" ? "No Chrome, toca no botão <b>Compartilhar</b> " + icCompartilhar + " do lado do endereço, lá em cima."
+      : nav === "outro" ? "Abre o menu do navegador e toca em <b>Compartilhar</b> " + icCompartilhar + "."
+      : "Toca no botão <b>Compartilhar</b> " + icCompartilhar + " na barra do Safari (embaixo ou em cima).";
+    [primeiro,
+     "Toca em <b>Adicionar à Tela de Início</b>" + (nav === "chrome" ? " (se não aparecer, toca em <b>Mais</b> ou rola a lista)." : " (rola a lista se precisar)."),
+     "Toca em <b>Adicionar</b>, no canto de cima.",
+     "Abre o Trela pelo <b>ícone novo</b> na tela do iPhone e toca em <b>Ativar notificações</b>."].forEach(t => { const li = el("li"); li.innerHTML = t; passos.append(li); });
+    const v = versaoIOS(), velho = v && (v[0] < 16 || (v[0] === 16 && v[1] < 4));
+    folha([el("h4", "", "Coloca o Trela na tela do iPhone"),
+      el("p", "", "O iPhone só manda notificação de app que está na tela de início. É rapidinho:"), passos,
+      ...(velho ? [el("p", "push-ios", "Teu iPhone está no iOS " + v.join(".") + ". Notificação só funciona do iOS 16.4 pra cima: vai em Ajustes › Geral › Atualização de Software.")] : []),
+      bt("Me mostra onde tocar", "sim", () => { fecharFolha(); setaIphone(); if (depois) depois(); }),
+      Object.assign(bt("Entendi", "", () => { fecharFolha(); if (depois) depois(); }), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" })], true);
+  }
+  // Seta piscando em cima do botão Compartilhar do navegador (embaixo no Safari, em cima no Chrome)
+  function setaIphone() {
+    const velha = $("#setaIos"); if (velha) velha.remove();
+    const nav = navegadorIOS(), emCima = nav !== "safari";
+    const s = el("div", "seta-ios " + (emCima ? "cima" : "baixo")); s.id = "setaIos";
+    s.innerHTML = '<div class="seta-txt">' + (nav === "chrome" ? "Toca no <b>Compartilhar</b> aqui em cima, do lado do endereço" : nav === "outro" ? "Abre o menu do navegador e toca em <b>Compartilhar</b>" : "Toca no <b>Compartilhar</b> aqui embaixo")
+      + '<small>Depois: <b>Adicionar à Tela de Início</b> › <b>Adicionar</b></small></div><div class="seta-flecha" aria-hidden="true">' + (emCima ? "↑" : "↓") + '</div>';
+    s.onclick = () => s.remove();
+    document.body.append(s);
+    setTimeout(() => s.remove(), 20000);
+  }
   async function ativarPush() {
-    if (ehIOS && !instalado()) {
-      folha([el("h4", "", "No iPhone, primeiro coloca o Trela na tela de início"),
-        el("p", "", "O iPhone só manda notificação de app que está na tela de início. Toca no botão de compartilhar do Safari (o quadradinho com a seta), depois em \"Adicionar à Tela de Início\". Abre o Trela pelo ícone novo e ativa de novo aqui."),
-        bt("Entendi", "sim", fecharFolha)]);
-      return false;
-    }
+    if (ehIOS && !instalado()) { passosIphone(); return false; }
     if (!pushPossivel()) { erroToast("Esse navegador não aceita notificações. Tenta pelo Chrome."); return false; }
+    if (notifBloqueada()) { comoLiberar(); return false; }
     const perm = await Notification.requestPermission();
-    if (perm !== "granted") { erroToast(perm === "denied" ? "As notificações estão bloqueadas pro Trela. Libera nas configurações do navegador." : "Notificações não ativadas."); return false; }
+    if (perm !== "granted") { desenharPush(); if (perm === "denied") comoLiberar(); else erroToast("Notificações não ativadas."); return false; }
     try { await pegarToken(); toast(EU.uid, "Pronto! Tu vai ser avisado no celular mesmo com o Trela fechado."); return true; }
-    catch (e) { console.warn("[Trela] push", e); erroToast(e && e.code === "permission-denied" ? "Não deu pra salvar: as regras do banco precisam ser publicadas." : "Não deu pra ativar agora. Tenta de novo."); return false; }
+    catch (e) { console.warn("[Trela] push", e); erroToast(e && e.code === "permission-denied" ? "Não deu pra salvar: as regras do banco precisam ser publicadas." : "Não deu pra ativar agora. Tenta de novo. (" + String((e && (e.code || e.message)) || "erro").slice(0, 60) + ")"); return false; }
   }
   async function desativarPush() {
     const t = pushToken; pushToken = null; guardado.salvar("trela-push-token", null);
@@ -720,27 +821,65 @@
     try { await mensagemPush().deleteToken(); } catch (e) {}
     toast(EU.uid, "Notificações no celular desligadas.");
   }
+  // Faixa embaixo do logo: some quando a notificação está ligada
+  const notifBloqueada = () => "Notification" in window && Notification.permission === "denied";
   function desenharPush() {
+    const fx = $("#pushFaixa");
+    if (fx) {
+      fx.hidden = !EU || !pushConfigurado() || pushLigado();
+      $("#pushFaixaTxt").textContent = ehIOS && !instalado() ? "Ativar notificações no iPhone" : notifBloqueada() ? "Notificações bloqueadas: toca pra ver como liberar" : "Ativar notificações";
+    }
     const box = $("#gvPushBox"); if (!box) return;
     box.hidden = !pushConfigurado();
     const on = pushLigado(); $("#gvPush").checked = on; box.classList.toggle("on", on);
     $("#gvPushTxt").textContent = on ? "Ligadas neste celular" : ("Notification" in window && Notification.permission === "denied") ? "Bloqueadas no navegador" : "Avisa mesmo com o Trela fechado";
   }
-  // Cartão na tela inicial convidando a ativar (uma vez por aparelho)
-  function cartaoPush() {
-    const ja = $("#pushCard"); if (ja) ja.remove();
-    if (!pushConfigurado() || pushLigado() || guardado.ler("trela-push-dispensado", false)) return;
-    if ("Notification" in window && Notification.permission === "denied") return;
-    const c = el("div", "push-card"); c.id = "pushCard";
-    c.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
-    const d = el("div");
-    d.append(el("b", "", "Quer ser avisado no celular?"), el("p", "", ehIOS && !instalado() ? "No iPhone, coloca o Trela na tela de início pra receber: tua vez no karaokê, drink que te ofereceram, match e mensagens." : "Tua vez no karaokê, drink que te ofereceram, match e mensagens, mesmo com o Trela fechado."));
-    const bts = el("div", "bts");
-    const sim = el("button", "sim", "Ativar"); sim.type = "button"; sim.onclick = async () => { if (await ativarPush()) c.remove(); desenharPush(); };
-    const nao = el("button", "", "Agora não"); nao.type = "button"; nao.onclick = () => { guardado.salvar("trela-push-dispensado", true); c.remove(); };
-    bts.append(sim, nao); d.append(bts); c.append(d);
-    const alvo = $("#feedTitle"); if (alvo && alvo.parentNode) alvo.parentNode.insertBefore(c, alvo);
+  // Toque na faixa: ativa direto (iPhone fora da tela de início: passo a passo; bloqueada: como liberar)
+  function comoLiberar() {
+    const passos = el("ol", "passos-ios");
+    (instalado()
+      ? ["Segura o dedo no ícone do Trela na tela do celular.", "Toca em <b>Informações do app</b> (ou no ⓘ).", "Vai em <b>Notificações</b> e liga.", "Volta pro Trela: a faixa some quando estiver ligado."]
+      : ["Toca no <b>cadeado</b> (ou nos três pontinhos) ao lado do endereço do site.", "Vai em <b>Permissões</b> ou <b>Configurações do site</b>.", "Em <b>Notificações</b>, escolhe <b>Permitir</b>.", "Recarrega a página e toca de novo em <b>Ativar notificações</b>."]
+    ).forEach(t => { const li = el("li"); li.innerHTML = t; passos.append(li); });
+    folha([el("h4", "", "As notificações estão bloqueadas"), el("p", "", "Alguém tocou em \"Bloquear\" quando o celular perguntou, e agora o site não pode perguntar de novo. Dá pra liberar assim:"), passos, bt("Entendi", "sim", fecharFolha)]);
   }
+  $("#pushFaixa").onclick = async () => {
+    if (ehIOS && !instalado()) return passosIphone();
+    if (notifBloqueada()) return comoLiberar();
+    await ativarPush(); desenharPush();
+  };
+  // Logo ao entrar: janela explicando o que a pessoa vai receber, com o botão de ativar.
+  // O celular só deixa pedir a permissão depois de um toque, por isso o botão.
+  // Aparece toda vez que abre o app (ou volta depois de 15 min) até ligar; "Agora não" só fecha. Depois dela (ou se não precisar), segue pro "depois".
+  let pushDispensadoAgora = false;
+  // voltou pro app depois de 15 min fora (iPhone não recarrega a página): pergunta de novo
+  let saiuEm = 0;
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { saiuEm = Date.now(); return; }
+    if (saiuEm && Date.now() - saiuEm > 15 * 60 * 1000) { pushDispensadoAgora = false; setTimeout(() => janelaPush(), 900); }
+  });
+  function janelaPush(depois, tentativa) {
+    const seguir = () => { if (depois) depois(); };
+    if (!EU || !pushConfigurado() || pushLigado()) return seguir();
+    // outra janela aberta (convite de drink, match...): espera ela fechar e aparece depois
+    if (!$("#veu").hidden) { if ((tentativa || 0) < 40) setTimeout(() => janelaPush(depois, (tentativa || 0) + 1), 3000); return; }
+    if (pushDispensadoAgora) return seguir();
+    pushDispensadoAgora = true;   // "Agora não" vale só até a próxima vez que abrir o app
+    const ios = ehIOS && !instalado(), bloq = !ios && notifBloqueada();
+    const ic = el("div", "push-ic"); ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
+    const lista = el("ul", "push-lista");
+    ["Tua vez no karaokê", "Convite de drink, e a resposta do teu", "Deu match no crush secreto", "Mensagens e pedidos de amizade", "Curtidas e quando te marcam", "Convite pro Encara ou Bebe"].forEach(t => lista.append(el("li", "", t)));
+    const nao = () => { fecharFolha(); seguir(); };
+    const itens = [ic, el("h4", "", "Fica sabendo na hora, mesmo com o Trela fechado"), el("p", "", "Com as notificações ligadas, o celular te avisa de:"), lista,
+      el("p", "push-nota", "E de vez em quando uma dica do que dá pra fazer no app. Dá pra desligar quando quiser nas configurações do celular.")];
+    if (ios) itens.push(el("p", "push-ios", "No iPhone, o Trela precisa estar na tela de início pra mandar notificação. Toca em \"Colocar na tela do iPhone\" que a gente mostra como."));
+    if (bloq) itens.push(el("p", "push-ios", "As notificações estão bloqueadas neste celular. Toca em \"Ativar notificações\" que a gente mostra como liberar."));
+    itens.push(bt("Ativar notificações", "sim", async () => { if (ios) { passosIphone(seguir); return; } if (bloq) { comoLiberar(); return; } fecharFolha(); await ativarPush(); desenharPush(); seguir(); }));
+    if (ios) itens.push(bt("Colocar na tela do iPhone", "", () => passosIphone(seguir)));
+    itens.push(Object.assign(bt("Agora não", "", nao), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" }));
+    folha(itens, true);
+  }
+
 
   // Vibra só se a pessoa já tocou na tela (antes disso o navegador bloqueia e reclama)
   function vibrar(padrao) { try { if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) navigator.vibrate(padrao); } catch (e) {} }
@@ -930,7 +1069,8 @@
       if (!EU) return;
       renderBadge(); desenharEu();
       const t = telaAtual();
-      if (t === "tHome") { renderFaixas(); renderFeed(); checarMais(); }
+      if (t === "tHome") { renderFaixas(); renderFeed(); checarMais(); atalhoQuem(); }
+      if (t === "tQuem") renderQuem();
       if (t === "tEvento") renderEvento();
       renderFotos();
       if (t === "tEventos") renderEventos();
@@ -1074,7 +1214,7 @@
     if (jaInstalado || guardado.ler("trela-instalar-fechado", false) || !EU) return;
     const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
     $("#instalarTxt").textContent = pedidoInstalar ? "Abre que nem app, direto do ícone."
-      : ios ? "No Safari: toca em Compartilhar (□↑) e depois em “Adicionar à Tela de Início”."
+      : ios ? (/CriOS/.test(navigator.userAgent) ? "No Chrome: toca em Compartilhar (□↑), do lado do endereço, e depois em “Adicionar à Tela de Início”." : "No Safari: toca em Compartilhar (□↑) e depois em “Adicionar à Tela de Início”.")
       : "No menu do navegador (⋮), toca em “Adicionar à tela inicial”.";
     $("#instalarBtn").hidden = !pedidoInstalar;
     $("#instalar").hidden = false;
@@ -1154,7 +1294,7 @@
       // fotos do concurso/desafio só quando um dos dois está ligado
       const precisa = !!((S.acoes.concurso && S.acoes.concurso.ativo) || (S.acoes.desafio && S.acoes.desafio.ativo));
       if (precisa && !pararPostsAcao) pararPostsAcao = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
-        S.postsAcao = q.docs.map(x => ({ id: x.id, ...x.data() })).filter(r => r.acao && r.fotoId); redesenhar();   // + exemplos (só no teste)
+        S.postsAcao = q.docs.map(x => ({ id: x.id, ...x.data() })).filter(r => r.acao && r.fotoId); redesenhar();
       }, () => {}));
       if (!precisa && pararPostsAcao) { pararPostsAcao(); pararPostsAcao = null; S.postsAcao = []; }
       // votos da enquete atual
@@ -1190,8 +1330,13 @@
       S.bloqueados = new Set(snap.docs.map(d => d.data().alvo)); redesenhar();
     }, () => {}));
 
+    // Sem foto de perfil: pede logo ao entrar
+    setTimeout(() => janelaPush(pedirFotoPerfil), 900);
+    // Dicas por notificação: o app aberto também "dá corda" no servidor (o telão é o principal)
+    const chamarDicas = () => auth.currentUser && auth.currentUser.getIdToken().then(t => fetch("/api/dicas", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json", Authorization: "Bearer " + t }, body: JSON.stringify({ base: BASE_APP }) })).catch(() => {});
+    const tDicas = setInterval(chamarDicas, 10 * 60 * 1000); setTimeout(chamarDicas, 90 * 1000); parar.push(() => clearInterval(tDicas));
     // Notificações no celular: cartão de convite e token sempre em dia
-    setTimeout(() => { cartaoPush(); desenharPush(); if (pushLigado() && pushPossivel()) pegarToken().catch(() => {}); }, 1500);
+    setTimeout(() => { desenharPush(); if (pushLigado() && pushPossivel()) pegarToken().catch(() => {}); }, 1500);
 
     // Crush secreto: os meus interesses (só eu vejo) e os matches
     parar.push(db.collection("interesses").where("de", "==", uid).onSnapshot(q => {
@@ -1248,8 +1393,8 @@
     let pararNoBar = null;
     const ouvirNoBar = () => {
       if (pararNoBar) pararNoBar();
-      const desde = FS.Timestamp.fromMillis(Date.now() - NO_BAR_MS);
-      pararNoBar = db.collection("usuarios").where("ultimoAcesso", ">", desde).orderBy("ultimoAcesso", "desc").limit(80).onSnapshot(snap => {
+      const desde = FS.Timestamp.fromMillis(Math.min(Date.now() - NO_BAR_MS, inicioDaNoite().getTime()));   // toda a noite (pelo menos 3 h)
+      pararNoBar = db.collection("usuarios").where("ultimoAcesso", ">", desde).orderBy("ultimoAcesso", "desc").limit(150).onSnapshot(snap => {
         S.noBar = snap.docs.filter(d => d.id !== uid).map(d => { const p = { id: d.id, ...d.data() }; perfis.set(d.id, p); return p; });
         redesenhar();
       }, () => {});
@@ -1264,6 +1409,37 @@
 
   function desenharEu() { if (!EU) return; const b = $("#btnEu"); b.replaceChildren(avatar(EU.uid)); b.title = EU.nome; desenharAberto(); }
   $("#btnEu").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
+  // Salva a foto de perfil (quadrada e leve) e já mostra em todo o app
+  async function salvarFotoPerfil(f) {
+    const d = await fotoQuadrada(f);
+    await db.doc("avatares/" + EU.uid).set({ data: d, criado: agoraServidor() });
+    await db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor(), fotoV: agoraServidor() }, { merge: true });
+    EU.fotoV = FS.Timestamp.now(); fotosPerfil.set(EU.uid + ":" + ms(EU.fotoV), d);
+    redesenhar(); renderPerfil();
+  }
+  // Ao entrar sem foto: janela pedindo a foto ("Ignorar por enquanto" esconde até a noite seguinte)
+  function pedirFotoPerfil() {
+    if (!EU || EU.fotoV || !$("#veu").hidden) return;
+    if (guardado.ler("trela-foto-ignorada", "") === chaveNoite()) return;
+    const arq = el("input"); arq.type = "file"; arq.accept = "image/*"; arq.hidden = true;
+    const arqCam = el("input"); arqCam.type = "file"; arqCam.accept = "image/*"; arqCam.setAttribute("capture", "user"); arqCam.hidden = true;
+    const aviso = el("p", "", "Assim a galera te reconhece no Trela: no Quem tá no Trela, no crush e no convite de drink.");
+    const usar = async f => {
+      if (!f) return;
+      aviso.textContent = "Enviando a foto…"; aviso.style.color = "";
+      try { await salvarFotoPerfil(f); fecharFolha(); toast(EU.uid, "Foto colocada! Agora a galera te reconhece."); }
+      catch (e) { aviso.textContent = "Não deu pra usar essa foto. Tenta outra."; aviso.style.color = "var(--laranja)"; }
+    };
+    arq.onchange = () => { const f = arq.files[0]; arq.value = ""; usar(f); };
+    arqCam.onchange = () => { const f = arqCam.files[0]; arqCam.value = ""; usar(f); };
+    const foto = el("div", "pede-foto"); foto.append(avatar(EU.uid, "g"));
+    const cam = el("span", "lapis"); cam.innerHTML = '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+    foto.append(cam); foto.onclick = () => arq.click();
+    folha([foto, arq, arqCam, el("h4", "", "Insere tua foto de perfil"), aviso,
+      bt("Inserir foto", "sim", () => arq.click()),
+      bt("Tirar selfie", "", async () => { const f = await abrirCamera(true, arqCam); if (f) usar(f); }),
+      Object.assign(bt("Ignorar por enquanto", "", () => { guardado.salvar("trela-foto-ignorada", chaveNoite()); fecharFolha(); }), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" })], true);
+  }
   function editarMeuPerfil() {
     const inp = el("input"); inp.maxLength = 20; inp.value = EU.nome; inp.setAttribute("aria-label", "Teu nome");
     const metodo = (auth.currentUser.providerData[0] || {}).providerId === "google.com" ? "Google" : "e-mail";
@@ -1285,13 +1461,8 @@
     const usarFotoPerfil = async input => {
       const f = input.files[0]; input.value = ""; if (!f) return;
       aviso.textContent = "Enviando a foto…"; aviso.style.color = "";
-      try {
-        const d = await fotoQuadrada(f);
-        await db.doc("avatares/" + EU.uid).set({ data: d, criado: agoraServidor() });
-        await db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor(), fotoV: agoraServidor() }, { merge: true });
-        EU.fotoV = FS.Timestamp.now(); fotosPerfil.set(EU.uid + ":" + ms(EU.fotoV), d);
-        redesenhar(); renderPerfil(); editarMeuPerfil();
-      } catch (e) { aviso.textContent = "Não deu pra usar essa foto. Tenta outra."; aviso.style.color = "var(--laranja)"; }
+      try { await salvarFotoPerfil(f); editarMeuPerfil(); }
+      catch (e) { aviso.textContent = "Não deu pra usar essa foto. Tenta outra."; aviso.style.color = "var(--laranja)"; }
     };
     const extras = [];
     if (EU.fotoV) extras.push(bt("Remover foto", "", async () => {
@@ -1604,11 +1775,11 @@
     parar.push(() => { ouvindoCardapio = false; cardapio = null; });
     parar.push(db.doc("config/cardapio").onSnapshot(s => {
       cardapioGrupos = (s.exists && Array.isArray(s.data().grupos)) ? s.data().grupos.filter(g => g && g.id && g.nome) : [];
-      if (telaAtual() === "tCardapio") renderCardapio();
+      if (telaAtual() === "tCardapio") renderCardapio(); else redesenhar();
     }, () => {}));
     parar.push(db.collection("cardapio").onSnapshot(q => {
       cardapio = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-      if (telaAtual() === "tCardapio") renderCardapio();
+      if (telaAtual() === "tCardapio") renderCardapio(); else redesenhar();   // perfil e Quem tá no Trela mostram o drink quando tem produto
     }, () => { cardapio = cardapio || []; if (telaAtual() === "tCardapio") renderCardapio(); }));
   }
   function abrirCardapio() { ir("tCardapio"); ouvirCardapio(); renderCardapio(); $("#cardapioScroll").scrollTop = 0; }
@@ -1700,11 +1871,6 @@
   $("#gavetaFundo").onclick = fecharMenu;
   document.addEventListener("keydown", e => { if (e.key === "Escape" && menuAberto()) fecharMenu(); });
   $("#gvPerfil").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
-  $("#gvPush").onchange = async e => {
-    const quer = e.target.checked;
-    if (quer) await ativarPush(); else await desativarPush();
-    desenharPush(); cartaoPush();
-  };
   $("#gvAberto").onchange = async e => {
     const on = e.target.checked;
     EU.aberto = on ? FS.Timestamp.now() : null; desenharAberto(); redesenhar();
@@ -1717,6 +1883,7 @@
     const d = b.dataset.ir; fecharMenu();
     if (d === "eventos") abrirEventos();
     else if (d === "cardapio") abrirCardapio();
+    else if (d === "quem") abrirQuem();
     else if (d === "avisos") $("#btnSino").click();
     else if (d === "galera") abrirGalera();
     else if (d === "feed") { while (pilha.length > 1) voltarTela(); setTimeout(() => $("#homeScroll").scrollTo({ top: $("#feedTitle").offsetTop - 10, behavior: "smooth" }), 50); }
@@ -2486,7 +2653,7 @@
   function abrirMeuPerfil() { abrirPerfil(EU.uid); }
   async function abrirPerfil(uid) {
     if (!uid) return;
-    perfilDe = uid; postsPerfil = null; ir("tPerfil"); renderPerfil();
+    perfilDe = uid; postsPerfil = null; ir("tPerfil"); if (uid !== EU.uid) ouvirCardapio(); renderPerfil();
     const s = await db.collection("telao").where("autor", "==", uid).limit(60).get().catch(() => null);
     if (perfilDe !== uid) return;
     postsPerfil = s ? s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ms(b.criado) - ms(a.criado)).slice(0, 15) : [];
@@ -2553,6 +2720,74 @@
     $("#perfilScroll").replaceChildren(...out);
   }
 
+  // ================= QUEM TÁ NO TRELA =================
+  // Todo mundo que abriu o app nesta noite (mesmo que tenha fechado). Online e quem ligou o anel vêm primeiro.
+  const hojeNoTrela = () => { const noite = inicioDaNoite().getTime(); return S.noBar.filter(p => p.id !== EU.uid && !S.bloqueados.has(p.id) && ms(p.ultimoAcesso) >= noite); };
+  function listaQuem() {
+    return hojeNoTrela().filter(p => !filtroQuem || abertoAgora(p))
+      .sort((a, b) => (online(b) - online(a)) || (abertoAgora(b) - abertoAgora(a)) || (ms(b.ultimoAcesso) - ms(a.ultimoAcesso)));
+  }
+  function atalhoQuem() {
+    const b = $("#quemAtalho"); if (!b) return;
+    const gente = hojeNoTrela(); b.hidden = !gente.length; if (!gente.length) return;
+    const on = gente.filter(online).length, ab = gente.filter(abertoAgora).length;
+    const chave = gente.map(p => p.id + (online(p) ? 1 : 0) + (abertoAgora(p) ? 1 : 0) + (p.fotoV ? ms(p.fotoV) : "")).join() + fotosPerfil.size;
+    if (b.dataset.k === chave) return; b.dataset.k = chave;
+    $("#quemPilha").replaceChildren(...gente.slice().sort((a, x) => (online(x) - online(a))).slice(0, 4).map(p => avatar(p.id)));
+    $("#quemAtalhoTxt").textContent = gente.length + (gente.length === 1 ? " pessoa abriu" : " pessoas abriram") + " o app hoje" + (on ? " · " + on + " online" : "") + (ab ? " · " + ab + " aberto" + (ab === 1 ? "" : "s") + " pra conhecer gente" : "") + ". Crush secreto e drink por aqui.";
+  }
+  $("#quemAtalho").onclick = () => abrirQuem();
+  let filtroQuem = false, quemIdx = 0, quemAss = "";
+  function abrirQuem() { ir("tQuem"); ouvirCardapio(); quemIdx = 0; quemAss = ""; renderQuem(); }
+  function renderQuem() {
+    if (telaAtual() !== "tQuem") return;
+    const lista = listaQuem();
+    // só redesenha se mudou algo (senão o toque some no meio e o carrossel volta pro começo)
+    const ass = JSON.stringify([filtroQuem, lista.map(p => [p.id, online(p), abertoAgora(p), p.fotoV ? ms(p.fotoV) : 0, S.interesses.has(p.id), S.matches.has(p.id)]), S.drinksMandados.map(x => x.id + x.status), cardapio ? cardapio.length : -1, fotosPerfil.size]);
+    if (ass === quemAss) return; quemAss = ass;
+    const box = $("#quemScroll"), out = [];
+    const todos = hojeNoTrela(), nAb = todos.filter(abertoAgora).length, nOn = todos.filter(online).length;
+    const topo = el("div", "quem-topo"); topo.append(el("p", "", todos.length + (todos.length === 1 ? " pessoa abriu" : " pessoas abriram") + " o app hoje" + (nOn ? " · " + nOn + " online" : "")));
+    out.push(topo);
+    const f = el("div", "filtro-g");
+    const b1 = el("button", filtroQuem ? "" : "on", "Todos · " + todos.length); b1.type = "button"; b1.onclick = () => { filtroQuem = false; quemIdx = 0; renderQuem(); };
+    const b2 = el("button", filtroQuem ? "on" : "", "Abertos pra conhecer gente · " + nAb); b2.type = "button"; b2.onclick = () => { filtroQuem = true; quemIdx = 0; renderQuem(); };
+    f.append(b1, b2); out.push(f);
+    if (!lista.length) {
+      out.push(el("div", "vazio-s", filtroQuem ? "Ninguém ligou o anel dourado ainda. Liga o teu no menu ≡!" : "Ainda não chegou ninguém hoje. Chama a galera!"));
+      box.replaceChildren(...out); return;
+    }
+    quemIdx = Math.min(quemIdx, lista.length - 1);
+    const trilho = el("div", "quem-trilho");
+    lista.forEach(p => {
+      const c = el("article", "quem-card" + (abertoAgora(p) ? " aberto" : "")); c.dataset.id = p.id;
+      const ft = el("button", "quem-foto"); ft.type = "button"; ft.setAttribute("aria-label", "Ver o perfil de " + p.nome); ft.append(avatar(p.id, "g")); ft.onclick = () => abrirPerfil(p.id);
+      const nm = el("div", "quem-nome"); nm.append(el("b", "", p.nome), el("span", online(p) ? "on" : "", online(p) ? "Online agora" : (visto(p.ultimoAcesso) || "Esteve aqui hoje")));
+      c.append(ft, nm);
+      if (abertoAgora(p)) c.append(el("span", "tag-aberto", "Aberto pra conhecer gente"));
+      c.append(blocoSocial(p));
+      trilho.append(c);
+    });
+    const nav = el("div", "quem-nav");
+    const ant = el("button", "", "‹"); ant.type = "button"; ant.setAttribute("aria-label", "Pessoa anterior");
+    const conta = el("span", "", (quemIdx + 1) + " de " + lista.length);
+    const prox = el("button", "", "›"); prox.type = "button"; prox.setAttribute("aria-label", "Próxima pessoa");
+    const irPara = i => { const card = trilho.children[i]; if (card) trilho.scrollTo({ left: card.offsetLeft - trilho.offsetLeft - 16, behavior: "smooth" }); };
+    ant.onclick = () => irPara(Math.max(0, quemIdx - 1)); prox.onclick = () => irPara(Math.min(lista.length - 1, quemIdx + 1));
+    const atualizarNav = () => { conta.textContent = (quemIdx + 1) + " de " + lista.length; ant.disabled = quemIdx === 0; prox.disabled = quemIdx === lista.length - 1; };
+    trilho.addEventListener("scroll", () => {
+      const w = trilho.children[0] ? trilho.children[0].offsetWidth + 12 : 1;
+      const i = Math.round(trilho.scrollLeft / w); if (i !== quemIdx) { quemIdx = Math.max(0, Math.min(lista.length - 1, i)); atualizarNav(); }
+    }, { passive: true });
+    nav.append(ant, conta, prox); atualizarNav();
+    out.push(trilho, nav, el("p", "nota", "Arrasta pro lado pra ver a próxima pessoa. O crush é segredo: só avisa os dois se os dois marcarem."));
+    box.replaceChildren(...out);
+    // volta pra pessoa que estava na tela
+    requestAnimationFrame(() => { const card = trilho.children[quemIdx]; if (card) trilho.scrollLeft = card.offsetLeft - trilho.offsetLeft - 16; });
+  }
+  // online/offline muda com o tempo: confere a cada 30 s
+  setInterval(() => { if (EU && telaAtual() === "tQuem") renderQuem(); if (EU && telaAtual() === "tHome") atalhoQuem(); }, 30 * 1000);
+
   // ================= CRUSH SECRETO + TE PAGO UM DRINK =================
   const SV = (p, extra) => '<svg viewBox="0 0 24 24" fill="' + (extra || "none") + '" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
   function blocoSocial(p) {
@@ -2564,7 +2799,8 @@
     c.onclick = () => deuMatch ? abrirChat(p.id) : marcado ? desmarcarInteresse(p) : marcarInteresse(p);
     box.append(c);
     box.append(el("p", "nota-s", deuMatch ? "Vocês dois marcaram. Bora puxar assunto!" : marcado ? "Se " + p.nome + " também marcar, os dois recebem o aviso de match. Toca de novo pra desmarcar." : "Ninguém fica sabendo. Só avisa os dois se " + p.nome + " também marcar."));
-    // Te pago um drink
+    // Te pago um drink (some enquanto o cardápio estiver vazio)
+    if (!cardapio || !cardapio.length) return box;
     const meu = S.drinksMandados.filter(x => x.para === p.id).sort((a, b) => ms(b.criado) - ms(a.criado))[0];
     const d = el("button", "bt-drink"); d.type = "button"; d.innerHTML = SV('<path d="M6 4h12l-1.5 15a2 2 0 0 1-2 1.8h-5a2 2 0 0 1-2-1.8z"/><path d="M6.5 9h11"/>');
     if (meu && meu.status === "enviado") { d.className = "bt-drink espera"; d.append("Convite enviado: " + meu.itemNome + " · cancelar"); d.onclick = () => cancelarDrink(meu); }

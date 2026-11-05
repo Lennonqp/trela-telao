@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202611051105">
+<link rel="stylesheet" href="estilo.css?v=202611051127">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -72,6 +72,10 @@
   .gv-aberto{font:400 14px/1.3 var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);display:flex;align-items:center;gap:12px;margin:2px 0 6px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.02);cursor:pointer}
   .gv-aberto.gv-push.on{border-color:var(--neon);background:rgba(255,63,164,.07)}
   .gv-push .sw:checked{background:var(--neon)}
+  .push-faixa{flex:none;display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid rgba(255,63,164,.35);background:linear-gradient(90deg,rgba(255,63,164,.2),rgba(169,92,242,.14));color:var(--ink);padding:10px 16px;font:700 14px/1.2 var(--f-body);cursor:pointer;text-align:left}
+  .push-faixa svg{flex:none;color:var(--neon)}
+  .push-faixa span{flex:1;min-width:0}
+  .push-faixa i{font-style:normal;color:var(--neon);font-size:20px}
   .push-ic{align-self:center;width:64px;height:64px;border-radius:18px;background:rgba(255,63,164,.14);display:grid;place-items:center;color:var(--neon);margin:2px auto 0;box-shadow:0 0 24px -6px rgba(255,63,164,.7)}
   .push-ic svg{width:34px;height:34px}
   .push-lista{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
@@ -515,6 +519,7 @@
       <button class="ico" id="btnGalera" type="button" aria-label="Amigos e conversas"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg><span class="badge" id="badge" hidden></span></button>
       <button class="ico" id="btnMenu" type="button" aria-label="Menu" aria-expanded="false" aria-controls="gaveta"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="ponto" id="pontoMenu" hidden></span></button>
     </div>
+    <button type="button" class="push-faixa" id="pushFaixa" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span id="pushFaixaTxt">Ativar notificações</span><i aria-hidden="true">›</i></button>
     <button type="button" class="aovivo" id="aoVivo" hidden aria-label="Eventos da noite">
       <span class="av-ic" id="aoVivoIc" aria-hidden="true"></span>
       <span class="av-rot">Ao vivo</span>
@@ -685,9 +690,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611051105"></script>
-<script src="marca.js?v=202611051105"></script>
-<script src="comum.js?v=202611051105"></script>
+<script src="config.js?v=202611051127"></script>
+<script src="marca.js?v=202611051127"></script>
+<script src="comum.js?v=202611051127"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -764,8 +769,9 @@
   async function ativarPush() {
     if (ehIOS && !instalado()) { passosIphone(); return false; }
     if (!pushPossivel()) { erroToast("Esse navegador não aceita notificações. Tenta pelo Chrome."); return false; }
+    if (notifBloqueada()) { comoLiberar(); return false; }
     const perm = await Notification.requestPermission();
-    if (perm !== "granted") { erroToast(perm === "denied" ? "As notificações estão bloqueadas pro Trela. Libera nas configurações do navegador." : "Notificações não ativadas."); return false; }
+    if (perm !== "granted") { desenharPush(); if (perm === "denied") comoLiberar(); else erroToast("Notificações não ativadas."); return false; }
     try { await pegarToken(); toast(EU.uid, "Pronto! Tu vai ser avisado no celular mesmo com o Trela fechado."); return true; }
     catch (e) { console.warn("[Trela] push", e); erroToast(e && e.code === "permission-denied" ? "Não deu pra salvar: as regras do banco precisam ser publicadas." : "Não deu pra ativar agora. Tenta de novo."); return false; }
   }
@@ -775,12 +781,33 @@
     try { await mensagemPush().deleteToken(); } catch (e) {}
     toast(EU.uid, "Notificações no celular desligadas.");
   }
+  // Faixa embaixo do logo: some quando a notificação está ligada
+  const notifBloqueada = () => "Notification" in window && Notification.permission === "denied";
   function desenharPush() {
+    const fx = $("#pushFaixa");
+    if (fx) {
+      fx.hidden = !EU || !pushConfigurado() || pushLigado();
+      $("#pushFaixaTxt").textContent = ehIOS && !instalado() ? "Ativar notificações no iPhone" : notifBloqueada() ? "Notificações bloqueadas: toca pra ver como liberar" : "Ativar notificações";
+    }
     const box = $("#gvPushBox"); if (!box) return;
     box.hidden = !pushConfigurado();
     const on = pushLigado(); $("#gvPush").checked = on; box.classList.toggle("on", on);
     $("#gvPushTxt").textContent = on ? "Ligadas neste celular" : ("Notification" in window && Notification.permission === "denied") ? "Bloqueadas no navegador" : "Avisa mesmo com o Trela fechado";
   }
+  // Toque na faixa: ativa direto (iPhone fora da tela de início: passo a passo; bloqueada: como liberar)
+  function comoLiberar() {
+    const passos = el("ol", "passos-ios");
+    (instalado()
+      ? ["Segura o dedo no ícone do Trela na tela do celular.", "Toca em <b>Informações do app</b> (ou no ⓘ).", "Vai em <b>Notificações</b> e liga.", "Volta pro Trela: a faixa some quando estiver ligado."]
+      : ["Toca no <b>cadeado</b> (ou nos três pontinhos) ao lado do endereço do site.", "Vai em <b>Permissões</b> ou <b>Configurações do site</b>.", "Em <b>Notificações</b>, escolhe <b>Permitir</b>.", "Recarrega a página e toca de novo em <b>Ativar notificações</b>."]
+    ).forEach(t => { const li = el("li"); li.innerHTML = t; passos.append(li); });
+    folha([el("h4", "", "As notificações estão bloqueadas"), el("p", "", "Alguém tocou em \"Bloquear\" quando o celular perguntou, e agora o site não pode perguntar de novo. Dá pra liberar assim:"), passos, bt("Entendi", "sim", fecharFolha)]);
+  }
+  $("#pushFaixa").onclick = async () => {
+    if (ehIOS && !instalado()) return passosIphone();
+    if (notifBloqueada()) return comoLiberar();
+    await ativarPush(); desenharPush();
+  };
   // Logo ao entrar: janela explicando o que a pessoa vai receber, com o botão de ativar.
   // O celular só deixa pedir a permissão depois de um toque, por isso o botão.
   // "Agora não" esconde até a noite seguinte. Depois dela (ou se não precisar), segue pro "depois".

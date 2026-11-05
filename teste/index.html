@@ -86,6 +86,15 @@
   .passos-ios{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;text-align:left;font-size:14px;line-height:1.4}
   .passos-ios li::marker{color:var(--neon);font-weight:800}
   .passos-ios svg{vertical-align:-3px;color:var(--neon)}
+  .seta-ios{position:fixed;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:4px;width:min(320px,90vw);pointer-events:auto}
+  .seta-ios.baixo{bottom:8px}
+  .seta-ios.cima{top:6px;flex-direction:column-reverse;left:auto;right:8px;transform:none;align-items:flex-end}
+  .seta-txt{background:var(--neon);color:#fff;border-radius:14px;padding:10px 14px;font-size:14px;line-height:1.35;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+  .seta-txt small{display:block;font-size:12px;opacity:.9;margin-top:4px}
+  .seta-flecha{font-size:42px;line-height:1;color:var(--neon);text-shadow:0 0 12px var(--neon);animation:setaPula .8s ease-in-out infinite alternate}
+  .seta-ios.cima .seta-flecha{margin-right:28px}
+  @keyframes setaPula{from{transform:translateY(0)}to{transform:translateY(10px)}}
+  .seta-ios.cima .seta-flecha{animation-direction:alternate-reverse}
   .push-ios{border:1px dashed var(--ouro);border-radius:12px;padding:10px 12px;color:var(--ink)!important;font-size:13px!important}
   .push-card{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--neon);background:linear-gradient(135deg,rgba(255,63,164,.14),rgba(169,92,242,.08));border-radius:16px;padding:14px;margin:12px 0}
   .push-card svg{flex:none;width:26px;height:26px;color:var(--neon);margin-top:2px}
@@ -773,7 +782,19 @@
     folha([el("h4", "", "Coloca o Trela na tela do iPhone"),
       el("p", "", "O iPhone só manda notificação de app que está na tela de início. É rapidinho:"), passos,
       ...(velho ? [el("p", "push-ios", "Teu iPhone está no iOS " + v.join(".") + ". Notificação só funciona do iOS 16.4 pra cima: vai em Ajustes › Geral › Atualização de Software.")] : []),
-      bt("Entendi", "sim", () => { guardado.salvar("trela-push-dispensado", chaveNoite()); fecharFolha(); if (depois) depois(); })], true);
+      bt("Me mostra onde tocar", "sim", () => { fecharFolha(); setaIphone(); if (depois) depois(); }),
+      Object.assign(bt("Entendi", "", () => { fecharFolha(); if (depois) depois(); }), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" })], true);
+  }
+  // Seta piscando em cima do botão Compartilhar do navegador (embaixo no Safari, em cima no Chrome)
+  function setaIphone() {
+    const velha = $("#setaIos"); if (velha) velha.remove();
+    const nav = navegadorIOS(), emCima = nav !== "safari";
+    const s = el("div", "seta-ios " + (emCima ? "cima" : "baixo")); s.id = "setaIos";
+    s.innerHTML = '<div class="seta-txt">' + (nav === "chrome" ? "Toca no <b>Compartilhar</b> aqui em cima, do lado do endereço" : nav === "outro" ? "Abre o menu do navegador e toca em <b>Compartilhar</b>" : "Toca no <b>Compartilhar</b> aqui embaixo")
+      + '<small>Depois: <b>Adicionar à Tela de Início</b> › <b>Adicionar</b></small></div><div class="seta-flecha" aria-hidden="true">' + (emCima ? "↑" : "↓") + '</div>';
+    s.onclick = () => s.remove();
+    document.body.append(s);
+    setTimeout(() => s.remove(), 20000);
   }
   async function ativarPush() {
     if (ehIOS && !instalado()) { passosIphone(); return false; }
@@ -819,23 +840,31 @@
   };
   // Logo ao entrar: janela explicando o que a pessoa vai receber, com o botão de ativar.
   // O celular só deixa pedir a permissão depois de um toque, por isso o botão.
-  // "Agora não" esconde até a noite seguinte. Depois dela (ou se não precisar), segue pro "depois".
+  // Aparece toda vez que abre o app (ou volta depois de 15 min) até ligar; "Agora não" só fecha. Depois dela (ou se não precisar), segue pro "depois".
+  let pushDispensadoAgora = false;
+  // voltou pro app depois de 15 min fora (iPhone não recarrega a página): pergunta de novo
+  let saiuEm = 0;
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { saiuEm = Date.now(); return; }
+    if (saiuEm && Date.now() - saiuEm > 15 * 60 * 1000) { pushDispensadoAgora = false; setTimeout(() => janelaPush(), 900); }
+  });
   function janelaPush(depois, tentativa) {
     const seguir = () => { if (depois) depois(); };
     if (!EU || !pushConfigurado() || pushLigado()) return seguir();
     // outra janela aberta (convite de drink, match...): espera ela fechar e aparece depois
     if (!$("#veu").hidden) { if ((tentativa || 0) < 40) setTimeout(() => janelaPush(depois, (tentativa || 0) + 1), 3000); return; }
-    if ("Notification" in window && Notification.permission === "denied") return seguir();
-    if (guardado.ler("trela-push-dispensado", "") === chaveNoite()) return seguir();
-    const ios = ehIOS && !instalado();
+    if (pushDispensadoAgora) return seguir();
+    pushDispensadoAgora = true;   // "Agora não" vale só até a próxima vez que abrir o app
+    const ios = ehIOS && !instalado(), bloq = !ios && notifBloqueada();
     const ic = el("div", "push-ic"); ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
     const lista = el("ul", "push-lista");
     ["Tua vez no karaokê", "Convite de drink, e a resposta do teu", "Deu match no crush secreto", "Mensagens e pedidos de amizade", "Curtidas e quando te marcam", "Convite pro Encara ou Bebe"].forEach(t => lista.append(el("li", "", t)));
-    const nao = () => { guardado.salvar("trela-push-dispensado", chaveNoite()); fecharFolha(); seguir(); };
+    const nao = () => { fecharFolha(); seguir(); };
     const itens = [ic, el("h4", "", "Fica sabendo na hora, mesmo com o Trela fechado"), el("p", "", "Com as notificações ligadas, o celular te avisa de:"), lista,
       el("p", "push-nota", "E de vez em quando uma dica do que dá pra fazer no app. Dá pra desligar quando quiser nas configurações do celular.")];
     if (ios) itens.push(el("p", "push-ios", "No iPhone, o Trela precisa estar na tela de início pra mandar notificação. Toca em \"Colocar na tela do iPhone\" que a gente mostra como."));
-    itens.push(bt("Ativar notificações", "sim", async () => { if (ios) { passosIphone(seguir); return; } fecharFolha(); await ativarPush(); desenharPush(); seguir(); }));
+    if (bloq) itens.push(el("p", "push-ios", "As notificações estão bloqueadas neste celular. Toca em \"Ativar notificações\" que a gente mostra como liberar."));
+    itens.push(bt("Ativar notificações", "sim", async () => { if (ios) { passosIphone(seguir); return; } if (bloq) { comoLiberar(); return; } fecharFolha(); await ativarPush(); desenharPush(); seguir(); }));
     if (ios) itens.push(bt("Colocar na tela do iPhone", "", () => passosIphone(seguir)));
     itens.push(Object.assign(bt("Agora não", "", nao), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" }));
     folha(itens, true);

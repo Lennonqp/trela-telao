@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202611051027">
+<link rel="stylesheet" href="estilo.css?v=202611051105">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -79,6 +79,9 @@
   .push-lista li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;text-align:left}
   .push-lista li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--neon);box-shadow:0 0 6px var(--neon)}
   .push-nota{font-size:12.5px!important}
+  .passos-ios{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;text-align:left;font-size:14px;line-height:1.4}
+  .passos-ios li::marker{color:var(--neon);font-weight:800}
+  .passos-ios svg{vertical-align:-3px;color:var(--neon)}
   .push-ios{border:1px dashed var(--ouro);border-radius:12px;padding:10px 12px;color:var(--ink)!important;font-size:13px!important}
   .push-card{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--neon);background:linear-gradient(135deg,rgba(255,63,164,.14),rgba(169,92,242,.08));border-radius:16px;padding:14px;margin:12px 0}
   .push-card svg{flex:none;width:26px;height:26px;color:var(--neon);margin-top:2px}
@@ -682,9 +685,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611051027"></script>
-<script src="marca.js?v=202611051027"></script>
-<script src="comum.js?v=202611051027"></script>
+<script src="config.js?v=202611051105"></script>
+<script src="marca.js?v=202611051105"></script>
+<script src="comum.js?v=202611051105"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -746,13 +749,20 @@
     await db.doc("tokens/" + EU.uid + "/aparelhos/" + tok).set({ criado: agoraServidor(), aparelho: navigator.userAgent.slice(0, 150) });
     pushToken = tok; guardado.salvar("trela-push-token", tok);
   }
+  // iPhone: notificação só funciona com o Trela na tela de início
+  function passosIphone(depois) {
+    const icCompartilhar = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+    const passos = el("ol", "passos-ios");
+    [["Toca no botão <b>Compartilhar</b> " + icCompartilhar + " na barra do Safari (embaixo ou em cima)."],
+     ["Rola a lista e toca em <b>Adicionar à Tela de Início</b>."],
+     ["Toca em <b>Adicionar</b>, no canto de cima."],
+     ["Abre o Trela pelo <b>ícone novo</b> na tela do iPhone e toca em <b>Ativar notificações</b>."]].forEach(t => { const li = el("li"); li.innerHTML = t[0]; passos.append(li); });
+    folha([el("h4", "", "Coloca o Trela na tela do iPhone"),
+      el("p", "", "O iPhone só manda notificação de app que está na tela de início. É rapidinho:"), passos,
+      bt("Entendi", "sim", () => { guardado.salvar("trela-push-dispensado", chaveNoite()); fecharFolha(); if (depois) depois(); })], true);
+  }
   async function ativarPush() {
-    if (ehIOS && !instalado()) {
-      folha([el("h4", "", "No iPhone, primeiro coloca o Trela na tela de início"),
-        el("p", "", "O iPhone só manda notificação de app que está na tela de início. Toca no botão de compartilhar do Safari (o quadradinho com a seta), depois em \"Adicionar à Tela de Início\". Abre o Trela pelo ícone novo e ativa de novo aqui."),
-        bt("Entendi", "sim", fecharFolha)]);
-      return false;
-    }
+    if (ehIOS && !instalado()) { passosIphone(); return false; }
     if (!pushPossivel()) { erroToast("Esse navegador não aceita notificações. Tenta pelo Chrome."); return false; }
     const perm = await Notification.requestPermission();
     if (perm !== "granted") { erroToast(perm === "denied" ? "As notificações estão bloqueadas pro Trela. Libera nas configurações do navegador." : "Notificações não ativadas."); return false; }
@@ -788,10 +798,10 @@
     const nao = () => { guardado.salvar("trela-push-dispensado", chaveNoite()); fecharFolha(); seguir(); };
     const itens = [ic, el("h4", "", "Fica sabendo na hora, mesmo com o Trela fechado"), el("p", "", "Com as notificações ligadas, o celular te avisa de:"), lista,
       el("p", "push-nota", "E de vez em quando uma dica do que dá pra fazer no app. Dá pra desligar quando quiser nas configurações do celular.")];
-    if (ios) itens.push(el("p", "push-ios", "No iPhone, primeiro coloca o Trela na tela de início: no Safari, toca em compartilhar (o quadradinho com a seta) e depois em \"Adicionar à Tela de Início\". Abre pelo ícone novo e ativa por lá."),
-      bt("Entendi", "sim", nao));
-    else itens.push(bt("Ativar notificações", "sim", async () => { fecharFolha(); await ativarPush(); desenharPush(); seguir(); }),
-      Object.assign(bt("Agora não", "", nao), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" }));
+    if (ios) itens.push(el("p", "push-ios", "No iPhone, o Trela precisa estar na tela de início pra mandar notificação. Toca em \"Colocar na tela do iPhone\" que a gente mostra como."));
+    itens.push(bt("Ativar notificações", "sim", async () => { if (ios) { passosIphone(seguir); return; } fecharFolha(); await ativarPush(); desenharPush(); seguir(); }));
+    if (ios) itens.push(bt("Colocar na tela do iPhone", "", () => passosIphone(seguir)));
+    itens.push(Object.assign(bt("Agora não", "", nao), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" }));
     folha(itens, true);
   }
 

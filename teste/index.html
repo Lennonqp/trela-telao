@@ -754,9 +754,20 @@
     } catch (e) {}
   }
   const mensagemPush = () => appTrela.messaging ? appTrela.messaging() : firebase.messaging();
+  const ESCOPO_APP = BASE_APP === "/" ? "/" : BASE_APP.replace(/\/$/, "");
+  // espera o sw.js ficar ativo (no máximo 15 s, pra não ficar travado)
+  function esperarAtivo(reg) {
+    if (reg.active) return Promise.resolve();
+    return new Promise((ok, falha) => {
+      const sw = reg.installing || reg.waiting, t = setTimeout(() => falha(new Error("sw demorou")), 15000);
+      if (!sw) { clearTimeout(t); return falha(new Error("sw sumiu")); }
+      sw.addEventListener("statechange", () => { if (sw.state === "activated") { clearTimeout(t); ok(); } else if (sw.state === "redundant") { clearTimeout(t); falha(new Error("sw falhou")); } });
+    });
+  }
   async function pegarToken() {
-    const reg = await navigator.serviceWorker.register("sw.js");
-    await navigator.serviceWorker.ready;
+    // O teste fica em /teste (sem barra no fim): o escopo tem que cobrir esse endereço
+    const reg = await navigator.serviceWorker.register("sw.js", { scope: ESCOPO_APP });
+    await esperarAtivo(reg);
     const tok = await mensagemPush().getToken({ vapidKey: window.VAPID_KEY, serviceWorkerRegistration: reg });
     if (!tok) throw new Error("sem token");
     if (tok !== pushToken && pushToken) db.doc("tokens/" + EU.uid + "/aparelhos/" + pushToken).delete().catch(() => {});
@@ -803,7 +814,7 @@
     const perm = await Notification.requestPermission();
     if (perm !== "granted") { desenharPush(); if (perm === "denied") comoLiberar(); else erroToast("Notificações não ativadas."); return false; }
     try { await pegarToken(); toast(EU.uid, "Pronto! Tu vai ser avisado no celular mesmo com o Trela fechado."); return true; }
-    catch (e) { console.warn("[Trela] push", e); erroToast(e && e.code === "permission-denied" ? "Não deu pra salvar: as regras do banco precisam ser publicadas." : "Não deu pra ativar agora. Tenta de novo."); return false; }
+    catch (e) { console.warn("[Trela] push", e); erroToast(e && e.code === "permission-denied" ? "Não deu pra salvar: as regras do banco precisam ser publicadas." : "Não deu pra ativar agora. Tenta de novo. (" + String((e && (e.code || e.message)) || "erro").slice(0, 60) + ")"); return false; }
   }
   async function desativarPush() {
     const t = pushToken; pushToken = null; guardado.salvar("trela-push-token", null);

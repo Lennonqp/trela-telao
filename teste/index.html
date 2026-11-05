@@ -808,7 +808,7 @@
     setTimeout(() => s.remove(), 20000);
   }
   async function ativarPush() {
-    if (iphoneSemPush()) { passosIphone(); return false; }
+    if (ehIOS) return false;   // iPhone: fica só no sino
     if (!pushPossivel()) { erroToast("Esse navegador não aceita notificações. Tenta pelo Chrome."); return false; }
     if (notifBloqueada()) { comoLiberar(); return false; }
     const perm = await Notification.requestPermission();
@@ -830,7 +830,7 @@
   function desenharPush() {
     const fx = $("#pushFaixa");
     if (fx) {
-      fx.hidden = !EU || !pushConfigurado() || pushLigado();
+      fx.hidden = !EU || ehIOS || !pushConfigurado() || pushLigado();
       $("#pushFaixaTxt").textContent = iphoneSemPush() ? "Ativar notificações no iPhone" : notifBloqueada() ? "Notificações bloqueadas: toca pra ver como liberar" : "Ativar notificações";
     }
     const box = $("#gvPushBox"); if (!box) return;
@@ -864,7 +864,7 @@
   });
   function janelaPush(depois, tentativa) {
     const seguir = () => { if (depois) depois(); };
-    if (!EU || !pushConfigurado() || pushLigado()) return seguir();
+    if (!EU || ehIOS || !pushConfigurado() || pushLigado()) return seguir();   // iPhone: sem notificação no celular, só o sino
     // outra janela aberta (convite de drink, match...): espera ela fechar e aparece depois
     if (!$("#veu").hidden) { if ((tentativa || 0) < 40) setTimeout(() => janelaPush(depois, (tentativa || 0) + 1), 3000); return; }
     if (pushDispensadoAgora) return seguir();

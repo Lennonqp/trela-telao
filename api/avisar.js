@@ -87,11 +87,27 @@ async function montarAvisos(db, uid, pedido) {
   return [];
 }
 
-async function enviar(adm, db, de, aviso, base) {
+// Tipos que também ficam guardados no sino do app (até a pessoa apagar).
+// Curtida e menção o próprio app já grava; mensagem fica no ícone do chat.
+const NO_SINO = ["drink", "match", "amizade", "karaoke", "mesa"];
+
+async function guardarNoSino(adm, db, de, aviso, pedido) {
+  const sub = String(pedido.tipo || "");
+  if (!NO_SINO.includes(sub)) return;
+  const u = await db.doc("usuarios/" + de).get();
+  await db.doc("avisos/" + aviso.para + "/itens/sino_" + aviso.chave.replace(/\//g, "")).create({
+    tipo: "sistema", sub, de: sub === "karaoke" ? "" : de, deNome: (u.exists && u.data().nome) || "",
+    titulo: aviso.titulo, texto: aviso.texto || "", caminho: aviso.caminho || "", alvo: String(pedido.id || "").replace(/\//g, ""),
+    criado: adm.firestore.FieldValue.serverTimestamp(), lida: false
+  }).catch(() => {});   // já estava no sino: não duplica
+}
+
+async function enviar(adm, db, de, aviso, base, pedido) {
   if (!aviso.para || aviso.para === de) return 0;
   // quem bloqueou não recebe nada de quem foi bloqueado
   const [b1, b2] = await Promise.all([db.doc("bloqueios/" + aviso.para + "_" + de).get(), db.doc("bloqueios/" + de + "_" + aviso.para).get()]);
   if (b1.exists || b2.exists) return 0;
+  await guardarNoSino(adm, db, de, aviso, pedido || {});
   const aparelhos = await db.collection("tokens").doc(aviso.para).collection("aparelhos").get();
   if (aparelhos.empty) return 0;
   // cada aviso uma vez só (se já foi, para aqui)
@@ -133,7 +149,7 @@ module.exports = async (req, res) => {
     if (susp.exists) return res.status(403).json({ erro: "conta suspensa" });
     const avisos = await montarAvisos(db, uid, pedido);
     let enviados = 0;
-    for (const a of avisos) enviados += await enviar(adm, db, uid, a, base);
+    for (const a of avisos) enviados += await enviar(adm, db, uid, a, base, pedido);
     return res.status(200).json({ ok: true, avisos: avisos.length, enviados });
   } catch (e) {
     console.error("[avisar]", e);
@@ -142,3 +158,4 @@ module.exports = async (req, res) => {
 };
 module.exports.montarAvisos = montarAvisos;
 module.exports.enviar = enviar;
+module.exports.NO_SINO = NO_SINO;

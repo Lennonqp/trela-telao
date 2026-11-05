@@ -319,6 +319,13 @@
   .aviso-l .av-ic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--c);color:#140c1b}
   .aviso-l .av-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
   .aviso-l small{font-size:12px;color:var(--muted)}
+  .aviso-l .av-sub{font-size:13px;color:var(--ink);opacity:.85}
+  .aviso-linha{display:flex;align-items:stretch;gap:6px}
+  .aviso-linha .aviso-l{flex:1;min-width:0}
+  .aviso-x{flex:none;width:40px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:15px;cursor:pointer}
+  .aviso-x:active{color:var(--neon);border-color:var(--neon)}
+  .sec-avisos{display:flex;align-items:center;justify-content:space-between}
+  .apagar-todos{border:0;background:none;color:var(--muted);font:inherit;font-size:12px;text-decoration:underline;cursor:pointer;padding:4px 0;text-transform:none;letter-spacing:0}
 
 
   /* Cartão de vencedor */
@@ -1275,10 +1282,11 @@
 
     // Marcações
     let primeiroAviso = true;
-    parar.push(db.collection("avisos").doc(uid).collection("itens").orderBy("criado", "desc").limit(30).onSnapshot(snap => {
+    parar.push(db.collection("avisos").doc(uid).collection("itens").orderBy("criado", "desc").limit(200).onSnapshot(snap => {
       S.avisosTodos = snap.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() }));
       S.avisos = S.avisosTodos.filter(a => !a.lida);
-      if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added" && !c.doc.data().lida).forEach(c => { const a = c.doc.data();
+      // os do sistema (drink, match, amizade...) já têm aviso próprio na tela; aqui só curtida e menção
+      if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added" && !c.doc.data().lida && c.doc.data().tipo !== "sistema").forEach(c => { const a = c.doc.data();
         if (a.tipo === "curtida") return toast(a.de, a.deNome + " curtiu tua foto", () => { c.doc.ref.update({ lida: true }); abrirPerfil(a.de); });
         toast(a.de, a.deNome + " te marcou num comentário", () => { c.doc.ref.update({ lida: true }); abrirComentarios(a.postId); }); });
       primeiroAviso = false; redesenhar();
@@ -2314,6 +2322,26 @@
   function lerAvisos() { S.avisos.forEach(a => a.ref.update({ lida: true }).catch(() => {})); eventosAtivos().forEach(marcarEventoVisto); renderBadge(); renderFaixas(); }
   const drinksPendentes = () => S.drinksRecebidos.filter(x => x.status === "enviado");
   function contaSino() { return S.avisos.length + eventosAtivos().filter(eventoNovo).length + drinksPendentes().length; }
+  const IC_SINO = {
+    drink: '<path d="M6 4h12l-1.5 15a2 2 0 0 1-2 1.8h-5a2 2 0 0 1-2-1.8z"/><path d="M6.5 9h11"/>',
+    match: '<path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/>',
+    amizade: '<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M19 8v6M16 11h6"/>',
+    karaoke: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/>',
+    mesa: '<rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/>'
+  };
+  // Toque num aviso do sistema: leva pro lugar certo
+  function abrirAvisoSistema(a) {
+    if (a.sub === "drink") { const x = drinksPendentes().find(d => d.id === a.alvo); if (x) return mostrarConviteDrink(x); return a.de && abrirPerfil(a.de); }
+    if (a.sub === "match") return a.de && abrirChat(a.de);
+    if (a.sub === "amizade") return a.de && abrirPerfil(a.de);
+    if (a.sub === "karaoke") return abrirEvento("karaoke");
+    if (a.sub === "mesa" && a.caminho) location.href = BASE_APP + a.caminho;
+  }
+  const apagarAviso = a => a.ref.delete().catch(() => erroToast("Não deu pra apagar. Tenta de novo."));
+  function apagarTodosAvisos() {
+    const lista = S.avisosTodos.slice();
+    for (let i = 0; i < lista.length; i += 400) { const b = db.batch(); lista.slice(i, i + 400).forEach(a => b.delete(a.ref)); b.commit().catch(() => erroToast("Não deu pra apagar. Tenta de novo.")); }
+  }
   function textoAviso(a) {
     if (a.tipo === "curtida") return "curtiu tua foto" + (a.texto ? ": “" + a.texto + "”" : "");
     return "te marcou num comentário: “" + a.texto + "”";
@@ -2337,15 +2365,27 @@
         t.append(linha, el("small", "", "Toca pra responder")); l.append(avatar(x.de, "p"), t); l.onclick = () => mostrarConviteDrink(x); out.push(l);
       });
     }
-    out.push(el("div", "secao", "Notificações"));
-    if (!S.avisosTodos.length) out.push(el("div", "vazio-s", "Nada por aqui ainda. Quando alguém te marcar ou curtir tua foto, aparece aqui."));
+    const cab = el("div", "secao sec-avisos"); cab.append(el("span", "", "Notificações"));
+    if (S.avisosTodos.length) cab.append(Object.assign(el("button", "apagar-todos", "Apagar todas"), { type: "button", onclick: apagarTodosAvisos }));
+    out.push(cab);
+    if (!S.avisosTodos.length) out.push(el("div", "vazio-s", "Nada por aqui ainda. Curtidas, marcações, drinks, match, amizades, karaokê e convites pro Encara ou Bebe aparecem aqui."));
     S.avisosTodos.forEach(a => {
+      const linhaAv = el("div", "aviso-linha");
       const l = el("button", "aviso-l" + (a.lida ? "" : " nova")); l.type = "button";
-      const t = el("span", "av-t"); const linha = el("span", ""); linha.append(el("b", "", a.deNome + " "), textoAviso(a));
-      t.append(linha, el("small", "", horaDe(a.criado)));
-      l.append(avatar(a.de), t);
-      l.onclick = () => { a.ref.update({ lida: true }).catch(() => {}); a.tipo === "curtida" ? abrirPerfil(a.de) : abrirComentarios(a.postId); };
-      out.push(l);
+      const t = el("span", "av-t");
+      if (a.tipo === "sistema") {
+        t.append(el("b", "", a.titulo || "Trela"), el("span", "av-sub", a.texto || ""), el("small", "", horaDe(a.criado)));
+        if (a.de) l.append(avatar(a.de), t);
+        else { const ic = el("span", "av-ic"); ic.style.setProperty("--c", "var(--neon)"); ic.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (IC_SINO[a.sub] || IC_SINO.karaoke) + '</svg>'; l.append(ic, t); }
+        l.onclick = () => { a.ref.update({ lida: true }).catch(() => {}); abrirAvisoSistema(a); };
+      } else {
+        const linha = el("span", ""); linha.append(el("b", "", a.deNome + " "), textoAviso(a));
+        t.append(linha, el("small", "", horaDe(a.criado)));
+        l.append(avatar(a.de), t);
+        l.onclick = () => { a.ref.update({ lida: true }).catch(() => {}); a.tipo === "curtida" ? abrirPerfil(a.de) : abrirComentarios(a.postId); };
+      }
+      const x = el("button", "aviso-x", "✕"); x.type = "button"; x.setAttribute("aria-label", "Apagar notificação"); x.onclick = () => apagarAviso(a);
+      linhaAv.append(l, x); out.push(linhaAv);
     });
     $("#avisosScroll").replaceChildren(...out);
   }

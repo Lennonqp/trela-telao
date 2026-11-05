@@ -21,6 +21,19 @@
   h1{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(30px,6vw,44px);line-height:1;text-transform:uppercase}
   h1 em{font-style:normal;color:var(--neon)}
   .sub{margin:6px 0 0;color:var(--muted);font-size:14px}
+  .liga-cd{flex-direction:row!important;align-items:center;justify-content:space-between;gap:14px!important;padding:16px 18px!important}
+  .liga-cd.on{border-color:var(--neon)}
+  .liga-txt{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .liga-txt b{font-size:16px}
+  .liga-txt span{font-size:13px;color:var(--muted)}
+  .liga-cd.on .liga-txt span{color:var(--ink)}
+  .chave{position:relative;flex:none;width:52px;height:30px;margin:0;cursor:pointer}
+  .chave input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+  .chave span{pointer-events:none;position:absolute;top:0;left:0;right:0;bottom:0;border-radius:999px;background:var(--line);transition:background .2s}
+  .chave span::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s}
+  .chave input:checked + span{background:var(--neon)}
+  .chave input:checked + span::after{transform:translateX(22px)}
+  .chave input:focus-visible + span{outline:2px solid var(--lilas);outline-offset:2px}
   .painel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:16px}
   .painel h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1;text-transform:uppercase;color:var(--lilas)}
   .painel.editando{border-color:var(--neon)}
@@ -134,6 +147,14 @@
     <div>
       <h1>Cardápio do <em>Trela</em></h1>
       <p class="sub">Assim a galera vê o cardápio. Pra cadastrar, toca em Cadastrar produto.</p>
+    </div>
+
+    <div class="painel liga-cd" id="ligaCd">
+      <div class="liga-txt">
+        <b>Mostrar o cardápio no app</b>
+        <span id="ligaCdEstado">Desligado: a galera ainda não vê o cardápio nem o "Te pago um drink".</span>
+      </div>
+      <label class="chave"><input type="checkbox" id="ligaCdChk" aria-label="Mostrar o cardápio no app"><span></span></label>
     </div>
 
     <details class="painel" id="gruposBox">
@@ -481,12 +502,27 @@
     avisar(p.nome + " saiu do cardápio.", () => db.doc("cardapio/" + p.id).set(copia).catch(() => msg("Não deu pra desfazer.", "erro")));
   }
 
+  // ---------- ligar/desligar o cardápio no app ----------
+  function desenharLiga(on) {
+    $("ligaCdChk").checked = on; $("ligaCd").classList.toggle("on", on);
+    $("ligaCdEstado").textContent = on ? "Ligado: a galera vê o cardápio no app e pode oferecer drink." : "Desligado: a galera ainda não vê o cardápio nem o \"Te pago um drink\".";
+  }
+  $("ligaCdChk").onchange = () => {
+    const on = $("ligaCdChk").checked;
+    if (on && !produtos.length) { $("ligaCdChk").checked = false; avisar("Cadastra pelo menos um produto antes de ligar."); return; }
+    desenharLiga(on);
+    db.doc("config/cardapio").set({ ativo: on, ativoEm: agoraServidor() }, { merge: true })
+      .then(() => avisar(on ? "Cardápio ligado no app." : "Cardápio desligado no app."))
+      .catch(e => { desenharLiga(!on); avisar(e && e.code === "permission-denied" ? "Sem permissão pra mudar." : "Não deu pra salvar agora. Tenta de novo."); });
+  };
+
   desenharPrecos({}); desenharGrupos();
   portaEquipe($("porta"), () => {
     $("tela").hidden = false; mostrarTela();
     let primeiraVezGrupos = true;
     parar.push(db.doc("config/cardapio").onSnapshot(s => {
       grupos = (s.exists && Array.isArray(s.data().grupos)) ? s.data().grupos.filter(g => g && g.id && g.nome) : [];
+      desenharLiga(s.exists && s.data().ativo === true);
       if (renomeando && !grupos.some(g => g.id === renomeando)) renomeando = null;
       if (!renomeando) desenharGrupos();
       if (primeiraVezGrupos) { primeiraVezGrupos = false; if (!grupos.length) $("gruposBox").open = true; }

@@ -95,7 +95,8 @@ module.exports = async (req, res) => {
   const base = BASES.includes(pedido.base) ? pedido.base : "/";
   try {
     const db = adm.firestore(), agora = Date.now();
-    const temCardapio = !(await db.collection("cardapio").limit(1).get()).empty;
+    const cfg = await db.doc("config/cardapio").get();
+    const temCardapio = cfg.exists && cfg.data().ativo === true && !(await db.collection("cardapio").limit(1).get()).empty;
     const dica = await reservarDica(db, agora, temCardapio);
     if (!dica) return res.status(200).json({ ok: true, mandou: false });
     const r = await mandarDica(adm, db, dica, base, agora);

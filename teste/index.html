@@ -692,7 +692,7 @@
     <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>Um anel dourado aparece na tua foto até as 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
     <button type="button" class="gv-item" data-ir="quem"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6.2 4.6 1.8 5.1 4.8"/></svg><span>Quem tá no Trela</span></button>
-    <button type="button" class="gv-item" data-ir="cardapio"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/></svg><span>Cardápio</span></button>
+    <button type="button" class="gv-item" data-ir="cardapio" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/></svg><span>Cardápio</span></button>
     <a class="gv-item gv-jogo" id="gvJogo" href="encara.html"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/><path d="M15.5 8.2c-1-1.2-2.8-.3-2.3 1.1.4 1 2.3 2.4 2.3 2.4s1.9-1.4 2.3-2.4c.5-1.4-1.3-2.3-2.3-1.1z"/></svg><span>Encara ou Bebe</span><em class="gv-n" id="gvJogoN" hidden></em><em class="gv-tag">jogo</em></a>
     <button type="button" class="gv-item gv-sair" id="gvSair"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span>Sair da conta</span></button>
     <p class="gv-rodape">Trela · versão de teste</p>
@@ -1337,6 +1337,12 @@
       minhaVezAntes = minha; S.karaokeErro = ""; redesenhar();
     }, e => { console.warn("[Trela] fila do karaokê", e && e.code); S.karaokeErro = e && e.code === "permission-denied" ? "regras" : "rede"; redesenhar(); })));
 
+    // Cardápio ligado/desligado pela equipe em /cardapio: desligado, some do menu e o drink não aparece
+    parar.push(db.doc("config/cardapio").onSnapshot(s => {
+      cardapioAtivo = s.exists && s.data().ativo === true;
+      document.querySelectorAll('[data-ir="cardapio"]').forEach(b => b.hidden = !cardapioAtivo);
+      if (telaAtual() === "tCardapio") renderCardapio(); else redesenhar();
+    }, () => {}));
     // Bloqueios que eu fiz
     parar.push(db.collection("bloqueios").where("de", "==", uid).onSnapshot(snap => {
       S.bloqueados = new Set(snap.docs.map(d => d.data().alvo)); redesenhar();
@@ -1781,7 +1787,8 @@
   function abrirEventos() { ir("tEventos"); renderEventos(); }
 
   // ================= CARDÁPIO (a equipe cadastra em /cardapio; aqui só mostra) =================
-  let cardapio = null, cardapioGrupos = [], ouvindoCardapio = false;
+  let cardapio = null, cardapioGrupos = [], ouvindoCardapio = false, cardapioAtivo = false;
+  const cardapioPronto = () => cardapioAtivo && !!cardapio && cardapio.length > 0;
   function ouvirCardapio() {
     if (ouvindoCardapio) return; ouvindoCardapio = true;   // só carrega quando alguém abre (as fotos pesam)
     parar.push(() => { ouvindoCardapio = false; cardapio = null; });
@@ -1815,6 +1822,7 @@
   }
   function renderCardapio() {
     const box = $("#cardapioScroll"), abas = $("#cdAbas");
+    if (!cardapioAtivo) { box.replaceChildren(el("p", "cd-vazio", "O cardápio ainda está sendo montado. Volta daqui a pouco!")); abas.hidden = true; return; }
     if (cardapio === null) { box.replaceChildren(el("p", "cd-vazio", "Carregando o cardápio…")); abas.hidden = true; return; }
     if (!cardapio.length) { box.replaceChildren(el("p", "cd-vazio", "O cardápio ainda está sendo montado. Volta daqui a pouco!")); abas.hidden = true; return; }
     const ids = new Set(cardapioGrupos.map(g => g.id));
@@ -2787,7 +2795,7 @@
     if (telaAtual() !== "tQuem") return;
     const lista = listaQuem();
     // só redesenha se mudou algo (senão o toque some no meio e o carrossel volta pro começo)
-    const ass = JSON.stringify([filtroQuem, lista.map(p => [p.id, online(p), abertoAgora(p), p.fotoV ? ms(p.fotoV) : 0, S.interesses.has(p.id), S.matches.has(p.id)]), S.drinksMandados.map(x => x.id + x.status), cardapio ? cardapio.length : -1, fotosPerfil.size]);
+    const ass = JSON.stringify([filtroQuem, lista.map(p => [p.id, online(p), abertoAgora(p), p.fotoV ? ms(p.fotoV) : 0, S.interesses.has(p.id), S.matches.has(p.id)]), S.drinksMandados.map(x => x.id + x.status), cardapio ? cardapio.length : -1, cardapioAtivo, fotosPerfil.size]);
     if (ass === quemAss) return; quemAss = ass;
     const box = $("#quemScroll"), out = [];
     const todos = hojeNoTrela(), nAb = todos.filter(abertoAgora).length, nOn = todos.filter(online).length;
@@ -2844,7 +2852,7 @@
     box.append(c);
     box.append(el("p", "nota-s", deuMatch ? "Vocês dois marcaram. Bora puxar assunto!" : marcado ? "Se " + p.nome + " também marcar, os dois recebem o aviso de match. Toca de novo pra desmarcar." : "Ninguém fica sabendo. Só avisa os dois se " + p.nome + " também marcar."));
     // Te pago um drink (some enquanto o cardápio estiver vazio)
-    if (!cardapio || !cardapio.length) return box;
+    if (!cardapioPronto()) return box;
     const meu = S.drinksMandados.filter(x => x.para === p.id).sort((a, b) => ms(b.criado) - ms(a.criado))[0];
     const d = el("button", "bt-drink"); d.type = "button"; d.innerHTML = SV('<path d="M6 4h12l-1.5 15a2 2 0 0 1-2 1.8h-5a2 2 0 0 1-2-1.8z"/><path d="M6.5 9h11"/>');
     if (meu && meu.status === "enviado") { d.className = "bt-drink espera"; d.append("Convite enviado: " + meu.itemNome + " · cancelar"); d.onclick = () => cancelarDrink(meu); }
@@ -2889,7 +2897,7 @@
     cs.append(avatar(EU.uid), h.firstChild, avatar(outro));
     const itens = [cs, el("h4", "grande", "Deu match!"), el("p", "", "Tu e " + p.nome + " marcaram interesse um no outro. Agora vocês podem conversar."),
       bt("Mandar mensagem", "sim", () => { fecharFolha(); abrirChat(outro); }),
-      bt("Te pago um drink", "", () => { fecharFolha(); escolherDrink(p); }),
+      ...(cardapioAtivo ? [bt("Te pago um drink", "", () => { fecharFolha(); escolherDrink(p); })] : []),
       bt("Depois", "", fecharFolha)];
     if (!$("#veu").hidden) { toast(outro, "Deu match com " + p.nome + "! Toca pra ver.", () => folha(itens)); return; }
     folha(itens);
@@ -2904,7 +2912,7 @@
     const lista = el("div", "drink-l");
     const desenhar = () => {
       if (cardapio === null) { lista.replaceChildren(el("p", "nota-s", "Carregando o cardápio…")); return; }
-      if (!cardapio.length) { lista.replaceChildren(el("p", "nota-s", "O cardápio ainda não foi cadastrado.")); return; }
+      if (!cardapio.length || !cardapioAtivo) { lista.replaceChildren(el("p", "nota-s", "O cardápio ainda não foi cadastrado.")); return; }
       const ids = new Set(cardapioGrupos.map(g => g.id)), out = [];
       const blocos = cardapioGrupos.map(g => ({ nome: g.nome, ps: cardapio.filter(x => x.grupo === g.id) })).filter(b => b.ps.length);
       const soltos = cardapio.filter(x => !ids.has(x.grupo)); if (soltos.length) blocos.push({ nome: blocos.length ? "Outros" : "", ps: soltos });

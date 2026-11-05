@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202611050916">
+<link rel="stylesheet" href="estilo.css?v=202611051027">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -665,7 +665,6 @@
       <div><b id="gvNome"></b><button type="button" class="gv-link" id="gvPerfil">Ver e editar perfil</button></div>
       <button class="ico" id="gvFechar" type="button" aria-label="Fechar menu">×</button>
     </div>
-    <label class="gv-aberto gv-push" id="gvPushBox" hidden><span><b>Notificações no celular</b><small id="gvPushTxt">Avisa mesmo com o Trela fechado</small></span><input type="checkbox" class="sw" id="gvPush" aria-label="Notificações no celular"></label>
     <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>Um anel dourado aparece na tua foto até as 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
     <button type="button" class="gv-item" data-ir="quem"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6.2 4.6 1.8 5.1 4.8"/></svg><span>Quem tá no Trela</span></button>
@@ -683,9 +682,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611050916"></script>
-<script src="marca.js?v=202611050916"></script>
-<script src="comum.js?v=202611050916"></script>
+<script src="config.js?v=202611051027"></script>
+<script src="marca.js?v=202611051027"></script>
+<script src="comum.js?v=202611051027"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -788,7 +787,7 @@
     ["Tua vez no karaokê", "Convite de drink, e a resposta do teu", "Deu match no crush secreto", "Mensagens e pedidos de amizade", "Curtidas e quando te marcam", "Convite pro Encara ou Bebe"].forEach(t => lista.append(el("li", "", t)));
     const nao = () => { guardado.salvar("trela-push-dispensado", chaveNoite()); fecharFolha(); seguir(); };
     const itens = [ic, el("h4", "", "Fica sabendo na hora, mesmo com o Trela fechado"), el("p", "", "Com as notificações ligadas, o celular te avisa de:"), lista,
-      el("p", "push-nota", "E de vez em quando uma dica do que dá pra fazer no app. Dá pra desligar quando quiser no menu ≡.")];
+      el("p", "push-nota", "E de vez em quando uma dica do que dá pra fazer no app. Dá pra desligar quando quiser nas configurações do celular.")];
     if (ios) itens.push(el("p", "push-ios", "No iPhone, primeiro coloca o Trela na tela de início: no Safari, toca em compartilhar (o quadradinho com a seta) e depois em \"Adicionar à Tela de Início\". Abre pelo ícone novo e ativa por lá."),
       bt("Entendi", "sim", nao));
     else itens.push(bt("Ativar notificações", "sim", async () => { fecharFolha(); await ativarPush(); desenharPush(); seguir(); }),
@@ -1787,11 +1786,6 @@
   $("#gavetaFundo").onclick = fecharMenu;
   document.addEventListener("keydown", e => { if (e.key === "Escape" && menuAberto()) fecharMenu(); });
   $("#gvPerfil").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
-  $("#gvPush").onchange = async e => {
-    const quer = e.target.checked;
-    if (quer) await ativarPush(); else await desativarPush();
-    desenharPush();
-  };
   $("#gvAberto").onchange = async e => {
     const on = e.target.checked;
     EU.aberto = on ? FS.Timestamp.now() : null; desenharAberto(); redesenhar();

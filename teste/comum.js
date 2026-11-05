@@ -112,7 +112,7 @@ var DICAS_APP = [
   { k: "anel", titulo: "Aberto pra conhecer gente?", texto: "Liga o anel dourado no menu do app.", ic: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/>', cor: "#ffc94d" },
   { k: "encara", titulo: "Encara ou Bebe", texto: "Chama teus amigos do app pra jogar, cada um no seu celular.", ic: '<rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/>', cor: "#ff8fc2" },
   { k: "cardapio", precisaCardapio: true, titulo: "O cardápio do Trela tá no app", texto: "Com os preços de 500 e 700 ml.", ic: '<path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/>', cor: "#a95cf2" },
-  { k: "notificacoes", titulo: "Fica sabendo na hora", texto: "Recebe aviso no celular de mensagem, drink e da tua vez no karaokê. Ativa no menu do app.", ic: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>', cor: "#3ddc97" }
+  { k: "notificacoes", titulo: "Fica sabendo na hora", texto: "Recebe aviso no celular de mensagem, drink e da tua vez no karaokê. O app pergunta quando tu entra.", ic: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>', cor: "#3ddc97" }
 ];
 function dicasDoApp(temCardapio) { return DICAS_APP.filter(function (d) { return !d.precisaCardapio || temCardapio; }); }
 

@@ -808,7 +808,7 @@
     setTimeout(() => s.remove(), 20000);
   }
   async function ativarPush() {
-    if (ehIOS && !instalado()) { passosIphone(); return false; }
+    if (iphoneSemPush()) { passosIphone(); return false; }
     if (!pushPossivel()) { erroToast("Esse navegador não aceita notificações. Tenta pelo Chrome."); return false; }
     if (notifBloqueada()) { comoLiberar(); return false; }
     const perm = await Notification.requestPermission();
@@ -823,12 +823,15 @@
     toast(EU.uid, "Notificações no celular desligadas.");
   }
   // Faixa embaixo do logo: some quando a notificação está ligada
+  // iPhone: só dá pra ativar quando o navegador oferece notificação (iOS 16.4+, aberto pelo ícone da tela de início).
+  // Olha o que o navegador tem, não o "modo tela cheia" (o ícone criado pelo Chrome nem sempre diz que está em tela cheia).
+  const iphoneSemPush = () => ehIOS && !("Notification" in window && "PushManager" in window && "serviceWorker" in navigator);
   const notifBloqueada = () => "Notification" in window && Notification.permission === "denied";
   function desenharPush() {
     const fx = $("#pushFaixa");
     if (fx) {
       fx.hidden = !EU || !pushConfigurado() || pushLigado();
-      $("#pushFaixaTxt").textContent = ehIOS && !instalado() ? "Ativar notificações no iPhone" : notifBloqueada() ? "Notificações bloqueadas: toca pra ver como liberar" : "Ativar notificações";
+      $("#pushFaixaTxt").textContent = iphoneSemPush() ? "Ativar notificações no iPhone" : notifBloqueada() ? "Notificações bloqueadas: toca pra ver como liberar" : "Ativar notificações";
     }
     const box = $("#gvPushBox"); if (!box) return;
     box.hidden = !pushConfigurado();
@@ -838,14 +841,14 @@
   // Toque na faixa: ativa direto (iPhone fora da tela de início: passo a passo; bloqueada: como liberar)
   function comoLiberar() {
     const passos = el("ol", "passos-ios");
-    (instalado()
+    (instalado() || ehIOS
       ? ["Segura o dedo no ícone do Trela na tela do celular.", "Toca em <b>Informações do app</b> (ou no ⓘ).", "Vai em <b>Notificações</b> e liga.", "Volta pro Trela: a faixa some quando estiver ligado."]
       : ["Toca no <b>cadeado</b> (ou nos três pontinhos) ao lado do endereço do site.", "Vai em <b>Permissões</b> ou <b>Configurações do site</b>.", "Em <b>Notificações</b>, escolhe <b>Permitir</b>.", "Recarrega a página e toca de novo em <b>Ativar notificações</b>."]
     ).forEach(t => { const li = el("li"); li.innerHTML = t; passos.append(li); });
     folha([el("h4", "", "As notificações estão bloqueadas"), el("p", "", "Alguém tocou em \"Bloquear\" quando o celular perguntou, e agora o site não pode perguntar de novo. Dá pra liberar assim:"), passos, bt("Entendi", "sim", fecharFolha)]);
   }
   $("#pushFaixa").onclick = async () => {
-    if (ehIOS && !instalado()) return passosIphone();
+    if (iphoneSemPush()) return passosIphone();
     if (notifBloqueada()) return comoLiberar();
     await ativarPush(); desenharPush();
   };
@@ -866,7 +869,7 @@
     if (!$("#veu").hidden) { if ((tentativa || 0) < 40) setTimeout(() => janelaPush(depois, (tentativa || 0) + 1), 3000); return; }
     if (pushDispensadoAgora) return seguir();
     pushDispensadoAgora = true;   // "Agora não" vale só até a próxima vez que abrir o app
-    const ios = ehIOS && !instalado(), bloq = !ios && notifBloqueada();
+    const ios = iphoneSemPush(), bloq = !ios && notifBloqueada();
     const ic = el("div", "push-ic"); ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
     const lista = el("ul", "push-lista");
     ["Tua vez no karaokê", "Convite de drink, e a resposta do teu", "Deu match no crush secreto", "Mensagens e pedidos de amizade", "Curtidas e quando te marcam", "Convite pro Encara ou Bebe"].forEach(t => lista.append(el("li", "", t)));

@@ -107,7 +107,7 @@ function msAteVirada() {
 // ---------- Dicas do app (telão; o servidor das notificações tem a mesma lista em api/avisar.js) ----------
 // precisaCardapio: só aparece quando a equipe já cadastrou algum produto no cardápio.
 var DICAS_APP = [
-  { k: "crush", titulo: "Tá de olho em alguém?", texto: "Marca o crush secreto em Quem tá no Trela, no app. Só avisa se os dois marcarem.", ic: '<path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/>', cor: "#ff3fa4" },
+  { k: "crush", titulo: "Tá de olho em alguém?", texto: "Marca \"Tenho interesse\" em Quem tá no Trela, no app. A pessoa fica sabendo e, se marcar de volta, dá match.", ic: '<path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/>', cor: "#ff3fa4" },
   { k: "drink", precisaCardapio: true, titulo: "Quer oferecer um drink pra alguém?", texto: "Manda o convite pelo app. Se a pessoa aceitar, tu pega no balcão.", ic: '<path d="M6 4h12l-1.5 15a2 2 0 0 1-2 1.8h-5a2 2 0 0 1-2-1.8z"/><path d="M6.5 9h11"/>', cor: "#ff7a2e" },
   { k: "anel", titulo: "Aberto pra conhecer gente?", texto: "Liga o anel dourado no menu do app.", ic: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/>', cor: "#ffc94d" },
   { k: "encara", titulo: "Encara ou Bebe", texto: "Chama teus amigos do app pra jogar, cada um no seu celular.", ic: '<rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/>', cor: "#ff8fc2" },

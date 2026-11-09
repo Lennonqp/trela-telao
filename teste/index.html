@@ -116,6 +116,7 @@
   .filtro-g button.on{background:var(--ouro);border-color:var(--ouro);color:#2a1c00}
   .social-p{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:4px}
   .bt-crush{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:999px;padding:12px;border:1.5px dashed var(--neon);background:none;color:var(--neon);font:700 14px/1.1 var(--f-body);cursor:pointer}
+  .social-p .interesse-em-mim,.interesse-em-mim{margin:0;font-size:15px;text-align:center;font-weight:800;color:var(--neon);text-shadow:0 0 12px rgba(255,63,164,.5)}
   .bt-crush.on{border-style:solid;background:rgba(255,63,164,.12)}
   .bt-crush svg{width:18px;height:18px;flex:none}
   .bt-drink{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:999px;padding:12px;border:0;background:linear-gradient(135deg,#ff7a2e,var(--neon));color:#1d0612;font:700 14px/1.1 var(--f-body);cursor:pointer}
@@ -879,7 +880,7 @@
     const ios = iphoneSemPush(), bloq = !ios && notifBloqueada();
     const ic = el("div", "push-ic"); ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
     const lista = el("ul", "push-lista");
-    ["Tua vez no karaokê", "Convite de drink, e a resposta do teu", "Deu match no crush secreto", "Mensagens e pedidos de amizade", "Curtidas e quando te marcam", "Convite pro Encara ou Bebe"].forEach(t => lista.append(el("li", "", t)));
+    ["Tua vez no karaokê", "Convite de drink, e a resposta do teu", "Quem tem interesse em ti, e quando dá match", "Mensagens e pedidos de amizade", "Curtidas e quando te marcam", "Convite pro Encara ou Bebe"].forEach(t => lista.append(el("li", "", t)));
     const nao = () => { fecharFolha(); seguir(); };
     const itens = [ic, el("h4", "", "Fica sabendo na hora, mesmo com o Trela fechado"), el("p", "", "Com as notificações ligadas, o celular te avisa de:"), lista,
       el("p", "push-nota", "E de vez em quando uma dica do que dá pra fazer no app. Dá pra desligar quando quiser nas configurações do celular.")];
@@ -1207,7 +1208,7 @@
     folha([
       el("h4", "", quem + " te chamou pro Encara ou Bebe"),
       el("p", "", "Cada um joga no próprio celular e uma roleta sorteia quem é o próximo. Só pra maiores de 18."),
-      bt("Entrar na mesa", "sim", () => { fecharFolha(); location.href = "encara.html?mesa=" + encodeURIComponent(m.id); }),
+      bt("Entrar na mesa", "sim", () => { fecharFolha(); location.href = "encara?mesa=" + encodeURIComponent(m.id); }),
       bt("Agora não", "", () => { fecharFolha(); db.doc("mesas/" + m.id).update({ recusados: FS.FieldValue.arrayUnion(EU.uid) }).catch(() => {}); })
     ]);
   }
@@ -1287,6 +1288,8 @@
       S.avisosTodos = snap.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() }));
       S.avisos = S.avisosTodos.filter(a => !a.lida);
       // os do sistema (drink, match, amizade...) já têm aviso próprio na tela; aqui só curtida e menção
+      if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added" && !c.doc.data().lida && c.doc.data().tipo === "sistema" && c.doc.data().sub === "interesse").forEach(c => { const a = c.doc.data();
+        vibrar([60, 40, 60]); toast(a.de, a.titulo + ". Toca pra ver o perfil.", () => { c.doc.ref.update({ lida: true }).catch(() => {}); abrirPerfil(a.de); }); });
       if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added" && !c.doc.data().lida && c.doc.data().tipo !== "sistema").forEach(c => { const a = c.doc.data();
         if (a.tipo === "curtida") return toast(a.de, a.deNome + " curtiu tua foto", () => { c.doc.ref.update({ lida: true }); abrirPerfil(a.de); });
         toast(a.de, a.deNome + " te marcou num comentário", () => { c.doc.ref.update({ lida: true }); abrirComentarios(a.postId); }); });
@@ -2334,6 +2337,7 @@
   const IC_SINO = {
     drink: '<path d="M6 4h12l-1.5 15a2 2 0 0 1-2 1.8h-5a2 2 0 0 1-2-1.8z"/><path d="M6.5 9h11"/>',
     match: '<path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/>',
+    interesse: '<path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/>',
     amizade: '<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M19 8v6M16 11h6"/>',
     karaoke: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/>',
     mesa: '<rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/>'
@@ -2342,6 +2346,7 @@
   function abrirAvisoSistema(a) {
     if (a.sub === "drink") { const x = drinksPendentes().find(d => d.id === a.alvo); if (x) return mostrarConviteDrink(x); return a.de && abrirPerfil(a.de); }
     if (a.sub === "match") return a.de && abrirChat(a.de);
+    if (a.sub === "interesse") return a.de && abrirPerfil(a.de);
     if (a.sub === "amizade") return a.de && abrirPerfil(a.de);
     if (a.sub === "karaoke") return abrirEvento("karaoke");
     if (a.sub === "mesa" && a.caminho) location.href = BASE_APP + a.caminho;
@@ -2795,7 +2800,7 @@
     if (telaAtual() !== "tQuem") return;
     const lista = listaQuem();
     // só redesenha se mudou algo (senão o toque some no meio e o carrossel volta pro começo)
-    const ass = JSON.stringify([filtroQuem, lista.map(p => [p.id, online(p), abertoAgora(p), p.fotoV ? ms(p.fotoV) : 0, S.interesses.has(p.id), S.matches.has(p.id)]), S.drinksMandados.map(x => x.id + x.status), cardapio ? cardapio.length : -1, cardapioAtivo, fotosPerfil.size]);
+    const ass = JSON.stringify([filtroQuem, lista.map(p => [p.id, online(p), abertoAgora(p), p.fotoV ? ms(p.fotoV) : 0, S.interesses.has(p.id), S.matches.has(p.id), interesseEmMim(p.id)]), S.drinksMandados.map(x => x.id + x.status), cardapio ? cardapio.length : -1, cardapioAtivo, fotosPerfil.size]);
     if (ass === quemAss) return; quemAss = ass;
     const box = $("#quemScroll"), out = [];
     const todos = hojeNoTrela(), nAb = todos.filter(abertoAgora).length, nOn = todos.filter(online).length;
@@ -2843,14 +2848,15 @@
   // ================= CRUSH SECRETO + TE PAGO UM DRINK =================
   const SV = (p, extra) => '<svg viewBox="0 0 24 24" fill="' + (extra || "none") + '" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
   function blocoSocial(p) {
-    const box = el("div", "social-p"), marcado = S.interesses.has(p.id), deuMatch = S.matches.has(p.id);
-    // Crush secreto
+    const box = el("div", "social-p"), marcado = S.interesses.has(p.id), deuMatch = S.matches.has(p.id), temPorMim = interesseEmMim(p.id);
+    // Tenho interesse (a pessoa fica sabendo; se marcar de volta, dá match)
+    if (temPorMim && !deuMatch) box.append(el("p", "interesse-em-mim", p.nome + " tem interesse em ti!"));
     const c = el("button", "bt-crush" + (marcado ? " on" : "")); c.type = "button";
     c.innerHTML = SV('<path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/>', marcado ? "currentColor" : "none");
-    c.append(deuMatch ? "Deu match com " + p.nome + "!" : marcado ? "Tu marcou interesse (só tu sabe)" : "Tenho interesse (em segredo)");
+    c.append(deuMatch ? "Deu match com " + p.nome + "!" : marcado ? "Tu marcou interesse" : temPorMim ? "Tenho interesse também" : "Tenho interesse");
     c.onclick = () => deuMatch ? abrirChat(p.id) : marcado ? desmarcarInteresse(p) : marcarInteresse(p);
     box.append(c);
-    box.append(el("p", "nota-s", deuMatch ? "Vocês dois marcaram. Bora puxar assunto!" : marcado ? "Se " + p.nome + " também marcar, os dois recebem o aviso de match. Toca de novo pra desmarcar." : "Ninguém fica sabendo. Só avisa os dois se " + p.nome + " também marcar."));
+    box.append(el("p", "nota-s", deuMatch ? "Vocês dois marcaram. Bora puxar assunto!" : marcado ? p.nome + " recebeu o aviso. Se marcar de volta, dá match. Toca de novo pra desmarcar." : temPorMim ? "Marca de volta que dá match na hora." : p.nome + " recebe um aviso de que tu tem interesse. Se marcar de volta, dá match."));
     // Te pago um drink (some enquanto o cardápio estiver vazio)
     if (!cardapioPronto()) return box;
     const meu = S.drinksMandados.filter(x => x.para === p.id).sort((a, b) => ms(b.criado) - ms(a.criado))[0];
@@ -2862,15 +2868,20 @@
     box.append(d);
     return box;
   }
+  // quem marcou interesse em mim nesta noite (vem pelo sino)
+  const interesseEmMim = uid => S.avisosTodos.some(a => a.tipo === "sistema" && a.sub === "interesse" && a.de === uid && ms(a.criado) >= inicioDaNoite().getTime());
   async function marcarInteresse(p) {
     if (S.interesses.has(p.id)) return;
     S.interesses.add(p.id); redesenhar();
     try { await db.doc("interesses/" + EU.uid + "_" + p.id).set({ de: EU.uid, para: p.id, criado: agoraServidor() }); }
     catch (e) { S.interesses.delete(p.id); redesenhar(); erroToast(e && e.code === "permission-denied" ? "Não deu: as regras do banco precisam ser publicadas." : "Não deu pra marcar agora. Tenta de novo."); return; }
-    toast(p.id, "Marcado em segredo. Se " + p.nome + " também marcar, vocês dois ficam sabendo.");
     // O banco só deixa ler o interesse do outro se os dois tiverem marcado
     const volta = await db.doc("interesses/" + p.id + "_" + EU.uid).get().catch(() => null);
-    if (!volta || !volta.exists || ms(volta.data().criado) < inicioDaNoite().getTime()) return;
+    if (!volta || !volta.exists || ms(volta.data().criado) < inicioDaNoite().getTime()) {
+      avisarCelular({ tipo: "interesse", id: EU.uid + "_" + p.id });   // o servidor avisa a pessoa (sino e celular)
+      toast(p.id, "Pronto! " + p.nome + " vai saber que tu tem interesse. Se marcar de volta, dá match.");
+      return;
+    }
     await criarMatch(p.id);
   }
   async function criarMatch(outro) {

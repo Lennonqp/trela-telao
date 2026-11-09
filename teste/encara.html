@@ -503,6 +503,16 @@ span.st-ok{font-size:13px;font-weight:700;flex:none}
   </div>
 </div>
 
+<!-- convite pra mesa online (aparece em qualquer tela do jogo) -->
+<div class="overlay center" id="ovConvite" hidden>
+  <div class="sheet gate" role="dialog" aria-modal="true" aria-labelledby="convTitulo">
+    <h3 id="convTitulo">Te chamaram pro Encara ou Bebe</h3>
+    <p id="convTexto">Cada um joga no próprio celular e uma roleta sorteia quem é o próximo.</p>
+    <button class="cta" type="button" id="btnConvEntrar" style="width:100%">Entrar na mesa</button>
+    <button class="link" type="button" id="btnConvNao">Agora não</button>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
@@ -1504,8 +1514,28 @@ function ouvirConvites(){
       return (m.jogadores||[]).indexOf(EU.uid)<0 && (m.recusados||[]).indexOf(EU.uid)<0 && Date.now()-ms(m.criado)<JANELA_CONVITE;
     });
     renderMesaBox();
+    mostrarConvite();
   }, function(){});
 }
+// convite novo: abre na hora, mesmo no meio de um jogo no celular
+var convitesVistos={}, conviteAberto=null;
+function mostrarConvite(){
+  if(ON){ $("ovConvite").hidden=true; conviteAberto=null; return; }
+  if(conviteAberto && !CONVITES.some(function(m){ return m.id===conviteAberto; })){ $("ovConvite").hidden=true; conviteAberto=null; }
+  for(var k in convitesVistos) if(!CONVITES.some(function(x){ return x.id===k; })) delete convitesVistos[k];   // recusou e chamaram de novo: mostra de novo
+  if(conviteAberto){ textoConvite(CONVITES.filter(function(x){ return x.id===conviteAberto; })[0]); return; }   // a partida pode ter começado
+  if(!$("ovGate").hidden) return;
+  var m=CONVITES.filter(function(x){ return !convitesVistos[x.id]; })[0]; if(!m) return;
+  convitesVistos[m.id]=1; conviteAberto=m.id; textoConvite(m);
+  $("ovConvite").hidden=false; buzz([80,40,80]);
+}
+function textoConvite(m){
+  if(!m) return;
+  $("convTitulo").textContent=(m.donoNome||"Um amigo")+" te chamou pro Encara ou Bebe";
+  $("convTexto").textContent=m.estado==="jogo" ? "A partida já começou! Entra que tu já vê a pergunta e cai na roleta das próximas." : "Cada um joga no próprio celular e uma roleta sorteia quem é o próximo.";
+}
+$("btnConvEntrar").addEventListener("click",function(){ var id=conviteAberto; conviteAberto=null; $("ovConvite").hidden=true; if(id) entrarNaMesa(id); });
+$("btnConvNao").addEventListener("click",function(){ var id=conviteAberto; conviteAberto=null; $("ovConvite").hidden=true; if(id) recusar(id); });
 function onlineAgora(a){ return a.ult && Date.now()-ms(a.ult)<ONLINE_MS_J; }
 function abrirAmigos(){
   if(!EU){ toast("Entra no app do Trela pra convidar teus amigos."); return; }

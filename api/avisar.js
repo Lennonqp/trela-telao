@@ -49,6 +49,16 @@ async function montarAvisos(db, uid, pedido) {
     const quando = m.criado && m.criado.toMillis ? m.criado.toMillis() : 0;
     return [{ para: outro, titulo: "Deu match!", texto: "Tu e " + (await nomeDe(uid)) + " marcaram interesse um no outro. Bora conversar?", caminho: "", tag: "match-" + id, chave: "match_" + id + "_" + quando }];
   }
+  if (tipo === "interesse") {   // "Tenho interesse": avisa a pessoa marcada dizendo quem foi
+    const i = id && await ler("interesses/" + id);
+    if (!i || i.de !== uid || !i.para || i.para === uid) return [];
+    // os dois já marcaram: quem avisa é o "Deu match!"
+    const volta = await ler("interesses/" + i.para + "_" + uid);
+    if (volta) return [];
+    const quando = i.criado && i.criado.toMillis ? i.criado.toMillis() : 0;
+    const nome = await nomeDe(uid);
+    return [{ para: i.para, titulo: corta(nome, 30) + " tem interesse em ti", texto: "Abre o perfil e marca \"Tenho interesse\" de volta pra dar match.", caminho: "", tag: "interesse-" + id, chave: "interesse_" + id + "_" + quando }];
+  }
   if (tipo === "aviso") {   // curtida ou menção (o app grava em avisos/{dono}/itens)
     const dono = String(pedido.dono || "").replace(/\//g, "");
     const a = dono && id && await ler("avisos/" + dono + "/itens/" + id);
@@ -89,7 +99,7 @@ async function montarAvisos(db, uid, pedido) {
 
 // Tipos que também ficam guardados no sino do app (até a pessoa apagar).
 // Curtida e menção o próprio app já grava; mensagem fica no ícone do chat.
-const NO_SINO = ["drink", "match", "amizade", "karaoke", "mesa"];
+const NO_SINO = ["drink", "match", "amizade", "karaoke", "mesa", "interesse"];
 
 async function guardarNoSino(adm, db, de, aviso, pedido) {
   const sub = String(pedido.tipo || "");

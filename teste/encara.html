@@ -86,7 +86,7 @@ textarea.field{min-height:96px;resize:vertical;font-size:15px;line-height:1.4}
 .modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .mode{position:relative;border:2px solid var(--linha);background:var(--garrafa);border-radius:14px;padding:12px 10px 12px;text-align:left;display:flex;flex-direction:column;gap:4px;min-width:0}
 .mode b{font-family:var(--f-display);font-weight:400;font-size:17px;line-height:1;padding-right:22px;overflow-wrap:anywhere}
-@media (max-width:380px){.mode{padding-top:30px}.mode b{padding-right:0}}
+@media (max-width:420px){.mode{padding-top:30px}.mode b{padding-right:0}}
 @media (max-width:340px){.mode{padding-left:8px;padding-right:8px}.mode b{font-size:15px}}
 .mode span{font-size:12.5px;color:var(--nevoa);line-height:1.3}
 .mode .chk{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;border:2px solid var(--linha);display:grid;place-items:center;font-size:11px;color:var(--tinta)}
@@ -149,7 +149,18 @@ button.pill{color:var(--cerveja)}
 .tag.agua{background:#cdeefd;color:#0d5578}
 .tag.meu{background:#e9e6dc;color:#3d3a30}
 .lvl{font-size:12px;font-weight:700;color:var(--tinta-2)}
-.lvl.ousado{color:#c4321d}
+.lvl.ousado,.lvl.despedida{color:#c4321d}
+.lvl.aniversario,.lvl.universitario,.lvl.firma{color:#7a3fc4}
+.temas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tema{position:relative;border:2px solid var(--linha);background:var(--garrafa);border-radius:14px;padding:11px 12px;text-align:left;display:flex;flex-direction:column;gap:3px;min-width:0;color:inherit;font:inherit;cursor:pointer}
+.tema b{font-family:var(--f-display);font-weight:400;font-size:16px;line-height:1.05;padding-right:22px;overflow-wrap:anywhere}
+.tema span{font-size:12.5px;color:var(--nevoa);line-height:1.3}
+.tema .chk{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;border:2px solid var(--linha)}
+.tema[aria-pressed="true"]{border-color:var(--cerveja);background:var(--garrafa-3)}
+.tema[aria-pressed="true"] .chk{background:var(--cerveja);border-color:var(--cerveja)}
+.tema[aria-pressed="true"] .chk::after{content:"✓";display:grid;place-items:center;font-size:11px;font-weight:800;height:100%}
+.tema.hot b{color:#ff8fc2}
+.tema:disabled{opacity:.6;cursor:default}
 .text{font-weight:800;font-size:clamp(22px,6.4vw,27px);line-height:1.22;letter-spacing:-.3px;text-wrap:balance;flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px}
 .text .lead{font-family:var(--f-display);font-weight:400;font-size:.78em;color:var(--tinta-2);letter-spacing:0}
 .text .vs{font-family:var(--f-display);font-weight:400;font-size:1.05em;line-height:1.05}
@@ -318,6 +329,17 @@ span.st-ok{font-size:13px;font-weight:700;flex:none}
         <button type="button" class="mode" data-mode="festa" aria-pressed="true"><i class="chk"></i><b>Festa</b><span>Celular na roda, stories e vergonha alheia.</span></button>
         <button type="button" class="mode hot" data-mode="ousado" aria-pressed="false"><i class="chk"></i><b>Ousado</b><span>Crush, ex e segredos. Só entre amigos.</span></button>
       </div>
+    </div>
+
+    <div class="block">
+      <h2>Baralho especial <small>opcional · escolha um</small></h2>
+      <div class="temas" id="temas">
+        <button type="button" class="tema" data-tema="aniversario" aria-pressed="false"><i class="chk"></i><b>Aniversário</b><span>Homenagens, micos e parabéns pro(a) aniversariante.</span></button>
+        <button type="button" class="tema hot" data-tema="despedida" aria-pressed="false"><i class="chk"></i><b>Despedida de solteiro(a)</b><span>Beijo, dança e cantada. Tudo só se a outra pessoa topar.</span></button>
+        <button type="button" class="tema" data-tema="universitario" aria-pressed="false"><i class="chk"></i><b>Universitário</b><span>Prova, professor, atlética e a turma.</span></button>
+        <button type="button" class="tema" data-tema="firma" aria-pressed="false"><i class="chk"></i><b>Firma</b><span>Chefe, reunião e o grupo do trabalho.</span></button>
+      </div>
+      <p class="hint">As cartas do baralho especial entram junto com os níveis marcados acima. Ninguém é obrigado a nada: quem não quiser, bebe ou pula.</p>
     </div>
 
     <details class="block" id="optsBox">
@@ -742,6 +764,119 @@ var C = {
   }
 };
 
+// Baralhos especiais: entram junto com os níveis escolhidos. Os mais ousados sempre pedem que a outra pessoa tope.
+var C_TEMAS = {
+  aniversario:{
+    desafio:[
+      "Faça um discurso de homenagem pro(a) aniversariante.|30",
+      "Cante parabéns pro(a) aniversariante no estilo que a roda escolher: sertanejo, ópera ou funk.",
+      "Conte a história mais engraçada que você já viveu com o(a) aniversariante.",
+      "Imite o(a) aniversariante até alguém adivinhar.",
+      "Grave um vídeo de parabéns pro(a) aniversariante como se fosse famoso(a).",
+      "Dê um abraço de urso no(a) aniversariante e só solte quando o tempo acabar.|15",
+      "Dê um beijo na bochecha do(a) aniversariante.",
+      "Faça a dança do aniversário no meio da roda.|20",
+      "Poste um story de parabéns marcando o(a) aniversariante.",
+      "Dê um selinho em {jogador}, se a pessoa topar."
+    ],
+    verdade:[
+      "Qual o melhor presente que você já ganhou?",
+      "Qual foi o pior aniversário da sua vida?",
+      "O que o(a) aniversariante vai estar fazendo daqui a 10 anos?",
+      "Qual o seu maior arrependimento do último ano?",
+      "Você já beijou alguém numa festa de aniversário? De quem era a festa?"
+    ],
+    todos:[
+      "Quem já esqueceu o aniversário de alguém da roda bebe.",
+      "Quem conhece o(a) aniversariante há mais de 5 anos bebe.",
+      "Brinde ao(à) aniversariante: todo mundo bebe.",
+      "Quem é mais velho(a) que o(a) aniversariante bebe."
+    ],
+    eununca:["esqueci um aniversário importante.","fiquei com alguém numa festa de aniversário.","chorei no meu próprio aniversário.","fingi que gostei de um presente."],
+    provavel:["esquecer o próprio aniversário?","chorar no parabéns?","comprar o presente no caminho da festa?","ficar com alguém hoje pra comemorar?"],
+    duelo:["Quem cantar parabéns mais alto ganha. A roda decide.","Falem datas de aniversário de pessoas da roda, um de cada vez. Quem errar ou travar perde."]
+  },
+  despedida:{
+    desafio:[
+      "Dê um beijo em {jogador}, se a pessoa topar. Bochecha ou boca, vocês escolhem.",
+      "Dance de um jeito sensual pra {jogador}, se a pessoa topar.|20",
+      "Sente no colo de {jogador} e faça uma declaração de amor, se a pessoa topar.",
+      "Dê um beijo no pescoço de {jogador}, se a pessoa topar.",
+      "Lamba o sal da mão de {jogador} e vire um shot, se a pessoa topar.",
+      "Peça o telefone de alguém fora da roda em nome do(a) noivo(a). Não precisa usar.",
+      "Tire um acessório (boné, relógio, brinco) como num striptease, com música de fundo.|20",
+      "Imite o(a) noivo(a) no dia do pedido de casamento.",
+      "Deixe {jogador} escrever um recado pro(a) noivo(a) no seu braço.",
+      "Faça o discurso de despedida da vida de solteiro(a).|30",
+      "Sussurre no ouvido de {jogador} a cantada mais ousada que você conhece."
+    ],
+    verdade:[
+      "Qual foi o beijo mais inesperado da sua vida?",
+      "O que você nunca contaria pro(a) noivo(a)?",
+      "Quem da roda vai casar primeiro? Por quê?",
+      "Qual foi a maior loucura que você fez solteiro(a)?",
+      "Você já ficou com alguém comprometido? Conta.",
+      "Qual o lugar mais ousado em que você já ficou com alguém?"
+    ],
+    todos:[
+      "Quem já ficou com alguém comprometido bebe.",
+      "Quem está solteiro(a) bebe pela liberdade.",
+      "Quem já pediu alguém em namoro bebe.",
+      "Quem já beijou alguém nesta festa bebe."
+    ],
+    eununca:["beijei alguém no primeiro encontro.","mandei uma foto ousada pra alguém.","fiquei com alguém num casamento.","acordei sem lembrar com quem fiquei."],
+    provavel:["casar em Las Vegas?","dar em cima do(a) garçom(nete) hoje?","chorar no casamento?","voltar pra casa acompanhado(a) hoje?"],
+    duelo:["Quem der a melhor cantada no(a) noivo(a) ganha. A roda decide.","Quem fizer a melhor dança de despedida ganha. A roda decide.|20"]
+  },
+  universitario:{
+    desafio:[
+      "Faça a sua melhor imitação de professor(a).|20",
+      "Explique a matéria mais difícil do seu curso como se fosse pra uma criança.|20",
+      "Mande \"saudade da prova\" no grupo da turma.",
+      "Grite o grito de guerra da sua atlética. Se não tiver, invente na hora.",
+      "Faça 10 flexões gritando o nome do seu curso.",
+      "Recrie a sua cara na hora de ver a nota de uma prova.",
+      "Ligue pra alguém da turma e pergunte qual é a matéria da prova de amanhã.",
+      "Apresente um TCC sobre {jogador}.|30",
+      "Dê um beijo em {jogador}, se a pessoa topar."
+    ],
+    verdade:[
+      "Qual foi a sua nota mais baixa?",
+      "Você já colou numa prova? Como?",
+      "Quem da faculdade você pegaria?",
+      "Já ficou com alguém da sua turma? Quem?",
+      "Qual professor(a) você acha bonito(a)?"
+    ],
+    todos:["Quem tem prova esta semana bebe.","Quem já reprovou em alguma matéria bebe.","Quem ainda mora com os pais bebe.","Quem já dormiu na aula bebe."],
+    eununca:["dormi na biblioteca.","fiz um trabalho em grupo sozinho(a).","fui pra aula de ressaca.","fiquei com alguém da minha turma."],
+    provavel:["trancar o curso?","chegar atrasado(a) na própria formatura?","virar professor(a)?","ficar com alguém da turma hoje?"],
+    duelo:["Falem nomes de cursos, um de cada vez. Quem travar ou repetir perde.","Quem disser a tabuada do 7 até o 70 mais rápido ganha."]
+  },
+  firma:{
+    desafio:[
+      "Imite o seu chefe numa reunião.|20",
+      "Faça o discurso de funcionário do mês.|30",
+      "Fale como coach até a sua próxima vez.",
+      "Venda o copo da sua frente num pitch de investidor.|20",
+      "Mande \"bom dia, equipe!\" no grupo do trabalho, mesmo de noite.",
+      "Imite a pessoa que mais fala nas reuniões.",
+      "Dê um apelido corporativo pra cada pessoa da roda.",
+      "Dê o seu melhor feedback sincero pra {jogador}, com sanduíche de elogio."
+    ],
+    verdade:[
+      "Qual foi a maior gafe que você já cometeu no trabalho?",
+      "Quem da firma você chamaria pra sair?",
+      "Você já fingiu estar trabalhando no home office? Conta.",
+      "Qual foi o pior chefe que você já teve?",
+      "Você já ficou com alguém do trabalho?"
+    ],
+    todos:["Quem chegou atrasado(a) esta semana bebe.","Quem respondeu e-mail de trabalho hoje bebe.","Quem já reclamou do chefe hoje bebe.","Quem está na empresa há mais de um ano bebe."],
+    eununca:["dormi numa reunião.","mandei mensagem pra pessoa errada no trabalho.","fingi que a internet caiu numa chamada.","chorei no banheiro do trabalho."],
+    provavel:["virar chefe?","pedir demissão por mensagem?","ficar com alguém da firma hoje?","chegar atrasado(a) amanhã?"],
+    duelo:["Falem jargões de escritório, um de cada vez. Quem travar ou repetir perde.","Quem fizer a melhor cara de \"essa reunião podia ser um e-mail\" ganha. A roda decide."]
+  }
+};
+var TEMA_NOME = {aniversario:"Aniversário", despedida:"Despedida", universitario:"Universitário", firma:"Firma"};
 var T = {
   desafio:{label:"Desafio", score:true, yes:"Encarei"},
   verdade:{label:"Verdade", score:true, yes:"Respondi"},
@@ -754,13 +889,13 @@ var T = {
 };
 var DOSES = ["1 gole","2 goles","3 goles","meio copo","vira o copo"];
 var FILL  = [0.18,0.32,0.46,0.55,0.95];
-var MODE_DOSE = {leve:[0,1], festa:[1,2], ousado:[2,3], meu:[1,2]};
+var MODE_DOSE = {leve:[0,1], festa:[1,2], ousado:[2,3], meu:[1,2], aniversario:[1,2], despedida:[2,3], universitario:[1,3], firma:[0,1]};
 var COLORS = ["#ff3fa4","#a95cf2","#f5b52e","#ff7a59","#5fd08a","#6fb6ff","#c99bff","#ff8fc2","#4fd6c6","#ffd36b","#a3e05c","#ffa94d"];
 var KEY = "encara-ou-bebe-v2";
 
 /* ===================== estado ===================== */
 function defaults(){
-  return {players:[], cfg:{modes:{leve:true,festa:true,ousado:false}, end:0, dose:1, order:"roda", skips:3, agua:1, som:1},
+  return {players:[], cfg:{modes:{leve:true,festa:true,ousado:false}, tema:"", end:0, dose:1, order:"roda", skips:3, agua:1, som:1},
           custom:"", game:null, adult:false, seq:0};
 }
 var S = defaults();
@@ -852,13 +987,14 @@ function renderSetup(){
       '<span class="nm">'+esc(p.name)+'</span><button type="button" class="x" data-rm="'+i+'" aria-label="Remover '+esc(p.name)+'">✕</button></div>';
   }).join("") : '<p class="empty">Ninguém ainda. Adicione pelo menos 2 pessoas. Toque na bolinha para trocar a cor.</p>';
   Array.prototype.forEach.call($("modes").children,function(b){ b.setAttribute("aria-pressed", S.cfg.modes[b.getAttribute("data-mode")]?"true":"false"); });
+  Array.prototype.forEach.call($("temas").children,function(b){ b.setAttribute("aria-pressed", S.cfg.tema===b.getAttribute("data-tema")?"true":"false"); });
   Array.prototype.forEach.call(document.querySelectorAll(".seg"),function(seg){
     var k=seg.getAttribute("data-cfg");
     Array.prototype.forEach.call(seg.children,function(b){ b.setAttribute("aria-pressed", String(S.cfg[k])===b.getAttribute("data-val")?"true":"false"); });
   });
   if($("custom").value!==S.custom) $("custom").value=S.custom;
   var nc=customLines().length; $("customCount").textContent = nc? nc+(nc===1?" carta":" cartas") : "";
-  var anyMode=S.cfg.modes.leve||S.cfg.modes.festa||S.cfg.modes.ousado;
+  var anyMode=S.cfg.modes.leve||S.cfg.modes.festa||S.cfg.modes.ousado||!!C_TEMAS[S.cfg.tema];
   var b=$("btnStart");
   b.disabled = ps.length<2 || !anyMode;
   b.textContent = !anyMode ? "Escolha um nível" : ps.length<2 ? (ps.length? "Falta mais 1 jogador" : "Adicione os jogadores") : "Começar com "+ps.length;
@@ -877,6 +1013,9 @@ function buildDeck(){
       C[m][k].forEach(function(raw){ var c=parse(raw); c.k=k; c.m=m; (k==="regra"?rules:d).push(c); });
     });
   });
+  // baralho especial (aniversário, despedida...): entra inteiro, junto com os níveis
+  var tm=C_TEMAS[S.cfg.tema];
+  if(tm) Object.keys(tm).forEach(function(k){ tm[k].forEach(function(raw){ var c=parse(raw); c.k=k; c.m=S.cfg.tema; d.push(c); }); });
   shuffle(rules).slice(0,5).forEach(function(c){ d.push(c); });
   customLines().forEach(function(line){
     var q=line.charAt(0)==="?", c=parse(q?line.slice(1).trim():line); c.k=q?"verdade":"desafio"; c.m="meu";
@@ -985,7 +1124,7 @@ function renderGame(anim){
   $("tag").className="tag "+(c.m==="meu"?"meu":c.k);
   $("tag").textContent = c.m==="meu" ? "Da galera · "+m.label : m.label;
   $("lvl").className="lvl "+c.m;
-  $("lvl").textContent = c.k==="agua" ? "" : ({leve:"Leve",festa:"Festa",ousado:"Ousado",meu:""})[c.m];
+  $("lvl").textContent = c.k==="agua" ? "" : (({leve:"Leve",festa:"Festa",ousado:"Ousado",meu:""})[c.m] || TEMA_NOME[c.m] || "");
   var txt;
   if(c.k==="eununca") txt='<span class="lead">Eu nunca…</span><span>'+cur.html+'</span>';
   else if(c.k==="provavel") txt='<span class="lead">Quem é mais provável de…</span><span>'+cur.html+'</span>';
@@ -1197,6 +1336,7 @@ document.addEventListener("click",function(e){
   if(ON && (t.closest("[data-rm]")||t.closest("[data-cor]"))) return;
   if((b=t.closest("[data-rm]"))){ var i=+b.getAttribute("data-rm"); S.players.splice(i,1); save(); renderSetup(); return; }
   if((b=t.closest("[data-cor]"))){ var p=S.players[+b.getAttribute("data-cor")]; p.color=COLORS[(COLORS.indexOf(p.color)+1)%COLORS.length]; save(); renderSetup(); return; }
+  if((b=t.closest(".tema"))){ if(ON&&!souDono()) return; var tt=b.getAttribute("data-tema"); S.cfg.tema = S.cfg.tema===tt ? "" : tt; if(ON){ salvarCfgMesa(); } else save(); renderSetup(); return; }
   if((b=t.closest(".mode"))){ if(ON&&!souDono()) return; var m=b.getAttribute("data-mode"); S.cfg.modes[m]=!S.cfg.modes[m]; if(ON){ salvarCfgMesa(); } else save(); renderSetup(); return; }
   if((b=t.closest(".seg button"))){ var k=b.parentNode.getAttribute("data-cfg"), v=b.getAttribute("data-val");
     if(ON&&k!=="som"&&!souDono()) return;
@@ -1251,7 +1391,7 @@ function nomeEm(m,u){ var x=m&&m.nomes&&m.nomes[u]; return (x&&x.n)||"Alguém"; 
 function corEm(m,u){ var x=m&&m.nomes&&m.nomes[u]; return (x&&x.c)||corDe(u); }
 function stDe(m){ try{ return JSON.parse(m.st||"null"); }catch(e){ return null; } }
 function cfgDe(m){ var c={}, base=(LOCAL&&LOCAL.cfg)||S.cfg, k; for(k in base) c[k]=base[k]; var mc=(m&&m.cfg)||{}; for(k in mc) c[k]=mc[k]; c.order="sorteio"; return c; }
-function cfgMesa(){ return {modes:{leve:!!S.cfg.modes.leve,festa:!!S.cfg.modes.festa,ousado:!!S.cfg.modes.ousado}, end:+S.cfg.end, dose:+S.cfg.dose, skips:+S.cfg.skips, agua:+S.cfg.agua}; }
+function cfgMesa(){ return {modes:{leve:!!S.cfg.modes.leve,festa:!!S.cfg.modes.festa,ousado:!!S.cfg.modes.ousado}, tema:S.cfg.tema||"", end:+S.cfg.end, dose:+S.cfg.dose, skips:+S.cfg.skips, agua:+S.cfg.agua}; }
 function stTxt(){ var g=S.game, h; if(g){ h=g.hist; g.hist=[]; } var t=JSON.stringify({players:S.players, game:g}); if(g) g.hist=h; return t; }
 // roda a lógica do jogo em cima do estado que veio do banco, sem mexer no que está na tela
 function comEstado(m, st, f){
@@ -1606,6 +1746,7 @@ function renderLobby(){
   $("addRow").hidden=!dono;
   $("inpName").placeholder="Alguém sem o app? Nome";
   Array.prototype.forEach.call($("modes").children,function(b){ b.setAttribute("aria-pressed", S.cfg.modes[b.getAttribute("data-mode")]?"true":"false"); b.disabled=!dono; });
+  Array.prototype.forEach.call($("temas").children,function(b){ b.setAttribute("aria-pressed", S.cfg.tema===b.getAttribute("data-tema")?"true":"false"); b.disabled=!dono; });
   $("optsBox").hidden=!dono; $("customBox").hidden=true; $("ordemOpt").hidden=true;
   Array.prototype.forEach.call(document.querySelectorAll(".seg"),function(seg){
     var k=seg.getAttribute("data-cfg");
@@ -1613,13 +1754,14 @@ function renderLobby(){
   });
   $("resume").hidden=true;
   $("rodaTitulo").firstChild.nodeValue="Quem está na mesa ";
-  var any=S.cfg.modes.leve||S.cfg.modes.festa||S.cfg.modes.ousado, b=$("btnStart");
+  var any=S.cfg.modes.leve||S.cfg.modes.festa||S.cfg.modes.ousado||!!C_TEMAS[S.cfg.tema], b=$("btnStart");
   if(dono){ b.disabled=naMesa<2||!any; b.textContent=!any?"Escolha um nível":naMesa<2?"Esperando a galera entrar":(M.estado==="sala"?"Começar com "+naMesa:"Voltar pro jogo"); }
   else { b.disabled=true; b.textContent="Esperando "+nomeEm(M,M.dono)+" começar"; }
 }
 function desfazerLobby(){
   $("addRow").hidden=false; $("inpName").placeholder="Nome de quem vai jogar";
   Array.prototype.forEach.call($("modes").children,function(b){ b.disabled=false; });
+  Array.prototype.forEach.call($("temas").children,function(b){ b.disabled=false; });
   $("optsBox").hidden=false; $("customBox").hidden=false; $("ordemOpt").hidden=false;
   $("rodaTitulo").firstChild.nodeValue="Quem está na roda ";
 }
@@ -1679,7 +1821,7 @@ function iniciarFirebase(){
     }).catch(function(){ renderMesaBox(); });
   });
 }
-window.__encara = function(){ return {S:S, ON:ON, M:M}; };   // usado pelos testes automáticos
+window.__encara = function(){ return {S:S, ON:ON, M:M, buildDeck:buildDeck, renderSetup:renderSetup}; };   // usado pelos testes automáticos
 if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", iniciarFirebase); else setTimeout(iniciarFirebase, 0);
 
 /* ===================== início ===================== */
@@ -1702,8 +1844,8 @@ if(hot && hot.ready) hot.ready(boot); else boot(hot && hot.data || {});
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611111738"></script>
-<script src="marca.js?v=202611111738"></script>
-<script src="comum.js?v=202611111738"></script>
+<script src="config.js?v=202611111751"></script>
+<script src="marca.js?v=202611111751"></script>
+<script src="comum.js?v=202611111751"></script>
 </body>
 </html>

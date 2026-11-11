@@ -143,9 +143,16 @@ service cloud.firestore {
 
       match /mensagens/{m} {
         allow read: if logado() && amigos(par);
-        // Mensagem de texto, ou foto (o texto pode ir vazio e a foto fica em /conversas/{par}/fotos)
+        // Mensagem de texto, ou foto (o texto pode ir vazio e a foto fica em /conversas/{par}/fotos),
+        // ou um item do cardápio mandado pro amigo ("Bora pedir isso?")
         allow create: if ativo() && amigos(par)
-          && request.resource.data.keys().hasOnly(['de', 'texto', 'criado', 'fotoId'])
+          && request.resource.data.keys().hasOnly(['de', 'texto', 'criado', 'fotoId', 'item'])
+          && (!('item' in request.resource.data)
+              || (request.resource.data.item is map
+                  && request.resource.data.item.keys().hasOnly(['id', 'nome', 'preco'])
+                  && request.resource.data.item.id is string && request.resource.data.item.id.size() <= 60
+                  && textoOk(request.resource.data.item.nome, 1, 60)
+                  && textoOk(request.resource.data.item.get('preco', ''), 0, 60)))
           && request.resource.data.de == eu()
           && (('fotoId' in request.resource.data)
               ? (request.resource.data.fotoId is string && textoOk(request.resource.data.texto, 0, 500)

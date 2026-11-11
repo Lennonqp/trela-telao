@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202611111738">
+<link rel="stylesheet" href="estilo.css?v=202611111751">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -92,7 +92,17 @@
   .fila b{display:block;font-family:var(--f-display);font-weight:400;font-size:calc(var(--u) * 4);letter-spacing:0;color:var(--ink);line-height:1}
   .barra{position:absolute;left:0;right:0;bottom:0;height:calc(var(--u) * .6);background:var(--line)}
   .barra i{display:block;height:100%;width:0;background:var(--neon)}
-  .emoji{position:absolute;bottom:calc(var(--u) * 2);font-size:calc(var(--u) * 4);pointer-events:none;animation:sobe 2.6s ease-out forwards}
+  .emoji{position:absolute;z-index:30;bottom:calc(var(--u) * 2);font-size:calc(var(--u) * 4 * var(--t,1));pointer-events:none;animation:voa 3.4s cubic-bezier(.25,.6,.4,1) forwards;filter:drop-shadow(0 0 calc(var(--u) * 1) rgba(255,63,164,.6))}
+  @keyframes voa{
+    0%{opacity:0;transform:translate(0,0) scale(.4) rotate(0)}
+    12%{opacity:1;transform:translate(calc(var(--dx) * .2),calc(var(--u) * -6)) scale(1.25) rotate(calc(var(--r) * .3))}
+    40%{transform:translate(calc(var(--dx) * -.5),calc(var(--u) * -22)) scale(1) rotate(calc(var(--r) * -.4))}
+    70%{opacity:1;transform:translate(var(--dx),calc(var(--u) * -36)) scale(1) rotate(var(--r))}
+    100%{opacity:0;transform:translate(calc(var(--dx) * .4),calc(var(--u) * -50)) scale(.8) rotate(0)}}
+  .combo{position:absolute;z-index:31;right:calc(var(--u) * 28);top:calc(var(--u) * 15);font-family:var(--f-display);font-size:calc(var(--u) * 5);line-height:1;color:#fff;text-shadow:0 0 calc(var(--u) * 2) var(--neon),0 0 calc(var(--u) * 4) var(--neon);pointer-events:none;animation:combo 1.6s cubic-bezier(.2,1.5,.4,1) forwards}
+  @keyframes combo{0%{opacity:0;transform:scale(2.6) rotate(-8deg)}18%{opacity:1;transform:scale(1) rotate(-4deg)}75%{opacity:1;transform:scale(1.05) rotate(-4deg)}100%{opacity:0;transform:translateY(calc(var(--u) * -4)) scale(.9) rotate(-4deg)}}
+  .reacs span.pulo{animation:pulo .5s cubic-bezier(.2,1.6,.4,1)}
+  @keyframes pulo{0%{transform:scale(1)}40%{transform:scale(1.45);background:rgba(255,63,164,.45)}100%{transform:scale(1)}}
   @keyframes sobe{0%{opacity:0;transform:translateY(0) scale(.6)}15%{opacity:1;transform:translateY(calc(var(--u) * -4)) scale(1.1)}100%{opacity:0;transform:translateY(calc(var(--u) * -34)) scale(1)}}
 
 
@@ -322,11 +332,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611111738"></script>
+<script src="config.js?v=202611111751"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611111738"></script>
-<script src="comum.js?v=202611111738"></script>
-<script src="equipe.js?v=202611111738"></script>
+<script src="marca.js?v=202611111751"></script>
+<script src="comum.js?v=202611111751"></script>
+<script src="equipe.js?v=202611111751"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -629,15 +639,35 @@
     const box = $("palco").querySelector(".reacs"); if (!box) return;
     limpar(box);
     Object.keys(REACOES).filter(k => (r.reacoes || {})[k]).forEach(k => {
-      const s = document.createElement("span"); s.textContent = REACOES[k] + " " + r.reacoes[k]; box.appendChild(s);
+      const s = document.createElement("span"); s.setAttribute("data-r", REACOES[k]); s.textContent = REACOES[k] + " " + r.reacoes[k]; box.appendChild(s);
     });
   }
 
+  // Reação voando: cada toque no app solta um emoji que sobe balançando pelo telão.
+  // Muitas do mesmo tipo em poucos segundos viram um "combo" (ex.: 🔥 x8).
+  let combos = {}, comboEl = null;
   function soltar(emoji) {
     if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (document.querySelectorAll("#tv .emoji").length > 40) return;   // não pesa a TV
     const e = document.createElement("div");
-    e.className = "emoji"; e.textContent = emoji; e.style.left = "calc(var(--u) * " + (6 + Math.random() * 60) + ")";
-    $("tv").appendChild(e); setTimeout(() => { if (e.parentNode) e.parentNode.removeChild(e); }, 2700);
+    e.className = "emoji"; e.textContent = emoji;
+    e.style.left = "calc(var(--u) * " + (4 + Math.random() * 64).toFixed(1) + ")";
+    e.style.setProperty("--t", (0.8 + Math.random() * 0.8).toFixed(2));
+    e.style.setProperty("--dx", "calc(var(--u) * " + ((Math.random() * 16) - 8).toFixed(1) + ")");
+    e.style.setProperty("--r", ((Math.random() * 50) - 25).toFixed(0) + "deg");
+    $("tv").appendChild(e); setTimeout(() => { if (e.parentNode) e.parentNode.removeChild(e); }, 3500);
+    // combo
+    const agora = Date.now(), c = combos[emoji] && agora - combos[emoji].t < 6000 ? combos[emoji] : { n: 0 };
+    c.n++; c.t = agora; combos[emoji] = c;
+    if (c.n >= 5 && (c.n === 5 || c.n % 5 === 0)) {
+      if (comboEl && comboEl.parentNode) comboEl.parentNode.removeChild(comboEl);
+      comboEl = document.createElement("div"); comboEl.className = "combo"; comboEl.textContent = emoji + " x" + c.n;
+      $("tv").appendChild(comboEl);
+      const el = comboEl; setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 1700);
+    }
+    // a bolinha do contador pula
+    const pill = $("palco").querySelector('.reacs [data-r="' + emoji + '"]');
+    if (pill) { pill.classList.remove("pulo"); void pill.offsetWidth; pill.classList.add("pulo"); }
   }
 
 

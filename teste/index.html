@@ -23,7 +23,7 @@
 <meta property="og:description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
 <meta property="og:image" content="https://trela-telao.vercel.app/icone-512.png">
 <meta name="twitter:card" content="summary">
-<link rel="stylesheet" href="estilo.css?v=202611111738">
+<link rel="stylesheet" href="estilo.css?v=202611111751">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -202,6 +202,21 @@
   .cd-foto{flex:none;width:84px;height:84px;border-radius:12px;background:var(--bg) center/cover no-repeat;border:1px solid var(--line);cursor:zoom-in;padding:0}
   .cd-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
   .cd-info h4{margin:0;font:700 16px/1.25 var(--f-body)}
+  .cd-mandar{align-self:flex-start;margin-top:4px;display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:6px 11px;font:700 12px/1 var(--f-body);cursor:pointer}
+  .cd-mandar svg{width:14px;height:14px}
+  .cd-prod.destaque{border-color:var(--neon);box-shadow:0 0 0 2px var(--neon)}
+  .lista-amigos{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto}
+  .lista-amigos button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 12px;font:600 15px/1.2 var(--f-body);cursor:pointer}
+  .lista-amigos small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+  .lista-amigos small.on{color:var(--ok)}
+  .msg.item-m{display:flex;flex-direction:column;gap:8px;min-width:200px;max-width:82%}
+  .item-m .im-top{display:flex;align-items:center;gap:10px}
+  .item-m .im-ft{flex:none;width:48px;height:48px;border-radius:10px;background:var(--bg) center/cover no-repeat;display:grid;place-items:center;color:var(--muted)}
+  .item-m .im-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .item-m .im-t small{font:400 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+  .item-m .im-t b{font-size:15px;line-height:1.2}
+  .item-m .im-t span{font-size:13px;opacity:.9}
+  .item-m .im-ver{align-self:flex-start;border:1px solid currentColor;background:none;color:inherit;border-radius:999px;padding:6px 12px;font:700 12px/1 var(--f-body);cursor:pointer}
   .cd-info p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
   .cd-precos{display:flex;flex-direction:column;gap:4px;margin-top:4px}
   .cd-preco{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;font-variant-numeric:tabular-nums}
@@ -795,9 +810,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611111738"></script>
-<script src="marca.js?v=202611111738"></script>
-<script src="comum.js?v=202611111738"></script>
+<script src="config.js?v=202611111751"></script>
+<script src="marca.js?v=202611111751"></script>
+<script src="comum.js?v=202611111751"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1995,7 +2010,7 @@
     }, () => {}));
     parar.push(db.collection("cardapio").onSnapshot(q => {
       cardapio = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-      if (telaAtual() === "tCardapio") renderCardapio(); else redesenhar();   // perfil e Quem tá no Trela mostram o drink quando tem produto
+      if (telaAtual() === "tCardapio") renderCardapio(); else if (telaAtual() === "tChat") renderChat(true); else redesenhar();   // perfil e Quem tá no Trela mostram o drink quando tem produto
     }, () => { cardapio = cardapio || []; if (telaAtual() === "tCardapio") renderCardapio(); }));
   }
   function abrirCardapio() { ir("tCardapio"); ouvirCardapio(); renderCardapio(); $("#cardapioScroll").scrollTop = 0; }
@@ -2017,6 +2032,47 @@
     const z = el("div", "cd-zoom"), img = el("img"); img.src = p.foto; img.alt = p.nome;
     z.append(img, el("b", "", p.nome)); z.onclick = () => z.remove(); document.body.append(z);
   }
+  // ---- Mandar um item do cardápio pra um amigo no chat ("bora pedir isso?") ----
+  const amigosUids = () => [...S.amizades.keys()].filter(u => ehAmigo(u) && !S.bloqueados.has(u));
+  const temAmigos = () => amigosUids().length > 0;
+  function textoPreco(p) {
+    const ks = (p.tamanhos && p.tamanhos.length) ? p.tamanhos : ["unico"];
+    return ks.filter(k => (p.precos || {})[k]).map(k => (k === "unico" ? "" : (ROTULO_COPO[k] || k) + " ") + reais(p.precos[k])).join(" · ");
+  }
+  function mandarProdutoPraAmigo(p) {
+    const lista = el("div", "lista-amigos");
+    amigosUids().map(perfil).sort((a, b) => (online(b) ? 1 : 0) - (online(a) ? 1 : 0) || String(a.nome).localeCompare(String(b.nome))).forEach(a => {
+      const b = el("button"); b.type = "button";
+      const t = el("span"); t.append(a.nome, el("small", online(a) ? "on" : "", online(a) ? "Online agora" : visto(a.ultimoAcesso)));
+      b.append(avatar(a.id, "p"), t);
+      b.onclick = async () => {
+        fecharFolha();
+        const ok = await enviarProduto(a.id, p);
+        if (ok) toast(a.id, p.nome + " mandado pra " + a.nome + ". Toca pra abrir a conversa.", () => abrirChat(a.id));
+      };
+      lista.append(b);
+    });
+    folha([el("h4", "", "Mandar " + p.nome + " pra quem?"), el("p", "", "Vai na conversa com \"Bora pedir isso?\" e o preço."), lista, bt("Cancelar", "", fecharFolha)]);
+  }
+  async function enviarProduto(uid, p) {
+    const par = parDe(EU.uid, uid), texto = "Bora pedir isso? " + p.nome;
+    const item = { id: p.id, nome: String(p.nome).slice(0, 60), preco: textoPreco(p).slice(0, 60) };
+    const batch = db.batch(), msgRef = db.collection("conversas").doc(par).collection("mensagens").doc();
+    batch.set(msgRef, { de: EU.uid, texto, item, criado: agoraServidor() });
+    batch.set(db.doc("conversas/" + par), { membros: [EU.uid, uid].sort(), ultima: { de: EU.uid, texto: "Bora pedir: " + item.nome, criado: agoraServidor() }, lidaPor: { [EU.uid]: agoraServidor() } }, { merge: true });
+    try { await batch.commit(); avisarCelular({ tipo: "mensagem", par, id: msgRef.id }); return true; }
+    catch (e) { erroToast(e && e.code === "permission-denied" ? "Não deu pra mandar: as regras novas do banco precisam ser publicadas." : "Não deu pra mandar. Tenta de novo."); return false; }
+  }
+  // abre o cardápio já no produto
+  function verProduto(id) {
+    abrirCardapio();
+    setTimeout(() => {
+      const c = document.getElementById("cdp-" + id), box = $("#cardapioScroll");
+      if (!c) return erroToast("Esse item saiu do cardápio.");
+      box.scrollTo({ top: c.offsetTop - box.offsetTop - 60, behavior: "smooth" });
+      c.classList.add("destaque"); setTimeout(() => c.classList.remove("destaque"), 2200);
+    }, 350);
+  }
   function renderCardapio() {
     const box = $("#cardapioScroll"), abas = $("#cdAbas");
     if (!cardapioAtivo) { box.replaceChildren(el("p", "cd-vazio", "O cardápio ainda está sendo montado. Volta daqui a pouco!")); abas.hidden = true; return; }
@@ -2030,11 +2086,17 @@
     blocos.forEach(b => {
       if (b.nome) { const h = el("h3", "cd-grupo", b.nome); h.id = "cdg-" + b.id; out.push(h); }
       b.ps.forEach(p => {
-        const c = el("article", "cd-prod");
+        const c = el("article", "cd-prod"); c.id = "cdp-" + p.id;
         if (p.foto) { const f = el("button", "cd-foto"); f.type = "button"; f.style.backgroundImage = "url(" + p.foto + ")"; f.setAttribute("aria-label", "Ver foto de " + p.nome); f.onclick = () => zoomFoto(p); c.append(f); }
         const info = el("div", "cd-info"); info.append(el("h4", "", p.nome));
         if (p.descricao) info.append(el("p", "", p.descricao));
-        info.append(precoProduto(p)); c.append(info); out.push(c);
+        info.append(precoProduto(p));
+        if (EU && temAmigos()) {
+          const m = el("button", "cd-mandar"); m.type = "button";
+          m.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>';
+          m.append("Mandar pra um amigo"); m.onclick = () => mandarProdutoPraAmigo(p); info.append(m);
+        }
+        c.append(info); out.push(c);
       });
     });
     box.replaceChildren(...out);
@@ -3298,6 +3360,7 @@
   const apagadaAte = outro => ms(((S.conversas.get(outro) || {}).apagadaPor || {})[EU.uid]);
   function renderChat(semRolar) {
     const out = [], corte = apagadaAte(chatCom);
+    if (!ouvindoCardapio && mensagens.some(m => m.item)) ouvirCardapio();   // foto do item mandado
     if (!ehAmigo(chatCom)) out.push(el("div", "sistema", S.bloqueados.has(chatCom) ? "Tu bloqueou essa pessoa." : "Vocês não são mais amigos, então não dá pra mandar mensagem."));
     else if (!mensagens.some(m => !corte || !m.criado || ms(m.criado) > corte)) out.push(el("div", "sistema", corte ? "Conversa apagada. As mensagens novas aparecem aqui." : "Vocês são amigos. Manda um oi!"));
     const IC_FOTO = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>';
@@ -3314,6 +3377,17 @@
         b.append(el("small", "", horaDe(m.criado)));
         if (!mine && !vista) b.onclick = () => verFotoChat(m);
         else b.onclick = () => { reagindo = reagindo === m.id ? null : m.id; renderChat(true); };
+      } else if (m.item) {
+        // item do cardápio mandado pelo amigo
+        b = el("div", "msg item-m " + (mine ? "minha" : "dela"));
+        const topo = el("div", "im-top"), ft = el("span", "im-ft"), prod = (cardapio || []).find(x => x.id === m.item.id);
+        if (prod && prod.foto) ft.style.backgroundImage = "url(" + prod.foto + ")";
+        else ft.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12l-1.5 15a2 2 0 0 1-2 1.8h-5a2 2 0 0 1-2-1.8z"/><path d="M6.5 9h11"/></svg>';
+        const t = el("div", "im-t"); t.append(el("small", "", "Bora pedir isso?"), el("b", "", m.item.nome)); if (m.item.preco) t.append(el("span", "", m.item.preco));
+        topo.append(ft, t);
+        const ver = el("button", "im-ver", "Ver no cardápio"); ver.type = "button"; ver.onclick = ev => { ev.stopPropagation(); verProduto(m.item.id); };
+        b.append(topo, ver, el("small", "", horaDe(m.criado)));
+        b.onclick = () => { reagindo = reagindo === m.id ? null : m.id; renderChat(true); };
       } else {
         b = el("div", "msg " + (mine ? "minha" : "dela"), m.texto); b.append(el("small", "", horaDe(m.criado)));
         b.onclick = () => { reagindo = reagindo === m.id ? null : m.id; renderChat(true); };

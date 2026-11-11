@@ -4,9 +4,10 @@
 <base href="/teste/">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202611091153">
+<link rel="stylesheet" href="estilo.css?v=202611111008">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -279,11 +280,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611091153"></script>
+<script src="config.js?v=202611111008"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611091153"></script>
-<script src="comum.js?v=202611091153"></script>
-<script src="equipe.js?v=202611091153"></script>
+<script src="marca.js?v=202611111008"></script>
+<script src="comum.js?v=202611111008"></script>
+<script src="equipe.js?v=202611111008"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -771,7 +772,7 @@
     } else if (k === "contagem") {
       const d = ateDe(c);
       corpo = '<div class="relogio-tv cont-tv">' + (d ? faltam(d) : "--:--") + "</div>" +
-        (d ? '<div class="ev-n">Até as ' + (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes() + "</div>" : "");
+        (d ? '<div class="ev-n">Até às ' + (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes() + "</div>" : "");
       cta = "";
     }
     const tit = k === "roleta" ? "Regra da vez" : m.titulo(c);

@@ -5,6 +5,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0d0a12">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -13,7 +16,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202611091153">
+<meta name="description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Trela">
+<meta property="og:title" content="Trela">
+<meta property="og:description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
+<meta property="og:image" content="https://trela-telao.vercel.app/icone-512.png">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="estilo.css?v=202611111008">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -42,19 +52,19 @@
   .quem-atalho .pilha{display:flex;flex:none}
   .quem-atalho .pilha .av{width:34px;height:34px;font-size:14px;box-shadow:0 0 0 2px var(--bg)}
   .quem-atalho .pilha .av + .av{margin-left:-10px}
-  .quem-atalho div{flex:1;min-width:0}
+  .quem-atalho > div{flex:1;min-width:0}
   .quem-atalho b{display:block;font:400 20px/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
-  .quem-atalho span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+  .quem-atalho > div > span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
   .quem-atalho i{font-style:normal;font-size:26px;color:var(--neon)}
   #tQuem .rolagem{gap:14px}
   .quem-topo{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .quem-topo p{margin:0;color:var(--muted);font-size:13px}
-  .quem-trilho{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:0 -16px;padding:0 16px 6px;scrollbar-width:none;overscroll-behavior-x:contain}
+  .quem-trilho{flex:none;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:0 -16px;padding:0 16px 6px;scrollbar-width:none;overscroll-behavior-x:contain}
   .quem-trilho::-webkit-scrollbar{display:none}
   .quem-card{flex:0 0 calc(100% - 8px);scroll-snap-align:center;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:12px}
   .quem-card.aberto{border-color:var(--ouro);box-shadow:0 0 22px -8px rgba(255,201,77,.6)}
-  .quem-foto{position:relative;border:0;padding:0;background:none;cursor:pointer;border-radius:16px;overflow:hidden}
-  .quem-foto .av{width:100%;height:auto;aspect-ratio:1;border-radius:16px;font-size:110px;box-shadow:none}
+  .quem-foto{flex:none;position:relative;border:0;padding:0;background:none;cursor:pointer;border-radius:16px;overflow:hidden}
+  .quem-foto .av{width:100%;height:auto;aspect-ratio:1;max-height:38vh;border-radius:16px;font-size:clamp(64px,22vh,110px);box-shadow:none}
   .quem-foto .av.on::after{width:22px;height:22px;right:12px;bottom:12px;min-width:0;min-height:0;box-shadow:0 0 0 3px var(--panel)}
   .quem-nome{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .quem-nome b{font:400 28px/1 var(--f-display);text-transform:uppercase}
@@ -70,8 +80,6 @@
   .tag-aberto{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ouro);color:var(--ouro);border-radius:999px;padding:4px 10px;font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
   .tag-aberto::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ouro);box-shadow:0 0 6px var(--ouro)}
   .gv-aberto{font:400 14px/1.3 var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);display:flex;align-items:center;gap:12px;margin:2px 0 6px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.02);cursor:pointer}
-  .gv-aberto.gv-push.on{border-color:var(--neon);background:rgba(255,63,164,.07)}
-  .gv-push .sw:checked{background:var(--neon)}
   .push-faixa{flex:none;display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid rgba(255,63,164,.35);background:linear-gradient(90deg,rgba(255,63,164,.2),rgba(169,92,242,.14));color:var(--ink);padding:10px 16px;font:700 14px/1.2 var(--f-body);cursor:pointer;text-align:left}
   .push-faixa svg{flex:none;color:var(--neon)}
   .push-faixa span{flex:1;min-width:0}
@@ -86,15 +94,6 @@
   .passos-ios{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;text-align:left;font-size:14px;line-height:1.4}
   .passos-ios li::marker{color:var(--neon);font-weight:800}
   .passos-ios svg{vertical-align:-3px;color:var(--neon)}
-  .seta-ios{position:fixed;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:4px;width:min(320px,90vw);pointer-events:auto}
-  .seta-ios.baixo{bottom:8px}
-  .seta-ios.cima{top:6px;flex-direction:column-reverse;left:auto;right:8px;transform:none;align-items:flex-end}
-  .seta-txt{background:var(--neon);color:#fff;border-radius:14px;padding:10px 14px;font-size:14px;line-height:1.35;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.5)}
-  .seta-txt small{display:block;font-size:12px;opacity:.9;margin-top:4px}
-  .seta-flecha{font-size:42px;line-height:1;color:var(--neon);text-shadow:0 0 12px var(--neon);animation:setaPula .8s ease-in-out infinite alternate}
-  .seta-ios.cima .seta-flecha{margin-right:28px}
-  @keyframes setaPula{from{transform:translateY(0)}to{transform:translateY(10px)}}
-  .seta-ios.cima .seta-flecha{animation-direction:alternate-reverse}
   .push-ios{border:1px dashed var(--ouro);border-radius:12px;padding:10px 12px;color:var(--ink)!important;font-size:13px!important}
   .push-card{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--neon);background:linear-gradient(135deg,rgba(255,63,164,.14),rgba(169,92,242,.08));border-radius:16px;padding:14px;margin:12px 0}
   .push-card svg{flex:none;width:26px;height:26px;color:var(--neon);margin-top:2px}
@@ -111,8 +110,9 @@
   .sw{position:relative;flex:none;width:44px;height:26px;appearance:none;-webkit-appearance:none;border-radius:999px;background:var(--line);margin:0;cursor:pointer;transition:background .2s}
   .sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
   .sw:checked{background:var(--ouro)}.sw:checked::after{transform:translateX(18px)}
-  .filtro-g{display:flex;gap:8px;margin-bottom:2px}
-  .filtro-g button{border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:7px 12px;font:700 12px/1 var(--f-body);cursor:pointer}
+  .filtro-g{flex:none;display:flex;gap:8px;margin-bottom:2px;overflow-x:auto;scrollbar-width:none}
+  .filtro-g::-webkit-scrollbar{display:none}
+  .filtro-g button{flex:none;white-space:nowrap;border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:7px 12px;font:700 12px/1 var(--f-body);cursor:pointer}
   .filtro-g button.on{background:var(--ouro);border-color:var(--ouro);color:#2a1c00}
   .social-p{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:4px}
   .bt-crush{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:999px;padding:12px;border:1.5px dashed var(--neon);background:none;color:var(--neon);font:700 14px/1.1 var(--f-body);cursor:pointer}
@@ -352,8 +352,13 @@
   @keyframes caiV{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--rot))}}
 
   /* Login */
-  #tLogin{justify-content:center;padding:28px 24px;gap:14px;overflow-y:auto;background:radial-gradient(70% 45% at 50% 18%,rgba(255,63,164,.22),transparent 70%),radial-gradient(60% 40% at 50% 100%,rgba(169,92,242,.25),transparent 70%),var(--bg)}
+  #tLogin{justify-content:flex-start;padding:28px 24px;gap:14px;overflow-y:auto;background:radial-gradient(70% 45% at 50% 18%,rgba(255,63,164,.22),transparent 70%),radial-gradient(60% 40% at 50% 100%,rgba(169,92,242,.25),transparent 70%),var(--bg)}
   #tLogin .logo{font-size:96px;text-align:center}
+  /* centraliza sem cortar o topo quando a tela é baixa (dá pra rolar) */
+  #tLogin > *{flex:none}
+  #tLogin > :first-child{margin-top:auto}
+  #tLogin > :last-child{margin-bottom:auto}
+  @media (max-height:720px){#tLogin{padding-top:18px;gap:10px}#tLogin .logo{font-size:60px}#tLogin .tag{font-size:22px;margin-bottom:4px}}
   .tag{font-family:var(--f-display);font-weight:400;font-size:28px;line-height:1.05;text-transform:uppercase;text-align:center;margin:0 0 10px;text-wrap:balance}
   .tag em{font-style:normal;color:var(--laranja)}
   .entrar{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border-radius:999px;padding:14px;font:700 15px/1 var(--f-body);cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
@@ -630,7 +635,7 @@
     </div>
   </div>
 
-  <!-- Quem tá no Trela: quem abriu o app nesta noite, um por vez, com crush e drink direto -->
+  <!-- Quem tá no Trela: quem abriu o app nesta noite, um por vez, com "Tenho interesse" e drink direto -->
   <div class="tela sub" id="tQuem" hidden>
     <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Quem tá no Trela</h3></div>
     <div class="rolagem" id="quemScroll"></div>
@@ -690,7 +695,7 @@
       <div><b id="gvNome"></b><button type="button" class="gv-link" id="gvPerfil">Ver e editar perfil</button></div>
       <button class="ico" id="gvFechar" type="button" aria-label="Fechar menu">×</button>
     </div>
-    <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>Um anel dourado aparece na tua foto até as 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
+    <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>Um anel dourado aparece na tua foto até às 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
     <button type="button" class="gv-item" data-ir="quem"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6.2 4.6 1.8 5.1 4.8"/></svg><span>Quem tá no Trela</span></button>
     <button type="button" class="gv-item" data-ir="cardapio" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/></svg><span>Cardápio</span></button>
@@ -707,9 +712,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611091153"></script>
-<script src="marca.js?v=202611091153"></script>
-<script src="comum.js?v=202611091153"></script>
+<script src="config.js?v=202611111008"></script>
+<script src="marca.js?v=202611111008"></script>
+<script src="comum.js?v=202611111008"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -732,7 +737,7 @@
     votos: [], meuVoto: null,   // enquete atual
     karaoke: [],           // fila do karaokê desta noite (todo mundo vê)
     convitesJogo: [],      // mesas do Encara ou Bebe que me convidaram e eu ainda não respondi
-    interesses: new Set(), // crush secreto: em quem EU marquei interesse nesta noite (ninguém mais vê)
+    interesses: new Set(), // "Tenho interesse": em quem EU marquei nesta noite (a pessoa é avisada pelo servidor)
     matches: new Set(),    // com quem deu match nesta noite
     drinksRecebidos: [], drinksMandados: [],
     bloqueados: new Set(),
@@ -782,39 +787,6 @@
     await db.doc("tokens/" + EU.uid + "/aparelhos/" + tok).set({ criado: agoraServidor(), aparelho: navigator.userAgent.slice(0, 150) });
     pushToken = tok; guardado.salvar("trela-push-token", tok);
   }
-  // iPhone: qual navegador (Safari, Chrome...) e qual iOS, pra mostrar o caminho certo
-  const navegadorIOS = () => /CriOS/.test(navigator.userAgent) ? "chrome" : /FxiOS|EdgiOS|OPiOS/.test(navigator.userAgent) ? "outro" : "safari";
-  const versaoIOS = () => { const m = /OS (\d+)_(\d+)/.exec(navigator.userAgent); return m ? [+m[1], +m[2]] : null; };
-  // iPhone: notificação só funciona com o Trela na tela de início
-  function passosIphone(depois) {
-    const icCompartilhar = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
-    const passos = el("ol", "passos-ios");
-    const nav = navegadorIOS(), primeiro =
-      nav === "chrome" ? "No Chrome, toca no botão <b>Compartilhar</b> " + icCompartilhar + " do lado do endereço, lá em cima."
-      : nav === "outro" ? "Abre o menu do navegador e toca em <b>Compartilhar</b> " + icCompartilhar + "."
-      : "Toca no botão <b>Compartilhar</b> " + icCompartilhar + " na barra do Safari (embaixo ou em cima).";
-    [primeiro,
-     "Toca em <b>Adicionar à Tela de Início</b>" + (nav === "chrome" ? " (se não aparecer, toca em <b>Mais</b> ou rola a lista)." : " (rola a lista se precisar)."),
-     "Toca em <b>Adicionar</b>, no canto de cima.",
-     "Abre o Trela pelo <b>ícone novo</b> na tela do iPhone e toca em <b>Ativar notificações</b>."].forEach(t => { const li = el("li"); li.innerHTML = t; passos.append(li); });
-    const v = versaoIOS(), velho = v && (v[0] < 16 || (v[0] === 16 && v[1] < 4));
-    folha([el("h4", "", "Coloca o Trela na tela do iPhone"),
-      el("p", "", "O iPhone só manda notificação de app que está na tela de início. É rapidinho:"), passos,
-      ...(velho ? [el("p", "push-ios", "Teu iPhone está no iOS " + v.join(".") + ". Notificação só funciona do iOS 16.4 pra cima: vai em Ajustes › Geral › Atualização de Software.")] : []),
-      bt("Me mostra onde tocar", "sim", () => { fecharFolha(); setaIphone(); if (depois) depois(); }),
-      Object.assign(bt("Entendi", "", () => { fecharFolha(); if (depois) depois(); }), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" })], true);
-  }
-  // Seta piscando em cima do botão Compartilhar do navegador (embaixo no Safari, em cima no Chrome)
-  function setaIphone() {
-    const velha = $("#setaIos"); if (velha) velha.remove();
-    const nav = navegadorIOS(), emCima = nav !== "safari";
-    const s = el("div", "seta-ios " + (emCima ? "cima" : "baixo")); s.id = "setaIos";
-    s.innerHTML = '<div class="seta-txt">' + (nav === "chrome" ? "Toca no <b>Compartilhar</b> aqui em cima, do lado do endereço" : nav === "outro" ? "Abre o menu do navegador e toca em <b>Compartilhar</b>" : "Toca no <b>Compartilhar</b> aqui embaixo")
-      + '<small>Depois: <b>Adicionar à Tela de Início</b> › <b>Adicionar</b></small></div><div class="seta-flecha" aria-hidden="true">' + (emCima ? "↑" : "↓") + '</div>';
-    s.onclick = () => s.remove();
-    document.body.append(s);
-    setTimeout(() => s.remove(), 20000);
-  }
   async function ativarPush() {
     if (ehIOS) return false;   // iPhone: fica só no sino
     if (!pushPossivel()) { erroToast("Esse navegador não aceita notificações. Tenta pelo Chrome."); return false; }
@@ -824,39 +796,25 @@
     try { await pegarToken(); toast(EU.uid, "Pronto! Tu vai ser avisado no celular mesmo com o Trela fechado."); return true; }
     catch (e) { console.warn("[Trela] push", e); erroToast(e && e.code === "permission-denied" ? "Não deu pra salvar: as regras do banco precisam ser publicadas." : "Não deu pra ativar agora. Tenta de novo. (" + String((e && (e.code || e.message)) || "erro").slice(0, 60) + ")"); return false; }
   }
-  async function desativarPush() {
-    const t = pushToken; pushToken = null; guardado.salvar("trela-push-token", null);
-    if (t) await db.doc("tokens/" + EU.uid + "/aparelhos/" + t).delete().catch(() => {});
-    try { await mensagemPush().deleteToken(); } catch (e) {}
-    toast(EU.uid, "Notificações no celular desligadas.");
-  }
   // Faixa embaixo do logo: some quando a notificação está ligada
-  // iPhone: só dá pra ativar quando o navegador oferece notificação (iOS 16.4+, aberto pelo ícone da tela de início).
-  // Olha o que o navegador tem, não o "modo tela cheia" (o ícone criado pelo Chrome nem sempre diz que está em tela cheia).
-  const iphoneSemPush = () => ehIOS && !("Notification" in window && "PushManager" in window && "serviceWorker" in navigator);
   const notifBloqueada = () => "Notification" in window && Notification.permission === "denied";
   function desenharPush() {
     const fx = $("#pushFaixa");
     if (fx) {
       fx.hidden = !EU || ehIOS || !pushConfigurado() || pushLigado();
-      $("#pushFaixaTxt").textContent = iphoneSemPush() ? "Ativar notificações no iPhone" : notifBloqueada() ? "Notificações bloqueadas: toca pra ver como liberar" : "Ativar notificações";
+      $("#pushFaixaTxt").textContent = notifBloqueada() ? "Notificações bloqueadas: toca pra ver como liberar" : "Ativar notificações";
     }
-    const box = $("#gvPushBox"); if (!box) return;
-    box.hidden = !pushConfigurado();
-    const on = pushLigado(); $("#gvPush").checked = on; box.classList.toggle("on", on);
-    $("#gvPushTxt").textContent = on ? "Ligadas neste celular" : ("Notification" in window && Notification.permission === "denied") ? "Bloqueadas no navegador" : "Avisa mesmo com o Trela fechado";
   }
-  // Toque na faixa: ativa direto (iPhone fora da tela de início: passo a passo; bloqueada: como liberar)
+  // Toque na faixa: ativa direto (bloqueada: mostra como liberar). No iPhone a faixa nem aparece: lá é só o sino.
   function comoLiberar() {
     const passos = el("ol", "passos-ios");
-    (instalado() || ehIOS
+    (instalado()
       ? ["Segura o dedo no ícone do Trela na tela do celular.", "Toca em <b>Informações do app</b> (ou no ⓘ).", "Vai em <b>Notificações</b> e liga.", "Volta pro Trela: a faixa some quando estiver ligado."]
       : ["Toca no <b>cadeado</b> (ou nos três pontinhos) ao lado do endereço do site.", "Vai em <b>Permissões</b> ou <b>Configurações do site</b>.", "Em <b>Notificações</b>, escolhe <b>Permitir</b>.", "Recarrega a página e toca de novo em <b>Ativar notificações</b>."]
     ).forEach(t => { const li = el("li"); li.innerHTML = t; passos.append(li); });
     folha([el("h4", "", "As notificações estão bloqueadas"), el("p", "", "Alguém tocou em \"Bloquear\" quando o celular perguntou, e agora o site não pode perguntar de novo. Dá pra liberar assim:"), passos, bt("Entendi", "sim", fecharFolha)]);
   }
   $("#pushFaixa").onclick = async () => {
-    if (iphoneSemPush()) return passosIphone();
     if (notifBloqueada()) return comoLiberar();
     await ativarPush(); desenharPush();
   };
@@ -877,17 +835,15 @@
     if (!$("#veu").hidden) { if ((tentativa || 0) < 40) setTimeout(() => janelaPush(depois, (tentativa || 0) + 1), 3000); return; }
     if (pushDispensadoAgora) return seguir();
     pushDispensadoAgora = true;   // "Agora não" vale só até a próxima vez que abrir o app
-    const ios = iphoneSemPush(), bloq = !ios && notifBloqueada();
+    const bloq = notifBloqueada();
     const ic = el("div", "push-ic"); ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
     const lista = el("ul", "push-lista");
     ["Tua vez no karaokê", "Convite de drink, e a resposta do teu", "Quem tem interesse em ti, e quando dá match", "Mensagens e pedidos de amizade", "Curtidas e quando te marcam", "Convite pro Encara ou Bebe"].forEach(t => lista.append(el("li", "", t)));
     const nao = () => { fecharFolha(); seguir(); };
     const itens = [ic, el("h4", "", "Fica sabendo na hora, mesmo com o Trela fechado"), el("p", "", "Com as notificações ligadas, o celular te avisa de:"), lista,
       el("p", "push-nota", "E de vez em quando uma dica do que dá pra fazer no app. Dá pra desligar quando quiser nas configurações do celular.")];
-    if (ios) itens.push(el("p", "push-ios", "No iPhone, o Trela precisa estar na tela de início pra mandar notificação. Toca em \"Colocar na tela do iPhone\" que a gente mostra como."));
     if (bloq) itens.push(el("p", "push-ios", "As notificações estão bloqueadas neste celular. Toca em \"Ativar notificações\" que a gente mostra como liberar."));
-    itens.push(bt("Ativar notificações", "sim", async () => { if (ios) { passosIphone(seguir); return; } if (bloq) { comoLiberar(); return; } fecharFolha(); await ativarPush(); desenharPush(); seguir(); }));
-    if (ios) itens.push(bt("Colocar na tela do iPhone", "", () => passosIphone(seguir)));
+    itens.push(bt("Ativar notificações", "sim", async () => { if (bloq) { comoLiberar(); return; } fecharFolha(); await ativarPush(); desenharPush(); seguir(); }));
     itens.push(Object.assign(bt("Agora não", "", nao), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" }));
     folha(itens, true);
   }
@@ -1359,7 +1315,7 @@
     // Notificações no celular: cartão de convite e token sempre em dia
     setTimeout(() => { desenharPush(); if (pushLigado() && pushPossivel()) pegarToken().catch(() => {}); }, 1500);
 
-    // Crush secreto: os meus interesses (só eu vejo) e os matches
+    // Tenho interesse: os meus interesses e os matches
     parar.push(db.collection("interesses").where("de", "==", uid).onSnapshot(q => {
       const noite = inicioDaNoite().getTime(); S.interesses = new Set();
       q.docs.forEach(d => { const x = d.data(); if (ms(x.criado) >= noite || !x.criado) S.interesses.add(x.para); else d.ref.delete().catch(() => {}); });   // de noites passadas: some
@@ -1444,7 +1400,7 @@
     if (guardado.ler("trela-foto-ignorada", "") === chaveNoite()) return;
     const arq = el("input"); arq.type = "file"; arq.accept = "image/*"; arq.hidden = true;
     const arqCam = el("input"); arqCam.type = "file"; arqCam.accept = "image/*"; arqCam.setAttribute("capture", "user"); arqCam.hidden = true;
-    const aviso = el("p", "", "Assim a galera te reconhece no Trela: no Quem tá no Trela, no crush e no convite de drink.");
+    const aviso = el("p", "", "Assim a galera te reconhece no Trela: no Quem tá no Trela, quando tu marca interesse e no convite de drink.");
     const usar = async f => {
       if (!f) return;
       aviso.textContent = "Enviando a foto…"; aviso.style.color = "";
@@ -1982,7 +1938,7 @@
     if (k === "contagem") {
       const d = ate(c);
       const r = el("div", "ev-relogio cont-relogio", d ? faltam(d) : "--:--");
-      out.push(pBloco("", r, el("p", "ev-mut", d ? "Até as " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "")));
+      out.push(pBloco("", r, el("p", "ev-mut", d ? "Até às " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "")));
     }
     // não perde o que está sendo digitado quando chega dado novo
     const guard = {}, foco = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.k : null;
@@ -2791,7 +2747,7 @@
     const chave = gente.map(p => p.id + (online(p) ? 1 : 0) + (abertoAgora(p) ? 1 : 0) + (p.fotoV ? ms(p.fotoV) : "")).join() + fotosPerfil.size;
     if (b.dataset.k === chave) return; b.dataset.k = chave;
     $("#quemPilha").replaceChildren(...gente.slice().sort((a, x) => (online(x) - online(a))).slice(0, 4).map(p => avatar(p.id)));
-    $("#quemAtalhoTxt").textContent = gente.length + (gente.length === 1 ? " pessoa abriu" : " pessoas abriram") + " o app hoje" + (on ? " · " + on + " online" : "") + (ab ? " · " + ab + " aberto" + (ab === 1 ? "" : "s") + " pra conhecer gente" : "") + ". Crush secreto e drink por aqui.";
+    $("#quemAtalhoTxt").textContent = gente.length + (gente.length === 1 ? " pessoa abriu" : " pessoas abriram") + " o app hoje" + (on ? " · " + on + " online" : "") + (ab ? " · " + ab + " aberto" + (ab === 1 ? "" : "s") + " pra conhecer gente" : "") + (cardapioAtivo ? ". Marca interesse e paga um drink por aqui." : ". Marca interesse em alguém por aqui.");
   }
   $("#quemAtalho").onclick = () => abrirQuem();
   let filtroQuem = false, quemIdx = 0, quemAss = "";
@@ -2837,7 +2793,7 @@
       const i = Math.round(trilho.scrollLeft / w); if (i !== quemIdx) { quemIdx = Math.max(0, Math.min(lista.length - 1, i)); atualizarNav(); }
     }, { passive: true });
     nav.append(ant, conta, prox); atualizarNav();
-    out.push(trilho, nav, el("p", "nota", "Arrasta pro lado pra ver a próxima pessoa. O crush é segredo: só avisa os dois se os dois marcarem."));
+    out.push(trilho, nav, el("p", "nota", "Arrasta pro lado pra ver a próxima pessoa. Quem tu marcar fica sabendo e, se marcar de volta, dá match."));
     box.replaceChildren(...out);
     // volta pra pessoa que estava na tela
     requestAnimationFrame(() => { const card = trilho.children[quemIdx]; if (card) trilho.scrollLeft = card.offsetLeft - trilho.offsetLeft - 16; });
@@ -2845,7 +2801,7 @@
   // online/offline muda com o tempo: confere a cada 30 s
   setInterval(() => { if (EU && telaAtual() === "tQuem") renderQuem(); if (EU && telaAtual() === "tHome") atalhoQuem(); }, 30 * 1000);
 
-  // ================= CRUSH SECRETO + TE PAGO UM DRINK =================
+  // ================= TENHO INTERESSE (MATCH) + TE PAGO UM DRINK =================
   const SV = (p, extra) => '<svg viewBox="0 0 24 24" fill="' + (extra || "none") + '" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
   function blocoSocial(p) {
     const box = el("div", "social-p"), marcado = S.interesses.has(p.id), deuMatch = S.matches.has(p.id), temPorMim = interesseEmMim(p.id);

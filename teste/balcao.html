@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202611091153">
+<link rel="stylesheet" href="estilo.css?v=202611111008">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -164,7 +164,7 @@
       <form class="bloco trela o-recado" id="formBar" novalidate>
         <h2>Recado do Trela</h2>
         <p>Entra na frente de todos os recados da galera.</p>
-        <div><label for="textoBar">Recado</label><input id="textoBar" maxlength="120" placeholder="Rodada dupla de chopp até as 22h!"></div>
+        <div><label for="textoBar">Recado</label><input id="textoBar" maxlength="120" placeholder="Rodada dupla de chopp até às 22h!"></div>
         <div class="linha">
           <label class="check"><input type="checkbox" id="repetir"> Repetir durante a noite</label>
           <button class="btn laranja" type="submit">Mandar pro telão</button>
@@ -312,11 +312,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611091153"></script>
+<script src="config.js?v=202611111008"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611091153"></script>
-<script src="comum.js?v=202611091153"></script>
-<script src="equipe.js?v=202611091153"></script>
+<script src="marca.js?v=202611111008"></script>
+<script src="comum.js?v=202611111008"></script>
+<script src="equipe.js?v=202611111008"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -688,7 +688,7 @@
     const c = A.roleta || {}, r = regraDaRoleta(c, Date.now());
     if (!r) { $("rAgora").textContent = "Coloca pelo menos uma regra"; $("rFalta").textContent = ""; return; }
     $("rAgora").textContent = r.texto;
-    $("rFalta").textContent = c.ativo ? "Troca em " + faltaTexto(r.fim) : "Ligue pra começar a girar";
+    $("rFalta").textContent = c.ativo ? "Troca em " + faltaTexto(r.fim) : "Liga pra começar a girar";
   }
 
   // ---- Contagem regressiva ----

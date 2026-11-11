@@ -158,6 +158,9 @@ service cloud.firestore {
       allow create: if ativo() && uid != eu()
         && request.resource.data.keys().hasOnly(['tipo', 'de', 'deNome', 'postId', 'texto', 'criado', 'lida'])
         && request.resource.data.de == eu() && request.resource.data.lida == false
+        // só curtida e marcação: os avisos do sistema (drink, match, interesse...) quem grava é o servidor
+        && request.resource.data.tipo in ['curtida', 'mencao']
+        && nomeOk(request.resource.data.deNome)
         && textoOk(request.resource.data.texto, 0, 60) && agora(request.resource.data);
       allow read, update, delete: if logado() && uid == eu();
     }
@@ -342,8 +345,9 @@ service cloud.firestore {
       allow delete: if logado() && resource.data.dono == eu();
     }
 
-    // ---------- Crush secreto (id = quemMarcou_marcado) ----------
-    // Cada um só vê os próprios interesses. O do outro só dá pra ler se os dois marcaram (é assim que o match aparece).
+    // ---------- Tenho interesse (id = quemMarcou_marcado) ----------
+    // Cada um só lê os próprios interesses; o do outro só dá pra ler se os dois marcaram (é assim que o match aparece).
+    // Quem foi marcado fica sabendo pelo aviso que o servidor (api/avisar.js) grava no sino.
     match /interesses/{id} {
       allow read: if logado() && (resource.data.de == eu()
         || (resource.data.para == eu() && exists(/databases/$(database)/documents/interesses/$(eu() + '_' + resource.data.de))));

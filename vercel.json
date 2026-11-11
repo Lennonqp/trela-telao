@@ -14,6 +14,25 @@
           "value": "no-cache"
         }
       ]
+    },
+    {
+      "source": "/teste/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/app",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/teste/app",
+      "destination": "/teste/index.html"
     }
   ]
 }

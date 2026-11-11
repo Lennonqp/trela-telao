@@ -23,7 +23,7 @@
 <meta property="og:description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
 <meta property="og:image" content="https://trela-telao.vercel.app/icone-512.png">
 <meta name="twitter:card" content="summary">
-<link rel="stylesheet" href="estilo.css?v=202611111641">
+<link rel="stylesheet" href="estilo.css?v=202611111738">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -521,6 +521,14 @@
   .foto-chat img{max-width:100%;max-height:calc(100% - 110px);border-radius:12px;object-fit:contain}
   .foto-chat p{margin:0;color:#fff;font-size:13px;opacity:.8;text-align:center}
   .foto-chat button{border:0;border-radius:999px;padding:12px 28px;background:var(--neon);color:#1d0612;font:700 14px var(--f-body);text-transform:uppercase;cursor:pointer}
+  /* Foto da casa (a equipe tirou) */
+  .item.casa{border-color:var(--neon);box-shadow:0 0 22px -12px var(--neon)}
+  .casa-topo{display:flex;align-items:center;gap:10px}
+  .casa-topo .ic{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--neon);color:#1d0612}
+  .casa-topo b{font-size:14px}
+  .casa-topo small{display:block;font:400 11px/1.2 var(--f-mono);color:var(--muted)}
+  .item.casa img.foto{border:6px solid #f6efe6;border-bottom-width:22px;border-radius:4px;transform:rotate(-1.5deg);box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  .tirar-foto{align-self:flex-start;border:0;background:none;color:var(--muted);font:400 12px/1.3 var(--f-body);text-decoration:underline;cursor:pointer;padding:2px 0}
   .previa-foto{max-width:100%;max-height:42vh;border-radius:14px;display:block;margin:0 auto}
   .sistema{align-self:center;font:400 12px var(--f-mono);color:var(--muted);text-align:center;max-width:90%}
   .chat-quem{flex:1;min-width:0;background:none;border:0;padding:0;text-align:left;cursor:pointer;color:var(--ink);font:700 16px/1.2 var(--f-body)}
@@ -787,9 +795,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611111641"></script>
-<script src="marca.js?v=202611111641"></script>
-<script src="comum.js?v=202611111641"></script>
+<script src="config.js?v=202611111738"></script>
+<script src="marca.js?v=202611111738"></script>
+<script src="comum.js?v=202611111738"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1728,9 +1736,16 @@
   }
   const reagi = guardado.ler("trela-reagi", {});
   function postCard(r) {
-    const card = el("article", "item" + (r.tipo === "bar" ? " bar" : ""));
+    const card = el("article", "item" + (r.tipo === "bar" ? " bar" : "") + (r.casa ? " casa" : ""));
     card.style.setProperty("--c", CORES[r.cor] || "var(--neon)");
     if (r.tipo === "bar") card.append(el("span", "selo", "Recado do Trela"));
+    else if (r.casa) {
+      // Foto da casa: a equipe tirou e mandou pro telão
+      const t = el("div", "casa-topo"), ic = el("span", "ic");
+      ic.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+      const tx = el("div"); tx.append(el("b", "", "Foto do Trela"), el("small", "", "Clique da equipe · " + horaDe(r.criado)));
+      t.append(ic, tx); card.append(t);
+    }
     else {
       const q = el("button", "quem"); q.type = "button";
       q.append(r.autor ? avatar(r.autor, "p") : el("span", "av p", (r.nome || "?")[0]));
@@ -1740,8 +1755,14 @@
       card.append(q);
     }
     if (r.acao && EVENTOS[r.acao]) { const tag = el("span", "selo-acao", EVENTOS[r.acao].rotulo); tag.style.setProperty("--c", EVENTOS[r.acao].cor); card.append(tag); }
-    if (r.fotoId) card.append(imgFoto(r.fotoId, "Foto de " + r.nome));
+    if (r.fotoId) card.append(imgFoto(r.fotoId, r.casa ? "Foto do Trela" : "Foto de " + r.nome));
     if (r.texto) card.append(el("p", "msg", r.texto));
+    if (r.casa) {
+      const pediu = !!pedidosFoto[r.id];
+      const tf = el("button", "tirar-foto", pediu ? "Pedido enviado: a equipe vai tirar essa foto" : "Apareço nessa foto e quero que tirem"); tf.type = "button"; tf.disabled = pediu;
+      tf.onclick = () => pedirTirarFoto(r);
+      card.append(tf);
+    }
     const linha = el("div", "linha");
     for (const k in REACOES) {
       const b = el("button", "reagir", REACOES[k] + " " + ((r.reacoes || {})[k] || 0)); b.type = "button";
@@ -1759,6 +1780,19 @@
       pv.onclick = () => abrirComentarios(r.id); card.append(pv);
     }
     return card;
+  }
+  // Quem aparece numa Foto do Trela pede pra tirar: vai pra equipe como denúncia (a equipe tira com um toque)
+  const pedidosFoto = guardado.ler("trela-pedidos-foto", {});
+  function pedirTirarFoto(r) {
+    folha([el("h4", "", "Tirar essa foto?"), el("p", "", "Se tu aparece nessa foto e não quer ela no telão, a equipe recebe o pedido e tira."),
+      bt("Pedir pra tirar", "sim", async () => {
+        fecharFolha();
+        try {
+          await db.collection("denuncias").add({ de: EU.uid, deNome: EU.nome, contra: "foto:" + r.id, contraNome: "Foto do Trela", texto: "Apareço nessa foto e quero que ela saia do telão.", criado: agoraServidor() });
+          pedidosFoto[r.id] = 1; guardado.salvar("trela-pedidos-foto", pedidosFoto);
+          toast(EU.uid, "Pedido enviado. A equipe tira a foto em seguida."); renderFeed();
+        } catch (e) { erroToast("Não deu pra pedir agora. Tenta de novo."); }
+      }), bt("Cancelar", "", fecharFolha)]);
   }
   function renderFeed() {
     $("#feedCount").textContent = S.posts.length ? S.posts.length + " na noite" : "";

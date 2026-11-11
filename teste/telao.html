@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202611111641">
+<link rel="stylesheet" href="estilo.css?v=202611111738">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -53,6 +53,27 @@
   .texto.foto-leg{font-size:calc(var(--u) * 3.4)}
   .texto.vazio{color:var(--muted)}
   .bar .texto{background:var(--laranja);color:#1a0b05;padding:calc(var(--u) * 1.2) calc(var(--u) * 1.8);border-radius:calc(var(--u) * 1);align-self:flex-start}
+  /* ---------- Foto da casa: flash de câmera, polaroid revelando e carimbo neon ---------- */
+  .flash{position:absolute;inset:0;z-index:40;background:#fff;opacity:0;pointer-events:none}
+  .flash.vai{animation:flash .9s ease-out}
+  @keyframes flash{0%{opacity:0}6%{opacity:1}22%{opacity:.85}100%{opacity:0}}
+  .casa .foto{position:relative}
+  .casa .foto img{border:0;border-radius:calc(var(--u) * .4);background:#f6efe6;padding:calc(var(--u) * 1.2) calc(var(--u) * 1.2) calc(var(--u) * 5);transform:rotate(-4deg);
+    box-shadow:0 0 0 calc(var(--u) * .25) rgba(255,63,164,.7),0 0 calc(var(--u) * 5) rgba(255,63,164,.55),0 calc(var(--u) * 2) calc(var(--u) * 5) rgba(0,0,0,.6)}
+  .casa.nova .foto img{animation:polaroid 1.1s cubic-bezier(.2,1.3,.4,1) both,revela 2.6s ease-out .35s both}
+  @keyframes polaroid{from{opacity:0;transform:translateY(calc(var(--u) * -12)) rotate(-18deg) scale(.7)}to{opacity:1;transform:rotate(-4deg)}}
+  @keyframes revela{from{filter:brightness(2.2) saturate(0) blur(3px)}55%{filter:brightness(1.3) saturate(.6) blur(.5px)}to{filter:none}}
+  .carimbo{position:absolute;right:calc(var(--u) * -1.5);bottom:calc(var(--u) * 1.4);z-index:2;font-family:var(--f-display);font-size:calc(var(--u) * 2.3);letter-spacing:.06em;text-transform:uppercase;line-height:1;
+    color:#fff;background:var(--neon);padding:calc(var(--u) * .7) calc(var(--u) * 1.3);border-radius:calc(var(--u) * .6);transform:rotate(7deg);
+    box-shadow:0 0 calc(var(--u) * 2.5) var(--neon),0 0 0 calc(var(--u) * .25) #fff;display:flex;align-items:center;gap:calc(var(--u) * .7);white-space:nowrap}
+  .carimbo svg{width:calc(var(--u) * 2.2);height:calc(var(--u) * 2.2)}
+  .casa.nova .carimbo{animation:carimba .55s cubic-bezier(.2,1.6,.4,1) 1.1s both}
+  @keyframes carimba{from{opacity:0;transform:rotate(-20deg) scale(3)}to{opacity:1;transform:rotate(7deg) scale(1)}}
+  .casa .selo{background:var(--neon);color:#fff}
+  .brilhos{position:absolute;inset:0;pointer-events:none;z-index:3}
+  .brilhos i{position:absolute;width:calc(var(--u) * 1.1);height:calc(var(--u) * 1.1);background:#fff;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);opacity:0;animation:brilho 1.4s ease-out both}
+  @keyframes brilho{0%{opacity:0;transform:scale(.2)}30%{opacity:1;transform:scale(1.4) rotate(45deg)}100%{opacity:0;transform:scale(.4) rotate(120deg)}}
+  @media (prefers-reduced-motion:reduce){.flash.vai,.casa.nova .foto img,.casa.nova .carimbo,.brilhos i{animation:none!important;opacity:1}.flash.vai{opacity:0}}
   .de{font-family:var(--f-mono);font-size:calc(var(--u) * 2);letter-spacing:.1em;text-transform:uppercase;color:var(--c,var(--neon));display:flex;align-items:center}
   .de:empty{display:none}
   .de .av{margin-right:calc(var(--u) * 1.1);flex:none;width:calc(var(--u) * 4.2);height:calc(var(--u) * 4.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 calc(var(--u) * 1.9)/1 var(--f-body);letter-spacing:0;color:#140c1b;background:var(--cor,var(--lilas)) center/cover no-repeat;box-shadow:0 0 0 calc(var(--u) * .3) var(--c,var(--neon))}
@@ -265,6 +286,7 @@
 <body>
 <div class="tv" id="tv">
   <div class="glow"></div>
+  <div class="flash" id="flash" aria-hidden="true"></div>
   <div class="topo">
     <div class="logo"><img src="logo.svg?v=3" alt="trela"></div>
     <div class="noite">Hoje no Trela<b id="noite">Bem-vindos</b>
@@ -300,11 +322,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611111641"></script>
+<script src="config.js?v=202611111738"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611111641"></script>
-<script src="comum.js?v=202611111641"></script>
-<script src="equipe.js?v=202611111641"></script>
+<script src="marca.js?v=202611111738"></script>
+<script src="comum.js?v=202611111738"></script>
+<script src="equipe.js?v=202611111738"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -415,7 +437,7 @@
           }
           const antes = itens.get(id);
           itens.set(id, r);
-          if (c.type === "added" && !primeira) (r.tipo === "bar" ? prioridade : novos).push(id);
+          if (c.type === "added" && !primeira) (r.tipo === "bar" || r.casa ? prioridade : novos).push(id);   // Foto da casa entra na frente
           // termômetro: post novo vale 3; reação 1; comentário 2 (os posts dos últimos 10 min contam ao ligar a TV)
           if (r.tipo !== "bar") {
             if (c.type === "added") { const t = mil(r.criado) || Date.now(); if (!primeira || Date.now() - t < JANELA_TERMO) calor.push({ t: primeira ? t : Date.now(), p: 3 }); }
@@ -506,13 +528,14 @@
     if (pararComs) { pararComs(); pararComs = null; }
     if (!r) { atual = null; palco.className = "palco entra"; palco.innerHTML = '<div class="corpo"><p class="texto vazio">Manda o primeiro recado da noite</p></div>'; return; }
     atual = r.id;
-    const bar = r.tipo === "bar";
-    palco.className = "palco entra" + (bar ? " bar" : "");
+    const bar = r.tipo === "bar", casa = !!r.casa;
+    palco.className = "palco entra" + (bar ? " bar" : "") + (casa ? " casa" + (eNovo ? " nova" : "") : "");
     palco.style.setProperty("--c", CORES[r.cor] || "var(--neon)");
     palco.innerHTML = '<div class="foto" hidden><img alt=""></div><div class="corpo">' +
       '<span class="selo" hidden></span><p class="texto"></p><div class="de"></div><div class="reacs"></div><div class="coms"></div></div>';
     const selo = palco.querySelector(".selo");
     if (bar) { selo.hidden = false; selo.textContent = "Recado do Trela"; }
+    else if (casa) { selo.hidden = false; selo.textContent = eNovo ? "Clique da equipe" : "Foto do Trela"; }
     else if (r.acao && EVENTOS[r.acao]) {
       selo.hidden = false; selo.classList.add("selo-ev"); selo.style.setProperty("--c2", EVENTOS[r.acao].cor);
       const c = A[r.acao] || {};
@@ -524,13 +547,20 @@
     t.classList.toggle("longo", (r.texto || "").length > 60);
     t.classList.toggle("foto-leg", !!r.fotoId);
     const de = palco.querySelector(".de");
-    if (!bar) {
+    if (casa) de.textContent = "Foto da casa · Equipe do Trela";
+    else if (!bar) {
       const av = document.createElement("span"); av.className = "av"; av.textContent = (r.nome || "?").charAt(0).toUpperCase();
       if (r.autor) {
         av.style.setProperty("--cor", corDe(r.autor));
         fotoDoAutor(r.autor).then(f => { if (f && atual === r.id) { av.textContent = ""; av.style.backgroundImage = "url(" + f + ")"; } });
       }
       de.appendChild(av); de.appendChild(document.createTextNode(r.nome || ""));
+    }
+    if (casa) {
+      const cb = document.createElement("span"); cb.className = "carimbo";
+      cb.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Foto do Trela';
+      palco.querySelector(".foto").appendChild(cb);
+      if (eNovo) efeitoFotoCasa(palco);
     }
     if (r.fotoId) carregarFoto(r.fotoId).then(d => { if (d && atual === r.id) { palco.querySelector(".foto img").src = d; palco.querySelector(".foto").hidden = false; } });
     desenharReacoes(r);
@@ -550,6 +580,21 @@
         });
       }, () => {});
     }
+  }
+
+  // Foto da casa chegando: flash de câmera e brilhos em volta da polaroid
+  function efeitoFotoCasa(palco) {
+    const f = $("flash");
+    f.classList.remove("vai"); void f.offsetWidth; f.classList.add("vai");
+    const b = document.createElement("div"); b.className = "brilhos";
+    for (let i = 0; i < 14; i++) {
+      const s = document.createElement("i");
+      s.style.left = (5 + Math.random() * 40) + "%"; s.style.top = (5 + Math.random() * 85) + "%";
+      s.style.animationDelay = (1 + Math.random() * 1.6).toFixed(2) + "s";
+      b.appendChild(s);
+    }
+    palco.appendChild(b);
+    setTimeout(() => { if (b.parentNode) b.parentNode.removeChild(b); }, 4500);
   }
 
   // Foto de perfil de quem mandou. O telão fica "ouvindo" o perfil de cada autor:

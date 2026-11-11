@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202611111641">
+<link rel="stylesheet" href="estilo.css?v=202611111738">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -27,6 +27,18 @@
   .check input{width:18px;height:18px;accent-color:var(--laranja)}
   .btn.laranja{background:var(--laranja);color:#1a0b05;width:auto;padding:12px 22px;font-size:18px;margin-left:auto}
   #avisoBt{width:auto;padding:12px 22px;font-size:18px;margin-left:auto}
+  /* Foto da casa */
+  .casa{border-color:var(--neon);background:linear-gradient(180deg,rgba(255,63,164,.09),transparent 60%),var(--panel)}
+  .casa h2{color:var(--neon)}
+  .casa-bts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .casa-bts button,.casa-env button{border-radius:12px;padding:13px 10px;font:700 14px/1.1 var(--f-body);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:8px}
+  .casa-bts .tirar,.casa-env .mandar{background:var(--neon);border-color:var(--neon);color:#1d0612}
+  .casa-bts button:disabled,.casa-env button:disabled{opacity:.5;cursor:default}
+  .casa-prev{display:flex;flex-direction:column;gap:10px}
+  .casa-prev img{width:100%;max-height:340px;object-fit:contain;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+  .casa-env{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .casa-env .mandar{flex:1;min-width:180px}
+  .card .pedido-foto{font-size:13px;color:var(--ink)}
   .cartela-cx .btn{font-size:16px;padding:11px}
   .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
   h3{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:400}
@@ -154,7 +166,7 @@
     /* No celular: o que pede ação primeiro, formulários depois */
     .painel{gap:22px}
     .topo,.cols{display:contents}
-    .o-drinks{order:0}.o-fila{order:1}.o-den{order:2}.o-acoes{order:3}.o-recado{order:4}.o-aviso{order:4}.o-noite{order:5}.o-telao{order:6}
+    .o-drinks{order:0}.o-fila{order:1}.o-den{order:2}.o-acoes{order:3}.o-recado{order:4}.o-aviso{order:4}.o-casa{order:4}.o-noite{order:5}.o-telao{order:6}
     body{padding:16px 14px calc(32px + env(safe-area-inset-bottom))}
     .logo{font-size:40px}
     .acoes button{padding:13px 8px}
@@ -187,6 +199,27 @@
         <p>Recados, fotos e comentários limpos vão direto pro telão. Aqui cai só o que o filtro achou suspeito e as denúncias de conversa.</p>
       </div>
     </div>
+
+    <section class="bloco casa o-casa" id="blocoCasa">
+      <h2>Foto da casa</h2>
+      <p>Tira a foto da galera e manda direto pro telão, com o selo "Foto do Trela" e um efeito de flash. Pede antes pra quem vai aparecer: quem estiver na foto pode pedir pra tirar pelo app.</p>
+      <input id="casaCam" type="file" accept="image/*" capture="environment" hidden>
+      <input id="casaGal" type="file" accept="image/*" hidden>
+      <div class="casa-bts" id="casaBts">
+        <button type="button" class="tirar" id="casaTirar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Tirar foto</button>
+        <button type="button" id="casaEscolher">Escolher da galeria</button>
+      </div>
+      <div class="casa-prev" id="casaPrev" hidden>
+        <img id="casaImg" alt="Prévia da foto da casa">
+        <div><label for="casaLegenda">Legenda (opcional)</label><input id="casaLegenda" maxlength="80" placeholder="Ex.: A mesa mais animada da noite"></div>
+        <div class="casa-env">
+          <button type="button" class="mandar" id="casaMandar">Mandar pro telão</button>
+          <button type="button" id="casaTrocar">Trocar foto</button>
+          <button type="button" id="casaCancelar">Cancelar</button>
+        </div>
+      </div>
+      <span class="anunciado" id="casaMsg" role="status"></span>
+    </section>
 
     <form class="bloco o-aviso" id="formAviso" novalidate>
       <h2>Aviso pra galera</h2>
@@ -354,11 +387,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611111641"></script>
+<script src="config.js?v=202611111738"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611111641"></script>
-<script src="comum.js?v=202611111641"></script>
-<script src="equipe.js?v=202611111641"></script>
+<script src="marca.js?v=202611111738"></script>
+<script src="comum.js?v=202611111738"></script>
+<script src="equipe.js?v=202611111738"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -385,6 +418,39 @@
     await db.collection("telao").add({ tipo: "bar", nome: "Trela", texto, cor: "laranja", repetir: $("repetir").checked, criado: agoraServidor(), reacoes: REACOES_ZERO });
     $("textoBar").value = ""; $("repetir").checked = false;
   });
+
+  // ---- Foto da casa: a equipe tira e manda direto pro telão (sem passar pela fila) ----
+  let casaDados = null;
+  const casaMsg = (t, erro) => msg("casaMsg", t, erro);
+  function casaPrevia(d) {
+    casaDados = d; $("casaImg").src = d; $("casaPrev").hidden = false; $("casaBts").hidden = true; casaMsg("");
+    $("casaLegenda").focus();
+  }
+  function casaLimpar() { casaDados = null; $("casaPrev").hidden = true; $("casaBts").hidden = false; $("casaLegenda").value = ""; $("casaImg").removeAttribute("src"); }
+  async function casaArquivo(f) {
+    if (!f) return;
+    casaMsg("Preparando a foto…");
+    try { casaPrevia(await comprimirFoto(f, 1280)); }
+    catch (e) { casaMsg("Não deu pra abrir essa foto. Tenta outra.", true); }
+  }
+  $("casaTirar").onclick = () => $("casaCam").click();
+  $("casaEscolher").onclick = () => $("casaGal").click();
+  $("casaTrocar").onclick = () => $("casaGal").click();
+  $("casaCancelar").onclick = () => { casaLimpar(); casaMsg(""); };
+  $("casaCam").onchange = e => { casaArquivo(e.target.files[0]); e.target.value = ""; };
+  $("casaGal").onchange = e => { casaArquivo(e.target.files[0]); e.target.value = ""; };
+  $("casaMandar").onclick = async () => {
+    if (!casaDados) return;
+    const texto = $("casaLegenda").value.replace(/\s+/g, " ").trim().slice(0, 80);
+    $("casaMandar").disabled = true; casaMsg("Mandando…");
+    try {
+      const fotoId = (await db.collection("fotos").add({ data: casaDados, criado: agoraServidor() })).id;
+      await db.collection("telao").add({ tipo: "foto", casa: true, nome: "Trela", texto, cor: "neon", fotoId, criado: agoraServidor(), reacoes: { fogo: 0, riso: 0, amor: 0 } });
+      casaLimpar();
+      casaMsg("Foto mandada! Ela entra no telão em seguida, com o flash.");
+    } catch (e) { casaMsg(e && e.code === "permission-denied" ? "Sem permissão pra mandar. Confere se esta conta é da equipe." : "Não deu pra mandar agora. Tenta de novo.", true); }
+    $("casaMandar").disabled = false;
+  };
 
   // Aviso pra galera: o servidor confere que é a equipe e manda pra quem abriu o app na noite
   $("formAviso").addEventListener("submit", async e => {
@@ -444,8 +510,30 @@
     return c;
   }
 
+  let denDocs = [];
+  function desenharDenuncias() {
+    $("nDen").textContent = denDocs.length ? "· " + denDocs.length : "";
+    lista($("denuncias"), denDocs.map(cartaoDenuncia), "Nenhuma denúncia. Quando alguém denuncia uma conversa, só a mensagem denunciada aparece aqui.");
+  }
   function cartaoDenuncia(doc) {
     const d = doc.data();
+    // Pedido de quem aparece numa Foto do Trela pra tirar do telão
+    if (String(d.contra || "").indexOf("foto:") === 0) {
+      const postId = d.contra.slice(5), post = (postsNoite || []).find(x => x.id === postId);
+      const c = el("div", "card alerta"); c.style.setProperty("--c", "var(--neon)");
+      c.append(el("div", "alvo", "Foto do Trela · " + d.deNome + " aparece na foto e pediu pra tirar"));
+      if (post && post.fotoId) { const img = el("img"); img.alt = "Foto do Trela"; carregarFoto(post.fotoId).then(x => x && (img.src = x)); c.append(img); }
+      else c.append(el("p", "pedido-foto", "A foto já saiu do telão."));
+      const meta = el("div", "meta"); meta.append(el("span", "tipo", "Pedido pra tirar foto"), el("span", "", horaDe(d.criado))); c.append(meta);
+      const a = el("div", "acoes");
+      if (post) a.append(botao("Tirar do telão", "perigo", async () => {
+        const b = db.batch(); b.delete(db.doc("telao/" + postId)); b.delete(doc.ref);
+        await b.commit().catch(() => {});
+        if (post.fotoId) db.doc("fotos/" + post.fotoId).delete().catch(() => {});
+      }));
+      a.append(botao(post ? "Manter a foto" : "Arquivar", "", () => doc.ref.delete()));
+      c.append(a); return c;
+    }
     const c = el("div", "card alerta"); c.style.setProperty("--c", "var(--laranja)");
     c.append(el("div", "alvo", "Conversa privada · " + d.deNome + " denunciou " + d.contraNome));
     c.append(el("p", "", d.texto ? "“" + d.texto + "”" : "(sem mensagem)"));
@@ -555,6 +643,7 @@
     parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
       postsNoite = q.docs.map(d => ({ id: d.id, ...d.data() })).concat(fotosDemoConcurso());   // + fotos de exemplo (só no teste)
       desenharConcurso(); desenharDesafio(); desenharRanking();
+      if (denDocs.some(d => String(d.data().contra || "").indexOf("foto:") === 0)) desenharDenuncias();   // pedido de tirar foto da casa
     }, () => {})));
     parar.push(ouvirNoite(desde => db.collection("curtidas").where("criado", ">=", desde).onSnapshot(q => {
       curtidasPor = curtidasDemo(); q.docs.forEach(d => { const p = d.data().post; curtidasPor[p] = (curtidasPor[p] || 0) + 1; });
@@ -863,8 +952,7 @@
       }, () => {});
     }));
     parar.push(db.collection("denuncias").orderBy("criado", "desc").limit(30).onSnapshot(s => {
-      $("nDen").textContent = s.size ? "· " + s.size : "";
-      lista($("denuncias"), s.docs.map(cartaoDenuncia), "Nenhuma denúncia. Quando alguém denuncia uma conversa, só a mensagem denunciada aparece aqui.");
+      denDocs = s.docs; desenharDenuncias();
     }, () => {}));
     parar.push(db.collection("suspensos").orderBy("criado", "desc").limit(30).onSnapshot(s => {
       lista($("suspensos"), s.docs.map(cartaoSuspenso), "Ninguém suspenso.");

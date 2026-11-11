@@ -9,7 +9,7 @@
 <title>Equipe · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="estilo.css?v=202611111008">
+<link rel="stylesheet" href="estilo.css?v=202611111641">
 <style>
   body{min-height:100dvh;padding:28px 16px calc(32px + env(safe-area-inset-bottom));background:radial-gradient(70% 40% at 15% 0%,rgba(169,92,242,.22),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(255,63,164,.18),transparent 70%),var(--bg)}
   .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
@@ -32,6 +32,8 @@
   .tv{--c:var(--neon)}
   .bc{--c:var(--laranja)}
   .cd{--c:var(--lilas);grid-column:1/-1;min-height:0}
+  .rs{--c:var(--ok);min-height:0}
+  .ag{--c:#ffc94d;min-height:0}
   .chips{display:flex;gap:6px;flex-wrap:wrap}
   .chip{font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--muted);font-variant-numeric:tabular-nums}
   .chip.tem{background:var(--laranja);border-color:var(--laranja);color:#1a0b05}
@@ -94,6 +96,20 @@
         <div class="chips"><span class="chip" id="cCardapio">— produtos</span></div>
         <span class="ir">Editar o cardápio</span>
       </a>
+      <a class="card rs" href="reservas">
+        <span class="ic"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h16M6 10v9M18 10v9M4 10l2-5h12l2 5"/><path d="M9 19v-5h6v5"/></svg></span>
+        <h2>Reservas</h2>
+        <p>A galera pede mesa pelo app. Aqui a equipe confirma ou recusa, e a pessoa é avisada.</p>
+        <div class="chips"><span class="chip" id="cReservas">— pra responder</span><span class="chip" id="cReservasOk">— confirmadas</span></div>
+        <span class="ir">Ver as reservas</span>
+      </a>
+      <a class="card ag" href="agenda">
+        <span class="ic"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span>
+        <h2>Agenda</h2>
+        <p>As próximas noites do bar. Aparecem no app, e quem pedir é avisado no dia.</p>
+        <div class="chips"><span class="chip" id="cAgenda">— noites na agenda</span></div>
+        <span class="ir">Editar a agenda</span>
+      </a>
     </div>
 
     <section class="conectar" aria-labelledby="tituloTv">
@@ -121,11 +137,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611111008"></script>
+<script src="config.js?v=202611111641"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611111008"></script>
-<script src="comum.js?v=202611111008"></script>
-<script src="equipe.js?v=202611111008"></script>
+<script src="marca.js?v=202611111641"></script>
+<script src="comum.js?v=202611111641"></script>
+<script src="equipe.js?v=202611111641"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -135,7 +151,7 @@
   function chip(elId, n, singular, plural) {
     const c = $(elId);
     c.textContent = n + " " + (n === 1 ? singular : plural);
-    c.classList.toggle("tem", n > 0 && elId !== "cNoTelao" && elId !== "cCardapio");
+    c.classList.toggle("tem", n > 0 && !["cNoTelao", "cCardapio", "cReservasOk", "cAgenda"].includes(elId));
   }
 
   // ---------- Conectar uma TV pelo código ----------
@@ -187,6 +203,15 @@
       return db.collection("fila").where("criado", ">=", desde).onSnapshot(s => chip("cFila", s.size, "pra decidir", "pra decidir"), () => {});
     }));
     parar.push(db.collection("cardapio").onSnapshot(s => chip("cCardapio", s.size, "produto", "produtos"), () => {}));
+    parar.push(db.collection("reservas").onSnapshot(s => {
+      const hoje = hojeISO(inicioDaNoite()), vale = s.docs.map(d => d.data()).filter(r => r.data >= hoje);
+      chip("cReservas", vale.filter(r => r.status === "pendente").length, "pra responder", "pra responder");
+      chip("cReservasOk", vale.filter(r => r.status === "confirmada").length, "confirmada", "confirmadas");
+    }, () => {}));
+    parar.push(db.collection("agenda").onSnapshot(s => {
+      const hoje = hojeISO(inicioDaNoite());
+      chip("cAgenda", s.docs.filter(d => d.data().data >= hoje).length, "noite na agenda", "noites na agenda");
+    }, () => {}));
     parar.push(db.collection("denuncias").onSnapshot(s => chip("cDen", s.size, "denúncia", "denúncias"), () => {}));
     parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).onSnapshot(
       s => chip("cNoTelao", s.size, "post hoje", "posts hoje"), () => {})));

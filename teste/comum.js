@@ -118,7 +118,7 @@ function dicasDoApp(temCardapio) { return DICAS_APP.filter(function (d) { return
 
 // Ações especiais: o que foi ligado antes da virada (6h) conta como desligado.
 // Assim nada fica ligado de uma noite pra outra, mesmo sem ninguém desligar.
-var ACOES_DA_NOITE = ["concurso", "desafio", "enquete", "roleta", "karaoke", "contagem", "jogo"];
+var ACOES_DA_NOITE = ["concurso", "desafio", "enquete", "roleta", "karaoke", "contagem", "jogo", "bingo", "ranking"];
 function acoesDaNoite(d) {
   var dados = d.exists ? d.data({ serverTimestamps: "estimate" }) : {};
   var pendente = !!(d.metadata && d.metadata.hasPendingWrites), noite = inicioDaNoite().getTime(), velhas = [];
@@ -219,6 +219,74 @@ function regraDaRoleta(c, agoraMs) {
 function faltaTexto(fimMs) {
   var s = Math.max(0, Math.round((fimMs - Date.now()) / 1000)), m = Math.floor(s / 60), ss = s % 60;
   return m + ":" + (ss < 10 ? "0" : "") + ss;
+}
+
+// ---------- Bingo de fotos ----------
+// Cartela de 9 tarefas, cada uma cumprida com uma foto. A equipe pode trocar as tarefas no balcão.
+var BINGO_PADRAO = [
+  "Selfie com alguém de outra mesa",
+  "Foto do brinde da tua mesa",
+  "Foto com alguém da equipe do Trela",
+  "Foto de um grupo de 5 ou mais",
+  "Foto com alguém com a mesma cor de roupa",
+  "Careta junto com um desconhecido",
+  "Foto com alguém que faz aniversário no teu mês",
+  "Foto com o telão aparecendo atrás",
+  "Foto dançando com alguém"
+];
+function tarefasDoBingo(c) {
+  var lista = (c && c.tarefas && c.tarefas.length ? c.tarefas : BINGO_PADRAO).map(function (t) { return String(t || "").trim(); }).filter(Boolean).slice(0, 9);
+  for (var i = lista.length; i < 9; i++) lista.push(BINGO_PADRAO[i]);
+  return lista;
+}
+// Quem fechou primeiro vem na frente; depois, quem tem mais fotos
+function rankingBingo(cartelas) {
+  return cartelas.slice().sort(function (a, b) {
+    var fa = ms(a.fechou), fb = ms(b.fechou);
+    if (fa || fb) return (fa || Infinity) - (fb || Infinity);
+    return (b.n || 0) - (a.n || 0) || ms(a.atualizado) - ms(b.atualizado);
+  });
+}
+
+// ---------- Ranking da noite ----------
+// posts: os recados e fotos da noite; cantou: as entradas do karaokê; curtidasPor: curtidas por post (quando der pra ler)
+function rankingDaNoite(posts, cantou, curtidasPor) {
+  var soma = function (r) { var x = r.reacoes || {}; return (x.fogo || 0) + (x.riso || 0) + (x.amor || 0); };
+  var galera = posts.filter(function (r) { return r.tipo !== "bar" && r.autor && !r.demo; });
+  var melhor = function (lista, valor) {
+    var top = null, n = 0;
+    lista.forEach(function (r) { var v = valor(r); if (v > n) { n = v; top = r; } });
+    return top ? { r: top, n: n } : null;
+  };
+  var recado = melhor(galera.filter(function (r) { return r.tipo === "recado"; }), soma);
+  var foto = melhor(galera.filter(function (r) { return r.tipo === "foto"; }), function (r) { return (curtidasPor && curtidasPor[r.id] != null) ? curtidasPor[r.id] : ((r.reacoes || {}).amor || 0); });
+  var conta = function (lista, chave) {
+    var m = {}; lista.forEach(function (x) { var k = x[chave]; if (!k) return; m[k] = m[k] || { uid: k, nome: x.nome, n: 0 }; m[k].n++; });
+    var top = null; Object.keys(m).forEach(function (k) { if (!top || m[k].n > top.n) top = m[k]; });
+    return top;
+  };
+  var cantor = conta((cantou || []).filter(function (k) { return k.status === "feito" || k.status === "cantando"; }), "autor");
+  var ativo = conta(galera, "autor");
+  var out = [];
+  if (recado) out.push({ k: "recado", rotulo: "Recado mais reagido", nome: recado.r.nome, uid: recado.r.autor, detalhe: recado.r.texto, n: recado.n, un: recado.n === 1 ? "reação" : "reações" });
+  if (foto) out.push({ k: "foto", rotulo: "Foto mais curtida", nome: foto.r.nome, uid: foto.r.autor, detalhe: foto.r.texto || "", fotoId: foto.r.fotoId, n: foto.n, un: foto.n === 1 ? "curtida" : "curtidas" });
+  if (cantor) out.push({ k: "cantor", rotulo: "Quem mais cantou", nome: cantor.nome, uid: cantor.uid, detalhe: "", n: cantor.n, un: cantor.n === 1 ? "música" : "músicas" });
+  if (ativo && ativo.n > 1) out.push({ k: "ativo", rotulo: "Quem mais mandou pro telão", nome: ativo.nome, uid: ativo.uid, detalhe: "", n: ativo.n, un: "envios" });
+  return out;
+}
+
+// ---------- Reações nas mensagens do chat ----------
+var REACOES_CHAT = { fogo: "🔥", riso: "😂", amor: "❤️", joia: "👍", uau: "😮" };
+
+// Datas da agenda e das reservas ("AAAA-MM-DD")
+function hojeISO(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function dataBonita(iso) {
+  var p = String(iso || "").split("-"); if (p.length !== 3) return iso || "";
+  var d = new Date(+p[0], +p[1] - 1, +p[2]), hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  var dif = Math.round((d - hoje) / 86400000);
+  var sem = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"][d.getDay()];
+  var dm = p[2] + "/" + p[1];
+  return dif === 0 ? "Hoje, " + dm : dif === 1 ? "Amanhã, " + dm : sem.charAt(0).toUpperCase() + sem.slice(1) + ", " + dm;
 }
 
 // A marca "feito por lennon" fica em marca.js (também usada pelo jogo, que não tem Firebase).

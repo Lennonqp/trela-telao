@@ -34,5 +34,11 @@
       "source": "/teste/app",
       "destination": "/teste/index.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/dicas?agenda=1",
+      "schedule": "0 16 * * *"
+    }
   ]
 }

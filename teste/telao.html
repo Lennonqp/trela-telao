@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202611111008">
+<link rel="stylesheet" href="estilo.css?v=202611111641">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -18,6 +18,24 @@
   .topo{position:absolute;left:calc(var(--u) * 4);right:calc(var(--u) * 4);top:calc(var(--u) * 3.5);display:flex;justify-content:space-between;align-items:flex-start}
   .logo{font-size:calc(var(--u) * 6.5)}
   .noite{text-align:right;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.14em;font-size:calc(var(--u) * 1.25);color:var(--muted)}
+  /* Termômetro da noite: sobe com recados, fotos, reações e comentários dos últimos 10 minutos */
+  .termo{display:flex;align-items:center;justify-content:flex-end;gap:calc(var(--u) * .8);margin-top:calc(var(--u) * .7);font-size:calc(var(--u) * 1.05);letter-spacing:.14em;color:var(--ink)}
+  .termo-barra{width:calc(var(--u) * 13);height:calc(var(--u) * .9);border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden}
+  .termo-barra i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--lilas),var(--neon),var(--laranja));background-size:calc(var(--u) * 13) 100%;transition:width 1.2s ease}
+  .termo.fogo span{color:var(--laranja);text-shadow:0 0 calc(var(--u) * 1) var(--laranja)}
+  /* Ranking da noite e bingo */
+  .rk-tv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:calc(var(--u) * 1.4);width:100%}
+  .rk-tv div{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:calc(var(--u) * 1.4);padding:calc(var(--u) * 1.4) calc(var(--u) * 1.8);min-width:0}
+  .rk-tv small{display:block;font-family:var(--f-mono);font-size:calc(var(--u) * 1.05);letter-spacing:.14em;text-transform:uppercase;color:var(--c)}
+  .rk-tv b{display:block;font-family:var(--f-display);font-weight:400;text-transform:uppercase;font-size:calc(var(--u) * 3.4);line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rk-tv span{display:block;font-size:calc(var(--u) * 1.3);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rk-tv em{font-style:normal;color:var(--ink);font-weight:700}
+  .bingo-tv{list-style:none;margin:0;padding:0;width:100%;display:flex;flex-direction:column;gap:calc(var(--u) * .7)}
+  .bingo-tv li{display:flex;align-items:center;gap:calc(var(--u) * 1.4);font-size:calc(var(--u) * 2.1);font-weight:600;border-bottom:1px solid var(--line);padding-bottom:calc(var(--u) * .6)}
+  .bingo-tv li b{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bingo-tv li i{font-style:normal;font-family:var(--f-display);color:var(--muted);width:calc(var(--u) * 3)}
+  .bingo-tv li span{font-family:var(--f-mono);font-size:calc(var(--u) * 1.3);color:var(--muted)}
+  .bingo-tv li.fechou span{color:var(--c);font-weight:700}
   .noite b{display:block;font-family:var(--f-display);font-weight:400;letter-spacing:.02em;font-size:calc(var(--u) * 3.2);color:var(--ink);line-height:1.05}
 
   .palco{position:absolute;left:calc(var(--u) * 4);right:calc(var(--u) * 26);top:calc(var(--u) * 14);bottom:calc(var(--u) * 5);display:flex;align-items:center}
@@ -249,7 +267,9 @@
   <div class="glow"></div>
   <div class="topo">
     <div class="logo"><img src="logo.svg?v=3" alt="trela"></div>
-    <div class="noite">Hoje no Trela<b id="noite">Bem-vindos</b></div>
+    <div class="noite">Hoje no Trela<b id="noite">Bem-vindos</b>
+      <div class="termo" id="termo" hidden><span id="termoTxt">Aquecendo</span><div class="termo-barra"><i id="termoNivel"></i></div></div>
+    </div>
   </div>
   <div class="palco" id="palco"><div class="corpo"><p class="texto vazio">Manda o primeiro recado da noite</p></div></div>
   <div class="fila" id="fila" hidden>Na fila<b id="nFila">0</b></div>
@@ -280,11 +300,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611111008"></script>
+<script src="config.js?v=202611111641"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611111008"></script>
-<script src="comum.js?v=202611111008"></script>
-<script src="equipe.js?v=202611111008"></script>
+<script src="marca.js?v=202611111641"></script>
+<script src="comum.js?v=202611111641"></script>
+<script src="equipe.js?v=202611111641"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -356,6 +376,21 @@
   const DICA_A_CADA = 5;        // uma dica do app a cada 5 recados da galera
   let desdeDica = 0, dicaIdx = 0, temCardapio = false;
 
+  // ---- Termômetro da noite ----
+  const JANELA_TERMO = 10 * 60 * 1000, TERMO_CHEIO = 45;   // 45 pontos em 10 min = pegando fogo
+  let calor = [];
+  function nivelTermometro() {
+    const desde = Date.now() - JANELA_TERMO;
+    calor = calor.filter(x => x.t >= desde);
+    return Math.min(1, calor.reduce((a, x) => a + x.p, 0) / TERMO_CHEIO);
+  }
+  function desenharTermometro() {
+    const n = nivelTermometro(), box = $("termo");
+    box.hidden = false;
+    $("termoNivel").style.width = Math.max(4, Math.round(n * 100)) + "%";
+    $("termoTxt").textContent = n >= .8 ? "Pegando fogo" : n >= .5 ? "Quente" : n >= .2 ? "Esquentando" : "Aquecendo";
+    box.classList.toggle("fogo", n >= .8);
+  }
   function ultimosDaGalera() {
     const lista = Array.from(itens.values()).filter(r => r.tipo !== "bar")
       .sort((a, b) => (mil(b.criado) || Date.now()) - (mil(a.criado) || Date.now()));
@@ -381,6 +416,15 @@
           const antes = itens.get(id);
           itens.set(id, r);
           if (c.type === "added" && !primeira) (r.tipo === "bar" ? prioridade : novos).push(id);
+          // termômetro: post novo vale 3; reação 1; comentário 2 (os posts dos últimos 10 min contam ao ligar a TV)
+          if (r.tipo !== "bar") {
+            if (c.type === "added") { const t = mil(r.criado) || Date.now(); if (!primeira || Date.now() - t < JANELA_TERMO) calor.push({ t: primeira ? t : Date.now(), p: 3 }); }
+            if (c.type === "modified" && antes) {
+              let n = 0; Object.keys(REACOES).forEach(k => { n += Math.max(0, ((r.reacoes || {})[k] || 0) - ((antes.reacoes || {})[k] || 0)); });
+              n += 2 * Math.max(0, (r.ncoms || 0) - (antes.ncoms || 0));
+              if (n) calor.push({ t: Date.now(), p: Math.min(n, 12) });
+            }
+          }
           if (c.type === "modified" && id === atual) {
             Object.keys(REACOES).forEach(k => {
               const n = ((r.reacoes || {})[k] || 0) - (((antes && antes.reacoes) || {})[k] || 0);
@@ -396,6 +440,7 @@
       }, () => {});
     });
 
+    setInterval(desenharTermometro, 5000);
     // Relógio da troca de recado (setInterval funciona melhor que requestAnimationFrame em TV)
     setInterval(() => {
       const p = Math.min(1, (Date.now() - inicio) / (durAtual * 1000));
@@ -559,11 +604,14 @@
     enquete: { cor: "var(--lilas)", rotulo: "Enquete", ic: svgIc('<path d="M5 20V10M12 20V4M19 20v-7"/>'), titulo: c => c.pergunta || "Enquete" },
     roleta: { cor: "var(--ok)", rotulo: "Roleta", ic: svgIc('<circle cx="12" cy="13" r="8"/><path d="M12 5v16M4 13h16M6.3 7.3l11.4 11.4M17.7 7.3 6.3 18.7"/><path d="M10 2.5h4L12 5z" fill="currentColor"/>'), titulo: c => { const r = regraDaRoleta(c); return r ? r.texto : "Roleta de regras"; } },
     musica: { cor: "#7cc6fe", rotulo: "Pedidos de música", ic: svgIc('<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>'), titulo: c => "Pede tua música pelo app" },
-    contagem: { cor: "#ffd166", rotulo: "Contagem", ic: svgIc('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'), titulo: c => c.titulo || "Falta pouco" }
+    contagem: { cor: "#ffd166", rotulo: "Contagem", ic: svgIc('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'), titulo: c => c.titulo || "Falta pouco" },
+    bingo: { cor: "#ff8fc2", rotulo: "Bingo de fotos", ic: svgIc('<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/>'), titulo: c => "9 fotos pra fechar a cartela" },
+    ranking: { cor: "#ffc94d", rotulo: "Ranking da noite", ic: svgIc('<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8.5 20h7"/>'), titulo: c => "Quem mais bombou hoje" }
   };
   // O karaokê não aparece no telão (só no app)
-  const ORDEM_EV = ["concurso", "desafio", "enquete", "roleta", "contagem"];
+  const ORDEM_EV = ["concurso", "desafio", "enquete", "bingo", "roleta", "contagem", "ranking"];
   let A = {}, postsAcao = [], curtidasPor = {}, votos = [];
+  let cartelasBingo = [], postsRanking = [], curtidasRanking = {}, cantouRanking = [];
   function eventosAtivos() { return ORDEM_EV.filter(k => A[k] && A[k].ativo).map(k => ({ k: k, c: A[k], m: EVENTOS[k] })); }
   function temRoda() {
     return Array.from(itens.values()).some(r => (r.tipo !== "bar" && !foraDaRoda(r)) || r.repetir);
@@ -579,7 +627,7 @@
   const escHtml = t => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
   function iniciarEventos() {
-    let pararPosts = null, pararCurt = null, pararVotos = null, votosDe = null;
+    let pararPosts = null, pararCurt = null, pararVotos = null, votosDe = null, pararBingo = null, pararRk = null;
     // refaz às 6h: o que foi ligado na noite anterior conta como desligado
     ouvirNoite(() => db.doc("config/acoes").onSnapshot(d => {
       A = acoesDaNoite(d).dados;
@@ -599,6 +647,21 @@
         if (enq) pararVotos = db.collection("enquetes").doc(enq).collection("votos").onSnapshot(q => { votos = q.docs.map(x => x.data().opcao); atualizarEventoNaTela(); }, () => {});
       }
       if (!(A.concurso && A.concurso.ativo)) seqConc = [];
+      // Bingo: cartelas da noite
+      const bingoOn = !!(A.bingo && A.bingo.ativo);
+      if (bingoOn && !pararBingo) pararBingo = ouvirNoite(() => db.collection("bingos").where("noite", "==", hojeISO(inicioDaNoite())).onSnapshot(q => {
+        cartelasBingo = q.docs.map(x => junta({ id: x.id }, x.data())); atualizarEventoNaTela();
+      }, () => {}));
+      if (!bingoOn && pararBingo) { pararBingo(); pararBingo = null; cartelasBingo = []; }
+      // Ranking da noite: todos os posts, as curtidas e quem cantou
+      const rkOn = !!(A.ranking && A.ranking.ativo);
+      if (rkOn && !pararRk) {
+        const p1 = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => { postsRanking = q.docs.map(x => junta({ id: x.id }, x.data())); atualizarEventoNaTela(); }, () => {}));
+        const p2 = ouvirNoite(desde => db.collection("curtidas").where("criado", ">=", desde).onSnapshot(q => { curtidasRanking = {}; q.docs.forEach(x => { const p = x.data().post; curtidasRanking[p] = (curtidasRanking[p] || 0) + 1; }); atualizarEventoNaTela(); }, () => {}));
+        const p3 = ouvirNoite(desde => db.collection("karaoke").where("criado", ">=", desde).onSnapshot(q => { cantouRanking = q.docs.map(x => x.data()); atualizarEventoNaTela(); }, () => {}));
+        pararRk = () => { p1(); p2(); p3(); };
+      }
+      if (!rkOn && pararRk) { pararRk(); pararRk = null; postsRanking = []; curtidasRanking = {}; cantouRanking = []; }
       talvezCelebrar();
       desenharVivo(false);
       // evento desligado enquanto estava na tela: passa pro próximo
@@ -769,6 +832,16 @@
     } else if (k === "musica") {
       corpo = '<p class="ev-regra">Escolhe a música e manda pelo app. A equipe recebe na hora.</p>';
       cta = "Pede pelo app: <b>menu</b> › <b>Eventos da noite</b>";
+    } else if (k === "bingo") {
+      const rk = rankingBingo(cartelasBingo).filter(b => (b.n || 0) > 0).slice(0, 6);
+      corpo = rk.length ? '<ol class="bingo-tv">' + rk.map((b, i) => '<li class="' + (b.fechou ? "fechou" : "") + '"><i>' + (i + 1) + "º</i><b>" + escHtml(b.nome) + "</b><span>" + (b.fechou ? "BINGO!" : (b.n || 0) + " de 9") + "</span></li>").join("") + "</ol>"
+        : '<div class="ev-vazio">Ninguém começou ainda.<br>Pega a tua cartela!</div>';
+      cta = "Cada tarefa é uma foto. Pega a cartela: <b>menu</b> › <b>Eventos da noite</b>";
+    } else if (k === "ranking") {
+      const rk = rankingDaNoite(postsRanking, cantouRanking, curtidasRanking);
+      corpo = rk.length ? '<div class="rk-tv">' + rk.map(x => "<div><small>" + escHtml(x.rotulo) + "</small><b>" + escHtml(x.nome) + "</b><span><em>" + x.n + " " + x.un + "</em>" + (x.detalhe ? " · " + escHtml(x.detalhe) : "") + "</span></div>").join("") + "</div>"
+        : '<div class="ev-vazio">A noite tá só começando.<br>Manda o primeiro recado!</div>';
+      cta = "Manda recado e foto, reage e canta: o ranking muda ao vivo";
     } else if (k === "contagem") {
       const d = ateDe(c);
       corpo = '<div class="relogio-tv cont-tv">' + (d ? faltam(d) : "--:--") + "</div>" +

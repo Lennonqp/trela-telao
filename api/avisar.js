@@ -30,7 +30,7 @@ async function montarAvisos(db, uid, pedido) {
     const m = await ler("conversas/" + par + "/mensagens/" + id);
     if (!m || m.de !== uid) return [];
     const outro = membros.find(x => x !== uid);
-    return [{ para: outro, titulo: await nomeDe(uid), texto: corta(m.texto, 110), caminho: "", tag: "chat-" + par, chave: "msg_" + id }];
+    return [{ para: outro, titulo: await nomeDe(uid), texto: m.fotoId ? "Mandou uma foto. Abre o Trela pra ver." : corta(m.texto, 110), caminho: "", tag: "chat-" + par, chave: "msg_" + id }];
   }
   if (tipo === "drink") {
     const d = id && await ler("drinks/" + id); if (!d) return [];
@@ -58,6 +58,18 @@ async function montarAvisos(db, uid, pedido) {
     const quando = i.criado && i.criado.toMillis ? i.criado.toMillis() : 0;
     const nome = await nomeDe(uid);
     return [{ para: i.para, titulo: corta(nome, 30) + " tem interesse em ti", texto: "Abre o perfil e marca \"Tenho interesse\" de volta pra dar match.", caminho: "", tag: "interesse-" + id, chave: "interesse_" + id + "_" + quando }];
+  }
+  if (tipo === "reserva") {   // a equipe confirmou ou recusou uma reserva de mesa
+    const r = id && await ler("reservas/" + id);
+    if (!r || !(await ler("equipe/" + uid))) return [];
+    const dia = String(r.data || "").split("-").reverse().slice(0, 2).join("/");
+    const quando = dia + " às " + (r.hora || "") + ", " + r.pessoas + (r.pessoas === 1 ? " pessoa" : " pessoas");
+    const recado = r.resposta ? " Recado do Trela: " + corta(r.resposta, 80) : "";
+    if (r.status === "confirmada")
+      return [{ para: r.de, titulo: "Tua reserva foi confirmada!", texto: "Mesa pra " + quando + "." + recado, caminho: "", tag: "reserva-" + id, chave: "reserva_" + id + "_confirmada" }];
+    if (r.status === "recusada")
+      return [{ para: r.de, titulo: "Não deu pra reservar dessa vez", texto: "Pedido de " + quando + "." + recado, caminho: "", tag: "reserva-" + id, chave: "reserva_" + id + "_recusada" }];
+    return [];
   }
   if (tipo === "aviso") {   // curtida ou menção (o app grava em avisos/{dono}/itens)
     const dono = String(pedido.dono || "").replace(/\//g, "");
@@ -99,7 +111,7 @@ async function montarAvisos(db, uid, pedido) {
 
 // Tipos que também ficam guardados no sino do app (até a pessoa apagar).
 // Curtida e menção o próprio app já grava; mensagem fica no ícone do chat.
-const NO_SINO = ["drink", "match", "amizade", "karaoke", "mesa", "interesse"];
+const NO_SINO = ["drink", "match", "amizade", "karaoke", "mesa", "interesse", "reserva"];
 
 async function guardarNoSino(adm, db, de, aviso, pedido) {
   const sub = String(pedido.tipo || "");
@@ -139,6 +151,50 @@ async function enviar(adm, db, de, aviso, base, pedido) {
   return r.successCount;
 }
 
+// Hora de Brasília: a noite vira às 6h (igual ao app)
+function inicioDaNoiteMs(agora) {
+  const b = new Date((agora || Date.now()) - 3 * 3600 * 1000);
+  if (b.getUTCHours() < 6) b.setUTCDate(b.getUTCDate() - 1);
+  return Date.parse(b.toISOString().slice(0, 10) + "T06:00:00-03:00");
+}
+// Aviso da equipe pra todo mundo que abriu o app nesta noite: fica no sino e vai pro celular de quem ativou
+async function avisoGeral(adm, db, uid, pedido, base) {
+  const eq = await db.doc("equipe/" + uid).get();
+  if (!eq.exists) return { status: 403, corpo: { erro: "só a equipe manda aviso geral" } };
+  const texto = String(pedido.texto || "").replace(/\s+/g, " ").trim();
+  if (texto.length < 3 || texto.length > 140) return { status: 400, corpo: { erro: "o aviso precisa ter de 3 a 140 letras" } };
+  const agora = Date.now(), chave = "geral_" + agora;
+  const pessoas = await db.collection("usuarios").where("ultimoAcesso", ">=", adm.firestore.Timestamp.fromMillis(inicioDaNoiteMs(agora))).get();
+  const tokens = [], quem = pessoas.docs.filter(p => p.id !== uid);
+  // em lotes de 25 pessoas ao mesmo tempo, pra não estourar o tempo do servidor em noite cheia
+  for (let i = 0; i < quem.length; i += 25) {
+    await Promise.all(quem.slice(i, i + 25).map(async p => {
+      await db.doc("avisos/" + p.id + "/itens/sino_" + chave).create({
+        tipo: "sistema", sub: "geral", de: "", deNome: "Trela", titulo: "Aviso do Trela", texto, caminho: "", alvo: "",
+        criado: adm.firestore.FieldValue.serverTimestamp(), lida: false
+      }).catch(() => {});
+      const ap = await db.collection("tokens").doc(p.id).collection("aparelhos").get();
+      ap.docs.forEach(a => tokens.push({ dono: p.id, t: a.id }));
+    }));
+  }
+  let enviados = 0;
+  for (let i = 0; i < tokens.length; i += 500) {
+    const lote = tokens.slice(i, i + 500);
+    const r = await adm.messaging().sendEachForMulticast({
+      tokens: lote.map(x => x.t),
+      data: { titulo: "Aviso do Trela", texto, url: base, tag: "geral" },
+      webpush: { headers: { Urgency: "high", TTL: "1800" } }
+    });
+    enviados += r.successCount;
+    await Promise.all(r.responses.map((x, j) => {
+      const c = x.error && x.error.code;
+      if (c === "messaging/registration-token-not-registered" || c === "messaging/invalid-registration-token") return db.collection("tokens").doc(lote[j].dono).collection("aparelhos").doc(lote[j].t).delete().catch(() => {});
+      return null;
+    }));
+  }
+  return { status: 200, corpo: { ok: true, pessoas: quem.length, enviados } };
+}
+
 module.exports = async (req, res) => {
   // Abrir no navegador mostra se está tudo pronto (não mostra nada secreto)
   if (req.method === "GET") return res.status(200).json({ servidor: "ok", chavePrivadaNoVercel: !!process.env.FIREBASE_SERVICE_ACCOUNT });
@@ -157,6 +213,7 @@ module.exports = async (req, res) => {
     const db = adm.firestore();
     const susp = await db.doc("suspensos/" + uid).get();
     if (susp.exists) return res.status(403).json({ erro: "conta suspensa" });
+    if (pedido.tipo === "geral") { const g = await avisoGeral(adm, db, uid, pedido, base); return res.status(g.status).json(g.corpo); }
     const avisos = await montarAvisos(db, uid, pedido);
     let enviados = 0;
     for (const a of avisos) enviados += await enviar(adm, db, uid, a, base, pedido);

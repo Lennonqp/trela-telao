@@ -31,6 +31,14 @@ Três páginas:
 - **Foto de perfil**: quem entra sem foto vê a janela "Insere tua foto de perfil" (Inserir foto, Tirar selfie, Ignorar por enquanto). Ignorando, volta só na noite seguinte.
 - **Dicas no telão**: a cada 5 recados entra uma dica do app (Tenho interesse, anel, Encara ou Bebe, notificações; drink e cardápio só com o cardápio ligado e com produto). A lista fica em `DICAS_APP` no `comum.js`.
 - **Encara ou Bebe**: no menu ≡ (`/encara`). Dá pra jogar num celular só ou montar uma mesa com os amigos do app: o convite aparece na tela deles, cada um acompanha no próprio celular e uma roleta sorteia a vez. Trava de 18+.
+- **Reação nas mensagens**: no chat, toca numa mensagem e escolhe a reação (uma por pessoa; toca de novo na mesma pra tirar).
+- **Foto no chat**: botão de câmera ao lado do campo de mensagem. A foto fica em `conversas/{par}/fotos`, só os dois amigos leem, e é apagada do banco quando quem recebeu fecha a foto ("Foto vista").
+- **Bingo de fotos** (ação especial no balcão): cartela de 9 tarefas, cada uma cumprida com uma foto. As fotos não vão pro telão (só a equipe vê, em "Ver fotos" no balcão); o telão mostra quem fechou a cartela e quantas fotos cada um tem. A equipe pode trocar as 9 tarefas.
+- **Ranking da noite** (ação especial no balcão): recado mais reagido, foto mais curtida, quem mais cantou e quem mais mandou pro telão. Aparece no telão, no app (Eventos da noite) e no balcão.
+- **Termômetro da noite**: barrinha no canto do telão que sobe com recados, fotos, reações e comentários dos últimos 10 minutos.
+- **Agenda do Trela**: a equipe cadastra as próximas noites em `/agenda`; no app aparece "Agenda" no menu ≡ com o botão "Me avisa". No dia (do meio-dia em diante) o servidor manda o lembrete pro sino e, no Android, pro celular. O `vercel.json` tem um agendamento diário às 13h (`/api/dicas?agenda=1`); o telão e o app aberto também disparam.
+- **Aviso pra galera**: no balcão, a equipe escreve um aviso que chega pra todo mundo que abriu o app na noite (janela no app, sino e notificação). Não aparece no telão.
+- **Reserva de mesa**: a equipe liga em `/reservas`. No app, "Reservar mesa" no menu ≡: dia, horário, quantas pessoas e observação. A equipe confirma ou recusa (com um recado) e a pessoa é avisada; ela pode cancelar.
 - **Conversas privadas só entre amigos**. As conversas não zeram às 6h; no menu ⋯ do chat tem **Apagar conversa** (só pra mim, ou pra nós dois). Dá pra desfazer amizade, bloquear e denunciar. Mensagem com palavrão chega borrada.
 
 ## 1. Criar o Firebase (gratuito)

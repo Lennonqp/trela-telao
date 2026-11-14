@@ -7,7 +7,7 @@ const admin = require("firebase-admin");
 const DICAS = [
   { k: "crush", titulo: "Tá de olho em alguém?", texto: "Marca \"Tenho interesse\" em Quem tá no Trela, no app. A pessoa fica sabendo e, se marcar de volta, dá match." },
   { k: "drink", precisaCardapio: true, titulo: "Quer oferecer um drink pra alguém?", texto: "Manda o convite pelo app. Se a pessoa aceitar, tu pega no balcão." },
-  { k: "anel", titulo: "Aberto pra conhecer gente?", texto: "Liga o anel dourado no menu do app." },
+  { k: "anel", titulo: "Aberto pra conhecer gente?", texto: "Liga no menu do app e aparece pra galera com o selo." },
   { k: "encara", titulo: "Encara ou Bebe", texto: "Chama teus amigos do app pra jogar, cada um no seu celular." },
   { k: "cardapio", precisaCardapio: true, titulo: "O cardápio do Trela tá no app", texto: "Com os preços de 500 e 700 ml." }
 ];

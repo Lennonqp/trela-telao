@@ -23,7 +23,7 @@
 <meta property="og:description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
 <meta property="og:image" content="https://trela-telao.vercel.app/icone-512.png">
 <meta name="twitter:card" content="summary">
-<link rel="stylesheet" href="estilo.css?v=202611132152">
+<link rel="stylesheet" href="estilo.css?v=202611132208">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -75,10 +75,10 @@
   .quem-nav button:disabled{opacity:.3}
   .quem-nav span{font:400 13px var(--f-mono);color:var(--muted);min-width:70px;text-align:center}
   .perfil-eu-foto{border:0;background:none;padding:0;cursor:pointer;border-radius:50%}
-  .av.aberto{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ouro),0 0 14px rgba(255,201,77,.55)}
   .aberto-t{color:var(--ouro)!important}
-  .tag-aberto{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ouro);color:var(--ouro);border-radius:999px;padding:4px 10px;font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
-  .tag-aberto::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ouro);box-shadow:0 0 6px var(--ouro)}
+  .tag-aberto{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ouro);background:var(--ouro);color:#2a1c00;border-radius:999px;padding:4px 10px;font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
+  .tag-aberto::before{content:"";width:7px;height:7px;border-radius:50%;background:#2a1c00}
+  .quem-foto .tag-aberto{position:absolute;left:10px;top:10px;z-index:1;box-shadow:0 4px 14px rgba(0,0,0,.45)}
   .gv-aberto{font:400 14px/1.3 var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);display:flex;align-items:center;gap:12px;margin:2px 0 6px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.02);cursor:pointer}
   .push-faixa{flex:none;display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid rgba(255,63,164,.35);background:linear-gradient(90deg,rgba(255,63,164,.2),rgba(169,92,242,.14));color:var(--ink);padding:10px 16px;font:700 14px/1.2 var(--f-body);cursor:pointer;text-align:left}
   .push-faixa svg{flex:none;color:var(--neon)}
@@ -791,7 +791,7 @@
       <div><b id="gvNome"></b><button type="button" class="gv-link" id="gvPerfil">Ver e editar perfil</button></div>
       <button class="ico" id="gvFechar" type="button" aria-label="Fechar menu">×</button>
     </div>
-    <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>Um anel dourado aparece na tua foto até às 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
+    <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>O selo aparece no teu perfil e no Quem tá no Trela até às 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
     <button type="button" class="gv-item" data-ir="quem"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6.2 4.6 1.8 5.1 4.8"/></svg><span>Quem tá no Trela</span></button>
     <button type="button" class="gv-item" data-ir="cardapio" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/></svg><span>Cardápio</span></button>
@@ -810,9 +810,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611132152"></script>
-<script src="marca.js?v=202611132152"></script>
-<script src="comum.js?v=202611132152"></script>
+<script src="config.js?v=202611132208"></script>
+<script src="marca.js?v=202611132208"></script>
+<script src="comum.js?v=202611132208"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1453,7 +1453,7 @@
     }, () => {}));
 
     // Sem foto de perfil: pede logo ao entrar
-    setTimeout(() => janelaPush(pedirFotoPerfil), 900);
+    setTimeout(() => janelaPush(() => perguntarAberto(pedirFotoPerfil)), 900);
     // Dicas por notificação: o app aberto também "dá corda" no servidor (o telão é o principal)
     const chamarDicas = () => auth.currentUser && auth.currentUser.getIdToken().then(t => fetch("/api/dicas", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json", Authorization: "Bearer " + t }, body: JSON.stringify({ base: BASE_APP }) })).catch(() => {});
     const tDicas = setInterval(chamarDicas, 10 * 60 * 1000); setTimeout(chamarDicas, 90 * 1000); parar.push(() => clearInterval(tDicas));
@@ -2150,12 +2150,22 @@
   $("#gavetaFundo").onclick = fecharMenu;
   document.addEventListener("keydown", e => { if (e.key === "Escape" && menuAberto()) fecharMenu(); });
   $("#gvPerfil").onclick = () => { fecharMenu(); abrirMeuPerfil(); };
-  $("#gvAberto").onchange = async e => {
-    const on = e.target.checked;
+  async function marcarAberto(on) {
     EU.aberto = on ? FS.Timestamp.now() : null; desenharAberto(); redesenhar();
-    try { await db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor(), aberto: on ? agoraServidor() : null }, { merge: true }); toast(EU.uid, on ? "Pronto! Teu anel dourado avisa que tu tá aberto pra conhecer gente." : "Anel dourado desligado."); }
+    try { await db.doc("usuarios/" + EU.uid).set({ nome: EU.nome, cor: EU.cor, ultimoAcesso: agoraServidor(), aberto: on ? agoraServidor() : null }, { merge: true }); toast(EU.uid, on ? "Pronto! O selo \"Aberto pra conhecer gente\" tá no teu perfil até o fim da noite." : "Selo desligado."); }
     catch (err) { EU.aberto = on ? null : FS.Timestamp.now(); desenharAberto(); redesenhar(); erroToast(err && err.code === "permission-denied" ? "Não deu pra salvar: as regras do banco precisam ser publicadas." : "Não deu pra salvar agora. Tenta de novo."); }
-  };
+  }
+  $("#gvAberto").onchange = e => marcarAberto(e.target.checked);
+  // Ao entrar: pergunta uma vez por noite se a pessoa está aberta pra conhecer gente (depois segue pro "depois")
+  function perguntarAberto(depois) {
+    const seguir = () => { if (depois) setTimeout(depois, 500); };
+    if (!EU || !$("#veu").hidden || abertoAgora(EU) || guardado.ler("trela-aberto-perguntado", "") === chaveNoite()) return seguir();
+    guardado.salvar("trela-aberto-perguntado", chaveNoite());
+    folha([el("span", "tag-aberto", "Aberto pra conhecer gente"), el("h4", "", "Hoje tu tá aberto pra conhecer gente?"),
+      el("p", "", "Quem diz sim ganha esse selo no perfil e no Quem tá no Trela, só até o fim da noite. Dá pra mudar no menu quando quiser."),
+      bt("Sim, tô aberto", "sim", () => { fecharFolha(); marcarAberto(true); seguir(); }),
+      bt("Hoje não", "", () => { fecharFolha(); seguir(); })]);
+  }
   function desenharAberto() { const on = abertoAgora(EU); $("#gvAberto").checked = on; $("#gvAbertoBox").classList.toggle("on", on); desenharPush(); }
   $("#gvSair").onclick = () => { fecharMenu(); auth.signOut(); };
   document.querySelectorAll(".gv-item[data-ir]").forEach(b => b.onclick = () => {
@@ -3004,7 +3014,7 @@
         f.append(b1, b2); out.push(f);
       }
       const lista = agora.filter(p => !filtroAbertos || abertoAgora(p)).sort((a, b) => abertoAgora(b) - abertoAgora(a));
-      if (filtroAbertos && !lista.length) out.push(el("div", "vazio-s", "Ninguém ligou o anel dourado ainda. Liga o teu no menu ≡!"));
+      if (filtroAbertos && !lista.length) out.push(el("div", "vazio-s", "Ninguém marcou que tá aberto ainda. Liga o teu no menu ≡!"));
       lista.forEach(p => out.push(linhaPessoa(p.id, (abertoAgora(p) ? "Aberto pra conhecer gente · " : "") + (ehAmigo(p.id) ? "Teu amigo · " + (online(p) ? "online agora" : visto(p.ultimoAcesso).toLowerCase()) : online(p) ? "Online agora" : visto(p.ultimoAcesso)), abertoAgora(p) ? "aberto-t" : online(p) ? "on" : "", botaoRelacao(p.id, true), false, () => abrirPerfil(p.id))));
       out.push(el("p", "nota", "Aparece aqui só quem está com o app do Trela aberto agora."));
     }
@@ -3114,7 +3124,7 @@
   }
 
   // ================= QUEM TÁ NO TRELA =================
-  // Todo mundo que abriu o app nesta noite (mesmo que tenha fechado). Online e quem ligou o anel vêm primeiro.
+  // Todo mundo que abriu o app nesta noite (mesmo que tenha fechado). Online e quem está aberto vêm primeiro.
   const hojeNoTrela = () => { const noite = inicioDaNoite().getTime(); return S.noBar.filter(p => p.id !== EU.uid && !S.bloqueados.has(p.id) && ms(p.ultimoAcesso) >= noite); };
   function listaQuem() {
     return hojeNoTrela().filter(p => !filtroQuem || abertoAgora(p))
@@ -3147,17 +3157,16 @@
     const b2 = el("button", filtroQuem ? "on" : "", "Abertos pra conhecer gente · " + nAb); b2.type = "button"; b2.onclick = () => { filtroQuem = true; quemIdx = 0; renderQuem(); };
     f.append(b1, b2); out.push(f);
     if (!lista.length) {
-      out.push(el("div", "vazio-s", filtroQuem ? "Ninguém ligou o anel dourado ainda. Liga o teu no menu ≡!" : "Ainda não chegou ninguém hoje. Chama a galera!"));
+      out.push(el("div", "vazio-s", filtroQuem ? "Ninguém marcou que tá aberto ainda. Liga o teu no menu ≡!" : "Ainda não chegou ninguém hoje. Chama a galera!"));
       box.replaceChildren(...out); return;
     }
     quemIdx = Math.min(quemIdx, lista.length - 1);
     const trilho = el("div", "quem-trilho");
     lista.forEach(p => {
       const c = el("article", "quem-card" + (abertoAgora(p) ? " aberto" : "")); c.dataset.id = p.id;
-      const ft = el("button", "quem-foto"); ft.type = "button"; ft.setAttribute("aria-label", "Ver o perfil de " + p.nome); ft.append(avatar(p.id, "g")); ft.onclick = () => abrirPerfil(p.id);
+      const ft = el("button", "quem-foto"); ft.type = "button"; ft.setAttribute("aria-label", "Ver o perfil de " + p.nome); ft.append(avatar(p.id, "g")); if (abertoAgora(p)) ft.append(el("span", "tag-aberto", "Aberto pra conhecer gente")); ft.onclick = () => abrirPerfil(p.id);
       const nm = el("div", "quem-nome"); nm.append(el("b", "", p.nome), el("span", online(p) ? "on" : "", online(p) ? "Online agora" : (visto(p.ultimoAcesso) || "Esteve aqui hoje")));
       c.append(ft, nm);
-      if (abertoAgora(p)) c.append(el("span", "tag-aberto", "Aberto pra conhecer gente"));
       c.append(blocoSocial(p));
       trilho.append(c);
     });

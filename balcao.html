@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Balcão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202611091153">
+<link rel="stylesheet" href="estilo.css?v=202611132152">
 <style>
   body{padding:20px 16px 40px}
   .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -25,6 +25,20 @@
   .check{display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer;margin:0;text-transform:none;letter-spacing:0;font-family:var(--f-body);color:var(--ink)}
   .check input{width:18px;height:18px;accent-color:var(--laranja)}
   .btn.laranja{background:var(--laranja);color:#1a0b05;width:auto;padding:12px 22px;font-size:18px;margin-left:auto}
+  #avisoBt{width:auto;padding:12px 22px;font-size:18px;margin-left:auto}
+  /* Foto da casa */
+  .casa{border-color:var(--neon);background:linear-gradient(180deg,rgba(255,63,164,.09),transparent 60%),var(--panel)}
+  .casa h2{color:var(--neon)}
+  .casa-bts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .casa-bts button,.casa-env button{border-radius:12px;padding:13px 10px;font:700 14px/1.1 var(--f-body);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:8px}
+  .casa-bts .tirar,.casa-env .mandar{background:var(--neon);border-color:var(--neon);color:#1d0612}
+  .casa-bts button:disabled,.casa-env button:disabled{opacity:.5;cursor:default}
+  .casa-prev{display:flex;flex-direction:column;gap:10px}
+  .casa-prev img{width:100%;max-height:340px;object-fit:contain;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+  .casa-env{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .casa-env .mandar{flex:1;min-width:180px}
+  .card .pedido-foto{font-size:13px;color:var(--ink)}
+  .cartela-cx .btn{font-size:16px;padding:11px}
   .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
   h3{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:400}
   .lista{display:flex;flex-direction:column;gap:10px}
@@ -136,13 +150,22 @@
   .regra-agora span{font:400 11px var(--f-mono);color:var(--muted);letter-spacing:.06em}
   #rRegras{min-height:150px;font-size:14px;line-height:1.5}
   .anunciado{font-size:12px;color:var(--ok);min-height:16px;margin:0}
+  #bTarefas{min-height:190px;font-size:14px;line-height:1.5}
+  .cartela-ver{position:fixed;inset:0;z-index:50;background:rgba(8,5,12,.86);display:flex;align-items:center;justify-content:center;padding:16px}
+  .cartela-cx{width:100%;max-width:560px;max-height:100%;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .cartela-cx h3{margin:0;font-size:18px}
+  .cartela-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .cartela-g figure{margin:0;display:flex;flex-direction:column;gap:4px}
+  .cartela-g img,.cartela-g .falta{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+  .cartela-g .falta{display:grid;place-items:center;color:var(--muted);font-size:12px}
+  .cartela-g figcaption{font-size:11px;color:var(--muted);line-height:1.25}
   @media (max-width:960px){.acoes-grade{grid-template-columns:minmax(0,1fr)}}
   @media (max-width:960px){.cols{grid-template-columns:minmax(0,1fr)}}
   @media (max-width:700px){
     /* No celular: o que pede ação primeiro, formulários depois */
     .painel{gap:22px}
     .topo,.cols{display:contents}
-    .o-drinks{order:0}.o-fila{order:1}.o-den{order:2}.o-acoes{order:3}.o-recado{order:4}.o-noite{order:5}.o-telao{order:6}
+    .o-drinks{order:0}.o-fila{order:1}.o-den{order:2}.o-acoes{order:3}.o-recado{order:4}.o-aviso{order:4}.o-casa{order:4}.o-noite{order:5}.o-telao{order:6}
     body{padding:16px 14px calc(32px + env(safe-area-inset-bottom))}
     .logo{font-size:40px}
     .acoes button{padding:13px 8px}
@@ -163,7 +186,7 @@
       <form class="bloco trela o-recado" id="formBar" novalidate>
         <h2>Recado do Trela</h2>
         <p>Entra na frente de todos os recados da galera.</p>
-        <div><label for="textoBar">Recado</label><input id="textoBar" maxlength="120" placeholder="Rodada dupla de chopp até as 22h!"></div>
+        <div><label for="textoBar">Recado</label><input id="textoBar" maxlength="120" placeholder="Rodada dupla de chopp até às 22h!"></div>
         <div class="linha">
           <label class="check"><input type="checkbox" id="repetir"> Repetir durante a noite</label>
           <button class="btn laranja" type="submit">Mandar pro telão</button>
@@ -175,6 +198,37 @@
         <p>Recados, fotos e comentários limpos vão direto pro telão. Aqui cai só o que o filtro achou suspeito e as denúncias de conversa.</p>
       </div>
     </div>
+
+    <section class="bloco casa o-casa" id="blocoCasa">
+      <h2>Foto da casa</h2>
+      <p>Tira a foto da galera e manda direto pro telão, com o selo "Foto do Trela" e um efeito de flash. Pede antes pra quem vai aparecer: quem estiver na foto pode pedir pra tirar pelo app.</p>
+      <input id="casaCam" type="file" accept="image/*" capture="environment" hidden>
+      <input id="casaGal" type="file" accept="image/*" hidden>
+      <div class="casa-bts" id="casaBts">
+        <button type="button" class="tirar" id="casaTirar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Tirar foto</button>
+        <button type="button" id="casaEscolher">Escolher da galeria</button>
+      </div>
+      <div class="casa-prev" id="casaPrev" hidden>
+        <img id="casaImg" alt="Prévia da foto da casa">
+        <div><label for="casaLegenda">Legenda (opcional)</label><input id="casaLegenda" maxlength="80" placeholder="Ex.: A mesa mais animada da noite"></div>
+        <div class="casa-env">
+          <button type="button" class="mandar" id="casaMandar">Mandar pro telão</button>
+          <button type="button" id="casaTrocar">Trocar foto</button>
+          <button type="button" id="casaCancelar">Cancelar</button>
+        </div>
+      </div>
+      <span class="anunciado" id="casaMsg" role="status"></span>
+    </section>
+
+    <form class="bloco o-aviso" id="formAviso" novalidate>
+      <h2>Aviso pra galera</h2>
+      <p>Chega no celular de quem abriu o app nesta noite: abre uma janela no app, fica no sino e vira notificação pra quem ativou. Não aparece no telão.</p>
+      <div><label for="textoAviso">Aviso</label><input id="textoAviso" maxlength="140" placeholder="Última chamada no balcão em 15 minutos"></div>
+      <div class="linha">
+        <span class="anunciado" id="avisoMsg" role="status"></span>
+        <button class="btn" type="submit" id="avisoBt">Avisar a galera</button>
+      </div>
+    </form>
 
 
     <section class="bloco drinks o-drinks" id="drinksBox" aria-labelledby="tituloDrinks" hidden>
@@ -188,7 +242,7 @@
       <header class="ac-cab">
         <div><h2 id="tituloAcoes">Ações especiais</h2><p>Liga só o que vai rolar na noite. Participações, votos e pedidos zeram às 6h, junto com a noite.</p></div>
         <div class="ac-todos">
-          <div><b>Todas as ações</b><span id="acLigadas">0 de 6 ligadas</span></div>
+          <div><b>Todas as ações</b><span id="acLigadas">0 de 8 ligadas</span></div>
           <label class="chave" title="Ligar ou desligar todas"><input type="checkbox" id="lig-todas" aria-label="Ligar ou desligar todas as ações"><span></span></label>
         </div>
       </header>
@@ -278,6 +332,27 @@
           <p class="anunciado" id="kMsg" role="status"></p>
         </article>
 
+        <!-- Bingo de fotos -->
+        <article class="acao" id="ac-bingo" style="--c:#ff8fc2">
+          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/></svg></span><div><h3>Bingo de fotos</h3><p>Cada pessoa recebe uma cartela com 9 tarefas e cumpre cada uma tirando uma foto. Quem fechar aparece no telão. As fotos não vão pro telão: só a equipe vê aqui.</p><span class="estado" id="est-bingo">Desligado</span></div>
+          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-bingo" aria-label="Ligar Bingo de fotos"><span></span></label></div>
+          <div class="campos">
+            <div><label for="bTarefas">As 9 tarefas (uma por linha)</label><textarea id="bTarefas" rows="9" spellcheck="false"></textarea></div>
+          </div>
+          <div class="acao-bts"><button type="button" id="bPadrao">Voltar pras tarefas sugeridas</button></div>
+          <p class="sub-t">Cartelas da noite <span id="bTotal"></span></p>
+          <div class="ranking" id="bLista"></div>
+          <p class="anunciado" id="bMsg" role="status"></p>
+        </article>
+
+        <!-- Ranking da noite -->
+        <article class="acao" id="ac-ranking" style="--c:#ffc94d">
+          <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8.5 20h7"/></svg></span><div><h3>Ranking da noite</h3><p>Mostra no telão e no app o recado mais reagido, a foto mais curtida, quem mais cantou e quem mais mandou pro telão. Bom pra ligar perto do fim da noite.</p><span class="estado" id="est-ranking">Desligado</span></div>
+          <label class="chave" title="Ligar ou desligar"><input type="checkbox" id="lig-ranking" aria-label="Ligar Ranking da noite"><span></span></label></div>
+          <p class="sub-t">Como está agora</p>
+          <div class="ranking" id="rkLista"></div>
+        </article>
+
         <!-- Contagem regressiva -->
         <article class="acao" id="ac-contagem" style="--c:#ffd166">
           <div class="acao-topo"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></span><div><h3>Contagem regressiva</h3><p>Happy hour, rodada dobrada, show… mostra quanto tempo falta no app e no telão.</p><span class="estado" id="est-contagem">Desligado</span></div>
@@ -311,11 +386,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611091153"></script>
+<script src="config.js?v=202611132152"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611091153"></script>
-<script src="comum.js?v=202611091153"></script>
-<script src="equipe.js?v=202611091153"></script>
+<script src="marca.js?v=202611132152"></script>
+<script src="comum.js?v=202611132152"></script>
+<script src="equipe.js?v=202611132152"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -341,6 +416,56 @@
     const texto = $("textoBar").value.trim(); if (!texto) return;
     await db.collection("telao").add({ tipo: "bar", nome: "Trela", texto, cor: "laranja", repetir: $("repetir").checked, criado: agoraServidor(), reacoes: REACOES_ZERO });
     $("textoBar").value = ""; $("repetir").checked = false;
+  });
+
+  // ---- Foto da casa: a equipe tira e manda direto pro telão (sem passar pela fila) ----
+  let casaDados = null;
+  const casaMsg = (t, erro) => msg("casaMsg", t, erro);
+  function casaPrevia(d) {
+    casaDados = d; $("casaImg").src = d; $("casaPrev").hidden = false; $("casaBts").hidden = true; casaMsg("");
+    $("casaLegenda").focus();
+  }
+  function casaLimpar() { casaDados = null; $("casaPrev").hidden = true; $("casaBts").hidden = false; $("casaLegenda").value = ""; $("casaImg").removeAttribute("src"); }
+  async function casaArquivo(f) {
+    if (!f) return;
+    casaMsg("Preparando a foto…");
+    try { casaPrevia(await comprimirFoto(f, 1280)); }
+    catch (e) { casaMsg("Não deu pra abrir essa foto. Tenta outra.", true); }
+  }
+  $("casaTirar").onclick = () => $("casaCam").click();
+  $("casaEscolher").onclick = () => $("casaGal").click();
+  $("casaTrocar").onclick = () => $("casaGal").click();
+  $("casaCancelar").onclick = () => { casaLimpar(); casaMsg(""); };
+  $("casaCam").onchange = e => { casaArquivo(e.target.files[0]); e.target.value = ""; };
+  $("casaGal").onchange = e => { casaArquivo(e.target.files[0]); e.target.value = ""; };
+  $("casaMandar").onclick = async () => {
+    if (!casaDados) return;
+    const texto = $("casaLegenda").value.replace(/\s+/g, " ").trim().slice(0, 80);
+    $("casaMandar").disabled = true; casaMsg("Mandando…");
+    try {
+      const fotoId = (await db.collection("fotos").add({ data: casaDados, criado: agoraServidor() })).id;
+      await db.collection("telao").add({ tipo: "foto", casa: true, nome: "Trela", texto, cor: "neon", fotoId, criado: agoraServidor(), reacoes: { fogo: 0, riso: 0, amor: 0 } });
+      casaLimpar();
+      casaMsg("Foto mandada! Ela entra no telão em seguida, com o flash.");
+    } catch (e) { casaMsg(e && e.code === "permission-denied" ? "Sem permissão pra mandar. Confere se esta conta é da equipe." : "Não deu pra mandar agora. Tenta de novo.", true); }
+    $("casaMandar").disabled = false;
+  };
+
+  // Aviso pra galera: o servidor confere que é a equipe e manda pra quem abriu o app na noite
+  $("formAviso").addEventListener("submit", async e => {
+    e.preventDefault();
+    const texto = $("textoAviso").value.replace(/\s+/g, " ").trim();
+    if (texto.length < 3) return msg("avisoMsg", "Escreve o aviso primeiro.", true);
+    $("avisoBt").disabled = true; msg("avisoMsg", "Mandando…");
+    try {
+      const t = await auth.currentUser.getIdToken();
+      const r = await fetch("/api/avisar", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + t }, body: JSON.stringify({ tipo: "geral", texto, base: new URL("./", document.baseURI).pathname }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.erro || "erro");
+      $("textoAviso").value = "";
+      msg("avisoMsg", "Aviso enviado pra " + j.pessoas + (j.pessoas === 1 ? " pessoa" : " pessoas") + " às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + ".");
+    } catch (err) { msg("avisoMsg", "Não deu pra mandar: " + (err && err.message && err.message !== "erro" ? err.message : "tenta de novo") + ".", true); }
+    $("avisoBt").disabled = false;
   });
 
   function cartao(doc, noTelao) {
@@ -384,8 +509,30 @@
     return c;
   }
 
+  let denDocs = [];
+  function desenharDenuncias() {
+    $("nDen").textContent = denDocs.length ? "· " + denDocs.length : "";
+    lista($("denuncias"), denDocs.map(cartaoDenuncia), "Nenhuma denúncia. Quando alguém denuncia uma conversa, só a mensagem denunciada aparece aqui.");
+  }
   function cartaoDenuncia(doc) {
     const d = doc.data();
+    // Pedido de quem aparece numa Foto do Trela pra tirar do telão
+    if (String(d.contra || "").indexOf("foto:") === 0) {
+      const postId = d.contra.slice(5), post = (postsNoite || []).find(x => x.id === postId);
+      const c = el("div", "card alerta"); c.style.setProperty("--c", "var(--neon)");
+      c.append(el("div", "alvo", "Foto do Trela · " + d.deNome + " aparece na foto e pediu pra tirar"));
+      if (post && post.fotoId) { const img = el("img"); img.alt = "Foto do Trela"; carregarFoto(post.fotoId).then(x => x && (img.src = x)); c.append(img); }
+      else c.append(el("p", "pedido-foto", "A foto já saiu do telão."));
+      const meta = el("div", "meta"); meta.append(el("span", "tipo", "Pedido pra tirar foto"), el("span", "", horaDe(d.criado))); c.append(meta);
+      const a = el("div", "acoes");
+      if (post) a.append(botao("Tirar do telão", "perigo", async () => {
+        const b = db.batch(); b.delete(db.doc("telao/" + postId)); b.delete(doc.ref);
+        await b.commit().catch(() => {});
+        if (post.fotoId) db.doc("fotos/" + post.fotoId).delete().catch(() => {});
+      }));
+      a.append(botao(post ? "Manter a foto" : "Arquivar", "", () => doc.ref.delete()));
+      c.append(a); return c;
+    }
     const c = el("div", "card alerta"); c.style.setProperty("--c", "var(--laranja)");
     c.append(el("div", "alvo", "Conversa privada · " + d.deNome + " denunciou " + d.contraNome));
     c.append(el("p", "", d.texto ? "“" + d.texto + "”" : "(sem mensagem)"));
@@ -416,7 +563,8 @@
 
   // =================== AÇÕES ESPECIAIS ===================
   // Tudo fica em config/acoes (a equipe liga/desliga e configura). O app e o telão leem de lá.
-  const ACOES = ["concurso", "desafio", "enquete", "roleta", "karaoke", "contagem"];
+  const ACOES = ["concurso", "desafio", "enquete", "bingo", "roleta", "karaoke", "contagem", "ranking"];
+  let bCartelas = [];        // cartelas do bingo da noite
   let A = {};                // config/acoes atual
   let postsNoite = [];       // posts da noite (pra concurso e desafio)
   let curtidasPor = {};      // curtidas por post nesta noite
@@ -461,6 +609,9 @@
     $("rPadrao").onclick = () => { salvar("roleta", { regras: REGRAS_PADRAO.slice() }); $("rRegras").value = REGRAS_PADRAO.join("\n"); };
     const relRoleta = setInterval(desenharRoleta, 1000); parar.push(() => clearInterval(relRoleta));
     $("tHora").onchange = () => salvar("contagem", { hora: $("tHora").value, ate: horarioAlvo() });
+    // Bingo: as 9 tarefas
+    $("bTarefas").oninput = () => salvarDepois("bTarefas", () => salvar("bingo", { tarefas: $("bTarefas").value.split("\n").map(x => x.trim().slice(0, 60)).filter(Boolean).slice(0, 9) }));
+    $("bPadrao").onclick = () => { salvar("bingo", { tarefas: BINGO_PADRAO.slice() }); $("bTarefas").value = BINGO_PADRAO.join("\n"); };
 
     // refaz às 6h: o que foi ligado na noite anterior desliga sozinho (e grava desligado no banco)
     parar.push(ouvirNoite(() => ref.onSnapshot(d => {
@@ -483,21 +634,27 @@
       if (document.activeElement !== $("rIntervalo")) $("rIntervalo").value = String((A.roleta && A.roleta.intervalo) || 20);
       if (livre("rRegras")) $("rRegras").value = regrasDaRoleta(A.roleta || {}).join("\n");
       if (A.contagem && A.contagem.hora && document.activeElement !== $("tHora")) $("tHora").value = A.contagem.hora;
-      ouvirVotos(); desenharConcurso(); desenharDesafio(); desenharKaraoke(); desenharRoleta();
+      if (livre("bTarefas")) $("bTarefas").value = tarefasDoBingo(A.bingo || {}).join("\n");
+      ouvirVotos(); desenharConcurso(); desenharDesafio(); desenharKaraoke(); desenharRoleta(); desenharBingo(); desenharRanking();
     }, () => {})));
 
     // Posts e curtidas da noite
     parar.push(ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
-      postsNoite = q.docs.map(d => ({ id: d.id, ...d.data() }));
-      desenharConcurso(); desenharDesafio();
+      postsNoite = q.docs.map(d => ({ id: d.id, ...d.data() }));   // + fotos de exemplo (só no teste)
+      desenharConcurso(); desenharDesafio(); desenharRanking();
+      if (denDocs.some(d => String(d.data().contra || "").indexOf("foto:") === 0)) desenharDenuncias();   // pedido de tirar foto da casa
     }, () => {})));
     parar.push(ouvirNoite(desde => db.collection("curtidas").where("criado", ">=", desde).onSnapshot(q => {
       curtidasPor = {}; q.docs.forEach(d => { const p = d.data().post; curtidasPor[p] = (curtidasPor[p] || 0) + 1; });
-      desenharConcurso();
+      desenharConcurso(); desenharRanking();
     }, () => {})));
+    // Bingo: cartelas da noite
+    parar.push(ouvirNoite(desde => db.collection("bingos").where("noite", "==", hojeISO(inicioDaNoite())).onSnapshot(q => {
+      bCartelas = q.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() })); desenharBingo();
+    }, () => { lista($("bLista"), [], "Não deu pra ler as cartelas. Confere se as regras novas do banco foram publicadas."); })));
     // Karaokê: quem canta agora + fila
     parar.push(ouvirNoite(desde => db.collection("karaoke").where("criado", ">=", desde).orderBy("criado").onSnapshot(q => {
-      kItens = q.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() })); desenharKaraoke();
+      kItens = q.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() })); desenharKaraoke(); desenharRanking();
     }, () => { lista($("kFila"), [], "Não deu pra ler a fila. Confere se as regras novas do banco foram publicadas."); })));
 
     // Botões
@@ -582,6 +739,43 @@
     lista($("kFila"), fila.map((x, i) => linhaK(x, (i + 1) + "º", [
       botao("Remover", "mini perigo", () => x.ref.delete().catch(() => {}))
     ], false)), A.karaoke && A.karaoke.ativo ? "Fila vazia. A galera entra pelo app." : "Liga o karaokê pra galera poder entrar na fila.");
+  }
+  // ---- Bingo de fotos: quem está jogando, ver as fotos e apagar a cartela ----
+  function desenharBingo() {
+    const rk = rankingBingo(bCartelas).filter(b => (b.n || 0) > 0);
+    $("bTotal").textContent = rk.length ? "· " + rk.length : "";
+    lista($("bLista"), rk.map((b, i) => {
+      const l = el("div", "rk" + (b.fechou ? " top" : ""));
+      const q = el("div", "quem"); q.append(el("b", "", b.nome || ""), el("span", "", b.fechou ? "Fechou às " + horaDe(b.fechou) : (b.n || 0) + " de 9 fotos"));
+      const bts = el("div", "rk-bts");
+      bts.append(botao("Ver fotos", "mini", () => verCartela(b)), botao("Apagar", "mini perigo", () => b.ref.delete().then(() => msg("bMsg", "Cartela de " + b.nome + " apagada.")).catch(() => msg("bMsg", "Não deu pra apagar.", true))));
+      l.append(el("div", "pos", (i + 1) + "º"), q, bts); return l;
+    }), A.bingo && A.bingo.ativo ? "Ninguém começou ainda." : "Liga o bingo pra galera receber a cartela.");
+  }
+  function verCartela(b) {
+    const velho = document.getElementById("cartelaVer"); if (velho) velho.remove();
+    const tarefas = tarefasDoBingo(A.bingo || {});
+    const fundo = el("div", "cartela-ver"); fundo.id = "cartelaVer";
+    const cx = el("div", "cartela-cx");
+    cx.append(el("h3", "", "Cartela de " + (b.nome || "")));
+    const g = el("div", "cartela-g");
+    tarefas.forEach((t, i) => {
+      const c = el("figure", ""), id = (b.fotos || {})[i];
+      if (id) { const im = el("img"); im.alt = t; carregarFoto(id).then(d => d && (im.src = d)); c.append(im); } else c.append(el("div", "falta", "sem foto"));
+      c.append(el("figcaption", "", t)); g.append(c);
+    });
+    cx.append(g, botao("Fechar", "btn", () => fundo.remove()));
+    fundo.append(cx); fundo.onclick = e => { if (e.target === fundo) fundo.remove(); };
+    document.body.append(fundo);
+  }
+  // ---- Ranking da noite (o mesmo cálculo do telão) ----
+  function desenharRanking() {
+    const rk = rankingDaNoite(postsNoite, kItens, curtidasPor);
+    lista($("rkLista"), rk.map(x => {
+      const l = el("div", "rk");
+      const q = el("div", "quem"); q.append(el("b", "", x.rotulo + ": " + x.nome), el("span", "", (x.detalhe ? x.detalhe + " · " : "") + x.n + " " + x.un));
+      l.append(q); return l;
+    }), "Ainda não tem o que contar nesta noite.");
   }
   // Tira quem está cantando e (se pedir) chama o primeiro da fila
   async function chamarProximo(chamarFila) {
@@ -687,7 +881,7 @@
     const c = A.roleta || {}, r = regraDaRoleta(c, Date.now());
     if (!r) { $("rAgora").textContent = "Coloca pelo menos uma regra"; $("rFalta").textContent = ""; return; }
     $("rAgora").textContent = r.texto;
-    $("rFalta").textContent = c.ativo ? "Troca em " + faltaTexto(r.fim) : "Ligue pra começar a girar";
+    $("rFalta").textContent = c.ativo ? "Troca em " + faltaTexto(r.fim) : "Liga pra começar a girar";
   }
 
   // ---- Contagem regressiva ----
@@ -757,8 +951,7 @@
       }, () => {});
     }));
     parar.push(db.collection("denuncias").orderBy("criado", "desc").limit(30).onSnapshot(s => {
-      $("nDen").textContent = s.size ? "· " + s.size : "";
-      lista($("denuncias"), s.docs.map(cartaoDenuncia), "Nenhuma denúncia. Quando alguém denuncia uma conversa, só a mensagem denunciada aparece aqui.");
+      denDocs = s.docs; desenharDenuncias();
     }, () => {}));
     parar.push(db.collection("suspensos").orderBy("criado", "desc").limit(30).onSnapshot(s => {
       lista($("suspensos"), s.docs.map(cartaoSuspenso), "Ninguém suspenso.");

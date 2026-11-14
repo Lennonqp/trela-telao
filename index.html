@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0d0a12">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -12,7 +15,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trela">
 <title>Trela</title>
-<link rel="stylesheet" href="estilo.css?v=202611091153">
+<meta name="description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Trela">
+<meta property="og:title" content="Trela">
+<meta property="og:description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
+<meta property="og:image" content="https://trela-telao.vercel.app/icone-512.png">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="estilo.css?v=202611132152">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -41,19 +51,19 @@
   .quem-atalho .pilha{display:flex;flex:none}
   .quem-atalho .pilha .av{width:34px;height:34px;font-size:14px;box-shadow:0 0 0 2px var(--bg)}
   .quem-atalho .pilha .av + .av{margin-left:-10px}
-  .quem-atalho div{flex:1;min-width:0}
+  .quem-atalho > div{flex:1;min-width:0}
   .quem-atalho b{display:block;font:400 20px/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
-  .quem-atalho span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+  .quem-atalho > div > span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
   .quem-atalho i{font-style:normal;font-size:26px;color:var(--neon)}
   #tQuem .rolagem{gap:14px}
   .quem-topo{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .quem-topo p{margin:0;color:var(--muted);font-size:13px}
-  .quem-trilho{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:0 -16px;padding:0 16px 6px;scrollbar-width:none;overscroll-behavior-x:contain}
+  .quem-trilho{flex:none;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:0 -16px;padding:0 16px 6px;scrollbar-width:none;overscroll-behavior-x:contain}
   .quem-trilho::-webkit-scrollbar{display:none}
   .quem-card{flex:0 0 calc(100% - 8px);scroll-snap-align:center;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:12px}
   .quem-card.aberto{border-color:var(--ouro);box-shadow:0 0 22px -8px rgba(255,201,77,.6)}
-  .quem-foto{position:relative;border:0;padding:0;background:none;cursor:pointer;border-radius:16px;overflow:hidden}
-  .quem-foto .av{width:100%;height:auto;aspect-ratio:1;border-radius:16px;font-size:110px;box-shadow:none}
+  .quem-foto{flex:none;position:relative;border:0;padding:0;background:none;cursor:pointer;border-radius:16px;overflow:hidden}
+  .quem-foto .av{width:100%;height:auto;aspect-ratio:1;max-height:38vh;border-radius:16px;font-size:clamp(64px,22vh,110px);box-shadow:none}
   .quem-foto .av.on::after{width:22px;height:22px;right:12px;bottom:12px;min-width:0;min-height:0;box-shadow:0 0 0 3px var(--panel)}
   .quem-nome{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .quem-nome b{font:400 28px/1 var(--f-display);text-transform:uppercase}
@@ -69,8 +79,6 @@
   .tag-aberto{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ouro);color:var(--ouro);border-radius:999px;padding:4px 10px;font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
   .tag-aberto::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ouro);box-shadow:0 0 6px var(--ouro)}
   .gv-aberto{font:400 14px/1.3 var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);display:flex;align-items:center;gap:12px;margin:2px 0 6px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.02);cursor:pointer}
-  .gv-aberto.gv-push.on{border-color:var(--neon);background:rgba(255,63,164,.07)}
-  .gv-push .sw:checked{background:var(--neon)}
   .push-faixa{flex:none;display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid rgba(255,63,164,.35);background:linear-gradient(90deg,rgba(255,63,164,.2),rgba(169,92,242,.14));color:var(--ink);padding:10px 16px;font:700 14px/1.2 var(--f-body);cursor:pointer;text-align:left}
   .push-faixa svg{flex:none;color:var(--neon)}
   .push-faixa span{flex:1;min-width:0}
@@ -85,15 +93,6 @@
   .passos-ios{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;text-align:left;font-size:14px;line-height:1.4}
   .passos-ios li::marker{color:var(--neon);font-weight:800}
   .passos-ios svg{vertical-align:-3px;color:var(--neon)}
-  .seta-ios{position:fixed;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:4px;width:min(320px,90vw);pointer-events:auto}
-  .seta-ios.baixo{bottom:8px}
-  .seta-ios.cima{top:6px;flex-direction:column-reverse;left:auto;right:8px;transform:none;align-items:flex-end}
-  .seta-txt{background:var(--neon);color:#fff;border-radius:14px;padding:10px 14px;font-size:14px;line-height:1.35;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.5)}
-  .seta-txt small{display:block;font-size:12px;opacity:.9;margin-top:4px}
-  .seta-flecha{font-size:42px;line-height:1;color:var(--neon);text-shadow:0 0 12px var(--neon);animation:setaPula .8s ease-in-out infinite alternate}
-  .seta-ios.cima .seta-flecha{margin-right:28px}
-  @keyframes setaPula{from{transform:translateY(0)}to{transform:translateY(10px)}}
-  .seta-ios.cima .seta-flecha{animation-direction:alternate-reverse}
   .push-ios{border:1px dashed var(--ouro);border-radius:12px;padding:10px 12px;color:var(--ink)!important;font-size:13px!important}
   .push-card{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--neon);background:linear-gradient(135deg,rgba(255,63,164,.14),rgba(169,92,242,.08));border-radius:16px;padding:14px;margin:12px 0}
   .push-card svg{flex:none;width:26px;height:26px;color:var(--neon);margin-top:2px}
@@ -110,8 +109,9 @@
   .sw{position:relative;flex:none;width:44px;height:26px;appearance:none;-webkit-appearance:none;border-radius:999px;background:var(--line);margin:0;cursor:pointer;transition:background .2s}
   .sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
   .sw:checked{background:var(--ouro)}.sw:checked::after{transform:translateX(18px)}
-  .filtro-g{display:flex;gap:8px;margin-bottom:2px}
-  .filtro-g button{border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:7px 12px;font:700 12px/1 var(--f-body);cursor:pointer}
+  .filtro-g{flex:none;display:flex;gap:8px;margin-bottom:2px;overflow-x:auto;scrollbar-width:none}
+  .filtro-g::-webkit-scrollbar{display:none}
+  .filtro-g button{flex:none;white-space:nowrap;border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:7px 12px;font:700 12px/1 var(--f-body);cursor:pointer}
   .filtro-g button.on{background:var(--ouro);border-color:var(--ouro);color:#2a1c00}
   .social-p{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:4px}
   .bt-crush{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:999px;padding:12px;border:1.5px dashed var(--neon);background:none;color:var(--neon);font:700 14px/1.1 var(--f-body);cursor:pointer}
@@ -201,6 +201,21 @@
   .cd-foto{flex:none;width:84px;height:84px;border-radius:12px;background:var(--bg) center/cover no-repeat;border:1px solid var(--line);cursor:zoom-in;padding:0}
   .cd-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
   .cd-info h4{margin:0;font:700 16px/1.25 var(--f-body)}
+  .cd-mandar{align-self:flex-start;margin-top:4px;display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:6px 11px;font:700 12px/1 var(--f-body);cursor:pointer}
+  .cd-mandar svg{width:14px;height:14px}
+  .cd-prod.destaque{border-color:var(--neon);box-shadow:0 0 0 2px var(--neon)}
+  .lista-amigos{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto}
+  .lista-amigos button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 12px;font:600 15px/1.2 var(--f-body);cursor:pointer}
+  .lista-amigos small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+  .lista-amigos small.on{color:var(--ok)}
+  .msg.item-m{display:flex;flex-direction:column;gap:8px;min-width:200px;max-width:82%}
+  .item-m .im-top{display:flex;align-items:center;gap:10px}
+  .item-m .im-ft{flex:none;width:48px;height:48px;border-radius:10px;background:var(--bg) center/cover no-repeat;display:grid;place-items:center;color:var(--muted)}
+  .item-m .im-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .item-m .im-t small{font:400 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+  .item-m .im-t b{font-size:15px;line-height:1.2}
+  .item-m .im-t span{font-size:13px;opacity:.9}
+  .item-m .im-ver{align-self:flex-start;border:1px solid currentColor;background:none;color:inherit;border-radius:999px;padding:6px 12px;font:700 12px/1 var(--f-body);cursor:pointer}
   .cd-info p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
   .cd-precos{display:flex;flex-direction:column;gap:4px;margin-top:4px}
   .cd-preco{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;font-variant-numeric:tabular-nums}
@@ -208,6 +223,46 @@
   .cd-preco b{font:700 16px/1 var(--f-body)}
   .cd-preco .cd-uni{color:#ff7a2e;font-weight:700;font-size:14px;text-shadow:0 0 6px rgba(255,90,31,.75),0 0 16px rgba(255,90,31,.4)}
   .cd-preco .cd-uni em{font-style:normal;font:700 10px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;border:1px solid #ff7a2e;border-radius:6px;padding:2px 5px;margin-right:5px;position:relative;top:-1px;box-shadow:0 0 8px rgba(255,90,31,.45),inset 0 0 6px rgba(255,90,31,.25)}
+  /* Bingo de fotos e ranking da noite */
+  .bingo-grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .bingo-cel{position:relative;aspect-ratio:1;border-radius:14px;border:1.5px dashed var(--line);background:var(--panel2);color:var(--ink);padding:8px;display:flex;align-items:center;justify-content:center;text-align:center;font:600 11.5px/1.25 var(--f-body);cursor:pointer;overflow:hidden}
+  .bingo-cel span{position:relative;z-index:1;overflow-wrap:anywhere}
+  .bingo-cel.feita{border:1.5px solid #ff8fc2}
+  .bingo-cel.feita img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0;filter:brightness(.55)}
+  .bingo-cel.feita span{color:#fff;text-shadow:0 1px 4px #000}
+  .bingo-check{position:absolute;top:5px;right:5px;z-index:2;width:22px;height:22px;border-radius:50%;background:#ff8fc2;color:#140c1b;display:grid;place-items:center}
+  .bingo-ok{font-size:17px!important;text-align:center}
+  .rk-linha{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:12px 0;color:var(--ink);cursor:pointer}
+  .ev-bloco h4 + .rk-linha{border-top:0}
+  .rk-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .rk-t small{font:400 10px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:#ffc94d}
+  .rk-t b{font-size:16px}
+  .rk-t span{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rk-n{flex:none;text-align:right;display:flex;flex-direction:column}
+  .rk-n b{font:400 26px/1 var(--f-display);color:#ffc94d}
+  .rk-n small{font:400 10px/1.2 var(--f-mono);color:var(--muted)}
+  /* Agenda e reservas */
+  #tAgenda .rolagem,#tReservas .rolagem{gap:12px}
+  .ag-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
+  .ag-card.hoje{border-color:var(--neon);box-shadow:0 0 22px -10px var(--neon)}
+  .ag-quando{font:700 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--lilas)}
+  .ag-card.hoje .ag-quando{color:var(--neon)}
+  .ag-card h4{margin:0;font:400 24px/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.01em;overflow-wrap:anywhere}
+  .ag-card p{margin:0;color:var(--muted);font-size:14px;overflow-wrap:anywhere}
+  .ag-avisa{align-self:flex-start;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:9px 14px;font:700 13px/1 var(--f-body);cursor:pointer}
+  .ag-avisa.on{border-color:var(--ok);color:var(--ok);background:rgba(61,220,151,.08)}
+  .rs-form{display:flex;flex-direction:column;gap:10px}
+  .rs-form label{font:400 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px}
+  .rs-dupla{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .rs-pessoas{display:flex;align-items:center;gap:12px}
+  .rs-pessoas button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--ink);font-size:22px;cursor:pointer}
+  .rs-pessoas b{min-width:44px;text-align:center;font:400 26px/1 var(--f-display)}
+  .rs-item{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c,var(--muted));border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:5px}
+  .rs-item b{font-size:15px}
+  .rs-item span{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+  .rs-st{font:700 10px/1 var(--f-mono)!important;letter-spacing:.12em;text-transform:uppercase;color:var(--c)!important}
+  .rs-item button{align-self:flex-start;margin-top:4px;border:1px solid var(--line);background:none;color:var(--muted);border-radius:999px;padding:7px 12px;font:700 12px/1 var(--f-body);cursor:pointer}
+  .aviso-geral{font-size:18px!important;color:var(--ink)!important;font-weight:600;overflow-wrap:anywhere}
   .cd-vazio{color:var(--muted);text-align:center;padding:40px 16px;margin:0}
   .cd-zoom{position:fixed;inset:0;z-index:40;background:rgba(5,3,8,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px}
   .cd-zoom img{max-width:100%;max-height:70vh;border-radius:16px}
@@ -351,8 +406,13 @@
   @keyframes caiV{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--rot))}}
 
   /* Login */
-  #tLogin{justify-content:center;padding:28px 24px;gap:14px;overflow-y:auto;background:radial-gradient(70% 45% at 50% 18%,rgba(255,63,164,.22),transparent 70%),radial-gradient(60% 40% at 50% 100%,rgba(169,92,242,.25),transparent 70%),var(--bg)}
+  #tLogin{justify-content:flex-start;padding:28px 24px;gap:14px;overflow-y:auto;background:radial-gradient(70% 45% at 50% 18%,rgba(255,63,164,.22),transparent 70%),radial-gradient(60% 40% at 50% 100%,rgba(169,92,242,.25),transparent 70%),var(--bg)}
   #tLogin .logo{font-size:96px;text-align:center}
+  /* centraliza sem cortar o topo quando a tela é baixa (dá pra rolar) */
+  #tLogin > *{flex:none}
+  #tLogin > :first-child{margin-top:auto}
+  #tLogin > :last-child{margin-bottom:auto}
+  @media (max-height:720px){#tLogin{padding-top:18px;gap:10px}#tLogin .logo{font-size:60px}#tLogin .tag{font-size:22px;margin-bottom:4px}}
   .tag{font-family:var(--f-display);font-weight:400;font-size:28px;line-height:1.05;text-transform:uppercase;text-align:center;margin:0 0 10px;text-wrap:balance}
   .tag em{font-style:normal;color:var(--laranja)}
   .entrar{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border-radius:999px;padding:14px;font:700 15px/1 var(--f-body);cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
@@ -458,6 +518,32 @@
   .msg.dela{align-self:flex-start;border-bottom-left-radius:4px}
   .msg.oculta{font-style:italic;color:var(--muted);cursor:pointer}
   .msg small{display:block;font:400 9px var(--f-mono);opacity:.7;margin-top:2px}
+  .compor .compor-foto{background:var(--panel);color:var(--ink);border:1px solid var(--line);display:grid;place-items:center}
+  .msgs .msg{position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .msg.com-reacao{margin-bottom:12px}
+  .msg .reac-m{position:absolute;bottom:-12px;right:8px;display:flex;gap:1px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:1px 6px;font-size:13px;line-height:1.5;color:var(--ink)}
+  .msg.dela .reac-m{right:auto;left:8px}
+  .reagir{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 6px;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+  .reagir.minha{align-self:flex-end}.reagir.dela{align-self:flex-start}
+  .reagir button{border:0;background:none;font-size:22px;line-height:1;padding:5px 6px;border-radius:999px;cursor:pointer}
+  .reagir button.on{background:rgba(255,63,164,.25)}
+  .msg.foto-m{display:flex;align-items:center;gap:8px;font-weight:700}
+  .msg.foto-m.vista{font-weight:400;font-style:italic;opacity:.75;cursor:default}
+  .msg.foto-m svg{flex:none}
+  .msg.foto-m small{margin-left:4px}
+  .foto-chat{position:fixed;inset:0;z-index:60;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}
+  .foto-chat img{max-width:100%;max-height:calc(100% - 110px);border-radius:12px;object-fit:contain}
+  .foto-chat p{margin:0;color:#fff;font-size:13px;opacity:.8;text-align:center}
+  .foto-chat button{border:0;border-radius:999px;padding:12px 28px;background:var(--neon);color:#1d0612;font:700 14px var(--f-body);text-transform:uppercase;cursor:pointer}
+  /* Foto da casa (a equipe tirou) */
+  .item.casa{border-color:var(--neon);box-shadow:0 0 22px -12px var(--neon)}
+  .casa-topo{display:flex;align-items:center;gap:10px}
+  .casa-topo .ic{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--neon);color:#1d0612}
+  .casa-topo b{font-size:14px}
+  .casa-topo small{display:block;font:400 11px/1.2 var(--f-mono);color:var(--muted)}
+  .item.casa img.foto{border:6px solid #f6efe6;border-bottom-width:22px;border-radius:4px;transform:rotate(-1.5deg);box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  .tirar-foto{align-self:flex-start;border:0;background:none;color:var(--muted);font:400 12px/1.3 var(--f-body);text-decoration:underline;cursor:pointer;padding:2px 0}
+  .previa-foto{max-width:100%;max-height:42vh;border-radius:14px;display:block;margin:0 auto}
   .sistema{align-self:center;font:400 12px var(--f-mono);color:var(--muted);text-align:center;max-width:90%}
   .chat-quem{flex:1;min-width:0;background:none;border:0;padding:0;text-align:left;cursor:pointer;color:var(--ink);font:700 16px/1.2 var(--f-body)}
   .chat-quem small{display:block;font:400 12px/1.3 var(--f-body);color:var(--muted)}
@@ -629,7 +715,7 @@
     </div>
   </div>
 
-  <!-- Quem tá no Trela: quem abriu o app nesta noite, um por vez, com crush e drink direto -->
+  <!-- Quem tá no Trela: quem abriu o app nesta noite, um por vez, com "Tenho interesse" e drink direto -->
   <div class="tela sub" id="tQuem" hidden>
     <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Quem tá no Trela</h3></div>
     <div class="rolagem" id="quemScroll"></div>
@@ -640,6 +726,18 @@
     <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Cardápio</h3></div>
     <nav class="cd-abas" id="cdAbas" aria-label="Grupos do cardápio" hidden></nav>
     <div class="rolagem" id="cardapioScroll"></div>
+  </div>
+
+  <!-- Agenda da semana -->
+  <div class="tela sub" id="tAgenda" hidden>
+    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Agenda do Trela</h3></div>
+    <div class="rolagem" id="agendaScroll"></div>
+  </div>
+
+  <!-- Reserva de mesa -->
+  <div class="tela sub" id="tReservas" hidden>
+    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Reservar mesa</h3></div>
+    <div class="rolagem" id="reservasScroll"></div>
   </div>
 
   <!-- Evento (ação especial) -->
@@ -675,7 +773,10 @@
       <button class="ico" id="chatMenu" type="button" aria-label="Opções">⋯</button>
     </div>
     <div class="rolagem" id="chatScroll"><div class="msgs" id="msgs"></div></div>
+    <input id="chatFoto" type="file" accept="image/*" hidden>
+    <input id="chatFotoCam" type="file" accept="image/*" capture="environment" hidden>
     <form class="compor" id="chatForm" novalidate>
+      <button type="button" class="compor-foto" id="chatFotoBt" aria-label="Mandar foto"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
       <input id="chatInput" maxlength="500" placeholder="Mensagem…" aria-label="Mensagem" autocomplete="off">
       <button type="submit" aria-label="Enviar">↑</button>
     </form>
@@ -689,13 +790,15 @@
       <div><b id="gvNome"></b><button type="button" class="gv-link" id="gvPerfil">Ver e editar perfil</button></div>
       <button class="ico" id="gvFechar" type="button" aria-label="Fechar menu">×</button>
     </div>
-    <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>Um anel dourado aparece na tua foto até as 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
+    <label class="gv-aberto" id="gvAbertoBox"><span><b>Aberto pra conhecer gente</b><small>Um anel dourado aparece na tua foto até às 6h</small></span><input type="checkbox" class="sw" id="gvAberto" aria-label="Aberto pra conhecer gente"></label>
     <button type="button" class="gv-item" data-ir="eventos"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></svg><span>Eventos da noite</span><em class="gv-n" id="gvEventos" hidden></em></button>
     <button type="button" class="gv-item" data-ir="quem"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6.2 4.6 1.8 5.1 4.8"/></svg><span>Quem tá no Trela</span></button>
     <button type="button" class="gv-item" data-ir="cardapio" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/></svg><span>Cardápio</span></button>
+    <button type="button" class="gv-item" data-ir="agenda" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>Agenda do Trela</span><em class="gv-n" id="gvAgendaN" hidden></em></button>
+    <button type="button" class="gv-item" data-ir="reservas" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h16M6 10v9M18 10v9M4 10l2-5h12l2 5"/><path d="M9 19v-5h6v5"/></svg><span>Reservar mesa</span><em class="gv-n" id="gvReservasN" hidden></em></button>
     <a class="gv-item gv-jogo" id="gvJogo" href="encara.html"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/><path d="M15.5 8.2c-1-1.2-2.8-.3-2.3 1.1.4 1 2.3 2.4 2.3 2.4s1.9-1.4 2.3-2.4c.5-1.4-1.3-2.3-2.3-1.1z"/></svg><span>Encara ou Bebe</span><em class="gv-n" id="gvJogoN" hidden></em><em class="gv-tag">jogo</em></a>
     <button type="button" class="gv-item gv-sair" id="gvSair"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span>Sair da conta</span></button>
-    <p class="gv-rodape">Trela · versão de teste</p>
+    <p class="gv-rodape">Trela</p>
   </nav>
 
   <div class="veu" id="veu" hidden><div class="folha" id="folha"></div></div>
@@ -706,9 +809,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611091153"></script>
-<script src="marca.js?v=202611091153"></script>
-<script src="comum.js?v=202611091153"></script>
+<script src="config.js?v=202611132152"></script>
+<script src="marca.js?v=202611132152"></script>
+<script src="comum.js?v=202611132152"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -731,7 +834,10 @@
     votos: [], meuVoto: null,   // enquete atual
     karaoke: [],           // fila do karaokê desta noite (todo mundo vê)
     convitesJogo: [],      // mesas do Encara ou Bebe que me convidaram e eu ainda não respondi
-    interesses: new Set(), // crush secreto: em quem EU marquei interesse nesta noite (ninguém mais vê)
+    bingos: [],            // cartelas do bingo de fotos desta noite
+    agenda: [], agendaAvisa: {},   // próximos eventos do bar e em quais eu toquei em "Me avisa"
+    reservas: [], reservasAtivo: false,
+    interesses: new Set(), // "Tenho interesse": em quem EU marquei nesta noite (a pessoa é avisada pelo servidor)
     matches: new Set(),    // com quem deu match nesta noite
     drinksRecebidos: [], drinksMandados: [],
     bloqueados: new Set(),
@@ -781,39 +887,6 @@
     await db.doc("tokens/" + EU.uid + "/aparelhos/" + tok).set({ criado: agoraServidor(), aparelho: navigator.userAgent.slice(0, 150) });
     pushToken = tok; guardado.salvar("trela-push-token", tok);
   }
-  // iPhone: qual navegador (Safari, Chrome...) e qual iOS, pra mostrar o caminho certo
-  const navegadorIOS = () => /CriOS/.test(navigator.userAgent) ? "chrome" : /FxiOS|EdgiOS|OPiOS/.test(navigator.userAgent) ? "outro" : "safari";
-  const versaoIOS = () => { const m = /OS (\d+)_(\d+)/.exec(navigator.userAgent); return m ? [+m[1], +m[2]] : null; };
-  // iPhone: notificação só funciona com o Trela na tela de início
-  function passosIphone(depois) {
-    const icCompartilhar = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
-    const passos = el("ol", "passos-ios");
-    const nav = navegadorIOS(), primeiro =
-      nav === "chrome" ? "No Chrome, toca no botão <b>Compartilhar</b> " + icCompartilhar + " do lado do endereço, lá em cima."
-      : nav === "outro" ? "Abre o menu do navegador e toca em <b>Compartilhar</b> " + icCompartilhar + "."
-      : "Toca no botão <b>Compartilhar</b> " + icCompartilhar + " na barra do Safari (embaixo ou em cima).";
-    [primeiro,
-     "Toca em <b>Adicionar à Tela de Início</b>" + (nav === "chrome" ? " (se não aparecer, toca em <b>Mais</b> ou rola a lista)." : " (rola a lista se precisar)."),
-     "Toca em <b>Adicionar</b>, no canto de cima.",
-     "Abre o Trela pelo <b>ícone novo</b> na tela do iPhone e toca em <b>Ativar notificações</b>."].forEach(t => { const li = el("li"); li.innerHTML = t; passos.append(li); });
-    const v = versaoIOS(), velho = v && (v[0] < 16 || (v[0] === 16 && v[1] < 4));
-    folha([el("h4", "", "Coloca o Trela na tela do iPhone"),
-      el("p", "", "O iPhone só manda notificação de app que está na tela de início. É rapidinho:"), passos,
-      ...(velho ? [el("p", "push-ios", "Teu iPhone está no iOS " + v.join(".") + ". Notificação só funciona do iOS 16.4 pra cima: vai em Ajustes › Geral › Atualização de Software.")] : []),
-      bt("Me mostra onde tocar", "sim", () => { fecharFolha(); setaIphone(); if (depois) depois(); }),
-      Object.assign(bt("Entendi", "", () => { fecharFolha(); if (depois) depois(); }), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" })], true);
-  }
-  // Seta piscando em cima do botão Compartilhar do navegador (embaixo no Safari, em cima no Chrome)
-  function setaIphone() {
-    const velha = $("#setaIos"); if (velha) velha.remove();
-    const nav = navegadorIOS(), emCima = nav !== "safari";
-    const s = el("div", "seta-ios " + (emCima ? "cima" : "baixo")); s.id = "setaIos";
-    s.innerHTML = '<div class="seta-txt">' + (nav === "chrome" ? "Toca no <b>Compartilhar</b> aqui em cima, do lado do endereço" : nav === "outro" ? "Abre o menu do navegador e toca em <b>Compartilhar</b>" : "Toca no <b>Compartilhar</b> aqui embaixo")
-      + '<small>Depois: <b>Adicionar à Tela de Início</b> › <b>Adicionar</b></small></div><div class="seta-flecha" aria-hidden="true">' + (emCima ? "↑" : "↓") + '</div>';
-    s.onclick = () => s.remove();
-    document.body.append(s);
-    setTimeout(() => s.remove(), 20000);
-  }
   async function ativarPush() {
     if (ehIOS) return false;   // iPhone: fica só no sino
     if (!pushPossivel()) { erroToast("Esse navegador não aceita notificações. Tenta pelo Chrome."); return false; }
@@ -823,39 +896,25 @@
     try { await pegarToken(); toast(EU.uid, "Pronto! Tu vai ser avisado no celular mesmo com o Trela fechado."); return true; }
     catch (e) { console.warn("[Trela] push", e); erroToast(e && e.code === "permission-denied" ? "Não deu pra salvar: as regras do banco precisam ser publicadas." : "Não deu pra ativar agora. Tenta de novo. (" + String((e && (e.code || e.message)) || "erro").slice(0, 60) + ")"); return false; }
   }
-  async function desativarPush() {
-    const t = pushToken; pushToken = null; guardado.salvar("trela-push-token", null);
-    if (t) await db.doc("tokens/" + EU.uid + "/aparelhos/" + t).delete().catch(() => {});
-    try { await mensagemPush().deleteToken(); } catch (e) {}
-    toast(EU.uid, "Notificações no celular desligadas.");
-  }
   // Faixa embaixo do logo: some quando a notificação está ligada
-  // iPhone: só dá pra ativar quando o navegador oferece notificação (iOS 16.4+, aberto pelo ícone da tela de início).
-  // Olha o que o navegador tem, não o "modo tela cheia" (o ícone criado pelo Chrome nem sempre diz que está em tela cheia).
-  const iphoneSemPush = () => ehIOS && !("Notification" in window && "PushManager" in window && "serviceWorker" in navigator);
   const notifBloqueada = () => "Notification" in window && Notification.permission === "denied";
   function desenharPush() {
     const fx = $("#pushFaixa");
     if (fx) {
       fx.hidden = !EU || ehIOS || !pushConfigurado() || pushLigado();
-      $("#pushFaixaTxt").textContent = iphoneSemPush() ? "Ativar notificações no iPhone" : notifBloqueada() ? "Notificações bloqueadas: toca pra ver como liberar" : "Ativar notificações";
+      $("#pushFaixaTxt").textContent = notifBloqueada() ? "Notificações bloqueadas: toca pra ver como liberar" : "Ativar notificações";
     }
-    const box = $("#gvPushBox"); if (!box) return;
-    box.hidden = !pushConfigurado();
-    const on = pushLigado(); $("#gvPush").checked = on; box.classList.toggle("on", on);
-    $("#gvPushTxt").textContent = on ? "Ligadas neste celular" : ("Notification" in window && Notification.permission === "denied") ? "Bloqueadas no navegador" : "Avisa mesmo com o Trela fechado";
   }
-  // Toque na faixa: ativa direto (iPhone fora da tela de início: passo a passo; bloqueada: como liberar)
+  // Toque na faixa: ativa direto (bloqueada: mostra como liberar). No iPhone a faixa nem aparece: lá é só o sino.
   function comoLiberar() {
     const passos = el("ol", "passos-ios");
-    (instalado() || ehIOS
+    (instalado()
       ? ["Segura o dedo no ícone do Trela na tela do celular.", "Toca em <b>Informações do app</b> (ou no ⓘ).", "Vai em <b>Notificações</b> e liga.", "Volta pro Trela: a faixa some quando estiver ligado."]
       : ["Toca no <b>cadeado</b> (ou nos três pontinhos) ao lado do endereço do site.", "Vai em <b>Permissões</b> ou <b>Configurações do site</b>.", "Em <b>Notificações</b>, escolhe <b>Permitir</b>.", "Recarrega a página e toca de novo em <b>Ativar notificações</b>."]
     ).forEach(t => { const li = el("li"); li.innerHTML = t; passos.append(li); });
     folha([el("h4", "", "As notificações estão bloqueadas"), el("p", "", "Alguém tocou em \"Bloquear\" quando o celular perguntou, e agora o site não pode perguntar de novo. Dá pra liberar assim:"), passos, bt("Entendi", "sim", fecharFolha)]);
   }
   $("#pushFaixa").onclick = async () => {
-    if (iphoneSemPush()) return passosIphone();
     if (notifBloqueada()) return comoLiberar();
     await ativarPush(); desenharPush();
   };
@@ -876,17 +935,15 @@
     if (!$("#veu").hidden) { if ((tentativa || 0) < 40) setTimeout(() => janelaPush(depois, (tentativa || 0) + 1), 3000); return; }
     if (pushDispensadoAgora) return seguir();
     pushDispensadoAgora = true;   // "Agora não" vale só até a próxima vez que abrir o app
-    const ios = iphoneSemPush(), bloq = !ios && notifBloqueada();
+    const bloq = notifBloqueada();
     const ic = el("div", "push-ic"); ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
     const lista = el("ul", "push-lista");
     ["Tua vez no karaokê", "Convite de drink, e a resposta do teu", "Quem tem interesse em ti, e quando dá match", "Mensagens e pedidos de amizade", "Curtidas e quando te marcam", "Convite pro Encara ou Bebe"].forEach(t => lista.append(el("li", "", t)));
     const nao = () => { fecharFolha(); seguir(); };
     const itens = [ic, el("h4", "", "Fica sabendo na hora, mesmo com o Trela fechado"), el("p", "", "Com as notificações ligadas, o celular te avisa de:"), lista,
       el("p", "push-nota", "E de vez em quando uma dica do que dá pra fazer no app. Dá pra desligar quando quiser nas configurações do celular.")];
-    if (ios) itens.push(el("p", "push-ios", "No iPhone, o Trela precisa estar na tela de início pra mandar notificação. Toca em \"Colocar na tela do iPhone\" que a gente mostra como."));
     if (bloq) itens.push(el("p", "push-ios", "As notificações estão bloqueadas neste celular. Toca em \"Ativar notificações\" que a gente mostra como liberar."));
-    itens.push(bt("Ativar notificações", "sim", async () => { if (ios) { passosIphone(seguir); return; } if (bloq) { comoLiberar(); return; } fecharFolha(); await ativarPush(); desenharPush(); seguir(); }));
-    if (ios) itens.push(bt("Colocar na tela do iPhone", "", () => passosIphone(seguir)));
+    itens.push(bt("Ativar notificações", "sim", async () => { if (bloq) { comoLiberar(); return; } fecharFolha(); await ativarPush(); desenharPush(); seguir(); }));
     itens.push(Object.assign(bt("Agora não", "", nao), { style: "border:0;color:var(--muted);text-decoration:underline;padding:6px" }));
     folha(itens, true);
   }
@@ -1064,6 +1121,14 @@
     t.onclick = () => { t.hidden = true; aoTocar && aoTocar(); };
     clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3500);
   }
+  // Aviso do sistema (reserva, agenda): ícone do sino + título
+  function toastSistema(a, aoTocar) {
+    const t = $("#toast"), ic = el("span", "av p"); ic.style.setProperty("--c", "var(--neon)"); ic.style.color = "#140c1b";
+    ic.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (IC_SINO[a.sub] || IC_SINO.geral) + "</svg>";
+    t.replaceChildren(ic, el("span", "", a.titulo + (a.texto ? (/[.!?]$/.test(a.titulo) ? " " : ". ") + a.texto : ""))); t.hidden = false;
+    t.onclick = () => { t.hidden = true; aoTocar && aoTocar(); };
+    clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 7000);
+  }
   function toastEvento(e) {
     const t = $("#toast"), ic = el("span", "av p"); ic.innerHTML = e.m.ic.replace('width="22" height="22"', 'width="16" height="16"'); ic.style.setProperty("--c", e.m.cor); ic.style.color = "#140c1b";
     t.replaceChildren(ic, el("span", "", "Começou: " + e.m.rotulo + " · " + e.m.titulo(e.c))); t.hidden = false;
@@ -1086,6 +1151,8 @@
       renderFotos();
       if (t === "tEventos") renderEventos();
       if (t === "tAvisos") renderAvisos();
+      if (t === "tAgenda") renderAgenda();
+      if (t === "tReservas") renderReservas();
       if (t === "tGalera") renderGalera();
       if (t === "tPerfil") renderPerfil();
       if (t === "tComs") renderComs();
@@ -1289,6 +1356,11 @@
       // os do sistema (drink, match, amizade...) já têm aviso próprio na tela; aqui só curtida e menção
       if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added" && !c.doc.data().lida && c.doc.data().tipo === "sistema" && c.doc.data().sub === "interesse").forEach(c => { const a = c.doc.data();
         vibrar([60, 40, 60]); toast(a.de, a.titulo + ". Toca pra ver o perfil.", () => { c.doc.ref.update({ lida: true }).catch(() => {}); abrirPerfil(a.de); }); });
+      // aviso da equipe, resposta da reserva e lembrete da agenda: mostra na hora pra quem está com o app aberto
+      if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added" && !c.doc.data().lida && c.doc.data().tipo === "sistema" && ["geral", "reserva", "agenda"].includes(c.doc.data().sub)).forEach(c => { const a = c.doc.data();
+        vibrar([80, 40, 80]);
+        if (a.sub === "geral") folha([el("h4", "", "Aviso do Trela"), el("p", "aviso-geral", a.texto), bt("Entendi", "sim", () => { c.doc.ref.update({ lida: true }).catch(() => {}); fecharFolha(); })]);
+        else toastSistema(a, () => { c.doc.ref.update({ lida: true }).catch(() => {}); abrirAvisoSistema(a); }); });
       if (!primeiroAviso) snap.docChanges().filter(c => c.type === "added" && !c.doc.data().lida && c.doc.data().tipo !== "sistema").forEach(c => { const a = c.doc.data();
         if (a.tipo === "curtida") return toast(a.de, a.deNome + " curtiu tua foto", () => { c.doc.ref.update({ lida: true }); abrirPerfil(a.de); });
         toast(a.de, a.deNome + " te marcou num comentário", () => { c.doc.ref.update({ lida: true }); abrirComentarios(a.postId); }); });
@@ -1296,7 +1368,8 @@
     }, () => {}));
 
     // ---- Eventos ligados no balcão ----
-    let primeiraConfig = true, pararPostsAcao = null, pararVotos = null, votosDe = null;
+    let primeiraConfig = true, pararPostsAcao = null, pararVotos = null, votosDe = null, pararBingo = null;
+    parar.push(() => { if (pararBingo) pararBingo(); pararBingo = null; });
     // refaz às 6h: o que foi ligado na noite anterior conta como desligado
     parar.push(ouvirNoite(() => db.doc("config/acoes").onSnapshot(d => {
       const antes = S.acoes; S.acoes = acoesDaNoite(d).dados;
@@ -1308,9 +1381,15 @@
       // fotos do concurso/desafio só quando um dos dois está ligado
       const precisa = !!((S.acoes.concurso && S.acoes.concurso.ativo) || (S.acoes.desafio && S.acoes.desafio.ativo));
       if (precisa && !pararPostsAcao) pararPostsAcao = ouvirNoite(desde => db.collection("telao").where("criado", ">=", desde).orderBy("criado", "desc").limit(300).onSnapshot(q => {
-        S.postsAcao = q.docs.map(x => ({ id: x.id, ...x.data() })).filter(r => r.acao && r.fotoId); redesenhar();
+        S.postsAcao = q.docs.map(x => ({ id: x.id, ...x.data() })).filter(r => r.acao && r.fotoId); redesenhar();   // + exemplos (só no teste)
       }, () => {}));
       if (!precisa && pararPostsAcao) { pararPostsAcao(); pararPostsAcao = null; S.postsAcao = []; }
+      // cartelas do bingo da noite, só com o bingo ligado
+      const bingoOn = !!(S.acoes.bingo && S.acoes.bingo.ativo);
+      if (bingoOn && !pararBingo) pararBingo = ouvirNoite(() => db.collection("bingos").where("noite", "==", chaveNoite()).onSnapshot(q => {
+        S.bingos = q.docs.map(x => ({ id: x.id, ...x.data() })); redesenhar();
+      }, () => {}));
+      if (!bingoOn && pararBingo) { pararBingo(); pararBingo = null; S.bingos = []; }
       // votos da enquete atual
       const enq = S.acoes.enquete && S.acoes.enquete.ativo && S.acoes.enquete.id;
       if (enq !== votosDe) {
@@ -1345,6 +1424,28 @@
       document.querySelectorAll('[data-ir="cardapio"]').forEach(b => b.hidden = !cardapioAtivo);
       if (telaAtual() === "tCardapio") renderCardapio(); else redesenhar();
     }, () => {}));
+    // Agenda da semana (a equipe cadastra): só o que ainda vai acontecer
+    parar.push(db.collection("agenda").where("data", ">=", hojeISO(inicioDaNoite())).onSnapshot(q => {
+      S.agenda = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.data + (a.hora || "")).localeCompare(b.data + (b.hora || "")));
+      document.querySelectorAll('[data-ir="agenda"]').forEach(b => b.hidden = !S.agenda.length);
+      $("#gvAgendaN").hidden = !S.agenda.length; $("#gvAgendaN").textContent = S.agenda.length;
+      // quais eu pedi pra ser avisado
+      S.agenda.forEach(e => { if (!(e.id in S.agendaAvisa)) { S.agendaAvisa[e.id] = false; db.doc("agenda/" + e.id + "/avisar/" + uid).get().then(d => { S.agendaAvisa[e.id] = d.exists; if (telaAtual() === "tAgenda") renderAgenda(); }).catch(() => {}); } });
+      if (telaAtual() === "tAgenda") renderAgenda();
+    }, () => {}));
+    // Reservas: a equipe liga em /reservas; as minhas aparecem na tela "Reservar mesa"
+    parar.push(db.doc("config/reservas").onSnapshot(s => {
+      S.reservasAtivo = s.exists && s.data().ativo === true;
+      document.querySelectorAll('[data-ir="reservas"]').forEach(b => b.hidden = !S.reservasAtivo && !S.reservas.length);
+      if (telaAtual() === "tReservas") renderReservas();
+    }, () => {}));
+    parar.push(db.collection("reservas").where("de", "==", uid).onSnapshot(q => {
+      S.reservas = q.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() })).filter(r => r.data >= hojeISO(inicioDaNoite())).sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora));
+      document.querySelectorAll('[data-ir="reservas"]').forEach(b => b.hidden = !S.reservasAtivo && !S.reservas.length);
+      const n = S.reservas.filter(r => r.status === "confirmada").length;
+      $("#gvReservasN").hidden = !n; $("#gvReservasN").textContent = n;
+      if (telaAtual() === "tReservas") renderReservas();
+    }, () => {}));
     // Bloqueios que eu fiz
     parar.push(db.collection("bloqueios").where("de", "==", uid).onSnapshot(snap => {
       S.bloqueados = new Set(snap.docs.map(d => d.data().alvo)); redesenhar();
@@ -1358,7 +1459,7 @@
     // Notificações no celular: cartão de convite e token sempre em dia
     setTimeout(() => { desenharPush(); if (pushLigado() && pushPossivel()) pegarToken().catch(() => {}); }, 1500);
 
-    // Crush secreto: os meus interesses (só eu vejo) e os matches
+    // Tenho interesse: os meus interesses e os matches
     parar.push(db.collection("interesses").where("de", "==", uid).onSnapshot(q => {
       const noite = inicioDaNoite().getTime(); S.interesses = new Set();
       q.docs.forEach(d => { const x = d.data(); if (ms(x.criado) >= noite || !x.criado) S.interesses.add(x.para); else d.ref.delete().catch(() => {}); });   // de noites passadas: some
@@ -1443,7 +1544,7 @@
     if (guardado.ler("trela-foto-ignorada", "") === chaveNoite()) return;
     const arq = el("input"); arq.type = "file"; arq.accept = "image/*"; arq.hidden = true;
     const arqCam = el("input"); arqCam.type = "file"; arqCam.accept = "image/*"; arqCam.setAttribute("capture", "user"); arqCam.hidden = true;
-    const aviso = el("p", "", "Assim a galera te reconhece no Trela: no Quem tá no Trela, no crush e no convite de drink.");
+    const aviso = el("p", "", "Assim a galera te reconhece no Trela: no Quem tá no Trela, quando tu marca interesse e no convite de drink.");
     const usar = async f => {
       if (!f) return;
       aviso.textContent = "Enviando a foto…"; aviso.style.color = "";
@@ -1649,9 +1750,16 @@
   }
   const reagi = guardado.ler("trela-reagi", {});
   function postCard(r) {
-    const card = el("article", "item" + (r.tipo === "bar" ? " bar" : ""));
+    const card = el("article", "item" + (r.tipo === "bar" ? " bar" : "") + (r.casa ? " casa" : ""));
     card.style.setProperty("--c", CORES[r.cor] || "var(--neon)");
     if (r.tipo === "bar") card.append(el("span", "selo", "Recado do Trela"));
+    else if (r.casa) {
+      // Foto da casa: a equipe tirou e mandou pro telão
+      const t = el("div", "casa-topo"), ic = el("span", "ic");
+      ic.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+      const tx = el("div"); tx.append(el("b", "", "Foto do Trela"), el("small", "", "Clique da equipe · " + horaDe(r.criado)));
+      t.append(ic, tx); card.append(t);
+    }
     else {
       const q = el("button", "quem"); q.type = "button";
       q.append(r.autor ? avatar(r.autor, "p") : el("span", "av p", (r.nome || "?")[0]));
@@ -1661,8 +1769,14 @@
       card.append(q);
     }
     if (r.acao && EVENTOS[r.acao]) { const tag = el("span", "selo-acao", EVENTOS[r.acao].rotulo); tag.style.setProperty("--c", EVENTOS[r.acao].cor); card.append(tag); }
-    if (r.fotoId) card.append(imgFoto(r.fotoId, "Foto de " + r.nome));
+    if (r.fotoId) card.append(imgFoto(r.fotoId, r.casa ? "Foto do Trela" : "Foto de " + r.nome));
     if (r.texto) card.append(el("p", "msg", r.texto));
+    if (r.casa) {
+      const pediu = !!pedidosFoto[r.id];
+      const tf = el("button", "tirar-foto", pediu ? "Pedido enviado: a equipe vai tirar essa foto" : "Apareço nessa foto e quero que tirem"); tf.type = "button"; tf.disabled = pediu;
+      tf.onclick = () => pedirTirarFoto(r);
+      card.append(tf);
+    }
     const linha = el("div", "linha");
     for (const k in REACOES) {
       const b = el("button", "reagir", REACOES[k] + " " + ((r.reacoes || {})[k] || 0)); b.type = "button";
@@ -1680,6 +1794,19 @@
       pv.onclick = () => abrirComentarios(r.id); card.append(pv);
     }
     return card;
+  }
+  // Quem aparece numa Foto do Trela pede pra tirar: vai pra equipe como denúncia (a equipe tira com um toque)
+  const pedidosFoto = guardado.ler("trela-pedidos-foto", {});
+  function pedirTirarFoto(r) {
+    folha([el("h4", "", "Tirar essa foto?"), el("p", "", "Se tu aparece nessa foto e não quer ela no telão, a equipe recebe o pedido e tira."),
+      bt("Pedir pra tirar", "sim", async () => {
+        fecharFolha();
+        try {
+          await db.collection("denuncias").add({ de: EU.uid, deNome: EU.nome, contra: "foto:" + r.id, contraNome: "Foto do Trela", texto: "Apareço nessa foto e quero que ela saia do telão.", criado: agoraServidor() });
+          pedidosFoto[r.id] = 1; guardado.salvar("trela-pedidos-foto", pedidosFoto);
+          toast(EU.uid, "Pedido enviado. A equipe tira a foto em seguida."); renderFeed();
+        } catch (e) { erroToast("Não deu pra pedir agora. Tenta de novo."); }
+      }), bt("Cancelar", "", fecharFolha)]);
   }
   function renderFeed() {
     $("#feedCount").textContent = S.posts.length ? S.posts.length + " na noite" : "";
@@ -1715,9 +1842,13 @@
     karaoke: { cor: "#7cc6fe", rotulo: "Karaokê", ic: SVG('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>'),
       titulo: c => karaokeAgora() ? "Cantando: " + karaokeAgora().nome : "Karaokê aberto", resumo: c => karaokeProximo() ? "Próximo: " + karaokeProximo().nome : "Entra na fila e escolhe tua música" },
     contagem: { cor: "#ffd166", rotulo: "Contagem", ic: SVG('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'),
-      titulo: c => c.titulo || "Falta pouco", resumo: c => "" }
+      titulo: c => c.titulo || "Falta pouco", resumo: c => "" },
+    bingo: { cor: "#ff8fc2", rotulo: "Bingo de fotos", ic: SVG('<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/>'),
+      titulo: c => "Fecha a cartela com 9 fotos", resumo: c => { const m = minhaCartela(); return m && m.fechou ? "Tu fechou a cartela!" : (m ? (m.n || 0) + " de 9 fotos" : "9 fotos pra fechar a cartela"); } },
+    ranking: { cor: "#ffc94d", rotulo: "Ranking da noite", ic: SVG('<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8.5 20h7"/>'),
+      titulo: c => "Quem mais bombou hoje", resumo: c => "Recado, foto e karaokê: muda ao vivo" }
   };
-  const ORDEM_EV = ["concurso", "desafio", "enquete", "roleta", "contagem", "karaoke"];
+  const ORDEM_EV = ["concurso", "desafio", "enquete", "bingo", "roleta", "contagem", "karaoke", "ranking"];
   const chaveNoite = () => { const d = inicioDaNoite(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
   const chaveEvento = (k, c) => k + ":" + (ms(c.desde) || 0) + (k === "enquete" ? ":" + (c.id || "") : "");
   let eventosVistos = guardado.ler("trela-eventos-vistos", {});
@@ -1788,6 +1919,84 @@
   // ---- Lista de eventos ----
   function abrirEventos() { ir("tEventos"); renderEventos(); }
 
+  // ================= AGENDA DA SEMANA =================
+  function abrirAgenda() { ir("tAgenda"); renderAgenda(); $("#agendaScroll").scrollTop = 0; }
+  const IC_SININHO = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
+  function renderAgenda() {
+    const out = [], hoje = hojeISO(inicioDaNoite());
+    if (!S.agenda.length) out.push(el("div", "vazio-s", "A equipe ainda não colocou nada na agenda. Volta daqui a pouco!"));
+    else out.push(el("p", "aviso-s", "Toca em \"Me avisa\" que a gente te lembra no dia" + (ehIOS ? ", aqui no sino do app." : ".")));
+    S.agenda.forEach(e => {
+      const c = el("article", "ag-card" + (e.data === hoje ? " hoje" : ""));
+      c.append(el("span", "ag-quando", dataBonita(e.data) + (e.hora ? " · " + e.hora : "")), el("h4", "", e.titulo));
+      if (e.descricao) c.append(el("p", "", e.descricao));
+      const on = !!S.agendaAvisa[e.id];
+      const b = el("button", "ag-avisa" + (on ? " on" : "")); b.type = "button"; b.innerHTML = IC_SININHO; b.append(on ? "Vou ser avisado · tirar" : "Me avisa");
+      b.onclick = async () => {
+        S.agendaAvisa[e.id] = !on; renderAgenda();
+        const ref = db.doc("agenda/" + e.id + "/avisar/" + EU.uid);
+        try { if (on) await ref.delete(); else await ref.set({ criado: agoraServidor() }); if (!on) toast(EU.uid, "Combinado! Te aviso no dia de " + e.titulo + "."); }
+        catch (err) { S.agendaAvisa[e.id] = on; renderAgenda(); erroToast(err && err.code === "permission-denied" ? "Não deu pra salvar: as regras novas do banco precisam ser publicadas." : "Não deu pra salvar. Tenta de novo."); }
+      };
+      c.append(b); out.push(c);
+    });
+    $("#agendaScroll").replaceChildren(...out);
+  }
+
+  // ================= RESERVA DE MESA =================
+  const RS_STATUS = { pendente: ["Esperando a equipe confirmar", "#ffd166"], confirmada: ["Confirmada", "var(--ok)"], recusada: ["Não deu dessa vez", "var(--laranja)"], cancelada: ["Cancelada por ti", "var(--muted)"] };
+  let rsForm = null;   // o que a pessoa está preenchendo (não se perde quando chega dado novo)
+  function abrirReservas() { rsForm = rsForm || { data: hojeISO(inicioDaNoite()), hora: "21:00", pessoas: 4, obs: "" }; ir("tReservas"); renderReservas(); $("#reservasScroll").scrollTop = 0; }
+  function renderReservas() {
+    const out = [];
+    if (!rsForm) rsForm = { data: hojeISO(inicioDaNoite()), hora: "21:00", pessoas: 4, obs: "" };
+    if (S.reservasAtivo) {
+      const f = el("section", "ev-bloco rs-form"); f.append(el("h4", "", "Pedir uma mesa"));
+      const dupla = el("div", "rs-dupla");
+      const cx = (rot, inp) => { const d = el("div"); const l = el("label", "", rot); d.append(l, inp); return d; };
+      const iData = el("input"); iData.type = "date"; iData.id = "rsData"; iData.min = hojeISO(); iData.value = rsForm.data; iData.oninput = () => rsForm.data = iData.value;
+      const iHora = el("input"); iHora.type = "time"; iHora.id = "rsHora"; iHora.value = rsForm.hora; iHora.oninput = () => rsForm.hora = iHora.value;
+      dupla.append(cx("Dia", iData), cx("Horário", iHora));
+      const pes = el("div", "rs-pessoas"), n = el("b", "", String(rsForm.pessoas)); n.id = "rsN";
+      const menos = el("button", "", "−"); menos.type = "button"; menos.setAttribute("aria-label", "Menos uma pessoa"); menos.onclick = () => { rsForm.pessoas = Math.max(1, rsForm.pessoas - 1); n.textContent = rsForm.pessoas; };
+      const mais = el("button", "", "+"); mais.type = "button"; mais.setAttribute("aria-label", "Mais uma pessoa"); mais.onclick = () => { rsForm.pessoas = Math.min(40, rsForm.pessoas + 1); n.textContent = rsForm.pessoas; };
+      pes.append(menos, n, mais, el("span", "", "pessoas"));
+      const iObs = el("input"); iObs.id = "rsObs"; iObs.maxLength = 120; iObs.placeholder = "Ex.: aniversário, perto do palco"; iObs.value = rsForm.obs; iObs.oninput = () => rsForm.obs = iObs.value;
+      const manda = bt("Pedir reserva", "sim", async () => {
+        const obs = rsForm.obs.trim();
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(rsForm.data) || rsForm.data < hojeISO(inicioDaNoite())) return erroToast("Escolhe um dia de hoje em diante.");
+        if (!/^\d{2}:\d{2}$/.test(rsForm.hora)) return erroToast("Escolhe o horário.");
+        if (motivoSuspeito(obs)) return erroToast("Tira palavrão, link ou telefone da observação.");
+        if (S.reservas.filter(r => r.status === "pendente").length >= 3) return erroToast("Tu já tem 3 pedidos esperando resposta.");
+        manda.disabled = true; manda.textContent = "Mandando…";
+        try {
+          await db.collection("reservas").add({ de: EU.uid, nome: EU.nome, data: rsForm.data, hora: rsForm.hora, pessoas: rsForm.pessoas, obs, status: "pendente", criado: agoraServidor() });
+          rsForm.obs = ""; toast(EU.uid, "Pedido enviado! A equipe confirma e tu recebe o aviso aqui no app.");
+        } catch (e) { erroToast(e && e.code === "permission-denied" ? "Não deu pra pedir: as regras novas do banco precisam ser publicadas." : "Não deu pra pedir. Tenta de novo."); }
+        renderReservas();
+      });
+      f.append(dupla, cx("Quantas pessoas", pes), cx("Observação (opcional)", iObs), manda,
+        el("p", "ev-mut", "O pedido só vale depois que a equipe confirmar. Tu recebe o aviso no sino" + (ehIOS ? "." : " e no celular.")));
+      out.push(f);
+    } else out.push(el("div", "vazio-s", "O Trela não está aceitando reservas pelo app agora."));
+    if (S.reservas.length) {
+      out.push(el("div", "secao", "Minhas reservas"));
+      S.reservas.forEach(r => {
+        const st = RS_STATUS[r.status] || RS_STATUS.pendente, it = el("div", "rs-item"); it.style.setProperty("--c", st[1]);
+        it.append(el("span", "rs-st", st[0]), el("b", "", dataBonita(r.data) + " às " + r.hora + " · " + r.pessoas + (r.pessoas === 1 ? " pessoa" : " pessoas")));
+        if (r.obs) it.append(el("span", "", r.obs));
+        if (r.resposta) it.append(el("span", "", "Recado do Trela: " + r.resposta));
+        if (r.status === "pendente" || r.status === "confirmada") {
+          const c = el("button", "", "Cancelar reserva"); c.type = "button";
+          c.onclick = () => r.ref.update({ status: "cancelada" }).catch(() => erroToast("Não deu pra cancelar. Tenta de novo."));
+          it.append(c);
+        }
+        out.push(it);
+      });
+    }
+    $("#reservasScroll").replaceChildren(...out);
+  }
+
   // ================= CARDÁPIO (a equipe cadastra em /cardapio; aqui só mostra) =================
   let cardapio = null, cardapioGrupos = [], ouvindoCardapio = false, cardapioAtivo = false;
   const cardapioPronto = () => cardapioAtivo && !!cardapio && cardapio.length > 0;
@@ -1800,7 +2009,7 @@
     }, () => {}));
     parar.push(db.collection("cardapio").onSnapshot(q => {
       cardapio = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-      if (telaAtual() === "tCardapio") renderCardapio(); else redesenhar();   // perfil e Quem tá no Trela mostram o drink quando tem produto
+      if (telaAtual() === "tCardapio") renderCardapio(); else if (telaAtual() === "tChat") renderChat(true); else redesenhar();   // perfil e Quem tá no Trela mostram o drink quando tem produto
     }, () => { cardapio = cardapio || []; if (telaAtual() === "tCardapio") renderCardapio(); }));
   }
   function abrirCardapio() { ir("tCardapio"); ouvirCardapio(); renderCardapio(); $("#cardapioScroll").scrollTop = 0; }
@@ -1822,6 +2031,47 @@
     const z = el("div", "cd-zoom"), img = el("img"); img.src = p.foto; img.alt = p.nome;
     z.append(img, el("b", "", p.nome)); z.onclick = () => z.remove(); document.body.append(z);
   }
+  // ---- Mandar um item do cardápio pra um amigo no chat ("bora pedir isso?") ----
+  const amigosUids = () => [...S.amizades.keys()].filter(u => ehAmigo(u) && !S.bloqueados.has(u));
+  const temAmigos = () => amigosUids().length > 0;
+  function textoPreco(p) {
+    const ks = (p.tamanhos && p.tamanhos.length) ? p.tamanhos : ["unico"];
+    return ks.filter(k => (p.precos || {})[k]).map(k => (k === "unico" ? "" : (ROTULO_COPO[k] || k) + " ") + reais(p.precos[k])).join(" · ");
+  }
+  function mandarProdutoPraAmigo(p) {
+    const lista = el("div", "lista-amigos");
+    amigosUids().map(perfil).sort((a, b) => (online(b) ? 1 : 0) - (online(a) ? 1 : 0) || String(a.nome).localeCompare(String(b.nome))).forEach(a => {
+      const b = el("button"); b.type = "button";
+      const t = el("span"); t.append(a.nome, el("small", online(a) ? "on" : "", online(a) ? "Online agora" : visto(a.ultimoAcesso)));
+      b.append(avatar(a.id, "p"), t);
+      b.onclick = async () => {
+        fecharFolha();
+        const ok = await enviarProduto(a.id, p);
+        if (ok) toast(a.id, p.nome + " mandado pra " + a.nome + ". Toca pra abrir a conversa.", () => abrirChat(a.id));
+      };
+      lista.append(b);
+    });
+    folha([el("h4", "", "Mandar " + p.nome + " pra quem?"), el("p", "", "Vai na conversa com \"Bora pedir isso?\" e o preço."), lista, bt("Cancelar", "", fecharFolha)]);
+  }
+  async function enviarProduto(uid, p) {
+    const par = parDe(EU.uid, uid), texto = "Bora pedir isso? " + p.nome;
+    const item = { id: p.id, nome: String(p.nome).slice(0, 60), preco: textoPreco(p).slice(0, 60) };
+    const batch = db.batch(), msgRef = db.collection("conversas").doc(par).collection("mensagens").doc();
+    batch.set(msgRef, { de: EU.uid, texto, item, criado: agoraServidor() });
+    batch.set(db.doc("conversas/" + par), { membros: [EU.uid, uid].sort(), ultima: { de: EU.uid, texto: "Bora pedir: " + item.nome, criado: agoraServidor() }, lidaPor: { [EU.uid]: agoraServidor() } }, { merge: true });
+    try { await batch.commit(); avisarCelular({ tipo: "mensagem", par, id: msgRef.id }); return true; }
+    catch (e) { erroToast(e && e.code === "permission-denied" ? "Não deu pra mandar: as regras novas do banco precisam ser publicadas." : "Não deu pra mandar. Tenta de novo."); return false; }
+  }
+  // abre o cardápio já no produto
+  function verProduto(id) {
+    abrirCardapio();
+    setTimeout(() => {
+      const c = document.getElementById("cdp-" + id), box = $("#cardapioScroll");
+      if (!c) return erroToast("Esse item saiu do cardápio.");
+      box.scrollTo({ top: c.offsetTop - box.offsetTop - 60, behavior: "smooth" });
+      c.classList.add("destaque"); setTimeout(() => c.classList.remove("destaque"), 2200);
+    }, 350);
+  }
   function renderCardapio() {
     const box = $("#cardapioScroll"), abas = $("#cdAbas");
     if (!cardapioAtivo) { box.replaceChildren(el("p", "cd-vazio", "O cardápio ainda está sendo montado. Volta daqui a pouco!")); abas.hidden = true; return; }
@@ -1835,11 +2085,17 @@
     blocos.forEach(b => {
       if (b.nome) { const h = el("h3", "cd-grupo", b.nome); h.id = "cdg-" + b.id; out.push(h); }
       b.ps.forEach(p => {
-        const c = el("article", "cd-prod");
+        const c = el("article", "cd-prod"); c.id = "cdp-" + p.id;
         if (p.foto) { const f = el("button", "cd-foto"); f.type = "button"; f.style.backgroundImage = "url(" + p.foto + ")"; f.setAttribute("aria-label", "Ver foto de " + p.nome); f.onclick = () => zoomFoto(p); c.append(f); }
         const info = el("div", "cd-info"); info.append(el("h4", "", p.nome));
         if (p.descricao) info.append(el("p", "", p.descricao));
-        info.append(precoProduto(p)); c.append(info); out.push(c);
+        info.append(precoProduto(p));
+        if (EU && temAmigos()) {
+          const m = el("button", "cd-mandar"); m.type = "button";
+          m.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>';
+          m.append("Mandar pra um amigo"); m.onclick = () => mandarProdutoPraAmigo(p); info.append(m);
+        }
+        c.append(info); out.push(c);
       });
     });
     box.replaceChildren(...out);
@@ -1905,6 +2161,8 @@
     const d = b.dataset.ir; fecharMenu();
     if (d === "eventos") abrirEventos();
     else if (d === "cardapio") abrirCardapio();
+    else if (d === "agenda") abrirAgenda();
+    else if (d === "reservas") abrirReservas();
     else if (d === "quem") abrirQuem();
     else if (d === "avisos") $("#btnSino").click();
     else if (d === "galera") abrirGalera();
@@ -1930,6 +2188,8 @@
     const assinatura = JSON.stringify([eventoAberto, e ? e.c : null, karaokeEditando, fotoEvento ? fotoEvento.acao + fotoEvento.data.length : null,
       S.jaConcorri, S.meuVoto, k0 === "enquete" ? S.votos : 0, k0 === "karaoke" ? [S.karaoke, S.karaokeErro] : 0,
       k0 === "roleta" ? (regraDaRoleta(e.c) || {}).slot : 0,
+      k0 === "bingo" ? [S.bingos.map(b => [b.id, b.n, ms(b.fechou), b.fotos]), bingoEnviando] : 0,
+      k0 === "ranking" ? rankingDaNoite(S.posts, S.karaoke, null).map(x => [x.k, x.nome, x.n]) : 0,
       (k0 === "concurso" || k0 === "desafio") ? [S.postsAcao.map(p => [p.id, p.nome, p.texto, (p.reacoes || {}).amor]), Array.from(S.curti)] : 0]);
     if (assinatura === assinaturaEvento && sc.childElementCount) return;
     assinaturaEvento = assinatura;
@@ -1978,16 +2238,87 @@
         "Ela passa por todas as regras antes de repetir. A próxima é surpresa!"])));
     }
     if (k === "karaoke") out.push(blocoKaraoke());
+    if (k === "bingo") out.push(...blocosBingo(c));
+    if (k === "ranking") out.push(blocoRanking());
     if (k === "contagem") {
       const d = ate(c);
       const r = el("div", "ev-relogio cont-relogio", d ? faltam(d) : "--:--");
-      out.push(pBloco("", r, el("p", "ev-mut", d ? "Até as " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "")));
+      out.push(pBloco("", r, el("p", "ev-mut", d ? "Até às " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "")));
     }
     // não perde o que está sendo digitado quando chega dado novo
     const guard = {}, foco = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.k : null;
     sc.querySelectorAll("input[data-k]").forEach(i => guard[i.dataset.k] = i.value);
     sc.replaceChildren(...out);
     sc.querySelectorAll("input[data-k]").forEach(i => { if (guard[i.dataset.k] != null) i.value = guard[i.dataset.k]; if (foco === i.dataset.k) i.focus(); });
+  }
+  // ---- Bingo de fotos: 9 tarefas, cada uma vale uma foto ----
+  const minhaCartela = () => S.bingos.find(b => b.de === EU.uid) || null;
+  let bingoEnviando = -1;
+  function blocosBingo(c) {
+    const tarefas = tarefasDoBingo(c), minha = minhaCartela(), fotos = (minha && minha.fotos) || {}, n = Object.keys(fotos).length;
+    const out = [];
+    if (minha && minha.fechou) out.push(pBloco("", el("p", "ev-ok bingo-ok", "BINGO! Tu fechou a cartela. Teu nome aparece no telão.")));
+    const grade = el("div", "bingo-grade");
+    tarefas.forEach((t, i) => {
+      const cel = el("button", "bingo-cel" + (fotos[i] ? " feita" : "")); cel.type = "button";
+      if (fotos[i]) { cel.append(imgFoto(fotos[i], "Foto: " + t)); const ok = el("i", "bingo-check"); ok.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'; cel.append(ok); }
+      cel.append(el("span", "", bingoEnviando === i ? "Mandando…" : t));
+      cel.onclick = () => fotoDoBingo(i, t, !!fotos[i]);
+      grade.append(cel);
+    });
+    out.push(pBloco("Tua cartela · " + n + " de 9", grade, el("p", "ev-mut", "Toca numa tarefa pra tirar a foto. Pede antes pra quem vai aparecer. As fotos não vão pro telão: só a equipe vê.")));
+    out.push(pBloco("Como funciona", passos(["Cada quadrado é uma tarefa. Cumpre e tira a foto ali mesmo.", "Fechou os 9? É bingo: teu nome aparece no telão.", "Quem fechar primeiro fica no topo do ranking."])));
+    const rk = rankingBingo(S.bingos).filter(b => (b.n || 0) > 0).slice(0, 10);
+    const lista = pBloco("Quem tá jogando" + (rk.length ? " · " + rk.length : ""));
+    if (!rk.length) lista.append(el("div", "vazio-s", "Ninguém começou ainda. Sai na frente!"));
+    rk.forEach((b, i) => {
+      const l = el("div", "kr-linha" + (b.de === EU.uid ? " eu" : ""));
+      const t = el("div", "kr-t"); t.append(el("b", "", b.de === EU.uid ? "Tu" : b.nome), el("span", "", b.fechou ? "Fechou a cartela às " + horaDe(b.fechou) : (b.n || 0) + " de 9 fotos"));
+      l.append(el("span", "kr-pos", (i + 1) + "º"), avatar(b.de, "p"), t); lista.append(l);
+    });
+    out.push(lista);
+    return out;
+  }
+  function fotoDoBingo(i, tarefa, jaTem) {
+    const usar = async f => {
+      if (!f) return;
+      let data; try { data = await comprimirFoto(f); } catch (e) { return erroToast("Não deu pra abrir essa foto. Tenta outra."); }
+      bingoEnviando = i; renderEvento();
+      try {
+        const fotoId = (await db.collection("fotos").add({ data, criado: agoraServidor() })).id;
+        const minha = minhaCartela(), fotos = Object.assign({}, (minha && minha.fotos) || {}, { [i]: fotoId }), n = Object.keys(fotos).length;
+        const dados = { de: EU.uid, nome: EU.nome, noite: chaveNoite(), fotos, n, atualizado: agoraServidor(),
+          criado: (minha && minha.criado) || agoraServidor(), fechou: (minha && minha.fechou) || (n >= 9 ? agoraServidor() : null) };
+        await db.doc("bingos/" + chaveNoite() + "_" + EU.uid).set(dados);
+        if (n >= 9 && !(minha && minha.fechou)) { vibrar([120, 60, 120, 60, 200]); toast(EU.uid, "BINGO! Tu fechou a cartela!"); }
+        else toast(EU.uid, "Foto marcada! " + n + " de 9.");
+      } catch (e) {
+        console.warn("[Trela] bingo", e && e.code);
+        erroToast(e && e.code === "permission-denied" ? "Não deu pra salvar: as regras novas do banco precisam ser publicadas." : "Não deu pra mandar a foto. Tenta de novo.");
+      }
+      bingoEnviando = -1; renderEvento();
+    };
+    $("#evFoto").onchange = ev => { usar(ev.target.files[0]); ev.target.value = ""; };
+    $("#evFotoCam").onchange = ev => { usar(ev.target.files[0]); ev.target.value = ""; };
+    folha([el("h4", "", tarefa), el("p", "", jaTem ? "Tu já fez essa. Quer trocar a foto?" : "Cumpre a tarefa e tira a foto."),
+      bt(jaTem ? "Tirar outra foto" : "Tirar foto", "sim", async () => { fecharFolha(); usar(await abrirCamera(false, $("#evFotoCam"))); }),
+      bt("Escolher da galeria", "", () => { fecharFolha(); $("#evFoto").click(); }),
+      bt("Cancelar", "", fecharFolha)]);
+  }
+  // ---- Ranking da noite ----
+  function blocoRanking() {
+    const rk = rankingDaNoite(S.posts.filter(p => !(p.autor && S.bloqueados.has(p.autor))), S.karaoke, null);
+    const b = pBloco("Até agora");
+    if (!rk.length) b.append(el("div", "vazio-s", "Ainda não tem o que contar. Manda um recado, uma foto ou canta no karaokê!"));
+    rk.forEach(x => {
+      const l = el("button", "rk-linha"); l.type = "button";
+      const t = el("div", "rk-t"); t.append(el("small", "", x.rotulo), el("b", "", x.uid === EU.uid ? "Tu" : x.nome));
+      if (x.detalhe) t.append(el("span", "", x.detalhe));
+      const n = el("div", "rk-n"); n.append(el("b", "", String(x.n)), el("small", "", x.un));
+      l.append(avatar(x.uid), t, n); l.onclick = () => abrirPerfil(x.uid); b.append(l);
+    });
+    b.append(el("p", "ev-mut", "O ranking muda ao vivo e também aparece no telão."));
+    return b;
   }
   function passos(lista) { const ol = el("ol", "ev-passos"); lista.forEach(t => ol.append(el("li", "", t))); return ol; }
 
@@ -2339,13 +2670,18 @@
     interesse: '<path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.5h2c.8-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/>',
     amizade: '<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M19 8v6M16 11h6"/>',
     karaoke: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/>',
-    mesa: '<rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/>'
+    mesa: '<rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/>',
+    reserva: '<path d="M4 10h16M6 10v9M18 10v9M4 10l2-5h12l2 5"/><path d="M9 19v-5h6v5"/>',
+    agenda: '<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+    geral: '<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6M17.5 6.5a7.5 7.5 0 0 1 0 11"/>'
   };
   // Toque num aviso do sistema: leva pro lugar certo
   function abrirAvisoSistema(a) {
     if (a.sub === "drink") { const x = drinksPendentes().find(d => d.id === a.alvo); if (x) return mostrarConviteDrink(x); return a.de && abrirPerfil(a.de); }
     if (a.sub === "match") return a.de && abrirChat(a.de);
     if (a.sub === "interesse") return a.de && abrirPerfil(a.de);
+    if (a.sub === "reserva") return abrirReservas();
+    if (a.sub === "agenda") return abrirAgenda();
     if (a.sub === "amizade") return a.de && abrirPerfil(a.de);
     if (a.sub === "karaoke") return abrirEvento("karaoke");
     if (a.sub === "mesa" && a.caminho) location.href = BASE_APP + a.caminho;
@@ -2790,7 +3126,7 @@
     const chave = gente.map(p => p.id + (online(p) ? 1 : 0) + (abertoAgora(p) ? 1 : 0) + (p.fotoV ? ms(p.fotoV) : "")).join() + fotosPerfil.size;
     if (b.dataset.k === chave) return; b.dataset.k = chave;
     $("#quemPilha").replaceChildren(...gente.slice().sort((a, x) => (online(x) - online(a))).slice(0, 4).map(p => avatar(p.id)));
-    $("#quemAtalhoTxt").textContent = gente.length + (gente.length === 1 ? " pessoa abriu" : " pessoas abriram") + " o app hoje" + (on ? " · " + on + " online" : "") + (ab ? " · " + ab + " aberto" + (ab === 1 ? "" : "s") + " pra conhecer gente" : "") + ". Crush secreto e drink por aqui.";
+    $("#quemAtalhoTxt").textContent = gente.length + (gente.length === 1 ? " pessoa abriu" : " pessoas abriram") + " o app hoje" + (on ? " · " + on + " online" : "") + (ab ? " · " + ab + " aberto" + (ab === 1 ? "" : "s") + " pra conhecer gente" : "") + (cardapioAtivo ? ". Marca interesse e paga um drink por aqui." : ". Marca interesse em alguém por aqui.");
   }
   $("#quemAtalho").onclick = () => abrirQuem();
   let filtroQuem = false, quemIdx = 0, quemAss = "";
@@ -2836,7 +3172,7 @@
       const i = Math.round(trilho.scrollLeft / w); if (i !== quemIdx) { quemIdx = Math.max(0, Math.min(lista.length - 1, i)); atualizarNav(); }
     }, { passive: true });
     nav.append(ant, conta, prox); atualizarNav();
-    out.push(trilho, nav, el("p", "nota", "Arrasta pro lado pra ver a próxima pessoa. O crush é segredo: só avisa os dois se os dois marcarem."));
+    out.push(trilho, nav, el("p", "nota", "Arrasta pro lado pra ver a próxima pessoa. Quem tu marcar fica sabendo e, se marcar de volta, dá match."));
     box.replaceChildren(...out);
     // volta pra pessoa que estava na tela
     requestAnimationFrame(() => { const card = trilho.children[quemIdx]; if (card) trilho.scrollLeft = card.offsetLeft - trilho.offsetLeft - 16; });
@@ -2844,7 +3180,7 @@
   // online/offline muda com o tempo: confere a cada 30 s
   setInterval(() => { if (EU && telaAtual() === "tQuem") renderQuem(); if (EU && telaAtual() === "tHome") atalhoQuem(); }, 30 * 1000);
 
-  // ================= CRUSH SECRETO + TE PAGO UM DRINK =================
+  // ================= TENHO INTERESSE (MATCH) + TE PAGO UM DRINK =================
   const SV = (p, extra) => '<svg viewBox="0 0 24 24" fill="' + (extra || "none") + '" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
   function blocoSocial(p) {
     const box = el("div", "social-p"), marcado = S.interesses.has(p.id), deuMatch = S.matches.has(p.id), temPorMim = interesseEmMim(p.id);
@@ -2999,11 +3335,12 @@
     if (pararChat) pararChat();
     const par = parDe(EU.uid, uid);
     pararChat = db.collection("conversas").doc(par).collection("mensagens").orderBy("criado").limitToLast(150).onSnapshot(s => {
-      mensagens = s.docs.map(d => ({ ref: d.ref, ...d.data() })); renderChat(); marcarLida();
+      const antes = mensagens.length;
+      mensagens = s.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() })); renderChat(mensagens.length === antes); marcarLida();   // reação não puxa a tela pro fim
     }, () => {});
     marcarLida();
   }
-  function fecharChat() { if (pararChat) pararChat(); pararChat = null; chatCom = null; }
+  function fecharChat() { if (pararChat) pararChat(); pararChat = null; chatCom = null; reagindo = null; }
   function marcarLida() {
     if (!chatCom || !naoLida(chatCom)) return;
     const par = parDe(EU.uid, chatCom), c = S.conversas.get(chatCom);
@@ -3020,17 +3357,116 @@
   const revelar = new Set();
   // Até quando a conversa foi apagada "só pra mim"
   const apagadaAte = outro => ms(((S.conversas.get(outro) || {}).apagadaPor || {})[EU.uid]);
-  function renderChat() {
+  function renderChat(semRolar) {
     const out = [], corte = apagadaAte(chatCom);
+    if (!ouvindoCardapio && mensagens.some(m => m.item)) ouvirCardapio();   // foto do item mandado
     if (!ehAmigo(chatCom)) out.push(el("div", "sistema", S.bloqueados.has(chatCom) ? "Tu bloqueou essa pessoa." : "Vocês não são mais amigos, então não dá pra mandar mensagem."));
     else if (!mensagens.some(m => !corte || !m.criado || ms(m.criado) > corte)) out.push(el("div", "sistema", corte ? "Conversa apagada. As mensagens novas aparecem aqui." : "Vocês são amigos. Manda um oi!"));
+    const IC_FOTO = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>';
     mensagens.filter(m => !corte || !m.criado || ms(m.criado) > corte).forEach((m, i) => {
       const mine = m.de === EU.uid, chave = ms(m.criado) + ":" + i;
-      if (!mine && ofensivoTexto(m.texto) && !revelar.has(chave)) { const o = el("div", "msg dela oculta", "Mensagem pode ser ofensiva · toca pra ver"); o.onclick = () => { revelar.add(chave); renderChat(); }; out.push(o); return; }
-      const b = el("div", "msg " + (mine ? "minha" : "dela"), m.texto); b.append(el("small", "", horaDe(m.criado))); out.push(b);
+      if (!mine && !m.fotoId && ofensivoTexto(m.texto) && !revelar.has(chave)) { const o = el("div", "msg dela oculta", "Mensagem pode ser ofensiva · toca pra ver"); o.onclick = () => { revelar.add(chave); renderChat(); }; out.push(o); return; }
+      let b;
+      if (m.fotoId) {
+        // Foto: quem recebe vê uma vez e ela some
+        const vista = !!m.fotoVista;
+        b = el("div", "msg foto-m " + (mine ? "minha" : "dela") + (vista || mine ? " vista" : ""));
+        b.innerHTML = IC_FOTO;
+        b.append(el("span", "", mine ? (vista ? "Foto vista" : "Foto enviada · ainda não vista") : (vista ? "Foto vista" : "Foto · toca pra ver (some depois)")));
+        b.append(el("small", "", horaDe(m.criado)));
+        if (!mine && !vista) b.onclick = () => verFotoChat(m);
+        else b.onclick = () => { reagindo = reagindo === m.id ? null : m.id; renderChat(true); };
+      } else if (m.item) {
+        // item do cardápio mandado pelo amigo
+        b = el("div", "msg item-m " + (mine ? "minha" : "dela"));
+        const topo = el("div", "im-top"), ft = el("span", "im-ft"), prod = (cardapio || []).find(x => x.id === m.item.id);
+        if (prod && prod.foto) ft.style.backgroundImage = "url(" + prod.foto + ")";
+        else ft.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12l-1.5 15a2 2 0 0 1-2 1.8h-5a2 2 0 0 1-2-1.8z"/><path d="M6.5 9h11"/></svg>';
+        const t = el("div", "im-t"); t.append(el("small", "", "Bora pedir isso?"), el("b", "", m.item.nome)); if (m.item.preco) t.append(el("span", "", m.item.preco));
+        topo.append(ft, t);
+        const ver = el("button", "im-ver", "Ver no cardápio"); ver.type = "button"; ver.onclick = ev => { ev.stopPropagation(); verProduto(m.item.id); };
+        b.append(topo, ver, el("small", "", horaDe(m.criado)));
+        b.onclick = () => { reagindo = reagindo === m.id ? null : m.id; renderChat(true); };
+      } else {
+        b = el("div", "msg " + (mine ? "minha" : "dela"), m.texto); b.append(el("small", "", horaDe(m.criado)));
+        b.onclick = () => { reagindo = reagindo === m.id ? null : m.id; renderChat(true); };
+      }
+      // reações (cada um a sua)
+      const rs = Object.values(m.reacoes || {}).filter(k => REACOES_CHAT[k]);
+      if (rs.length) { b.classList.add("com-reacao"); b.append(el("span", "reac-m", [...new Set(rs)].map(k => REACOES_CHAT[k]).join("") + (rs.length > 1 ? " " + rs.length : ""))); }
+      out.push(b);
+      if (reagindo === m.id) {
+        const barra = el("div", "reagir " + (mine ? "minha" : "dela")), minha = (m.reacoes || {})[EU.uid];
+        Object.keys(REACOES_CHAT).forEach(k => {
+          const r = el("button", minha === k ? "on" : "", REACOES_CHAT[k]); r.type = "button"; r.setAttribute("aria-label", "Reagir com " + k);
+          r.onclick = ev => { ev.stopPropagation(); reagirMensagem(m, minha === k ? null : k); };
+          barra.append(r);
+        });
+        out.push(barra);
+      }
     });
     $("#msgs").replaceChildren(...out);
-    const sc = $("#chatScroll"); sc.scrollTop = sc.scrollHeight;
+    if (!semRolar) { const sc = $("#chatScroll"); sc.scrollTop = sc.scrollHeight; }
+  }
+  // Reagir: toca na mensagem, escolhe a reação (toca de novo na mesma pra tirar)
+  let reagindo = null;
+  function reagirMensagem(m, k) {
+    reagindo = null;
+    m.ref.update({ ["reacoes." + EU.uid]: k || FS.FieldValue.delete() })
+      .catch(e => erroToast(e && e.code === "permission-denied" ? "Não deu pra reagir: as regras novas do banco precisam ser publicadas." : "Não deu pra reagir. Tenta de novo."));
+    renderChat(true);
+  }
+  // Foto no chat: fica em conversas/{par}/fotos; quem recebe vê uma vez e ela é apagada
+  $("#chatFotoBt").onclick = () => {
+    if (!chatCom) return;
+    const usar = async f => {
+      if (!f) return;
+      let data; try { data = await comprimirFoto(f); } catch (e) { return erroToast("Não deu pra abrir essa foto. Tenta outra."); }
+      const im = el("img", "previa-foto"); im.src = data; im.alt = "Prévia da foto";
+      const manda = bt("Mandar foto", "sim", async () => { manda.disabled = true; manda.textContent = "Mandando…"; await mandarFotoChat(data); fecharFolha(); });
+      folha([el("h4", "", "Mandar essa foto pra " + perfil(chatCom).nome + "?"), im, el("p", "", "A foto some depois que a pessoa abrir. Não manda foto de quem não deixou."), manda, bt("Cancelar", "", fecharFolha)]);
+    };
+    $("#chatFoto").onchange = ev => { usar(ev.target.files[0]); ev.target.value = ""; };
+    $("#chatFotoCam").onchange = ev => { usar(ev.target.files[0]); ev.target.value = ""; };
+    folha([el("h4", "", "Mandar foto"),
+      bt("Tirar foto", "sim", async () => { fecharFolha(); usar(await abrirCamera(false, $("#chatFotoCam"))); }),
+      bt("Escolher da galeria", "", () => { fecharFolha(); $("#chatFoto").click(); }),
+      bt("Cancelar", "", fecharFolha)]);
+  };
+  async function mandarFotoChat(data) {
+    const com = chatCom, par = parDe(EU.uid, com), conv = db.collection("conversas").doc(par);
+    try {
+      // garante que a conversa existe (as regras conferem a amizade por ela)
+      await conv.set({ membros: [EU.uid, com].sort(), lidaPor: { [EU.uid]: agoraServidor() } }, { merge: true });
+      const fotoRef = conv.collection("fotos").doc();
+      await fotoRef.set({ de: EU.uid, data, criado: agoraServidor() });
+      const msgRef = conv.collection("mensagens").doc();
+      const lote = db.batch();
+      lote.set(msgRef, { de: EU.uid, texto: "", fotoId: fotoRef.id, criado: agoraServidor() });
+      lote.set(conv, { membros: [EU.uid, com].sort(), ultima: { de: EU.uid, texto: "Foto", criado: agoraServidor() }, lidaPor: { [EU.uid]: agoraServidor() } }, { merge: true });
+      await lote.commit();
+      avisarCelular({ tipo: "mensagem", par, id: msgRef.id });
+    } catch (e) {
+      console.warn("[Trela] foto no chat", e && e.code);
+      erroToast(e && e.code === "permission-denied" ? "Não deu pra mandar a foto: as regras novas do banco precisam ser publicadas." : "Não deu pra mandar a foto. Tenta de novo.");
+    }
+  }
+  async function verFotoChat(m) {
+    const par = parDe(EU.uid, chatCom), ref = db.doc("conversas/" + par + "/fotos/" + m.fotoId);
+    let data = null;
+    try { const d = await ref.get(); data = d.exists ? d.data().data : null; } catch (e) {}
+    if (!data) { m.ref.update({ fotoVista: true }).catch(() => {}); return erroToast("Essa foto não está mais disponível."); }
+    const box = el("div", "foto-chat"); box.setAttribute("role", "dialog"); box.setAttribute("aria-label", "Foto");
+    const im = el("img"); im.src = data; im.alt = "Foto de " + perfil(chatCom).nome;
+    const fechar = el("button", "", "Fechar"); fechar.type = "button";
+    fechar.onclick = () => {
+      box.remove();
+      // viu: marca como vista e apaga a foto do banco
+      m.ref.update({ fotoVista: true }).catch(() => {});
+      ref.delete().catch(() => {});
+    };
+    box.append(im, el("p", "", "Essa foto some quando tu fechar."), fechar);
+    document.body.append(box);
   }
   $("#chatForm").addEventListener("submit", async e => {
     e.preventDefault();
@@ -3061,6 +3497,8 @@
           for (let i = 0; i < s.docs.length; i += 400) {
             const b = db.batch(); s.docs.slice(i, i + 400).forEach(d => b.delete(d.ref)); await b.commit();
           }
+          const fs = await db.collection("conversas").doc(par).collection("fotos").get().catch(() => null);
+          if (fs) await Promise.all(fs.docs.map(d => d.ref.delete().catch(() => {})));
           await db.doc("conversas/" + par).set({ membros: [EU.uid, uid].sort(), ultima: null }, { merge: true });
           fecharFolha(); if (telaAtual() === "tChat") { mensagens = []; renderChat(); } else redesenhar();
         } catch (e) { erro.textContent = "Não deu pra apagar agora. Tenta de novo."; }

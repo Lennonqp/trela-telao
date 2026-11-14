@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0d0a12">
+<title>Reservas · Trela</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="estilo.css?v=202611132152">
+<style>
+  body{min-height:100dvh;padding:28px 16px calc(32px + env(safe-area-inset-bottom));background:radial-gradient(70% 40% at 15% 0%,rgba(169,92,242,.22),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(255,63,164,.18),transparent 70%),var(--bg)}
+  .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+  .logo{font-size:48px}
+  .logo small{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-shadow:none;margin-top:8px}
+  .voltar{color:var(--lilas);font-weight:700;text-decoration:none;font-size:14px}
+  #porta{display:flex;justify-content:center}
+  main{display:flex;flex-direction:column;gap:18px}
+  h1{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(30px,6vw,44px);line-height:1;text-transform:uppercase}
+  h1 em{font-style:normal;color:var(--neon)}
+  .sub{margin:6px 0 0;color:var(--muted);font-size:14px}
+  .painel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px}
+  .painel h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1;text-transform:uppercase;color:var(--lilas)}
+  .painel input,.painel textarea{background:var(--bg)}
+  .dupla{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .msg{margin:0;font-size:13px;min-height:18px;color:var(--ok)}
+  .msg.erro{color:var(--laranja)}
+  .vazio{margin:0;color:var(--muted);text-align:center;padding:26px 10px;border:1px dashed var(--line);border-radius:14px}
+  .sec{font:400 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:6px 0 -6px;display:flex;justify-content:space-between}
+  .item{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c,var(--lilas));border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px}
+  .item .quando{font:700 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--c,var(--lilas))}
+  .item b{font-size:17px;overflow-wrap:anywhere}
+  .item span{color:var(--muted);font-size:14px;overflow-wrap:anywhere}
+  .item .bts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .item .bts button{border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:10px 16px;font:700 12px/1 var(--f-body);text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
+  .item .bts button.sim{background:var(--ok);border-color:var(--ok);color:#06200f}
+  .item .bts button.nao{border-color:var(--laranja);color:var(--laranja)}
+  .liga{flex-direction:row!important;align-items:center;justify-content:space-between;gap:14px!important;padding:16px 18px!important}
+  .liga.on{border-color:var(--neon)}
+  .liga-txt{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .liga-txt b{font-size:16px}
+  .liga-txt span{font-size:13px;color:var(--muted)}
+  .liga.on .liga-txt span{color:var(--ink)}
+  .chave{position:relative;flex:none;width:52px;height:30px;margin:0;cursor:pointer}
+  .chave input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+  .chave span{pointer-events:none;position:absolute;top:0;left:0;right:0;bottom:0;border-radius:999px;background:var(--line);transition:background .2s}
+  .chave span::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s}
+  .chave input:checked + span{background:var(--neon)}
+  .chave input:checked + span::after{transform:translateX(22px)}
+  .chave input:focus-visible + span{outline:2px solid var(--lilas);outline-offset:2px}
+  @media (max-width:480px){.dupla{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><img src="logo.svg?v=3" alt="trela"><small>Equipe · reservas</small></div>
+    <a class="voltar" href="bar">&lsaquo; Voltar pro painel</a>
+  </header>
+
+  <div id="porta"></div>
+
+  <main id="tela" hidden>
+    <div>
+      <h1>Reservas de <em>mesa</em></h1>
+      <p class="sub">A galera pede a mesa pelo app. A reserva só vale depois que alguém da equipe confirmar aqui, e a pessoa é avisada na hora.</p>
+    </div>
+
+    <div class="painel liga" id="ligaRs">
+      <div class="liga-txt">
+        <b>Aceitar reservas pelo app</b>
+        <span id="ligaRsEstado">Desligado: "Reservar mesa" não aparece no app.</span>
+      </div>
+      <label class="chave"><input type="checkbox" id="ligaRsChk" aria-label="Aceitar reservas pelo app"><span></span></label>
+    </div>
+    <p class="msg" id="rsMsg" role="status"></p>
+
+    <div class="sec"><span>Esperando resposta</span><span id="rsNPend"></span></div>
+    <div id="rsPend" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div class="sec"><span>Confirmadas</span><span id="rsNConf"></span></div>
+    <div id="rsConf" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div class="sec"><span>Recusadas e canceladas</span></div>
+    <div id="rsOutras" style="display:flex;flex-direction:column;gap:10px"></div>
+  </main>
+
+  <footer class="lennon-pe" data-marca-lennon></footer>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="config.js?v=202611132152"></script>
+<script>window.SESSAO_EQUIPE = true;</script>
+<script src="marca.js?v=202611132152"></script>
+<script src="comum.js?v=202611132152"></script>
+<script src="equipe.js?v=202611132152"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  const botao = (texto, cls, acao) => { const b = el("button", cls, texto); b.type = "button"; b.onclick = acao; return b; };
+  const msg = (id, t, erro) => { $(id).textContent = t; $(id).className = "msg" + (erro ? " erro" : ""); };
+  const semPermissao = e => e && e.code === "permission-denied";
+  let parar = [];
+  // Reservas: /reservas/{id} = { de, nome, data, hora, pessoas, obs, status, criado, resposta, respondido }
+  const auth = appTrela.auth();
+  let reservas = [];
+  function desenharLiga(on) {
+    $("ligaRsChk").checked = on; $("ligaRs").classList.toggle("on", on);
+    $("ligaRsEstado").textContent = on ? "Ligado: a galera pode pedir mesa em Reservar mesa, no menu do app." : "Desligado: \"Reservar mesa\" não aparece no app.";
+  }
+  $("ligaRsChk").onchange = () => {
+    const on = $("ligaRsChk").checked; desenharLiga(on);
+    db.doc("config/reservas").set({ ativo: on, ativoEm: agoraServidor() }, { merge: true })
+      .then(() => msg("rsMsg", on ? "Reservas ligadas no app." : "Reservas desligadas no app."))
+      .catch(e => { desenharLiga(!on); msg("rsMsg", semPermissao(e) ? "Sem permissão pra mudar." : "Não deu pra salvar. Tenta de novo.", true); });
+  };
+  // avisa a pessoa (sino e celular): o servidor confere que quem chamou é da equipe
+  function avisar(id) {
+    const u = auth.currentUser; if (!u) return;
+    u.getIdToken().then(t => fetch("/api/avisar", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json", Authorization: "Bearer " + t }, body: JSON.stringify({ tipo: "reserva", id, base: new URL("./", document.baseURI).pathname.replace(/\/$/, "") === "/teste" ? "/teste/" : "/" }) })).catch(() => {});
+  }
+  async function responder(r, status, resposta) {
+    try {
+      await db.doc("reservas/" + r.id).update({ status, resposta: String(resposta || "").replace(/\s+/g, " ").trim().slice(0, 120), respondido: agoraServidor() });
+      avisar(r.id);
+      msg("rsMsg", (status === "confirmada" ? "Reserva de " : "Pedido de ") + r.nome + (status === "confirmada" ? " confirmada" : " recusado") + ". A pessoa foi avisada.");
+    } catch (e) { msg("rsMsg", semPermissao(e) ? "Sem permissão. Publica o firestore.rules de novo." : "Não deu pra responder. Tenta de novo.", true); }
+  }
+  const COR = { pendente: "#ffd166", confirmada: "var(--ok)", recusada: "var(--laranja)", cancelada: "var(--muted)" };
+  function cartao(r) {
+    const it = el("div", "item"); it.style.setProperty("--c", COR[r.status] || COR.pendente);
+    it.append(el("span", "quando", dataBonita(r.data) + " · " + r.hora), el("b", "", r.nome + " · " + r.pessoas + (r.pessoas === 1 ? " pessoa" : " pessoas")));
+    if (r.obs) it.append(el("span", "", "Observação: " + r.obs));
+    if (r.resposta) it.append(el("span", "", "Recado enviado: " + r.resposta));
+    if (r.status === "cancelada") it.append(el("span", "", "Cancelada pela pessoa"));
+    if (r.status === "recusada") it.append(el("span", "", "Recusada pela equipe"));
+    const bts = el("div", "bts");
+    if (r.status === "pendente") {
+      const rec = el("input"); rec.maxLength = 120; rec.placeholder = "Recado pra pessoa (opcional). Ex.: mesa perto do palco"; rec.setAttribute("aria-label", "Recado pra " + r.nome); rec.style.background = "var(--bg)";
+      it.append(rec);
+      bts.append(botao("Confirmar", "sim", () => responder(r, "confirmada", rec.value)), botao("Recusar", "nao", () => responder(r, "recusada", rec.value)));
+    } else if (r.status === "confirmada") {
+      bts.append(botao("Desmarcar", "nao", () => responder(r, "recusada", "A equipe precisou desmarcar. Fala com a gente no balcão.")));
+    } else bts.append(botao("Apagar", "", () => db.doc("reservas/" + r.id).delete().catch(() => msg("rsMsg", "Não deu pra apagar.", true))));
+    it.append(bts); return it;
+  }
+  function desenhar() {
+    const hoje = hojeISO(inicioDaNoite()), ord = (a, b) => (a.data + a.hora).localeCompare(b.data + b.hora);
+    const vale = reservas.filter(r => r.data >= hoje);
+    const pend = vale.filter(r => r.status === "pendente").sort(ord), conf = vale.filter(r => r.status === "confirmada").sort(ord), outras = vale.filter(r => r.status === "recusada" || r.status === "cancelada").sort(ord);
+    $("rsNPend").textContent = pend.length || ""; $("rsNConf").textContent = conf.length || "";
+    $("rsPend").replaceChildren(...(pend.length ? pend.map(cartao) : [el("p", "vazio", "Nenhum pedido esperando.")]));
+    $("rsConf").replaceChildren(...(conf.length ? conf.map(cartao) : [el("p", "vazio", "Nenhuma reserva confirmada.")]));
+    $("rsOutras").replaceChildren(...(outras.length ? outras.map(cartao) : [el("p", "vazio", "Nada por aqui.")]));
+  }
+  portaEquipe($("porta"), () => {
+    $("tela").hidden = false;
+    parar.push(db.doc("config/reservas").onSnapshot(s => desenharLiga(s.exists && s.data().ativo === true), () => {}));
+    parar.push(db.collection("reservas").onSnapshot(s => {
+      // não redesenha enquanto alguém digita o recado
+      const digitando = document.activeElement && document.activeElement.tagName === "INPUT" && document.activeElement.type !== "checkbox" && document.activeElement.value;
+      reservas = s.docs.map(d => Object.assign({ id: d.id }, d.data()));
+      // reservas de dias que já passaram saem sozinhas
+      const hoje = hojeISO(inicioDaNoite());
+      reservas.filter(r => r.data < hoje).forEach(r => db.doc("reservas/" + r.id).delete().catch(() => {}));
+      if (!digitando) desenhar();
+    }, e => { $("rsPend").replaceChildren(el("p", "vazio", semPermissao(e) ? "As regras do Firestore estão desatualizadas. Publica o firestore.rules de novo." : "Não deu pra carregar as reservas.")); }));
+  }, () => { parar.forEach(f => f()); parar = []; $("tela").hidden = true; });
+</script>
+</body>
+</html>

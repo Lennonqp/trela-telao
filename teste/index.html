@@ -23,7 +23,7 @@
 <meta property="og:description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
 <meta property="og:image" content="https://trela-telao.vercel.app/icone-512.png">
 <meta name="twitter:card" content="summary">
-<link rel="stylesheet" href="estilo.css?v=202611161736">
+<link rel="stylesheet" href="estilo.css?v=202611161742">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -475,6 +475,7 @@
   .linha{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
   .reagir{background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:6px 10px;font:500 14px/1 var(--f-body);cursor:pointer;font-variant-numeric:tabular-nums}
   .reagir[aria-pressed="true"]{border-color:var(--neon);background:rgba(255,63,164,.12)}
+  .apagar-post{flex-basis:100%;text-align:right;border:0;background:none;color:var(--muted);font:600 12px/1 var(--f-body);text-decoration:underline;cursor:pointer;padding:6px 0 0}
   .comentar{margin-left:auto;background:none;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:6px 12px;font:700 12px/1 var(--f-body);cursor:pointer}
   .previa{background:none;border:0;padding:0;text-align:left;font-size:13px;color:var(--muted);cursor:pointer;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   .previa b{color:var(--ink)}
@@ -796,9 +797,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611161736"></script>
-<script src="marca.js?v=202611161736"></script>
-<script src="comum.js?v=202611161736"></script>
+<script src="config.js?v=202611161742"></script>
+<script src="marca.js?v=202611161742"></script>
+<script src="comum.js?v=202611161742"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1730,6 +1731,18 @@
     else carregarFoto(fotoId).then(d => { if (d) { fotosProntas.set(fotoId, d); img.src = d; } });
     return img;
   }
+  function confirmarApagarPost(r) {
+    const sim = bt("Apagar", "perigo", async () => {
+      sim.disabled = true; sim.textContent = "Apagando…";
+      try {
+        await db.doc("telao/" + r.id).delete();
+        if (postsPerfil) postsPerfil = postsPerfil.filter(x => x.id !== r.id);
+        S.postsMap.delete(r.id);
+        fecharFolha(); toast(EU.uid, "Post apagado."); redesenhar(); if (telaAtual() === "tPerfil") renderPerfil();
+      } catch (e) { sim.disabled = false; sim.textContent = "Apagar"; erroToast("Não deu pra apagar agora. Tenta de novo."); }
+    });
+    folha([el("h4", "", "Apagar esse post?"), el("p", "", r.tipo === "foto" ? "A foto sai do telão, do Rolou hoje e do teu perfil. Não dá pra desfazer." : "O recado sai do telão, do Rolou hoje e do teu perfil. Não dá pra desfazer."), sim, bt("Cancelar", "", fecharFolha)]);
+  }
   const reagi = guardado.ler("trela-reagi", {});
   function postCard(r) {
     const card = el("article", "item" + (r.tipo === "bar" ? " bar" : "") + (r.casa ? " casa" : ""));
@@ -1768,6 +1781,8 @@
     const n = r.ncoms || 0;
     const cm = el("button", "comentar", n ? n + (n === 1 ? " comentário" : " comentários") : "Comentar"); cm.type = "button";
     cm.onclick = () => abrirComentarios(r.id); linha.append(cm);
+    // os meus posts: dá pra apagar (sai do telão, do Rolou hoje e do perfil)
+    if (EU && r.autor === EU.uid && !r.demo) { const ap = el("button", "apagar-post", "Apagar post"); ap.type = "button"; ap.onclick = () => confirmarApagarPost(r); linha.append(ap); }
     card.append(linha);
     if (r.ultimoCom) {
       const pv = el("button", "previa"); pv.type = "button";

@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202611161742">
+<link rel="stylesheet" href="estilo.css?v=202611161743">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -23,10 +23,17 @@
   .logo{font-size:calc(var(--u) * 6.5)}
   .noite{text-align:right;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.14em;font-size:calc(var(--u) * 1.25);color:var(--muted)}
   /* Termômetro da noite: sobe com recados, fotos, reações e comentários dos últimos 10 minutos */
-  .termo{display:flex;align-items:center;justify-content:flex-end;gap:calc(var(--u) * .8);margin-top:calc(var(--u) * .7);font-size:calc(var(--u) * 1.05);letter-spacing:.14em;color:var(--ink)}
-  .termo-barra{width:calc(var(--u) * 13);height:calc(var(--u) * .9);border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden}
-  .termo-barra i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--lilas),var(--neon),var(--laranja));background-size:calc(var(--u) * 13) 100%;transition:width 1.2s ease}
-  .termo.fogo span{color:var(--laranja);text-shadow:0 0 calc(var(--u) * 1) var(--laranja)}
+  .termo-rot{display:block;margin-top:calc(var(--u) * .8);font:700 calc(var(--u) * 1.5)/1 var(--f-mono);letter-spacing:.16em;color:var(--ink)}
+  .termo-rot.fogo{color:var(--laranja);text-shadow:0 0 calc(var(--u) * 1.2) var(--laranja)}
+  /* tubo na vertical, colado na borda direita da tela, do alto até embaixo */
+  .termo{position:absolute;right:calc(var(--u) * 1.1);top:calc(var(--u) * 13.5);bottom:calc(var(--u) * 3);width:calc(var(--u) * 1.8);z-index:3}
+  .termo-tubo{position:absolute;left:0;right:0;top:0;bottom:calc(var(--u) * 1.6);border-radius:999px;background:rgba(255,255,255,.12);border:calc(var(--u) * .12) solid rgba(255,255,255,.28);overflow:hidden}
+  .termo-tubo i{position:absolute;left:0;right:0;bottom:0;height:0;border-radius:999px;background:linear-gradient(0deg,var(--lilas),var(--neon) 55%,var(--laranja));background-size:100% calc(var(--u) * 38);background-position:bottom;transition:height 1.2s ease;box-shadow:0 0 calc(var(--u) * 1.4) var(--neon)}
+  .termo-tubo::after{content:"";position:absolute;left:0;right:0;top:0;bottom:0;background:repeating-linear-gradient(0deg,transparent 0,transparent calc(var(--u) * 3.6),rgba(9,6,13,.55) calc(var(--u) * 3.6),rgba(9,6,13,.55) calc(var(--u) * 3.8))}
+  .termo-bulbo{position:absolute;left:50%;bottom:0;width:calc(var(--u) * 3.2);height:calc(var(--u) * 3.2);margin-left:calc(var(--u) * -1.6);border-radius:50%;background:var(--lilas);border:calc(var(--u) * .12) solid rgba(255,255,255,.28);box-shadow:0 0 calc(var(--u) * 1.6) var(--lilas)}
+  .termo.fogo .termo-tubo i{box-shadow:0 0 calc(var(--u) * 2.4) var(--laranja);animation:termoFogo 1.1s ease-in-out infinite alternate}
+  .termo.fogo .termo-bulbo{background:var(--laranja);box-shadow:0 0 calc(var(--u) * 2.6) var(--laranja)}
+  @keyframes termoFogo{from{filter:brightness(1)}to{filter:brightness(1.45)}}
   /* Ranking da noite e bingo */
   .rk-tv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:calc(var(--u) * 1.4);width:100%}
   .rk-tv div{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:calc(var(--u) * 1.4);padding:calc(var(--u) * 1.4) calc(var(--u) * 1.8);min-width:0}
@@ -305,9 +312,10 @@
   <div class="topo">
     <div class="logo"><img src="logo.svg?v=3" alt="trela"></div>
     <div class="noite">Hoje no Trela<b id="noite">Bem-vindos</b>
-      <div class="termo" id="termo" hidden><span id="termoTxt">Aquecendo</span><div class="termo-barra"><i id="termoNivel"></i></div></div>
+      <span class="termo-rot" id="termoTxt" hidden>Aquecendo</span>
     </div>
   </div>
+  <div class="termo" id="termo" aria-hidden="true" hidden><div class="termo-tubo"><i id="termoNivel"></i></div><span class="termo-bulbo"></span></div>
   <div class="palco" id="palco"><div class="corpo"><p class="texto vazio">Manda o primeiro recado da noite</p></div></div>
   <div class="fila" id="fila" hidden>Na fila<b id="nFila">0</b></div>
   <div class="qr"><div id="qrcode"></div><p>Escaneia e entra no Trela</p></div>
@@ -337,11 +345,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611161742"></script>
+<script src="config.js?v=202611161743"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611161742"></script>
-<script src="comum.js?v=202611161742"></script>
-<script src="equipe.js?v=202611161742"></script>
+<script src="marca.js?v=202611161743"></script>
+<script src="comum.js?v=202611161743"></script>
+<script src="equipe.js?v=202611161743"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -423,10 +431,10 @@
   }
   function desenharTermometro() {
     const n = nivelTermometro(), box = $("termo");
-    box.hidden = false;
-    $("termoNivel").style.width = Math.max(4, Math.round(n * 100)) + "%";
+    box.hidden = false; $("termoTxt").hidden = false;
+    $("termoNivel").style.height = Math.max(6, Math.round(n * 100)) + "%";
     $("termoTxt").textContent = n >= .8 ? "Pegando fogo" : n >= .5 ? "Quente" : n >= .2 ? "Esquentando" : "Aquecendo";
-    box.classList.toggle("fogo", n >= .8);
+    box.classList.toggle("fogo", n >= .8); $("termoTxt").classList.toggle("fogo", n >= .8);
   }
   function ultimosDaGalera() {
     const lista = Array.from(itens.values()).filter(r => r.tipo !== "bar")

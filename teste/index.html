@@ -23,7 +23,7 @@
 <meta property="og:description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
 <meta property="og:image" content="https://trela-telao.vercel.app/icone-512.png">
 <meta name="twitter:card" content="summary">
-<link rel="stylesheet" href="estilo.css?v=202611161732">
+<link rel="stylesheet" href="estilo.css?v=202611161736">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -245,6 +245,9 @@
   /* Agenda */
   #tAgenda .rolagem{gap:12px}
   .ag-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
+  .ag-capa{border:0;padding:0;background:var(--panel2);border-radius:12px;overflow:hidden;cursor:pointer;display:block;width:100%}
+  .ag-capa img{display:block;width:100%;max-height:300px;object-fit:cover}
+  .ag-capa-g{width:100%;max-height:70vh;object-fit:contain;border-radius:12px}
   .ag-card.hoje{border-color:var(--neon);box-shadow:0 0 22px -10px var(--neon)}
   .ag-quando{font:700 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--lilas)}
   .ag-card.hoje .ag-quando{color:var(--neon)}
@@ -793,9 +796,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611161732"></script>
-<script src="marca.js?v=202611161732"></script>
-<script src="comum.js?v=202611161732"></script>
+<script src="config.js?v=202611161736"></script>
+<script src="marca.js?v=202611161736"></script>
+<script src="comum.js?v=202611161736"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1907,6 +1910,11 @@
     else out.push(el("p", "aviso-s", "Toca em \"Me avisa\" que a gente te lembra no dia" + (ehIOS ? ", aqui no sino do app." : ".")));
     S.agenda.forEach(e => {
       const c = el("article", "ag-card" + (e.data === hoje ? " hoje" : ""));
+      if (e.fotoId) {
+        const capa = el("button", "ag-capa"); capa.type = "button"; capa.hidden = true; capa.setAttribute("aria-label", "Ver a foto de " + e.titulo);
+        const im = el("img"); im.alt = "Foto de " + e.titulo; capa.append(im); c.append(capa);
+        carregarFoto(e.fotoId).then(d => { if (!d) return; im.src = d; capa.hidden = false; capa.onclick = () => { const g = el("img", "ag-capa-g"); g.src = d; g.alt = im.alt; folha([g, el("h4", "", e.titulo), bt("Fechar", "", fecharFolha)]); }; });
+      }
       c.append(el("span", "ag-quando", dataBonita(e.data) + (e.hora ? " · " + e.hora : "")), el("h4", "", e.titulo));
       if (e.descricao) c.append(el("p", "", e.descricao));
       const on = !!S.agendaAvisa[e.id];

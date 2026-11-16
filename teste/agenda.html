@@ -9,7 +9,7 @@
 <title>Agenda · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="estilo.css?v=202611161732">
+<link rel="stylesheet" href="estilo.css?v=202611161736">
 <style>
   body{min-height:100dvh;padding:28px 16px calc(32px + env(safe-area-inset-bottom));background:radial-gradient(70% 40% at 15% 0%,rgba(169,92,242,.22),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(255,63,164,.18),transparent 70%),var(--bg)}
   .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
@@ -51,6 +51,11 @@
   .chave input:checked + span{background:var(--neon)}
   .chave input:checked + span::after{transform:translateX(22px)}
   .chave input:focus-visible + span{outline:2px solid var(--lilas);outline-offset:2px}
+  .ag-foto{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .ag-foto img{width:120px;height:120px;object-fit:cover;border-radius:12px;border:1px solid var(--line);background:var(--bg)}
+  .ag-foto .bts{display:flex;gap:8px;flex-wrap:wrap}
+  .ag-foto button{border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:10px 16px;font:700 12px/1 var(--f-body);text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
+  .item img.capa{width:100%;max-height:260px;object-fit:cover;border-radius:10px;background:var(--bg);margin-bottom:4px}
   @media (max-width:480px){.dupla{grid-template-columns:1fr}}
 </style>
 </head>
@@ -66,7 +71,7 @@
   <main id="tela" hidden>
     <div>
       <h1>Agenda do <em>Trela</em></h1>
-      <p class="sub">As próximas noites aparecem no app, em Agenda do Trela. Quem tocar em "Me avisa" recebe o lembrete no dia.</p>
+      <p class="sub">As próximas noites aparecem no app, em Agenda do Trela, com a foto do evento se tiver. Quem tocar em "Me avisa" recebe o lembrete no dia.</p>
     </div>
 
     <form class="painel" id="formAg" novalidate>
@@ -77,6 +82,14 @@
         <div><label for="agHora">Horário</label><input id="agHora" type="time" value="20:00"></div>
       </div>
       <div><label for="agDesc">Descrição (opcional)</label><textarea id="agDesc" maxlength="200" placeholder="Ex.: Open de chopp até às 22h e DJ convidado"></textarea></div>
+      <div>
+        <label>Foto do evento (opcional)</label>
+        <input id="agArq" type="file" accept="image/*" hidden>
+        <div class="ag-foto">
+          <img id="agPrev" alt="Foto do evento" hidden>
+          <div class="bts"><button type="button" id="agEscolher">Escolher foto</button><button type="button" id="agTirarFoto" hidden>Tirar a foto</button></div>
+        </div>
+      </div>
       <p class="msg" id="agMsg" role="status"></p>
       <button class="btn" type="submit" id="agSalvar">Colocar na agenda</button>
       <button class="ghost" type="button" id="agCancelar" hidden>Cancelar edição</button>
@@ -92,11 +105,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611161732"></script>
+<script src="config.js?v=202611161736"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611161732"></script>
-<script src="comum.js?v=202611161732"></script>
-<script src="equipe.js?v=202611161732"></script>
+<script src="marca.js?v=202611161736"></script>
+<script src="comum.js?v=202611161736"></script>
+<script src="equipe.js?v=202611161736"></script>
 <script>
   const $ = id => document.getElementById(id);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -104,9 +117,20 @@
   const msg = (id, t, erro) => { $(id).textContent = t; $(id).className = "msg" + (erro ? " erro" : ""); };
   const semPermissao = e => e && e.code === "permission-denied";
   let parar = [];
-  // Agenda da semana: /agenda/{id} = { titulo, descricao, data "AAAA-MM-DD", hora "HH:MM", criado, avisado }
+  // Agenda da semana: /agenda/{id} = { titulo, descricao, data "AAAA-MM-DD", hora "HH:MM", fotoId (opcional, em /fotos), criado, avisado }
   let eventos = [], editando = null;
-  function limparForm() { editando = null; $("agTitulo").value = ""; $("agDesc").value = ""; $("agData").value = hojeISO(); $("agHora").value = "20:00"; $("formTit").textContent = "Nova noite"; $("agSalvar").textContent = "Colocar na agenda"; $("agCancelar").hidden = true; }
+  // Foto do evento: fotoNova = imagem escolhida agora; fotoAtual = fotoId já salvo (na edição); fotoSaiu = mandou tirar
+  let fotoNova = null, fotoAtual = null, fotoSaiu = false;
+  function desenharFoto(src) { $("agPrev").hidden = !src; if (src) $("agPrev").src = src; $("agTirarFoto").hidden = !src; $("agEscolher").textContent = src ? "Trocar foto" : "Escolher foto"; }
+  $("agEscolher").onclick = () => $("agArq").click();
+  $("agArq").onchange = async e => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+    try { fotoNova = await comprimirFoto(f, 1200); fotoSaiu = false; desenharFoto(fotoNova); msg("agMsg", ""); }
+    catch (err) { msg("agMsg", "Não deu pra usar essa foto. Tenta outra.", true); }
+  };
+  $("agTirarFoto").onclick = () => { fotoNova = null; fotoSaiu = true; desenharFoto(null); };
+  const apagarFoto = id => { if (id) db.doc("fotos/" + id).delete().catch(() => {}); };
+  function limparForm() { fotoNova = null; fotoAtual = null; fotoSaiu = false; desenharFoto(null); editando = null; $("agTitulo").value = ""; $("agDesc").value = ""; $("agData").value = hojeISO(); $("agHora").value = "20:00"; $("formTit").textContent = "Nova noite"; $("agSalvar").textContent = "Colocar na agenda"; $("agCancelar").hidden = true; }
   $("agCancelar").onclick = () => { limparForm(); msg("agMsg", ""); };
   $("formAg").addEventListener("submit", async e => {
     e.preventDefault();
@@ -116,13 +140,17 @@
     if (data < hojeISO(inicioDaNoite())) return msg("agMsg", "Esse dia já passou.", true);
     $("agSalvar").disabled = true;
     try {
+      // foto nova: grava em /fotos e guarda só o id no evento
+      const fotoId = fotoNova ? (await db.collection("fotos").add({ data: fotoNova, criado: agoraServidor() })).id : null;
+      const trocaFoto = fotoId ? { fotoId } : fotoSaiu ? { fotoId: null } : {};
       if (editando) {
         const antes = eventos.filter(x => x.id === editando)[0] || {};
         // mudou o dia: o lembrete vale de novo
-        await db.doc("agenda/" + editando).update(Object.assign({ titulo, descricao, data, hora }, antes.data !== data ? { avisado: false } : {}));
+        await db.doc("agenda/" + editando).update(Object.assign({ titulo, descricao, data, hora }, trocaFoto, antes.data !== data ? { avisado: false } : {}));
+        if ((fotoId || fotoSaiu) && antes.fotoId) apagarFoto(antes.fotoId);
         msg("agMsg", "Alteração salva.");
       } else {
-        await db.collection("agenda").add({ titulo, descricao, data, hora, avisado: false, criado: agoraServidor() });
+        await db.collection("agenda").add(Object.assign({ titulo, descricao, data, hora, avisado: false, criado: agoraServidor() }, fotoId ? { fotoId } : {}));
         msg("agMsg", titulo + " entrou na agenda.");
       }
       limparForm();
@@ -135,13 +163,14 @@
     $("agN").textContent = prox.length ? prox.length + (prox.length === 1 ? " noite" : " noites") : "";
     const itens = prox.map(x => {
       const it = el("div", "item"); if (x.data === hoje) it.style.setProperty("--c", "var(--neon)");
+      if (x.fotoId) { const im = el("img", "capa"); im.alt = "Foto de " + x.titulo; im.hidden = true; it.append(im); carregarFoto(x.fotoId).then(d => { if (d) { im.src = d; im.hidden = false; } }); }
       it.append(el("span", "quando", dataBonita(x.data) + (x.hora ? " · " + x.hora : "")), el("b", "", x.titulo));
       if (x.descricao) it.append(el("span", "", x.descricao));
       const avis = el("span", "", "…"); it.append(avis);
       db.collection("agenda").doc(x.id).collection("avisar").get().then(q => { avis.textContent = q.size + (q.size === 1 ? " pessoa pediu pra ser avisada" : " pessoas pediram pra ser avisadas") + (x.avisado ? " · lembrete já enviado" : ""); }).catch(() => { avis.textContent = x.avisado ? "Lembrete já enviado" : ""; });
       const bts = el("div", "bts");
-      bts.append(botao("Editar", "", () => { editando = x.id; $("agTitulo").value = x.titulo; $("agDesc").value = x.descricao || ""; $("agData").value = x.data; $("agHora").value = x.hora || ""; $("formTit").textContent = "Editar noite"; $("agSalvar").textContent = "Salvar alteração"; $("agCancelar").hidden = false; msg("agMsg", ""); $("formAg").scrollIntoView({ behavior: "smooth", block: "start" }); }),
-        botao("Tirar da agenda", "nao", () => db.doc("agenda/" + x.id).delete().then(() => msg("agMsg", x.titulo + " saiu da agenda.")).catch(() => msg("agMsg", "Não deu pra tirar.", true))));
+      bts.append(botao("Editar", "", () => { editando = x.id; $("agTitulo").value = x.titulo; $("agDesc").value = x.descricao || ""; $("agData").value = x.data; $("agHora").value = x.hora || ""; fotoNova = null; fotoSaiu = false; fotoAtual = x.fotoId || null; desenharFoto(null); if (fotoAtual) carregarFoto(fotoAtual).then(d => { if (d && editando === x.id && !fotoNova && !fotoSaiu) desenharFoto(d); }); $("formTit").textContent = "Editar noite"; $("agSalvar").textContent = "Salvar alteração"; $("agCancelar").hidden = false; msg("agMsg", ""); $("formAg").scrollIntoView({ behavior: "smooth", block: "start" }); }),
+        botao("Tirar da agenda", "nao", () => db.doc("agenda/" + x.id).delete().then(() => apagarFoto(x.fotoId)).then(() => msg("agMsg", x.titulo + " saiu da agenda.")).catch(() => msg("agMsg", "Não deu pra tirar.", true))));
       it.append(bts); return it;
     });
     $("agLista").replaceChildren(...(itens.length ? itens : [el("p", "vazio", "Nenhuma noite na agenda. Cadastra a primeira aí em cima.")]));
@@ -153,7 +182,7 @@
       eventos = s.docs.map(d => Object.assign({ id: d.id }, d.data()));
       // o que já passou sai sozinho (a equipe apaga)
       const hoje = hojeISO(inicioDaNoite());
-      eventos.filter(x => x.data < hoje).forEach(x => db.doc("agenda/" + x.id).delete().catch(() => {}));
+      eventos.filter(x => x.data < hoje).forEach(x => db.doc("agenda/" + x.id).delete().then(() => apagarFoto(x.fotoId)).catch(() => {}));
       desenhar();
     }, e => { $("agLista").replaceChildren(el("p", "vazio", semPermissao(e) ? "As regras do Firestore estão desatualizadas. Publica o firestore.rules de novo." : "Não deu pra carregar a agenda.")); }));
   }, () => { parar.forEach(f => f()); parar = []; $("tela").hidden = true; });

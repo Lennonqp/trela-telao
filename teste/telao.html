@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202611161727">
+<link rel="stylesheet" href="estilo.css?v=202611161732">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -15,6 +15,10 @@
   body{display:flex;align-items:center;justify-content:center}
   .tv{position:relative;width:calc(var(--u) * 100);height:calc(var(--u) * 56.25);overflow:hidden;cursor:none;flex:none}
   .glow{position:absolute;top:0;right:0;bottom:0;left:0;background:radial-gradient(60% 70% at 15% 10%,rgba(169,92,242,.28),transparent 60%),radial-gradient(50% 60% at 95% 100%,rgba(255,63,164,.22),transparent 60%)}
+  /* Cor do recado: tinge o fundo do telão enquanto o recado está na tela */
+  .corfundo{position:absolute;top:0;right:0;bottom:0;left:0;opacity:0;transition:opacity 1.1s ease;pointer-events:none;
+    background:radial-gradient(75% 85% at 28% 58%,var(--c,transparent),transparent 72%),radial-gradient(55% 60% at 100% 0%,var(--c,transparent),transparent 70%),linear-gradient(0deg,var(--c,transparent),transparent 45%)}
+  .corfundo.on{opacity:.34}
   .topo{position:absolute;left:calc(var(--u) * 4);right:calc(var(--u) * 4);top:calc(var(--u) * 3.5);display:flex;justify-content:space-between;align-items:flex-start}
   .logo{font-size:calc(var(--u) * 6.5)}
   .noite{text-align:right;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.14em;font-size:calc(var(--u) * 1.25);color:var(--muted)}
@@ -296,6 +300,7 @@
 <body>
 <div class="tv" id="tv">
   <div class="glow"></div>
+  <div class="corfundo" id="corFundo" aria-hidden="true"></div>
   <div class="flash" id="flash" aria-hidden="true"></div>
   <div class="topo">
     <div class="logo"><img src="logo.svg?v=3" alt="trela"></div>
@@ -332,11 +337,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611161727"></script>
+<script src="config.js?v=202611161732"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611161727"></script>
-<script src="comum.js?v=202611161727"></script>
-<script src="equipe.js?v=202611161727"></script>
+<script src="marca.js?v=202611161732"></script>
+<script src="comum.js?v=202611161732"></script>
+<script src="equipe.js?v=202611161732"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -531,7 +536,10 @@
     publicarEstado();
   }
 
+  // Fundo na cor do recado (só recado e foto da galera; evento, dica e recado do bar ficam com o fundo normal)
+  function fundoCor(c) { const f = $("corFundo"); if (c) f.style.setProperty("--c", c); f.classList.toggle("on", !!c); }
   function mostrar(r, eNovo) {
+    fundoCor(r && r.tipo !== "bar" && !r.casa ? (CORES[r.cor] || "var(--neon)") : null);
     const palco = $("palco");
     palco.classList.remove("entra"); void palco.offsetWidth; palco.classList.add("entra");
     inicio = Date.now(); durAtual = DUR; itemConc = null; $("tv").classList.remove("modo-concurso");
@@ -787,7 +795,7 @@
     if (pararComs) { pararComs(); pararComs = null; }
     inicio = Date.now(); durAtual = DUR_EV; atual = "ev:" + k; itemConc = null;
     $("tv").classList.toggle("modo-concurso", k === "concurso");
-    palco.className = "palco entra evento";
+    fundoCor(null); palco.className = "palco entra evento";
     palco.style.setProperty("--c", EVENTOS[k].cor);
     desenharEventoNoPalco(k);
   }
@@ -797,7 +805,7 @@
     if (pararComs) { pararComs(); pararComs = null; }
     inicio = Date.now(); durAtual = DUR_EV; atual = "dica:" + d.k; itemConc = null;
     $("tv").classList.remove("modo-concurso");
-    palco.className = "palco entra evento dica";
+    fundoCor(null); palco.className = "palco entra evento dica";
     palco.style.setProperty("--c", d.cor);
     const ic = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d.ic + "</svg>";
     palco.innerHTML = '<div class="ev-tv"><div class="ev-cab"><span class="ev-ic">' + ic + '</span><div><small>Dica do app do Trela</small><h2' + (d.titulo.length > 30 ? ' class="longo"' : "") + ">" + escHtml(d.titulo) + "</h2></div></div>" +
@@ -827,7 +835,7 @@
     if (pararComs) { pararComs(); pararComs = null; }
     inicio = Date.now(); atual = "ev:concurso"; itemConc = item;
     durAtual = item.tipo === "rank" ? DUR_EV + 2 : DUR_EV;
-    palco.className = "palco entra evento";
+    fundoCor(null); palco.className = "palco entra evento";
     palco.style.setProperty("--c", "var(--ouro)");
     $("tv").classList.add("modo-concurso");
     desenharEventoNoPalco("concurso");

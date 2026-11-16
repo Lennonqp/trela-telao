@@ -7,7 +7,8 @@ const appTrela = window.SESSAO_EQUIPE
 const db = appTrela.firestore();
 const agoraServidor = () => firebase.firestore.FieldValue.serverTimestamp();
 
-const CORES = { neon: "var(--neon)", lilas: "var(--lilas)", laranja: "var(--laranja)" };
+const CORES = { neon: "var(--neon)", lilas: "var(--lilas)", laranja: "var(--laranja)", amarelo: "#ffc94d", verde: "#3ddc97", turquesa: "#2fe0d0", azul: "#5aa9ff", vermelho: "#ff4d5e" };
+const CORES_NOME = { neon: "Rosa neon", lilas: "Lilás", laranja: "Laranja", amarelo: "Amarelo", verde: "Verde", turquesa: "Turquesa", azul: "Azul", vermelho: "Vermelho" };
 const REACOES = { fogo: "🔥", riso: "😂", amor: "❤️" };
 const REACOES_ZERO = { fogo: 0, riso: 0, amor: 0 };
 

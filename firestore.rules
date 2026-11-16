@@ -19,7 +19,7 @@ service cloud.firestore {
     function nomeOk(n) { return n is string && n.size() >= 1 && n.size() <= 20; }
     function textoOk(t, min, max) { return t is string && t.size() >= min && t.size() <= max; }
     function agora(d) { return d.criado == request.time; }
-    function corOk(c) { return c in ['neon', 'lilas', 'laranja']; }
+    function corOk(c) { return c in ['neon', 'lilas', 'laranja', 'amarelo', 'verde', 'turquesa', 'azul', 'vermelho']; }
 
     // Segunda barreira do filtro (a primeira fica na página)
     function suspeito(t) {

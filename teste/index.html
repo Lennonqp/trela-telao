@@ -23,7 +23,7 @@
 <meta property="og:description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
 <meta property="og:image" content="https://trela-telao.vercel.app/icone-512.png">
 <meta name="twitter:card" content="summary">
-<link rel="stylesheet" href="estilo.css?v=202611161727">
+<link rel="stylesheet" href="estilo.css?v=202611161732">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -442,9 +442,14 @@
   .camera .cam-msg{position:absolute;top:40%;left:24px;right:24px;text-align:center;color:#fff;font:600 15px/1.4 var(--f-body)}
   .foto-bt svg{margin-right:8px;flex:none}
   .chars{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-align:right;margin-top:4px}
-  .cores{display:flex;gap:8px}
-  .cores button{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 4px;font:700 11px/1 var(--f-mono);text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
-  .cores button[aria-pressed="true"]{border-color:var(--c);color:var(--c);box-shadow:inset 0 0 0 1px var(--c)}
+  .cor-bt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:14px;padding:12px 14px;font:600 15px/1.2 var(--f-body);cursor:pointer}
+  .cor-bt i,.cor-op i{flex:none;width:26px;height:26px;border-radius:50%;background:var(--c);box-shadow:0 0 12px -2px var(--c)}
+  .cor-bt span{flex:1;min-width:0}
+  .cor-bt small{display:block;color:var(--muted);font:400 12px/1.3 var(--f-body);margin-top:2px}
+  .cor-bt em{font:700 11px/1 var(--f-mono);font-style:normal;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+  .cor-grade{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .cor-op{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:14px;padding:12px;font:600 14px/1.2 var(--f-body);cursor:pointer;text-align:left}
+  .cor-op[aria-pressed="true"]{border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c);color:var(--c)}
   .status{border-radius:14px;padding:14px;text-align:center;font-size:14px;background:var(--panel);border:1px solid var(--line)}
   .status b{display:block;font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.05;text-transform:uppercase}
   .status.agora{border-color:var(--neon);box-shadow:0 0 0 1px var(--neon),0 0 24px rgba(255,63,164,.35)}
@@ -641,11 +646,7 @@
           <textarea id="texto" maxlength="120" placeholder="Parabéns, Ju! 27 aninhos no Trela!"></textarea>
           <div class="chars" id="chars">0/120</div>
         </div>
-        <div class="cores" id="cores">
-          <button type="button" data-cor="neon" aria-pressed="true" style="--c:var(--neon)">Neon</button>
-          <button type="button" data-cor="lilas" aria-pressed="false" style="--c:var(--lilas)">Lilás</button>
-          <button type="button" data-cor="laranja" aria-pressed="false" style="--c:var(--laranja)">Laranja</button>
-        </div>
+        <button type="button" class="cor-bt" id="corBt" aria-haspopup="dialog"><i></i><span><b id="corNome">Rosa neon</b><small>A cor do recado pinta o fundo do telão</small></span><em>Alterar cor</em></button>
         <button class="btn" id="enviar" type="submit">Mandar pro telão</button>
         <div class="status" id="status" role="status" hidden></div>
         <p class="regras" id="regras">Xingamento, link ou telefone passam pela equipe antes.</p>
@@ -792,9 +793,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611161727"></script>
-<script src="marca.js?v=202611161727"></script>
-<script src="comum.js?v=202611161727"></script>
+<script src="config.js?v=202611161732"></script>
+<script src="marca.js?v=202611161732"></script>
+<script src="comum.js?v=202611161732"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1636,10 +1637,19 @@
     $("#regras").textContent = tipo === "foto" ? "A foto vai direto pro telão. A equipe pode tirar a qualquer momento." : "Xingamento, link ou telefone passam pela equipe antes.";
     contar();
   });
-  document.querySelectorAll("#cores button").forEach(b => b.onclick = () => {
-    document.querySelectorAll("#cores button").forEach(x => x.setAttribute("aria-pressed", x === b));
-    cor = b.dataset.cor;
-  });
+  // Cor do recado: um botão só ("Alterar cor") abre a lista; a última escolhida fica guardada no celular
+  function desenharCor() { $("#corBt").style.setProperty("--c", CORES[cor]); $("#corNome").textContent = CORES_NOME[cor]; }
+  cor = CORES[guardado.ler("trela-cor", "")] ? guardado.ler("trela-cor", "") : "neon"; desenharCor();
+  $("#corBt").onclick = () => {
+    const grade = el("div", "cor-grade");
+    Object.keys(CORES).forEach(k => {
+      const b = el("button", "cor-op"); b.type = "button"; b.style.setProperty("--c", CORES[k]); b.setAttribute("aria-pressed", String(k === cor));
+      b.append(el("i"), el("span", "", CORES_NOME[k]));
+      b.onclick = () => { cor = k; guardado.salvar("trela-cor", k); desenharCor(); fecharFolha(); };
+      grade.append(b);
+    });
+    folha([el("h4", "", "Cor do recado"), el("p", "", "O texto sai nessa cor e o fundo do telão muda junto enquanto o teu recado estiver lá."), grade]);
+  };
   const contar = () => { $("#chars").textContent = $("#texto").value.length + "/" + $("#texto").maxLength; };
   $("#texto").addEventListener("input", contar);
   const pegarFoto = async e => { await usarFotoTelao(e.target.files[0]); e.target.value = ""; };

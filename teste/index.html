@@ -23,7 +23,7 @@
 <meta property="og:description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
 <meta property="og:image" content="https://trela-telao.vercel.app/icone-512.png">
 <meta name="twitter:card" content="summary">
-<link rel="stylesheet" href="estilo.css?v=202611132208">
+<link rel="stylesheet" href="estilo.css?v=202611161727">
 <style>
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
@@ -242,8 +242,8 @@
   .rk-n{flex:none;text-align:right;display:flex;flex-direction:column}
   .rk-n b{font:400 26px/1 var(--f-display);color:#ffc94d}
   .rk-n small{font:400 10px/1.2 var(--f-mono);color:var(--muted)}
-  /* Agenda e reservas */
-  #tAgenda .rolagem,#tReservas .rolagem{gap:12px}
+  /* Agenda */
+  #tAgenda .rolagem{gap:12px}
   .ag-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
   .ag-card.hoje{border-color:var(--neon);box-shadow:0 0 22px -10px var(--neon)}
   .ag-quando{font:700 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--lilas)}
@@ -252,17 +252,6 @@
   .ag-card p{margin:0;color:var(--muted);font-size:14px;overflow-wrap:anywhere}
   .ag-avisa{align-self:flex-start;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:9px 14px;font:700 13px/1 var(--f-body);cursor:pointer}
   .ag-avisa.on{border-color:var(--ok);color:var(--ok);background:rgba(61,220,151,.08)}
-  .rs-form{display:flex;flex-direction:column;gap:10px}
-  .rs-form label{font:400 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px}
-  .rs-dupla{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .rs-pessoas{display:flex;align-items:center;gap:12px}
-  .rs-pessoas button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--ink);font-size:22px;cursor:pointer}
-  .rs-pessoas b{min-width:44px;text-align:center;font:400 26px/1 var(--f-display)}
-  .rs-item{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c,var(--muted));border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:5px}
-  .rs-item b{font-size:15px}
-  .rs-item span{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
-  .rs-st{font:700 10px/1 var(--f-mono)!important;letter-spacing:.12em;text-transform:uppercase;color:var(--c)!important}
-  .rs-item button{align-self:flex-start;margin-top:4px;border:1px solid var(--line);background:none;color:var(--muted);border-radius:999px;padding:7px 12px;font:700 12px/1 var(--f-body);cursor:pointer}
   .aviso-geral{font-size:18px!important;color:var(--ink)!important;font-weight:600;overflow-wrap:anywhere}
   .cd-vazio{color:var(--muted);text-align:center;padding:40px 16px;margin:0}
   .cd-zoom{position:fixed;inset:0;z-index:40;background:rgba(5,3,8,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px}
@@ -735,12 +724,6 @@
     <div class="rolagem" id="agendaScroll"></div>
   </div>
 
-  <!-- Reserva de mesa -->
-  <div class="tela sub" id="tReservas" hidden>
-    <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3>Reservar mesa</h3></div>
-    <div class="rolagem" id="reservasScroll"></div>
-  </div>
-
   <!-- Evento (ação especial) -->
   <div class="tela sub" id="tEvento" hidden>
     <div class="appbar"><button class="ico voltar" type="button" data-voltar aria-label="Voltar">‹</button><h3 id="eventoTit">Evento</h3></div>
@@ -796,7 +779,6 @@
     <button type="button" class="gv-item" data-ir="quem"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6.2 4.6 1.8 5.1 4.8"/></svg><span>Quem tá no Trela</span></button>
     <button type="button" class="gv-item" data-ir="cardapio" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 7h6M9 10.5h4"/></svg><span>Cardápio</span></button>
     <button type="button" class="gv-item" data-ir="agenda" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>Agenda do Trela</span><em class="gv-n" id="gvAgendaN" hidden></em></button>
-    <button type="button" class="gv-item" data-ir="reservas" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h16M6 10v9M18 10v9M4 10l2-5h12l2 5"/><path d="M9 19v-5h6v5"/></svg><span>Reservar mesa</span><em class="gv-n" id="gvReservasN" hidden></em></button>
     <a class="gv-item gv-jogo" id="gvJogo" href="encara.html"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="11" height="15" rx="2" transform="rotate(-10 8.5 13.5)"/><rect x="10" y="3" width="11" height="15" rx="2"/><path d="M15.5 8.2c-1-1.2-2.8-.3-2.3 1.1.4 1 2.3 2.4 2.3 2.4s1.9-1.4 2.3-2.4c.5-1.4-1.3-2.3-2.3-1.1z"/></svg><span>Encara ou Bebe</span><em class="gv-n" id="gvJogoN" hidden></em><em class="gv-tag">jogo</em></a>
     <button type="button" class="gv-item gv-sair" id="gvSair"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span>Sair da conta</span></button>
     <p class="gv-rodape">Trela · versão de teste</p>
@@ -810,9 +792,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611132208"></script>
-<script src="marca.js?v=202611132208"></script>
-<script src="comum.js?v=202611132208"></script>
+<script src="config.js?v=202611161727"></script>
+<script src="marca.js?v=202611161727"></script>
+<script src="comum.js?v=202611161727"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -837,7 +819,7 @@
     convitesJogo: [],      // mesas do Encara ou Bebe que me convidaram e eu ainda não respondi
     bingos: [],            // cartelas do bingo de fotos desta noite
     agenda: [], agendaAvisa: {},   // próximos eventos do bar e em quais eu toquei em "Me avisa"
-    reservas: [], reservasAtivo: false,
+
     interesses: new Set(), // "Tenho interesse": em quem EU marquei nesta noite (a pessoa é avisada pelo servidor)
     matches: new Set(),    // com quem deu match nesta noite
     drinksRecebidos: [], drinksMandados: [],
@@ -1153,7 +1135,6 @@
       if (t === "tEventos") renderEventos();
       if (t === "tAvisos") renderAvisos();
       if (t === "tAgenda") renderAgenda();
-      if (t === "tReservas") renderReservas();
       if (t === "tGalera") renderGalera();
       if (t === "tPerfil") renderPerfil();
       if (t === "tComs") renderComs();
@@ -1433,19 +1414,6 @@
       // quais eu pedi pra ser avisado
       S.agenda.forEach(e => { if (!(e.id in S.agendaAvisa)) { S.agendaAvisa[e.id] = false; db.doc("agenda/" + e.id + "/avisar/" + uid).get().then(d => { S.agendaAvisa[e.id] = d.exists; if (telaAtual() === "tAgenda") renderAgenda(); }).catch(() => {}); } });
       if (telaAtual() === "tAgenda") renderAgenda();
-    }, () => {}));
-    // Reservas: a equipe liga em /reservas; as minhas aparecem na tela "Reservar mesa"
-    parar.push(db.doc("config/reservas").onSnapshot(s => {
-      S.reservasAtivo = s.exists && s.data().ativo === true;
-      document.querySelectorAll('[data-ir="reservas"]').forEach(b => b.hidden = !S.reservasAtivo && !S.reservas.length);
-      if (telaAtual() === "tReservas") renderReservas();
-    }, () => {}));
-    parar.push(db.collection("reservas").where("de", "==", uid).onSnapshot(q => {
-      S.reservas = q.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() })).filter(r => r.data >= hojeISO(inicioDaNoite())).sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora));
-      document.querySelectorAll('[data-ir="reservas"]').forEach(b => b.hidden = !S.reservasAtivo && !S.reservas.length);
-      const n = S.reservas.filter(r => r.status === "confirmada").length;
-      $("#gvReservasN").hidden = !n; $("#gvReservasN").textContent = n;
-      if (telaAtual() === "tReservas") renderReservas();
     }, () => {}));
     // Bloqueios que eu fiz
     parar.push(db.collection("bloqueios").where("de", "==", uid).onSnapshot(snap => {
@@ -1944,60 +1912,6 @@
     $("#agendaScroll").replaceChildren(...out);
   }
 
-  // ================= RESERVA DE MESA =================
-  const RS_STATUS = { pendente: ["Esperando a equipe confirmar", "#ffd166"], confirmada: ["Confirmada", "var(--ok)"], recusada: ["Não deu dessa vez", "var(--laranja)"], cancelada: ["Cancelada por ti", "var(--muted)"] };
-  let rsForm = null;   // o que a pessoa está preenchendo (não se perde quando chega dado novo)
-  function abrirReservas() { rsForm = rsForm || { data: hojeISO(inicioDaNoite()), hora: "21:00", pessoas: 4, obs: "" }; ir("tReservas"); renderReservas(); $("#reservasScroll").scrollTop = 0; }
-  function renderReservas() {
-    const out = [];
-    if (!rsForm) rsForm = { data: hojeISO(inicioDaNoite()), hora: "21:00", pessoas: 4, obs: "" };
-    if (S.reservasAtivo) {
-      const f = el("section", "ev-bloco rs-form"); f.append(el("h4", "", "Pedir uma mesa"));
-      const dupla = el("div", "rs-dupla");
-      const cx = (rot, inp) => { const d = el("div"); const l = el("label", "", rot); d.append(l, inp); return d; };
-      const iData = el("input"); iData.type = "date"; iData.id = "rsData"; iData.min = hojeISO(); iData.value = rsForm.data; iData.oninput = () => rsForm.data = iData.value;
-      const iHora = el("input"); iHora.type = "time"; iHora.id = "rsHora"; iHora.value = rsForm.hora; iHora.oninput = () => rsForm.hora = iHora.value;
-      dupla.append(cx("Dia", iData), cx("Horário", iHora));
-      const pes = el("div", "rs-pessoas"), n = el("b", "", String(rsForm.pessoas)); n.id = "rsN";
-      const menos = el("button", "", "−"); menos.type = "button"; menos.setAttribute("aria-label", "Menos uma pessoa"); menos.onclick = () => { rsForm.pessoas = Math.max(1, rsForm.pessoas - 1); n.textContent = rsForm.pessoas; };
-      const mais = el("button", "", "+"); mais.type = "button"; mais.setAttribute("aria-label", "Mais uma pessoa"); mais.onclick = () => { rsForm.pessoas = Math.min(40, rsForm.pessoas + 1); n.textContent = rsForm.pessoas; };
-      pes.append(menos, n, mais, el("span", "", "pessoas"));
-      const iObs = el("input"); iObs.id = "rsObs"; iObs.maxLength = 120; iObs.placeholder = "Ex.: aniversário, perto do palco"; iObs.value = rsForm.obs; iObs.oninput = () => rsForm.obs = iObs.value;
-      const manda = bt("Pedir reserva", "sim", async () => {
-        const obs = rsForm.obs.trim();
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(rsForm.data) || rsForm.data < hojeISO(inicioDaNoite())) return erroToast("Escolhe um dia de hoje em diante.");
-        if (!/^\d{2}:\d{2}$/.test(rsForm.hora)) return erroToast("Escolhe o horário.");
-        if (motivoSuspeito(obs)) return erroToast("Tira palavrão, link ou telefone da observação.");
-        if (S.reservas.filter(r => r.status === "pendente").length >= 3) return erroToast("Tu já tem 3 pedidos esperando resposta.");
-        manda.disabled = true; manda.textContent = "Mandando…";
-        try {
-          await db.collection("reservas").add({ de: EU.uid, nome: EU.nome, data: rsForm.data, hora: rsForm.hora, pessoas: rsForm.pessoas, obs, status: "pendente", criado: agoraServidor() });
-          rsForm.obs = ""; toast(EU.uid, "Pedido enviado! A equipe confirma e tu recebe o aviso aqui no app.");
-        } catch (e) { erroToast(e && e.code === "permission-denied" ? "Não deu pra pedir: as regras novas do banco precisam ser publicadas." : "Não deu pra pedir. Tenta de novo."); }
-        renderReservas();
-      });
-      f.append(dupla, cx("Quantas pessoas", pes), cx("Observação (opcional)", iObs), manda,
-        el("p", "ev-mut", "O pedido só vale depois que a equipe confirmar. Tu recebe o aviso no sino" + (ehIOS ? "." : " e no celular.")));
-      out.push(f);
-    } else out.push(el("div", "vazio-s", "O Trela não está aceitando reservas pelo app agora."));
-    if (S.reservas.length) {
-      out.push(el("div", "secao", "Minhas reservas"));
-      S.reservas.forEach(r => {
-        const st = RS_STATUS[r.status] || RS_STATUS.pendente, it = el("div", "rs-item"); it.style.setProperty("--c", st[1]);
-        it.append(el("span", "rs-st", st[0]), el("b", "", dataBonita(r.data) + " às " + r.hora + " · " + r.pessoas + (r.pessoas === 1 ? " pessoa" : " pessoas")));
-        if (r.obs) it.append(el("span", "", r.obs));
-        if (r.resposta) it.append(el("span", "", "Recado do Trela: " + r.resposta));
-        if (r.status === "pendente" || r.status === "confirmada") {
-          const c = el("button", "", "Cancelar reserva"); c.type = "button";
-          c.onclick = () => r.ref.update({ status: "cancelada" }).catch(() => erroToast("Não deu pra cancelar. Tenta de novo."));
-          it.append(c);
-        }
-        out.push(it);
-      });
-    }
-    $("#reservasScroll").replaceChildren(...out);
-  }
-
   // ================= CARDÁPIO (a equipe cadastra em /cardapio; aqui só mostra) =================
   let cardapio = null, cardapioGrupos = [], ouvindoCardapio = false, cardapioAtivo = false;
   const cardapioPronto = () => cardapioAtivo && !!cardapio && cardapio.length > 0;
@@ -2173,7 +2087,6 @@
     if (d === "eventos") abrirEventos();
     else if (d === "cardapio") abrirCardapio();
     else if (d === "agenda") abrirAgenda();
-    else if (d === "reservas") abrirReservas();
     else if (d === "quem") abrirQuem();
     else if (d === "avisos") $("#btnSino").click();
     else if (d === "galera") abrirGalera();
@@ -2691,7 +2604,7 @@
     if (a.sub === "drink") { const x = drinksPendentes().find(d => d.id === a.alvo); if (x) return mostrarConviteDrink(x); return a.de && abrirPerfil(a.de); }
     if (a.sub === "match") return a.de && abrirChat(a.de);
     if (a.sub === "interesse") return a.de && abrirPerfil(a.de);
-    if (a.sub === "reserva") return abrirReservas();
+    if (a.sub === "reserva") return;   // avisos antigos de reserva (hoje a reserva é só controle da equipe)
     if (a.sub === "agenda") return abrirAgenda();
     if (a.sub === "amizade") return a.de && abrirPerfil(a.de);
     if (a.sub === "karaoke") return abrirEvento("karaoke");

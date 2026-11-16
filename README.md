@@ -42,7 +42,7 @@ Três páginas:
 - **Termômetro da noite**: barrinha no canto do telão que sobe com recados, fotos, reações e comentários dos últimos 10 minutos.
 - **Agenda do Trela**: a equipe cadastra as próximas noites em `/agenda`; no app aparece "Agenda" no menu ≡ com o botão "Me avisa". No dia (do meio-dia em diante) o servidor manda o lembrete pro sino e, no Android, pro celular. O `vercel.json` tem um agendamento diário às 13h (`/api/dicas?agenda=1`); o telão e o app aberto também disparam.
 - **Aviso pra galera**: no balcão, a equipe escreve um aviso que chega pra todo mundo que abriu o app na noite (janela no app, sino e notificação). Não aparece no telão.
-- **Reserva de mesa**: a equipe liga em `/reservas`. No app, "Reservar mesa" no menu ≡: dia, horário, quantas pessoas e observação. A equipe confirma ou recusa (com um recado) e a pessoa é avisada; ela pode cancelar.
+- **Reservas de mesa (controle da equipe)**: em `/reservas` a equipe anota as reservas que chegam por WhatsApp, telefone ou balcão: nome, telefone, dia, horário, quantas pessoas, quantas mesas e observação, marcando "A confirmar" ou "Confirmada". A lista vem separada por dia com o total de reservas, mesas e pessoas, e dá pra confirmar, editar e apagar. Não aparece no app da galera. (No oficial ainda vale o modelo antigo, com pedido pelo app.)
 - **Conversas privadas só entre amigos**. As conversas não zeram às 6h; no menu ⋯ do chat tem **Apagar conversa** (só pra mim, ou pra nós dois). Dá pra desfazer amizade, bloquear e denunciar. Mensagem com palavrão chega borrada.
 
 ## 1. Criar o Firebase (gratuito)

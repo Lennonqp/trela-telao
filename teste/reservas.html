@@ -9,7 +9,7 @@
 <title>Reservas · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="estilo.css?v=202611132208">
+<link rel="stylesheet" href="estilo.css?v=202611161727">
 <style>
   body{min-height:100dvh;padding:28px 16px calc(32px + env(safe-area-inset-bottom));background:radial-gradient(70% 40% at 15% 0%,rgba(169,92,242,.22),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(255,63,164,.18),transparent 70%),var(--bg)}
   .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
@@ -38,20 +38,20 @@
   .item .bts button{border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:10px 16px;font:700 12px/1 var(--f-body);text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
   .item .bts button.sim{background:var(--ok);border-color:var(--ok);color:#06200f}
   .item .bts button.nao{border-color:var(--laranja);color:var(--laranja)}
-  .liga{flex-direction:row!important;align-items:center;justify-content:space-between;gap:14px!important;padding:16px 18px!important}
-  .liga.on{border-color:var(--neon)}
-  .liga-txt{display:flex;flex-direction:column;gap:4px;min-width:0}
-  .liga-txt b{font-size:16px}
-  .liga-txt span{font-size:13px;color:var(--muted)}
-  .liga.on .liga-txt span{color:var(--ink)}
-  .chave{position:relative;flex:none;width:52px;height:30px;margin:0;cursor:pointer}
-  .chave input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
-  .chave span{pointer-events:none;position:absolute;top:0;left:0;right:0;bottom:0;border-radius:999px;background:var(--line);transition:background .2s}
-  .chave span::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s}
-  .chave input:checked + span{background:var(--neon)}
-  .chave input:checked + span::after{transform:translateX(22px)}
-  .chave input:focus-visible + span{outline:2px solid var(--lilas);outline-offset:2px}
-  @media (max-width:480px){.dupla{grid-template-columns:1fr}}
+  .tripla{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .opcoes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .opcoes button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:12px;font:700 13px/1.2 var(--f-body);cursor:pointer}
+  .opcoes button[aria-pressed="true"]{border-color:var(--c);color:var(--c);background:rgba(255,255,255,.04)}
+  .dia{display:flex;flex-direction:column;gap:10px}
+  .dia-topo{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px}
+  .dia-topo b{font:400 22px/1 var(--f-display);text-transform:uppercase}
+  .dia-topo span{font:400 12px/1.3 var(--f-mono);color:var(--muted);letter-spacing:.04em}
+  .selo{align-self:flex-start;border:1px solid var(--c);color:var(--c)!important;border-radius:999px;padding:4px 10px;font:700 11px/1 var(--f-mono)!important;letter-spacing:.08em;text-transform:uppercase}
+  .resumo{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .resumo div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:4px}
+  .resumo b{font:400 28px/1 var(--f-display)}
+  .resumo span{font-size:12px;color:var(--muted)}
+  @media (max-width:480px){.dupla{grid-template-columns:1fr}.tripla{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -66,24 +66,39 @@
   <main id="tela" hidden>
     <div>
       <h1>Reservas de <em>mesa</em></h1>
-      <p class="sub">A galera pede a mesa pelo app. A reserva só vale depois que alguém da equipe confirmar aqui, e a pessoa é avisada na hora.</p>
+      <p class="sub">Controle da equipe: anota aqui as reservas que chegam (WhatsApp, telefone, balcão) e marca se cada uma já está confirmada. Não aparece no app da galera.</p>
     </div>
 
-    <div class="painel liga" id="ligaRs">
-      <div class="liga-txt">
-        <b>Aceitar reservas pelo app</b>
-        <span id="ligaRsEstado">Desligado: "Reservar mesa" não aparece no app.</span>
+    <div class="resumo" id="rsResumo"></div>
+
+    <form class="painel" id="rsForm" autocomplete="off">
+      <h2 id="rsTitulo">Nova reserva</h2>
+      <div class="dupla">
+        <div><label for="rsNome">Nome de quem reservou</label><input id="rsNome" maxlength="40" placeholder="Ex.: Mariana"></div>
+        <div><label for="rsTel">Telefone (opcional)</label><input id="rsTel" type="tel" maxlength="20" placeholder="(51) 90000-0000"></div>
       </div>
-      <label class="chave"><input type="checkbox" id="ligaRsChk" aria-label="Aceitar reservas pelo app"><span></span></label>
-    </div>
-    <p class="msg" id="rsMsg" role="status"></p>
+      <div class="dupla">
+        <div><label for="rsData">Dia</label><input id="rsData" type="date"></div>
+        <div><label for="rsHora">Horário</label><input id="rsHora" type="time" value="21:00"></div>
+      </div>
+      <div class="dupla">
+        <div><label for="rsPessoas">Quantas pessoas</label><input id="rsPessoas" type="number" inputmode="numeric" min="1" max="200" value="4"></div>
+        <div><label for="rsMesas">Quantas mesas</label><input id="rsMesas" type="number" inputmode="numeric" min="1" max="50" value="1"></div>
+      </div>
+      <div><label for="rsObs">Observação (opcional)</label><input id="rsObs" maxlength="120" placeholder="Ex.: aniversário, mesa perto do palco"></div>
+      <div>
+        <label>Situação</label>
+        <div class="opcoes" id="rsStatus">
+          <button type="button" data-st="pendente" style="--c:#ffd166" aria-pressed="true">A confirmar</button>
+          <button type="button" data-st="confirmada" style="--c:var(--ok)" aria-pressed="false">Confirmada</button>
+        </div>
+      </div>
+      <p class="msg" id="rsMsg" role="status"></p>
+      <button class="btn" type="submit" id="rsSalvar">Anotar reserva</button>
+      <button class="ghost" type="button" id="rsCancelar" hidden>Cancelar edição</button>
+    </form>
 
-    <div class="sec"><span>Esperando resposta</span><span id="rsNPend"></span></div>
-    <div id="rsPend" style="display:flex;flex-direction:column;gap:10px"></div>
-    <div class="sec"><span>Confirmadas</span><span id="rsNConf"></span></div>
-    <div id="rsConf" style="display:flex;flex-direction:column;gap:10px"></div>
-    <div class="sec"><span>Recusadas e canceladas</span></div>
-    <div id="rsOutras" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div id="rsLista" style="display:flex;flex-direction:column;gap:22px"></div>
   </main>
 
   <footer class="lennon-pe" data-marca-lennon></footer>
@@ -92,11 +107,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611132208"></script>
+<script src="config.js?v=202611161727"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611132208"></script>
-<script src="comum.js?v=202611132208"></script>
-<script src="equipe.js?v=202611132208"></script>
+<script src="marca.js?v=202611161727"></script>
+<script src="comum.js?v=202611161727"></script>
+<script src="equipe.js?v=202611161727"></script>
 <script>
   const $ = id => document.getElementById(id);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -104,70 +119,83 @@
   const msg = (id, t, erro) => { $(id).textContent = t; $(id).className = "msg" + (erro ? " erro" : ""); };
   const semPermissao = e => e && e.code === "permission-denied";
   let parar = [];
-  // Reservas: /reservas/{id} = { de, nome, data, hora, pessoas, obs, status, criado, resposta, respondido }
-  const auth = appTrela.auth();
-  let reservas = [];
-  function desenharLiga(on) {
-    $("ligaRsChk").checked = on; $("ligaRs").classList.toggle("on", on);
-    $("ligaRsEstado").textContent = on ? "Ligado: a galera pode pedir mesa em Reservar mesa, no menu do app." : "Desligado: \"Reservar mesa\" não aparece no app.";
+  // Reservas (controle da equipe): /reservas/{id} = { nome, tel, data, hora, pessoas, mesas, obs, status: "pendente" | "confirmada", criado }
+  let reservas = [], editando = null, statusForm = "pendente";
+  const limpo = (v, n) => String(v || "").replace(/\s+/g, " ").trim().slice(0, n);
+  const confirmada = r => r.status === "confirmada";
+  const plural = (n, um, varios) => n + " " + (n === 1 ? um : varios);
+  function marcarStatus(st) { statusForm = st; $("rsStatus").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.st === st))); }
+  $("rsStatus").onclick = e => { const b = e.target.closest("button"); if (b) marcarStatus(b.dataset.st); };
+  function limparForm() {
+    editando = null; $("rsNome").value = ""; $("rsTel").value = ""; $("rsObs").value = ""; $("rsPessoas").value = 4; $("rsMesas").value = 1;
+    marcarStatus("pendente"); $("rsTitulo").textContent = "Nova reserva"; $("rsSalvar").textContent = "Anotar reserva"; $("rsCancelar").hidden = true;
   }
-  $("ligaRsChk").onchange = () => {
-    const on = $("ligaRsChk").checked; desenharLiga(on);
-    db.doc("config/reservas").set({ ativo: on, ativoEm: agoraServidor() }, { merge: true })
-      .then(() => msg("rsMsg", on ? "Reservas ligadas no app." : "Reservas desligadas no app."))
-      .catch(e => { desenharLiga(!on); msg("rsMsg", semPermissao(e) ? "Sem permissão pra mudar." : "Não deu pra salvar. Tenta de novo.", true); });
-  };
-  // avisa a pessoa (sino e celular): o servidor confere que quem chamou é da equipe
-  function avisar(id) {
-    const u = auth.currentUser; if (!u) return;
-    u.getIdToken().then(t => fetch("/api/avisar", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json", Authorization: "Bearer " + t }, body: JSON.stringify({ tipo: "reserva", id, base: new URL("./", document.baseURI).pathname.replace(/\/$/, "") === "/teste" ? "/teste/" : "/" }) })).catch(() => {});
+  function editar(r) {
+    editando = r.id; $("rsNome").value = r.nome || ""; $("rsTel").value = r.tel || ""; $("rsData").value = r.data; $("rsHora").value = r.hora; $("rsPessoas").value = r.pessoas || 1; $("rsMesas").value = r.mesas || 1; $("rsObs").value = r.obs || "";
+    marcarStatus(confirmada(r) ? "confirmada" : "pendente"); $("rsTitulo").textContent = "Editar reserva"; $("rsSalvar").textContent = "Salvar alteração"; $("rsCancelar").hidden = false; msg("rsMsg", "");
+    $("rsForm").scrollIntoView({ behavior: "smooth", block: "start" });
   }
-  async function responder(r, status, resposta) {
+  $("rsCancelar").onclick = () => { limparForm(); msg("rsMsg", ""); };
+  $("rsForm").onsubmit = async e => {
+    e.preventDefault();
+    const nome = limpo($("rsNome").value, 40), data = $("rsData").value, hora = $("rsHora").value;
+    const pessoas = parseInt($("rsPessoas").value, 10), mesas = parseInt($("rsMesas").value, 10);
+    if (!nome) return msg("rsMsg", "Escreve o nome de quem reservou.", true);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) return msg("rsMsg", "Escolhe o dia da reserva.", true);
+    if (data < hojeISO(inicioDaNoite())) return msg("rsMsg", "Esse dia já passou.", true);
+    if (!/^\d{2}:\d{2}$/.test(hora)) return msg("rsMsg", "Escolhe o horário.", true);
+    if (!(pessoas >= 1 && pessoas <= 200)) return msg("rsMsg", "A quantidade de pessoas vai de 1 a 200.", true);
+    if (!(mesas >= 1 && mesas <= 50)) return msg("rsMsg", "A quantidade de mesas vai de 1 a 50.", true);
+    const d = { nome, tel: limpo($("rsTel").value, 20), data, hora, pessoas, mesas, obs: limpo($("rsObs").value, 120), status: statusForm };
+    $("rsSalvar").disabled = true;
     try {
-      await db.doc("reservas/" + r.id).update({ status, resposta: String(resposta || "").replace(/\s+/g, " ").trim().slice(0, 120), respondido: agoraServidor() });
-      avisar(r.id);
-      msg("rsMsg", (status === "confirmada" ? "Reserva de " : "Pedido de ") + r.nome + (status === "confirmada" ? " confirmada" : " recusado") + ". A pessoa foi avisada.");
-    } catch (e) { msg("rsMsg", semPermissao(e) ? "Sem permissão. Publica o firestore.rules de novo." : "Não deu pra responder. Tenta de novo.", true); }
+      if (editando) await db.doc("reservas/" + editando).update(d);
+      else await db.collection("reservas").add(Object.assign(d, { criado: agoraServidor() }));
+      const era = editando; limparForm(); $("rsData").value = data;
+      msg("rsMsg", era ? "Reserva de " + nome + " atualizada." : "Reserva de " + nome + " anotada.");
+    } catch (err) { msg("rsMsg", semPermissao(err) ? "Sem permissão. Publica o firestore.rules de novo." : "Não deu pra salvar. Tenta de novo.", true); }
+    $("rsSalvar").disabled = false;
+  };
+  function mudarStatus(r, st) {
+    db.doc("reservas/" + r.id).update({ status: st }).then(() => msg("rsMsg", "Reserva de " + r.nome + (st === "confirmada" ? " confirmada." : " voltou pra a confirmar.")))
+      .catch(err => msg("rsMsg", semPermissao(err) ? "Sem permissão. Publica o firestore.rules de novo." : "Não deu pra mudar. Tenta de novo.", true));
   }
-  const COR = { pendente: "#ffd166", confirmada: "var(--ok)", recusada: "var(--laranja)", cancelada: "var(--muted)" };
   function cartao(r) {
-    const it = el("div", "item"); it.style.setProperty("--c", COR[r.status] || COR.pendente);
-    it.append(el("span", "quando", dataBonita(r.data) + " · " + r.hora), el("b", "", r.nome + " · " + r.pessoas + (r.pessoas === 1 ? " pessoa" : " pessoas")));
+    const ok = confirmada(r), it = el("div", "item"); it.style.setProperty("--c", ok ? "var(--ok)" : "#ffd166");
+    const sl = el("span", "selo", ok ? "Confirmada" : "A confirmar");
+    it.append(el("span", "quando", r.hora), el("b", "", r.nome), el("span", "", plural(r.pessoas || 1, "pessoa", "pessoas") + " · " + plural(r.mesas || 1, "mesa", "mesas")), sl);
+    if (r.tel) it.append(el("span", "", "Telefone: " + r.tel));
     if (r.obs) it.append(el("span", "", "Observação: " + r.obs));
-    if (r.resposta) it.append(el("span", "", "Recado enviado: " + r.resposta));
-    if (r.status === "cancelada") it.append(el("span", "", "Cancelada pela pessoa"));
-    if (r.status === "recusada") it.append(el("span", "", "Recusada pela equipe"));
     const bts = el("div", "bts");
-    if (r.status === "pendente") {
-      const rec = el("input"); rec.maxLength = 120; rec.placeholder = "Recado pra pessoa (opcional). Ex.: mesa perto do palco"; rec.setAttribute("aria-label", "Recado pra " + r.nome); rec.style.background = "var(--bg)";
-      it.append(rec);
-      bts.append(botao("Confirmar", "sim", () => responder(r, "confirmada", rec.value)), botao("Recusar", "nao", () => responder(r, "recusada", rec.value)));
-    } else if (r.status === "confirmada") {
-      bts.append(botao("Desmarcar", "nao", () => responder(r, "recusada", "A equipe precisou desmarcar. Fala com a gente no balcão.")));
-    } else bts.append(botao("Apagar", "", () => db.doc("reservas/" + r.id).delete().catch(() => msg("rsMsg", "Não deu pra apagar.", true))));
+    bts.append(ok ? botao("Voltar pra a confirmar", "", () => mudarStatus(r, "pendente")) : botao("Confirmar", "sim", () => mudarStatus(r, "confirmada")),
+      botao("Editar", "", () => editar(r)),
+      botao("Apagar", "nao", () => { if (editando === r.id) limparForm(); db.doc("reservas/" + r.id).delete().then(() => msg("rsMsg", "Reserva de " + r.nome + " apagada.")).catch(() => msg("rsMsg", "Não deu pra apagar.", true)); }));
     it.append(bts); return it;
   }
   function desenhar() {
-    const hoje = hojeISO(inicioDaNoite()), ord = (a, b) => (a.data + a.hora).localeCompare(b.data + b.hora);
-    const vale = reservas.filter(r => r.data >= hoje);
-    const pend = vale.filter(r => r.status === "pendente").sort(ord), conf = vale.filter(r => r.status === "confirmada").sort(ord), outras = vale.filter(r => r.status === "recusada" || r.status === "cancelada").sort(ord);
-    $("rsNPend").textContent = pend.length || ""; $("rsNConf").textContent = conf.length || "";
-    $("rsPend").replaceChildren(...(pend.length ? pend.map(cartao) : [el("p", "vazio", "Nenhum pedido esperando.")]));
-    $("rsConf").replaceChildren(...(conf.length ? conf.map(cartao) : [el("p", "vazio", "Nenhuma reserva confirmada.")]));
-    $("rsOutras").replaceChildren(...(outras.length ? outras.map(cartao) : [el("p", "vazio", "Nada por aqui.")]));
+    const hoje = hojeISO(inicioDaNoite());
+    const vale = reservas.filter(r => r.data >= hoje).sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora));
+    const soma = (l, k) => l.reduce((n, r) => n + (r[k] || 1), 0);
+    const doDia = vale.filter(r => r.data === hoje);
+    const quadro = (n, t) => { const d = el("div"); d.append(el("b", "", String(n)), el("span", "", t)); return d; };
+    $("rsResumo").replaceChildren(quadro(doDia.length, "reservas hoje"), quadro(soma(doDia, "mesas"), "mesas hoje"), quadro(vale.filter(r => !confirmada(r)).length, "a confirmar no total"));
+    const dias = []; vale.forEach(r => { let d = dias.find(x => x.data === r.data); if (!d) dias.push(d = { data: r.data, itens: [] }); d.itens.push(r); });
+    $("rsLista").replaceChildren(...(dias.length ? dias.map(d => {
+      const box = el("div", "dia"), topo = el("div", "dia-topo"), conf = d.itens.filter(confirmada).length;
+      topo.append(el("b", "", dataBonita(d.data)), el("span", "", plural(d.itens.length, "reserva", "reservas") + " · " + plural(soma(d.itens, "mesas"), "mesa", "mesas") + " · " + plural(soma(d.itens, "pessoas"), "pessoa", "pessoas") + " · " + conf + (conf === 1 ? " confirmada" : " confirmadas") + (d.itens.length - conf ? " · " + (d.itens.length - conf) + " a confirmar" : "")));
+      box.append(topo, ...d.itens.map(cartao)); return box;
+    }) : [el("p", "vazio", "Nenhuma reserva anotada. Usa o formulário acima pra anotar a primeira.")]));
   }
+  $("rsData").value = hojeISO(inicioDaNoite()); $("rsData").min = hojeISO(inicioDaNoite());
   portaEquipe($("porta"), () => {
     $("tela").hidden = false;
-    parar.push(db.doc("config/reservas").onSnapshot(s => desenharLiga(s.exists && s.data().ativo === true), () => {}));
     parar.push(db.collection("reservas").onSnapshot(s => {
-      // não redesenha enquanto alguém digita o recado
-      const digitando = document.activeElement && document.activeElement.tagName === "INPUT" && document.activeElement.type !== "checkbox" && document.activeElement.value;
       reservas = s.docs.map(d => Object.assign({ id: d.id }, d.data()));
       // reservas de dias que já passaram saem sozinhas
       const hoje = hojeISO(inicioDaNoite());
       reservas.filter(r => r.data < hoje).forEach(r => db.doc("reservas/" + r.id).delete().catch(() => {}));
-      if (!digitando) desenhar();
-    }, e => { $("rsPend").replaceChildren(el("p", "vazio", semPermissao(e) ? "As regras do Firestore estão desatualizadas. Publica o firestore.rules de novo." : "Não deu pra carregar as reservas.")); }));
+      desenhar();
+    }, e => { $("rsLista").replaceChildren(el("p", "vazio", semPermissao(e) ? "As regras do Firestore estão desatualizadas. Publica o firestore.rules de novo." : "Não deu pra carregar as reservas.")); }));
   }, () => { parar.forEach(f => f()); parar = []; $("tela").hidden = true; });
 </script>
 </body>

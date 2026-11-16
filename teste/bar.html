@@ -9,7 +9,7 @@
 <title>Equipe · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="estilo.css?v=202611132208">
+<link rel="stylesheet" href="estilo.css?v=202611161727">
 <style>
   body{min-height:100dvh;padding:28px 16px calc(32px + env(safe-area-inset-bottom));background:radial-gradient(70% 40% at 15% 0%,rgba(169,92,242,.22),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(255,63,164,.18),transparent 70%),var(--bg)}
   .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
@@ -99,8 +99,8 @@
       <a class="card rs" href="reservas">
         <span class="ic"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h16M6 10v9M18 10v9M4 10l2-5h12l2 5"/><path d="M9 19v-5h6v5"/></svg></span>
         <h2>Reservas</h2>
-        <p>A galera pede mesa pelo app. Aqui a equipe confirma ou recusa, e a pessoa é avisada.</p>
-        <div class="chips"><span class="chip" id="cReservas">— pra responder</span><span class="chip" id="cReservasOk">— confirmadas</span></div>
+        <p>Controle da equipe: anota as reservas de mesa, as quantidades e marca quais já estão confirmadas.</p>
+        <div class="chips"><span class="chip" id="cReservas">— a confirmar</span><span class="chip" id="cReservasOk">— confirmadas</span></div>
         <span class="ir">Ver as reservas</span>
       </a>
       <a class="card ag" href="agenda">
@@ -137,11 +137,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611132208"></script>
+<script src="config.js?v=202611161727"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611132208"></script>
-<script src="comum.js?v=202611132208"></script>
-<script src="equipe.js?v=202611132208"></script>
+<script src="marca.js?v=202611161727"></script>
+<script src="comum.js?v=202611161727"></script>
+<script src="equipe.js?v=202611161727"></script>
 <script>
   const $ = id => document.getElementById(id);
   const auth = appTrela.auth();
@@ -205,7 +205,7 @@
     parar.push(db.collection("cardapio").onSnapshot(s => chip("cCardapio", s.size, "produto", "produtos"), () => {}));
     parar.push(db.collection("reservas").onSnapshot(s => {
       const hoje = hojeISO(inicioDaNoite()), vale = s.docs.map(d => d.data()).filter(r => r.data >= hoje);
-      chip("cReservas", vale.filter(r => r.status === "pendente").length, "pra responder", "pra responder");
+      chip("cReservas", vale.filter(r => r.status !== "confirmada").length, "a confirmar", "a confirmar");
       chip("cReservasOk", vale.filter(r => r.status === "confirmada").length, "confirmada", "confirmadas");
     }, () => {}));
     parar.push(db.collection("agenda").onSnapshot(s => {

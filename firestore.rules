@@ -489,12 +489,8 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
         && resource.data.status in ['pendente', 'confirmada']
         && request.resource.data.status == 'cancelada';
-      // A equipe confirma ou recusa (com um recado opcional)
-      allow update: if equipe()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'resposta', 'respondido'])
-        && request.resource.data.status in ['confirmada', 'recusada']
-        && request.resource.data.get('resposta', '').size() <= 120;
-      allow delete: if equipe();
+      // Controle da equipe: anota, edita, confirma e apaga as reservas
+      allow create, update, delete: if equipe();
     }
 
     // ---------- Bingo de fotos: uma cartela por pessoa por noite (id = noite_uid) ----------

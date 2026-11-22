@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202611221714">
+<link rel="stylesheet" href="estilo.css?v=202611221724">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -25,18 +25,26 @@
   /* Termômetro da noite: sobe com recados, fotos, reações e comentários dos últimos 10 minutos */
   /* Coluna da direita: fila, termômetro e QR code, empilhados de baixo pra cima */
   .lado{position:absolute;right:calc(var(--u) * 4);bottom:calc(var(--u) * 4);width:calc(var(--u) * 18);display:flex;flex-direction:column;gap:calc(var(--u) * 1);z-index:3}
-  /* Termômetro da noite: card bem visível em cima do QR code, com o tubo na vertical */
-  .termo{display:flex;align-items:center;gap:calc(var(--u) * 1.3);background:rgba(23,18,31,.92);border:calc(var(--u) * .15) solid rgba(169,92,242,.55);border-radius:calc(var(--u) * 1.4);padding:calc(var(--u) * 1) calc(var(--u) * 1.2);box-shadow:0 0 calc(var(--u) * 2.4) rgba(169,92,242,.25);transition:border-color .6s,box-shadow .6s}
-  .termo-tb{position:relative;flex:none;width:calc(var(--u) * 3);height:calc(var(--u) * 9)}
-  .termo-tubo{position:absolute;left:calc(var(--u) * .4);right:calc(var(--u) * .4);top:0;bottom:calc(var(--u) * 2);border-radius:999px;background:rgba(255,255,255,.12);border:calc(var(--u) * .15) solid rgba(255,255,255,.35);overflow:hidden}
-  .termo-tubo i{position:absolute;left:0;right:0;bottom:0;height:0;border-radius:999px;background:linear-gradient(0deg,var(--lilas),var(--neon) 55%,var(--laranja));background-size:100% calc(var(--u) * 9);background-position:bottom;transition:height 1.2s ease;box-shadow:0 0 calc(var(--u) * 1.4) var(--neon)}
-  .termo-tubo::after{content:"";position:absolute;left:0;right:0;top:0;bottom:0;background:repeating-linear-gradient(0deg,transparent 0,transparent calc(var(--u) * 1.6),rgba(9,6,13,.55) calc(var(--u) * 1.6),rgba(9,6,13,.55) calc(var(--u) * 1.75))}
-  .termo-bulbo{position:absolute;left:0;bottom:0;width:calc(var(--u) * 3);height:calc(var(--u) * 3);border-radius:50%;background:var(--lilas);border:calc(var(--u) * .15) solid rgba(255,255,255,.35);box-sizing:border-box;box-shadow:0 0 calc(var(--u) * 1.6) var(--lilas)}
-  .termo-tx{min-width:0;display:flex;flex-direction:column;gap:calc(var(--u) * .6)}
-  .termo-tx small{font-family:var(--f-mono);font-size:calc(var(--u) * 1);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);line-height:1.2}
-  .termo-tx b{font-family:var(--f-display);font-weight:400;font-size:calc(var(--u) * 2.2);line-height:1;text-transform:uppercase;color:var(--ink);overflow:hidden}
-  .termo-tx span{font-size:calc(var(--u) * 1.05);line-height:1.25;color:var(--muted)}
-  .termo.fogo{border-color:var(--laranja);box-shadow:0 0 calc(var(--u) * 3.4) rgba(255,90,31,.5)}
+  /* Termômetro da noite: card em cima do QR code, com a barra deitada (enche da esquerda pra direita) */
+  .termo{display:flex;flex-direction:column;gap:calc(var(--u) * .9);background:rgba(23,18,31,.94);border:calc(var(--u) * .15) solid rgba(169,92,242,.6);border-radius:calc(var(--u) * 1.4);padding:calc(var(--u) * 1.3) calc(var(--u) * 1.4);box-shadow:0 0 calc(var(--u) * 2.4) rgba(169,92,242,.25)}
+  .termo-tx{gap:calc(var(--u) * .5)}
+  .termo-tx small{font-size:calc(var(--u) * 1.05)}
+  .termo-tx b{font-size:calc(var(--u) * 3.4);white-space:nowrap}
+  .termo-tx span{font-size:calc(var(--u) * 1.1)}
+  .termo-tb{position:relative;order:2;height:calc(var(--u) * 2.2);margin-left:calc(var(--u) * 1.2)}
+  .termo-tubo{left:0;right:0;top:calc(var(--u) * .3);bottom:calc(var(--u) * .3)}
+  .termo-tubo i{top:0;width:var(--nivel,6%);background:linear-gradient(90deg,var(--lilas),var(--neon) 55%,var(--laranja));background-size:calc(var(--u) * 14) 100%;box-shadow:0 0 calc(var(--u) * 1.4) var(--neon)}
+  .termo-tubo::after{content:"";position:absolute;left:0;right:0;top:0;bottom:0;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(var(--u) * 1.6),rgba(9,6,13,.55) calc(var(--u) * 1.6),rgba(9,6,13,.55) calc(var(--u) * 1.75))}
+  .termo-bulbo{position:absolute;left:calc(var(--u) * -1.2);top:0;width:calc(var(--u) * 2.2);height:calc(var(--u) * 2.2);border-radius:50%;background:var(--lilas);border:calc(var(--u) * .15) solid rgba(255,255,255,.35);box-sizing:border-box;box-shadow:0 0 calc(var(--u) * 1.6) var(--lilas)}
+  .termo-tx span{order:3}
+  .termo-tubo{position:absolute;border-radius:999px;background:rgba(255,255,255,.12);border:calc(var(--u) * .15) solid rgba(255,255,255,.35);overflow:hidden}
+  .termo-tubo i{position:absolute;left:0;bottom:0;border-radius:999px;transition:width 1.2s ease,height 1.2s ease}
+  .termo-tx{min-width:0;display:flex;flex-direction:column}
+  .termo-tx small{font-family:var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);line-height:1.2;white-space:nowrap}
+  .termo-tx b{font-family:var(--f-display);font-weight:400;line-height:1;text-transform:uppercase;color:var(--ink);overflow:hidden}
+  .termo-tx span{line-height:1.25;color:var(--muted)}
+  .termo{transition:border-color .6s,box-shadow .6s}
+  .termo.fogo{border-color:var(--laranja)!important;box-shadow:0 0 calc(var(--u) * 3.4) rgba(255,90,31,.5)!important}
   .termo.fogo .termo-tx b{color:var(--laranja);text-shadow:0 0 calc(var(--u) * 1.2) var(--laranja)}
   .termo.fogo .termo-tubo i{box-shadow:0 0 calc(var(--u) * 2.4) var(--laranja);animation:termoFogo 1.1s ease-in-out infinite alternate}
   .termo.fogo .termo-bulbo{background:var(--laranja);box-shadow:0 0 calc(var(--u) * 2.6) var(--laranja)}
@@ -105,7 +113,7 @@
 
   .qr{position:relative;background:var(--ink);color:#0d0a12;border-radius:calc(var(--u) * 1.4);padding:calc(var(--u) * 1.4);text-align:center}
   .qr #qrcode img,.qr #qrcode canvas{width:100%!important;height:auto!important;display:block}
-  .qr p{margin:calc(var(--u) * 1) 0 0;font-family:var(--f-display);font-size:calc(var(--u) * 1.7);line-height:1.05;text-transform:uppercase}
+  .qr p{margin:calc(var(--u) * 1) 0 0;font-family:var(--f-display);font-size:calc(var(--u) * 1.7);line-height:1.05;text-transform:uppercase;text-wrap:balance}
   .fila{font-family:var(--f-mono);font-size:calc(var(--u) * 1.2);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:right}
   .fila b{margin-left:calc(var(--u) * .8);font-family:var(--f-display);font-weight:400;font-size:calc(var(--u) * 2.6);letter-spacing:0;color:var(--ink);line-height:1}
   .barra{position:absolute;left:0;right:0;bottom:0;height:calc(var(--u) * .6);background:var(--line)}
@@ -356,11 +364,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611221714"></script>
+<script src="config.js?v=202611221724"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611221714"></script>
-<script src="comum.js?v=202611221714"></script>
-<script src="equipe.js?v=202611221714"></script>
+<script src="marca.js?v=202611221724"></script>
+<script src="comum.js?v=202611221724"></script>
+<script src="equipe.js?v=202611221724"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -445,7 +453,7 @@
   function desenharTermometro() {
     const n = nivelTermometro(), box = $("termo");
     box.hidden = false;
-    $("termoNivel").style.height = Math.max(6, Math.round(n * 100)) + "%";
+    $("termoNivel").style.setProperty("--nivel", Math.max(6, Math.round(n * 100)) + "%");
     const tx = $("termoTxt"), palavra = n >= .8 ? "Pegando fogo" : n >= .5 ? "Quente" : n >= .2 ? "Esquentando" : "Aquecendo";
     if (tx.textContent !== palavra || !tx.dataset.ok) {
       // palavra comprida (Esquentando) diminui até caber no card, sem quebrar no meio

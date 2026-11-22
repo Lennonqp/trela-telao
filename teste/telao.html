@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Telão · Trela</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="estilo.css?v=202611161743">
+<link rel="stylesheet" href="estilo.css?v=202611221714">
 <style>
   html,body{height:100%;overflow:hidden;background:#09060d;margin:0}
   /* --u = 1% da largura do telão (16:9). O JS ajusta; este é só o valor inicial. */
@@ -23,14 +23,21 @@
   .logo{font-size:calc(var(--u) * 6.5)}
   .noite{text-align:right;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.14em;font-size:calc(var(--u) * 1.25);color:var(--muted)}
   /* Termômetro da noite: sobe com recados, fotos, reações e comentários dos últimos 10 minutos */
-  .termo-rot{display:block;margin-top:calc(var(--u) * .8);font:700 calc(var(--u) * 1.5)/1 var(--f-mono);letter-spacing:.16em;color:var(--ink)}
-  .termo-rot.fogo{color:var(--laranja);text-shadow:0 0 calc(var(--u) * 1.2) var(--laranja)}
-  /* tubo na vertical, colado na borda direita da tela, do alto até embaixo */
-  .termo{position:absolute;right:calc(var(--u) * 1.1);top:calc(var(--u) * 13.5);bottom:calc(var(--u) * 3);width:calc(var(--u) * 1.8);z-index:3}
-  .termo-tubo{position:absolute;left:0;right:0;top:0;bottom:calc(var(--u) * 1.6);border-radius:999px;background:rgba(255,255,255,.12);border:calc(var(--u) * .12) solid rgba(255,255,255,.28);overflow:hidden}
-  .termo-tubo i{position:absolute;left:0;right:0;bottom:0;height:0;border-radius:999px;background:linear-gradient(0deg,var(--lilas),var(--neon) 55%,var(--laranja));background-size:100% calc(var(--u) * 38);background-position:bottom;transition:height 1.2s ease;box-shadow:0 0 calc(var(--u) * 1.4) var(--neon)}
-  .termo-tubo::after{content:"";position:absolute;left:0;right:0;top:0;bottom:0;background:repeating-linear-gradient(0deg,transparent 0,transparent calc(var(--u) * 3.6),rgba(9,6,13,.55) calc(var(--u) * 3.6),rgba(9,6,13,.55) calc(var(--u) * 3.8))}
-  .termo-bulbo{position:absolute;left:50%;bottom:0;width:calc(var(--u) * 3.2);height:calc(var(--u) * 3.2);margin-left:calc(var(--u) * -1.6);border-radius:50%;background:var(--lilas);border:calc(var(--u) * .12) solid rgba(255,255,255,.28);box-shadow:0 0 calc(var(--u) * 1.6) var(--lilas)}
+  /* Coluna da direita: fila, termômetro e QR code, empilhados de baixo pra cima */
+  .lado{position:absolute;right:calc(var(--u) * 4);bottom:calc(var(--u) * 4);width:calc(var(--u) * 18);display:flex;flex-direction:column;gap:calc(var(--u) * 1);z-index:3}
+  /* Termômetro da noite: card bem visível em cima do QR code, com o tubo na vertical */
+  .termo{display:flex;align-items:center;gap:calc(var(--u) * 1.3);background:rgba(23,18,31,.92);border:calc(var(--u) * .15) solid rgba(169,92,242,.55);border-radius:calc(var(--u) * 1.4);padding:calc(var(--u) * 1) calc(var(--u) * 1.2);box-shadow:0 0 calc(var(--u) * 2.4) rgba(169,92,242,.25);transition:border-color .6s,box-shadow .6s}
+  .termo-tb{position:relative;flex:none;width:calc(var(--u) * 3);height:calc(var(--u) * 9)}
+  .termo-tubo{position:absolute;left:calc(var(--u) * .4);right:calc(var(--u) * .4);top:0;bottom:calc(var(--u) * 2);border-radius:999px;background:rgba(255,255,255,.12);border:calc(var(--u) * .15) solid rgba(255,255,255,.35);overflow:hidden}
+  .termo-tubo i{position:absolute;left:0;right:0;bottom:0;height:0;border-radius:999px;background:linear-gradient(0deg,var(--lilas),var(--neon) 55%,var(--laranja));background-size:100% calc(var(--u) * 9);background-position:bottom;transition:height 1.2s ease;box-shadow:0 0 calc(var(--u) * 1.4) var(--neon)}
+  .termo-tubo::after{content:"";position:absolute;left:0;right:0;top:0;bottom:0;background:repeating-linear-gradient(0deg,transparent 0,transparent calc(var(--u) * 1.6),rgba(9,6,13,.55) calc(var(--u) * 1.6),rgba(9,6,13,.55) calc(var(--u) * 1.75))}
+  .termo-bulbo{position:absolute;left:0;bottom:0;width:calc(var(--u) * 3);height:calc(var(--u) * 3);border-radius:50%;background:var(--lilas);border:calc(var(--u) * .15) solid rgba(255,255,255,.35);box-sizing:border-box;box-shadow:0 0 calc(var(--u) * 1.6) var(--lilas)}
+  .termo-tx{min-width:0;display:flex;flex-direction:column;gap:calc(var(--u) * .6)}
+  .termo-tx small{font-family:var(--f-mono);font-size:calc(var(--u) * 1);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);line-height:1.2}
+  .termo-tx b{font-family:var(--f-display);font-weight:400;font-size:calc(var(--u) * 2.2);line-height:1;text-transform:uppercase;color:var(--ink);overflow:hidden}
+  .termo-tx span{font-size:calc(var(--u) * 1.05);line-height:1.25;color:var(--muted)}
+  .termo.fogo{border-color:var(--laranja);box-shadow:0 0 calc(var(--u) * 3.4) rgba(255,90,31,.5)}
+  .termo.fogo .termo-tx b{color:var(--laranja);text-shadow:0 0 calc(var(--u) * 1.2) var(--laranja)}
   .termo.fogo .termo-tubo i{box-shadow:0 0 calc(var(--u) * 2.4) var(--laranja);animation:termoFogo 1.1s ease-in-out infinite alternate}
   .termo.fogo .termo-bulbo{background:var(--laranja);box-shadow:0 0 calc(var(--u) * 2.6) var(--laranja)}
   @keyframes termoFogo{from{filter:brightness(1)}to{filter:brightness(1.45)}}
@@ -96,11 +103,11 @@
   .coms div{background:rgba(255,255,255,.06);border-radius:calc(var(--u) * .8);padding:calc(var(--u) * .5) calc(var(--u) * 1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .coms b{color:var(--muted)}
 
-  .qr{position:absolute;right:calc(var(--u) * 4);bottom:calc(var(--u) * 4);width:calc(var(--u) * 18);background:var(--ink);color:#0d0a12;border-radius:calc(var(--u) * 1.4);padding:calc(var(--u) * 1.4);text-align:center}
+  .qr{position:relative;background:var(--ink);color:#0d0a12;border-radius:calc(var(--u) * 1.4);padding:calc(var(--u) * 1.4);text-align:center}
   .qr #qrcode img,.qr #qrcode canvas{width:100%!important;height:auto!important;display:block}
   .qr p{margin:calc(var(--u) * 1) 0 0;font-family:var(--f-display);font-size:calc(var(--u) * 1.7);line-height:1.05;text-transform:uppercase}
-  .fila{position:absolute;right:calc(var(--u) * 4);top:calc(var(--u) * 14);width:calc(var(--u) * 18);font-family:var(--f-mono);font-size:calc(var(--u) * 1.2);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:right}
-  .fila b{display:block;font-family:var(--f-display);font-weight:400;font-size:calc(var(--u) * 4);letter-spacing:0;color:var(--ink);line-height:1}
+  .fila{font-family:var(--f-mono);font-size:calc(var(--u) * 1.2);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:right}
+  .fila b{margin-left:calc(var(--u) * .8);font-family:var(--f-display);font-weight:400;font-size:calc(var(--u) * 2.6);letter-spacing:0;color:var(--ink);line-height:1}
   .barra{position:absolute;left:0;right:0;bottom:0;height:calc(var(--u) * .6);background:var(--line)}
   .barra i{display:block;height:100%;width:0;background:var(--neon)}
   .emoji{position:absolute;z-index:30;bottom:calc(var(--u) * 2);font-size:calc(var(--u) * 4 * var(--t,1));pointer-events:none;animation:voa 3.4s cubic-bezier(.25,.6,.4,1) forwards;filter:drop-shadow(0 0 calc(var(--u) * 1) rgba(255,63,164,.6))}
@@ -312,13 +319,17 @@
   <div class="topo">
     <div class="logo"><img src="logo.svg?v=3" alt="trela"></div>
     <div class="noite">Hoje no Trela<b id="noite">Bem-vindos</b>
-      <span class="termo-rot" id="termoTxt" hidden>Aquecendo</span>
     </div>
   </div>
-  <div class="termo" id="termo" aria-hidden="true" hidden><div class="termo-tubo"><i id="termoNivel"></i></div><span class="termo-bulbo"></span></div>
   <div class="palco" id="palco"><div class="corpo"><p class="texto vazio">Manda o primeiro recado da noite</p></div></div>
-  <div class="fila" id="fila" hidden>Na fila<b id="nFila">0</b></div>
-  <div class="qr"><div id="qrcode"></div><p>Escaneia e entra no Trela</p></div>
+  <div class="lado">
+    <div class="fila" id="fila" hidden>Na fila<b id="nFila">0</b></div>
+    <div class="termo" id="termo" hidden>
+      <div class="termo-tb" aria-hidden="true"><div class="termo-tubo"><i id="termoNivel"></i></div><span class="termo-bulbo"></span></div>
+      <div class="termo-tx"><small>Termômetro da noite</small><b id="termoTxt">Aquecendo</b><span>Manda recado e reage pra esquentar</span></div>
+    </div>
+    <div class="qr"><div id="qrcode"></div><p>Escaneia e entra no Trela</p></div>
+  </div>
   <div class="vivo" id="vivo" hidden><span class="vi-ic" id="viIc"></span><span class="vi-rot">Ao vivo</span><span class="vi-txt" id="viTxt"></span><span class="vi-cta" id="viCta">Participa pelo app</span></div>
   <div class="lennon-tv" data-marca-lennon="tv"></div>
   <div class="barra"><i id="barra"></i></div>
@@ -345,11 +356,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611161743"></script>
+<script src="config.js?v=202611221714"></script>
 <script>window.SESSAO_EQUIPE = true;</script>
-<script src="marca.js?v=202611161743"></script>
-<script src="comum.js?v=202611161743"></script>
-<script src="equipe.js?v=202611161743"></script>
+<script src="marca.js?v=202611221714"></script>
+<script src="comum.js?v=202611221714"></script>
+<script src="equipe.js?v=202611221714"></script>
 <script>
   // Escrito sem recursos novos de JavaScript pra rodar em navegador de Smart TV
   const $ = id => document.getElementById(id);
@@ -366,6 +377,8 @@
     const w = window.innerWidth, h = window.innerHeight;
     const larg = Math.min(w, h * 16 / 9);
     document.documentElement.style.setProperty("--u", (larg / 100) + "px");
+    // mudou o tamanho da tela: o termômetro recalcula o tamanho da palavra
+    const tx = document.getElementById("termoTxt"); if (tx) { tx.dataset.ok = ""; if (typeof desenharTermometro === "function" && !document.getElementById("termo").hidden) desenharTermometro(); }
   }
   ajustar();
   window.addEventListener("resize", ajustar);
@@ -431,10 +444,16 @@
   }
   function desenharTermometro() {
     const n = nivelTermometro(), box = $("termo");
-    box.hidden = false; $("termoTxt").hidden = false;
+    box.hidden = false;
     $("termoNivel").style.height = Math.max(6, Math.round(n * 100)) + "%";
-    $("termoTxt").textContent = n >= .8 ? "Pegando fogo" : n >= .5 ? "Quente" : n >= .2 ? "Esquentando" : "Aquecendo";
-    box.classList.toggle("fogo", n >= .8); $("termoTxt").classList.toggle("fogo", n >= .8);
+    const tx = $("termoTxt"), palavra = n >= .8 ? "Pegando fogo" : n >= .5 ? "Quente" : n >= .2 ? "Esquentando" : "Aquecendo";
+    if (tx.textContent !== palavra || !tx.dataset.ok) {
+      // palavra comprida (Esquentando) diminui até caber no card, sem quebrar no meio
+      tx.textContent = palavra; tx.style.fontSize = ""; tx.dataset.ok = "1";
+      let tam = parseFloat(getComputedStyle(tx).fontSize), passos = 0;
+      while (tx.scrollWidth > tx.clientWidth + 1 && passos++ < 20) { tam *= .93; tx.style.fontSize = tam + "px"; }
+    }
+    box.classList.toggle("fogo", n >= .8);
   }
   function ultimosDaGalera() {
     const lista = Array.from(itens.values()).filter(r => r.tipo !== "bar")

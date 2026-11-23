@@ -24,10 +24,10 @@
 <meta property="og:image" content="https://trela-telao.vercel.app/icone-512.png">
 <meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@800&amp;display=swap">
-<link rel="stylesheet" href="estilo.css?v=202611222304">
+<link rel="stylesheet" href="estilo.css?v=202611222307">
 <style>
   /* ===== Abertura do Na Tela: o quadrado com o ponto se abre e aparece o nome ===== */
-  .abertura{position:fixed;inset:0;z-index:999;background:#141414;display:flex;align-items:center;justify-content:center;animation:abSai .5s ease-in 2.4s forwards;cursor:pointer;
+  .abertura{position:fixed;inset:0;z-index:999;background:radial-gradient(70% 45% at 50% 18%,rgba(255,63,164,.18),transparent 70%),radial-gradient(60% 40% at 50% 100%,rgba(169,92,242,.22),transparent 70%),var(--bg);display:flex;align-items:center;justify-content:center;animation:abSai .5s ease-in 2.4s forwards;cursor:pointer;
     --w:min(78vw,320px);--h:calc(var(--w) * .37)}
   .ab-marca{position:relative;width:var(--w);height:var(--h);display:flex;align-items:center;justify-content:center;animation:abEntra .45s cubic-bezier(.2,1.3,.4,1) both,abAbre .6s cubic-bezier(.7,0,.2,1) .9s both}
   .ab-c{position:absolute;width:calc(var(--w) * .106);height:calc(var(--w) * .106);border:0 solid #FFD23F}
@@ -837,9 +837,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611222304"></script>
-<script src="marca.js?v=202611222304"></script>
-<script src="comum.js?v=202611222304"></script>
+<script src="config.js?v=202611222307"></script>
+<script src="marca.js?v=202611222307"></script>
+<script src="comum.js?v=202611222307"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };

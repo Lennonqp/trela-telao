@@ -11,11 +11,11 @@ window.FIREBASE_CONFIG = {
   measurementId: "G-NHLFG7GTED"
 };
 
-// Marca "feito por lennon" no rodapé das telas (app, balcão, menu da equipe e telão).
+// Marca "feito por Na Tela" no rodapé das telas (app, balcão, menu da equipe e telão).
 // Cada contato vira um botão. No telão aparece só o primeiro (sem link).
 window.CONTATO_LENNON = [
-  { texto: "WhatsApp (51) 99017-7804", link: "https://wa.me/5551990177804?text=" + encodeURIComponent("Oi Lennon! Vi o telão do Trela e quero um pro meu negócio.") },
-  { texto: "lennonqpscs@gmail.com", link: "mailto:lennonqpscs@gmail.com?subject=" + encodeURIComponent("Telão / app pro meu negócio") }
+  { texto: "WhatsApp (51) 99017-7804", link: "https://wa.me/5551990177804?text=" + encodeURIComponent("Oi! Vi o Na Tela no Trela e quero no meu bar.") },
+  { texto: "lennonqpscs@gmail.com", link: "mailto:lennonqpscs@gmail.com?subject=" + encodeURIComponent("Na Tela no meu bar") }
 ];
 
 // Quanto tempo cada recado fica no telão (em segundos)

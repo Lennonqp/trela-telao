@@ -290,7 +290,7 @@ function dataBonita(iso) {
   return dif === 0 ? "Hoje, " + dm : dif === 1 ? "Amanhã, " + dm : sem.charAt(0).toUpperCase() + sem.slice(1) + ", " + dm;
 }
 
-// A marca "feito por lennon" fica em marca.js (também usada pelo jogo, que não tem Firebase).
+// A marca "feito por Na Tela" fica em marca.js (também usada pelo jogo, que não tem Firebase).
 
 // localStorage que não quebra se o navegador bloquear
 const guardado = {

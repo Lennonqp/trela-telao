@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Inter+Tight:wght@800&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
 </head>
 <body>
 <style>
@@ -248,7 +248,7 @@ canvas.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:non
 .volta{align-self:flex-start;color:var(--nevoa);font-size:14px;font-weight:700;text-decoration:none;padding:4px 0}
 .volta:hover{color:var(--texto)}
 .av-copo svg{width:26px;height:auto}
-/* marca "feito por lennon" (mesmo visual das outras telas) */
+/* marca "feito por Na Tela" (mesmo visual das outras telas) */
 .lennon{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:8px;row-gap:6px;padding:18px 8px 8px;color:var(--nevoa);font:500 12px/1.2 var(--f-body);text-decoration:none;opacity:.85;text-align:center}
 .lennon .ln-nome{display:inline-flex;align-items:center;font:800 17px/1 var(--f-body);letter-spacing:-.03em;color:var(--texto)}
 .lennon .liga{width:.78em;height:.84em;margin:0 .04em 0 .06em;color:#ff3fa4;filter:drop-shadow(0 0 4px rgba(255,63,164,.75));position:relative;top:.06em}
@@ -257,6 +257,10 @@ canvas.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:non
 .lennon a.ln-contato:hover,.lennon a.ln-contato:focus-visible{background:rgba(169,92,242,.18)}
 .lennon .ln-contato.vazio{border-style:dashed;color:var(--nevoa);font-weight:500}
 .lennon-pe{width:100%}
+.lennon .nt{position:relative;display:inline-flex;align-items:center;gap:.22em;padding:.28em .5em .32em;font:800 16px/1 "Inter Tight","Archivo",sans-serif;letter-spacing:-.05em;color:var(--texto);
+  background:linear-gradient(#FFD23F,#FFD23F) left top/.42em .11em no-repeat,linear-gradient(#FFD23F,#FFD23F) left top/.11em .42em no-repeat,linear-gradient(#FFD23F,#FFD23F) right top/.42em .11em no-repeat,linear-gradient(#FFD23F,#FFD23F) right top/.11em .42em no-repeat,linear-gradient(#FFD23F,#FFD23F) left bottom/.42em .11em no-repeat,linear-gradient(#FFD23F,#FFD23F) left bottom/.11em .42em no-repeat,linear-gradient(#FFD23F,#FFD23F) right bottom/.42em .11em no-repeat,linear-gradient(#FFD23F,#FFD23F) right bottom/.11em .42em no-repeat}
+.lennon .nt-dot{flex:none;width:.3em;height:.3em;border-radius:50%;background:#E63B2E}
+
 /* mesa online */
 .mesa{border-color:#ff3fa4;background:linear-gradient(180deg,rgba(255,63,164,.12),transparent 70%),var(--garrafa-2)}
 .mesa .hint{font-size:14px}
@@ -1843,8 +1847,8 @@ if(hot && hot.ready) hot.ready(boot); else boot(hot && hot.data || {});
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=202611221955"></script>
-<script src="marca.js?v=202611221955"></script>
-<script src="comum.js?v=202611221955"></script>
+<script src="config.js?v=202611222327"></script>
+<script src="marca.js?v=202611222327"></script>
+<script src="comum.js?v=202611222327"></script>
 </body>
 </html>

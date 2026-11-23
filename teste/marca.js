@@ -14,11 +14,10 @@ function marcaLennon(tipo) {
       ? '<a class="ln-contato" href="' + esc(link) + '"' + (link.indexOf("http") === 0 ? ' target="_blank" rel="noopener"' : "") + ">" + esc(c.texto) + "</a>"
       : '<span class="ln-contato">' + esc(c.texto) + "</span>";
   }
-  if (!contatos && !tv) contatos = '<span class="ln-contato vazio">contato em breve</span>';
   var el = document.createElement("div");
   el.className = "lennon" + (tv ? " ln-tv" : "");
   el.innerHTML = '<span class="ln-por">feito por</span><span class="ln-nome nt" aria-label="Na Tela"><span class="nt-dot"></span>na tela</span>' +
-    (tv ? '<span class="ln-sep">·</span><span class="ln-txt">telão interativo pro teu negócio</span>' : '<span class="ln-txt">quer um app ou telão pro teu negócio?</span>') +
+    (tv ? '<span class="ln-sep">·</span><span class="ln-txt">telão interativo pro teu bar</span>' : (contatos ? '<span class="ln-txt">quer o Na Tela no teu bar?</span>' : "")) +
     (contatos ? (tv ? '<span class="ln-sep">·</span>' : "") + '<span class="ln-contatos">' + contatos + "</span>" : "");
   return el;
 }

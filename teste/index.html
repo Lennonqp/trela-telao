@@ -23,8 +23,31 @@
 <meta property="og:description" content="Manda teu recado e tua foto pro telão do Trela, vê quem tá no bar, joga Encara ou Bebe e conversa com a galera.">
 <meta property="og:image" content="https://trela-telao.vercel.app/icone-512.png">
 <meta name="twitter:card" content="summary">
-<link rel="stylesheet" href="estilo.css?v=202611221739">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@800&amp;display=swap">
+<link rel="stylesheet" href="estilo.css?v=202611222304">
 <style>
+  /* ===== Abertura do Na Tela: o quadrado com o ponto se abre e aparece o nome ===== */
+  .abertura{position:fixed;inset:0;z-index:999;background:#141414;display:flex;align-items:center;justify-content:center;animation:abSai .5s ease-in 2.4s forwards;cursor:pointer;
+    --w:min(78vw,320px);--h:calc(var(--w) * .37)}
+  .ab-marca{position:relative;width:var(--w);height:var(--h);display:flex;align-items:center;justify-content:center;animation:abEntra .45s cubic-bezier(.2,1.3,.4,1) both,abAbre .6s cubic-bezier(.7,0,.2,1) .9s both}
+  .ab-c{position:absolute;width:calc(var(--w) * .106);height:calc(var(--w) * .106);border:0 solid #FFD23F}
+  .ab-c.tl{left:0;top:0;border-left-width:calc(var(--w) * .0276);border-top-width:calc(var(--w) * .0276)}
+  .ab-c.tr{right:0;top:0;border-right-width:calc(var(--w) * .0276);border-top-width:calc(var(--w) * .0276)}
+  .ab-c.bl{left:0;bottom:0;border-left-width:calc(var(--w) * .0276);border-bottom-width:calc(var(--w) * .0276)}
+  .ab-c.br{right:0;bottom:0;border-right-width:calc(var(--w) * .0276);border-bottom-width:calc(var(--w) * .0276)}
+  .ab-txt{display:flex;align-items:center;font:800 calc(var(--w) * .225)/1 "Inter Tight","Archivo",sans-serif;letter-spacing:-.06em;word-spacing:.14em;color:#F6F3EC;transform:translateY(-.03em);animation:abGap .6s cubic-bezier(.7,0,.2,1) .9s both}
+  .ab-dot{flex:none;width:calc(var(--w) * .0575);height:calc(var(--w) * .0575);border-radius:50%;background:#E63B2E;transform:translateY(.07em);animation:abPonto .45s cubic-bezier(.2,1.6,.4,1) .15s both,abGrava .9s ease-in-out .6s 2 alternate}
+  .ab-nome{display:block;white-space:nowrap;overflow:hidden;max-width:2.95em;animation:abNome .6s cubic-bezier(.7,0,.2,1) .9s both}
+  @keyframes abEntra{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:none}}
+  @keyframes abAbre{from{width:var(--h)}to{width:var(--w)}}
+  @keyframes abGap{from{gap:0}to{gap:.17em}}
+  @keyframes abNome{from{max-width:0;opacity:0}to{max-width:2.95em;opacity:1}}
+  @keyframes abPonto{from{transform:translateY(.07em) scale(0)}to{transform:translateY(.07em) scale(1)}}
+  @keyframes abGrava{from{box-shadow:0 0 0 0 rgba(230,59,46,.0)}to{box-shadow:0 0 0 calc(var(--w) * .03) rgba(230,59,46,.28)}}
+  @keyframes abSai{to{opacity:0;visibility:hidden}}
+  .abertura.sai{animation:abSai .3s ease-in forwards}
+  @media (prefers-reduced-motion:reduce){.ab-marca,.ab-txt,.ab-dot,.ab-nome{animation:none!important}.abertura{animation:abSai .4s ease-in 1.2s forwards}}
+
   html,body{height:100%;overflow:hidden}
   :root{--panel2:#201929;--ouro:#ffc94d}
   .app{position:fixed;inset:0;max-width:520px;margin:0 auto;background:var(--bg);overflow:hidden;padding-top:env(safe-area-inset-top)}
@@ -587,6 +610,23 @@
 </style>
 </head>
 <body>
+<!-- Abertura do Na Tela (uma vez por sessão; toque pula) -->
+<div class="abertura" id="abertura" aria-hidden="true">
+  <div class="ab-marca"><i class="ab-c tl"></i><i class="ab-c tr"></i><i class="ab-c bl"></i><i class="ab-c br"></i>
+    <span class="ab-txt"><span class="ab-dot"></span><span class="ab-nome">na tela</span></span>
+  </div>
+</div>
+<script>
+(function () {
+  var ab = document.getElementById("abertura"), viu = false;
+  try { viu = sessionStorage.getItem("natela-abertura") === "1"; sessionStorage.setItem("natela-abertura", "1"); } catch (e) {}
+  if (viu) { ab.parentNode.removeChild(ab); return; }
+  var tirar = function () { if (ab.parentNode) ab.parentNode.removeChild(ab); };
+  ab.addEventListener("click", function () { ab.classList.add("sai"); setTimeout(tirar, 320); });
+  ab.addEventListener("animationend", function (e) { if (e.target === ab) tirar(); });
+  setTimeout(tirar, 3400);
+})();
+</script>
 <div class="app" id="app">
 
   <div class="tela carregando" id="tCarregando"><div style="display:flex;flex-direction:column;align-items:center;gap:14px"><div class="logo" style="font-size:72px"><img src="logo.svg?v=3" alt="trela"></div><p id="carregandoTxt" style="margin:0;color:var(--muted);font-size:14px"></p></div></div>
@@ -797,9 +837,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="config.js?v=202611221739"></script>
-<script src="marca.js?v=202611221739"></script>
-<script src="comum.js?v=202611221739"></script>
+<script src="config.js?v=202611222304"></script>
+<script src="marca.js?v=202611222304"></script>
+<script src="comum.js?v=202611222304"></script>
 <script>
   const $ = s => document.querySelector(s);
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
